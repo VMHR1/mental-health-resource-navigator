@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "version": "1.0",
+    "region": "Dallas–Fort Worth",
+    "last_generated": "2025-12-20",
+    "disclaimer": "Information is provided for general informational purposes only. Listings are not ranked and inclusion does not imply endorsement. Availability and coverage may change quickly; confirm details directly with programs."
+  },
+  "programs": [
+    {
+      "program_id": "dfw-iop-001",
+      "organization": {
+        "name": "North Metro Behavioral Health",
+        "type": "Community Mental Health Center",
+        "website": "https://example.org",
+        "general_phone": "(214) 555-0123",
+        "general_email": "info@northmetro.org"
+      },
+      "program": {
+        "name": "Adolescent IOP – Plano",
+        "level_of_care": "Intensive Outpatient (IOP)",
+        "level_plain_language": "Intensive outpatient program with structured treatment multiple days per week",
+        "service_setting": "Hybrid",
+        "description_public": "Structured outpatient treatment for adolescents that typically includes group therapy, individual therapy, and family sessions. Schedules and services are determined during intake and may vary by individual needs.",
+        "clinical_focus_areas": [
+          "Depression/mood",
+          "Anxiety",
+          "SI/NSSI support"
+        ],
+        "family_involvement": "Required",
+        "school_coordination": "Varies/Case-by-case"
+      },
+      "eligibility": {
+        "min_age": 12,
+        "max_age": 17,
+        "inclusion_notes": "Designed for adolescents who need more structure than weekly therapy.",
+        "exclusion_notes": "May not be appropriate for individuals requiring immediate medical or psychiatric stabilization."
+      },
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75024",
+          "service_area_notes": "Serves North Texas; telehealth available statewide in Texas"
+        }
+      ],
+      "access_intake": {
+        "self_referral": "Yes",
+        "referral_required": "Varies",
+        "referral_sources_allowed": [
+          "Parent/guardian",
+          "Therapist",
+          "Primary care",
+          "ED/hospital"
+        ],
+        "intake_steps": [
+          "Phone screening",
+          "Clinical assessment",
+          "Insurance verification/authorization",
+          "Scheduling"
+        ],
+        "documents_commonly_requested": [
+          "ID",
+          "Insurance card",
+          "Prior treatment records (if available)"
+        ],
+        "intake_contact": {
+          "phone": "(214) 555-0456",
+          "email": "intake@northmetro.org"
+        }
+      },
+      "insurance_payment": {
+        "payment_types": [
+          "Commercial",
+          "Medicaid"
+        ],
+        "specific_payers": [
+          "Aetna",
+          "BCBS",
+          "UnitedHealthcare"
+        ],
+        "prior_authorization": "Varies",
+        "financial_assistance_available": "Unknown"
+      },
+      "language_accessibility": {
+        "languages": [
+          "English",
+          "Spanish"
+        ],
+        "interpreter_services": "Yes",
+        "accessibility_features": [
+          "Wheelchair accessible"
+        ]
+      },
+      "program_structure": {
+        "days_per_week": "3–5",
+        "hours_per_day": "3–4",
+        "group_therapy": "Yes",
+        "individual_therapy": "May be included",
+        "psychiatry_services": "May be included",
+        "family_sessions": "Required"
+      },
+      "availability": {
+        "accepting_new_patients": "Unknown",
+        "waitlist_status": "Moderate",
+        "typical_time_to_intake": "2–4 weeks",
+        "availability_last_reported": "2025-12-05"
+      },
+      "verification": {
+        "last_verified": "2025-12-05",
+        "source_of_update": "Updated by program staff",
+        "verification_status": "Verified"
+      }
+    },
+    {
+      "program_id": "dfw-php-002",
+      "organization": {
+        "name": "Downtown Youth Wellness Center",
+        "type": "Hospital/Health System",
+        "website": "https://example-hospital.org",
+        "general_phone": "(214) 555-0199",
+        "general_email": ""
+      },
+      "program": {
+        "name": "Adolescent PHP – Dallas",
+        "level_of_care": "Partial Hospitalization (PHP)",
+        "level_plain_language": "Day treatment program with structured care most weekdays",
+        "service_setting": "In-person",
+        "description_public": "Day-treatment program providing structured mental health services for adolescents while allowing them to return home in the evenings. Services and schedules are determined during intake.",
+        "clinical_focus_areas": [
+          "Depression/mood",
+          "Anxiety",
+          "Trauma"
+        ],
+        "family_involvement": "Varies by patient",
+        "school_coordination": "Yes"
+      },
+      "eligibility": {
+        "min_age": 13,
+        "max_age": 17,
+        "inclusion_notes": "",
+        "exclusion_notes": "Not appropriate for individuals requiring 24-hour inpatient care."
+      },
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75201",
+          "service_area_notes": "Dallas County"
+        }
+      ],
+      "access_intake": {
+        "self_referral": "No",
+        "referral_required": "Yes",
+        "referral_sources_allowed": [
+          "Therapist",
+          "Primary care",
+          "ED/hospital"
+        ],
+        "intake_steps": [
+          "Phone screening",
+          "Clinical assessment",
+          "Scheduling"
+        ],
+        "documents_commonly_requested": [
+          "ID",
+          "Insurance card",
+          "Consent forms"
+        ],
+        "intake_contact": {
+          "phone": "(214) 555-0199",
+          "email": ""
+        }
+      },
+      "insurance_payment": {
+        "payment_types": [
+          "Commercial",
+          "CHIP"
+        ],
+        "specific_payers": [],
+        "prior_authorization": "Yes",
+        "financial_assistance_available": "No"
+      },
+      "language_accessibility": {
+        "languages": [
+          "English"
+        ],
+        "interpreter_services": "Unknown",
+        "accessibility_features": []
+      },
+      "program_structure": {
+        "days_per_week": "5",
+        "hours_per_day": "5–6",
+        "group_therapy": "Yes",
+        "individual_therapy": "Varies",
+        "psychiatry_services": "May be included",
+        "family_sessions": "Varies"
+      },
+      "availability": {
+        "accepting_new_patients": "Yes",
+        "waitlist_status": "Short",
+        "typical_time_to_intake": "1–2 weeks",
+        "availability_last_reported": "2025-11-28"
+      },
+      "verification": {
+        "last_verified": "2025-11-28",
+        "source_of_update": "Updated by organization admin",
+        "verification_status": "Verified"
+      }
+    }
+  ]
+}
