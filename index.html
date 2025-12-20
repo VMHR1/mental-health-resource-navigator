@@ -3,536 +3,1432 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dallas Youth Post-Discharge Resource Navigator (V1)</title>
-
+  <title>Adolescent Mental Health Resource Directory • DFW (Demo)</title>
   <style>
     :root{
-      /* Warm, welcoming palette */
-      --bg: #fbfaf7;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: rgba(17, 24, 39, 0.10);
+      --bg: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
 
-      --accent: #c65a3a;     /* terracotta */
-      --accent2: #f2b27c;    /* warm peach */
-      --accent3: #2f6f6d;    /* calm teal (sparingly) */
+      --card: rgba(255,255,255,0.92);
+      --border: rgba(15,23,42,0.10);
 
-      --soft: rgba(198, 90, 58, 0.06);
-      --soft2: rgba(242, 178, 124, 0.18);
-      --shadow: 0 18px 50px rgba(17,24,39,0.08);
+      --accent: #f97316;   /* warm orange */
+      --accent2:#fb7185;   /* warm rose */
+      --accent3:#22c55e;   /* gentle green */
+      --shadow: 0 22px 70px rgba(2, 8, 23, 0.10);
+      --shadow2: 0 12px 28px rgba(2, 8, 23, 0.08);
 
-      --radius: 16px;
+      --radius: 18px;
       --radius2: 22px;
+
+      --warnBorder: rgba(249,115,22,0.35);
+      --warnBg: rgba(249,115,22,0.08);
+      --warnText: #7c2d12;
+
+      --goodBorder: rgba(34,197,94,0.35);
+      --goodBg: rgba(34,197,94,0.08);
+      --goodText: #14532d;
     }
 
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; }
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:
-        radial-gradient(900px 450px at 10% 0%, rgba(242,178,124,0.25) 0%, transparent 55%),
-        radial-gradient(900px 450px at 90% 0%, rgba(47,111,109,0.12) 0%, transparent 60%),
+        radial-gradient(1200px 700px at 20% -10%, rgba(249,115,22,0.12), transparent 60%),
+        radial-gradient(1000px 700px at 110% 20%, rgba(251,113,133,0.10), transparent 55%),
+        radial-gradient(900px 700px at 40% 110%, rgba(34,197,94,0.08), transparent 55%),
         var(--bg);
-      color:var(--text);
+      color: var(--text);
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    .container{
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 16px 90px;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      justify-content: space-between;
+      align-items:flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .brand h1{
+      margin:0 0 6px;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+    }
+    .brand p{
+      margin:0;
+      color: var(--muted);
+      max-width: 80ch;
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .top-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items:center;
+    }
+
+    .pill, button{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.72);
+      border-radius: 999px;
+      padding: 10px 12px;
+      cursor: pointer;
+      color: var(--text);
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    button:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+      background: rgba(255,255,255,0.92);
+    }
+    .pill{ cursor: default; display:flex; align-items:center; gap:8px; }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 18px rgba(249,115,22,0.20);
+    }
+
+    .urgent{
+      border: none;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 14px 30px rgba(249,115,22,0.22);
+    }
+    .urgent:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(249,115,22,0.26);
     }
 
     /* Layout */
-    header{
-      max-width:1160px;
-      margin:0 auto;
-      padding:30px 18px 14px;
-    }
-    .brandRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-    }
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    h1{
-      margin:0;
-      font-size:28px;
-      letter-spacing:-0.02em;
-      line-height:1.1;
-    }
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      line-height:1.55;
-      max-width:850px;
+    .layout{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap: 14px;
+      margin-top: 14px;
+      align-items: start;
     }
 
-    .wrap{ max-width:1160px; margin:0 auto; padding:0 18px 56px; }
-    .grid{ display:grid; gap:16px; grid-template-columns: 1fr; }
-    @media (min-width: 1040px){ .grid{ grid-template-columns: 430px 1fr; } }
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
+      .topbar{ flex-direction: column; align-items: stretch; }
+      .top-actions{ justify-content: flex-start; }
+    }
 
     /* Cards */
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,1));
-      border: 1px solid var(--border);
+      background: var(--card);
+      border:1px solid var(--border);
       border-radius: var(--radius2);
-      padding: 16px;
       box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: linear-gradient(120deg, rgba(249,115,22,0.18), rgba(251,113,133,0.16), rgba(34,197,94,0.14));
+      filter: blur(18px);
+      opacity: 0.42;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .card-inner{
+      position: relative;
+      z-index: 1;
+      padding: 14px;
     }
 
-    .hr{ height:1px; background: rgba(17,24,39,0.08); margin:14px 0; }
-
-    .pill{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(17,24,39,0.10);
+    .panel-title{
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      margin: 0 0 6px;
+    }
+    .panel-sub{
+      margin: 0 0 10px;
       color: var(--muted);
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(6px);
+      font-size: 12.5px;
+      line-height: 1.35;
     }
 
-    /* Friendly “callout badge” */
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid rgba(198,90,58,0.22);
-      background: rgba(198,90,58,0.06);
-      color: #7a2e1c;
-      max-width:100%;
+    /* Filters */
+    .filters .row{ margin-bottom: 12px; }
+    label{
+      display:block;
+      font-weight: 800;
+      font-size: 12.5px;
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
     }
-
-    /* Forms */
-    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
-    select, input[type="text"]{
-      width:100%;
-      padding:11px 12px;
-      border-radius:14px;
-      border: 1px solid rgba(17,24,39,0.14);
-      background: rgba(255,255,255,0.95);
+    input, select{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.88);
+      outline: none;
+      transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
       color: var(--text);
-      outline:none;
-      transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+      font-size: 14px;
     }
-    select:focus, input[type="text"]:focus{
-      border-color: rgba(198,90,58,0.40);
-      box-shadow: 0 0 0 4px rgba(242,178,124,0.25);
+    input:focus, select:focus{
+      border-color: rgba(249,115,22,0.35);
+      box-shadow: 0 0 0 6px rgba(249,115,22,0.10);
     }
 
-    .row{ display:flex; gap:10px; }
-    .row > div{ flex:1; }
-
-    .btns{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-    button{
-      padding:11px 12px;
-      border-radius:14px;
-      border:1px solid rgba(17,24,39,0.12);
-      background: rgba(255,255,255,0.85);
-      color:var(--text);
-      cursor:pointer;
-      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    .chips{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
     }
-    button:hover{ transform: translateY(-1px); box-shadow: 0 10px 30px rgba(17,24,39,0.08); }
-    button:active{ transform: translateY(0px); }
-
-    button.primary{
-      background: linear-gradient(180deg, rgba(198,90,58,0.98), rgba(172,70,46,0.98));
-      border-color: rgba(198,90,58,0.35);
-      color: white;
+    .chip{
+      padding: 9px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.70);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+      display:flex; align-items:center; gap:8px;
     }
-    button.primary:hover{ filter: brightness(1.03); }
+    .chip:hover{ transform: translateY(-1px); box-shadow: var(--shadow2); background: rgba(255,255,255,0.92); color: var(--text); }
+    .chip.active{
+      color: var(--text);
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow2);
+    }
+    .chip .mini-dot{
+      width:9px; height:9px; border-radius: 999px;
+      background: rgba(15,23,42,0.20);
+    }
+    .chip.active .mini-dot{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 20px rgba(249,115,22,0.18);
+    }
 
-    .small{ font-size:12px; color:var(--muted); line-height:1.6; }
+    .small{
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 8px 0 0;
+    }
+
+    .alert{
+      margin-top: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--warnBorder);
+      background: var(--warnBg);
+      color: var(--warnText);
+      font-size: 12.5px;
+      line-height: 1.35;
+      display:none;
+    }
+    .alert.show{ display:block; animation: pop .22s ease; }
+
+    @keyframes pop{
+      from{ transform: translateY(6px); opacity: 0; }
+      to{ transform: translateY(0); opacity: 1; }
+    }
 
     /* Results header */
-    .resultsHead{
+    .results-head{
       display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .results-head .meta{
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+      margin: 2px 0 0;
     }
 
-    /* Sections inside results */
-    .sectionCard{
-      border: 1px solid rgba(17,24,39,0.10);
-      background: rgba(255,255,255,0.88);
-      border-radius: var(--radius2);
-      padding: 14px;
-      margin: 12px 0;
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .sectionCard:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 14px 44px rgba(17,24,39,0.06);
-    }
-
-    .sectionTitle{
+    .sortbar{
       display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      font-size:16px;
+      justify-content: flex-end;
+    }
+    .sortbar select{ width: 240px; }
+
+    /* Result list */
+    .grid-results{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .result{
+      background: rgba(255,255,255,0.85);
+      border:1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      transition: transform .18s ease, box-shadow .18s ease;
+      position: relative;
+    }
+    .result:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .result-inner{
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+    }
+    @media (max-width: 760px){
+      .result-inner{ grid-template-columns: 1fr; }
+    }
+
+    .hgroup h3{
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+    .hgroup .org{
+      color: var(--muted);
+      font-size: 12.5px;
+      margin: 0 0 10px;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .tag{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.70);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      display:flex; gap:8px; align-items:center;
+    }
+    .tag .t-dot{
+      width:9px; height:9px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 20px rgba(249,115,22,0.14);
+    }
+
+    .facts{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    @media (max-width: 760px){ .facts{ grid-template-columns: 1fr; } }
+
+    .fact{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.60);
+      border-radius: 14px;
+      padding: 10px 10px;
+    }
+    .fact .k{
+      font-size: 11px;
+      color: var(--muted);
+      margin:0 0 3px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .fact .v{
+      margin:0;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .unknown{
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .actions{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+      min-width: 180px;
+    }
+    .btn{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.72);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      text-align: center;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: var(--shadow2); background: rgba(255,255,255,0.92); }
+    .btn.primary{
+      border:none;
+      color:white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 14px 30px rgba(249,115,22,0.20);
+    }
+    .btn.primary:hover{ box-shadow: 0 18px 40px rgba(249,115,22,0.25); }
+
+    .btn.small{
+      padding: 9px 10px;
+      font-size: 12.5px;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+
+    .subactions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* Drawer (program details) */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 8, 23, 0.40);
+      backdrop-filter: blur(8px);
+      display:none;
+      z-index: 50;
+    }
+    .overlay.show{ display:block; animation: fadeIn .18s ease; }
+    @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+    .drawer{
+      position: fixed;
+      top: 0; right: 0;
+      height: 100%;
+      width: min(520px, 92vw);
+      background: rgba(255,255,255,0.92);
+      border-left: 1px solid var(--border);
+      box-shadow: -30px 0 80px rgba(2, 8, 23, 0.18);
+      transform: translateX(110%);
+      transition: transform .22s ease;
+      z-index: 60;
+      overflow:auto;
+    }
+    .drawer.show{ transform: translateX(0); }
+    .drawer-head{
+      padding: 16px 16px 10px;
+      position: sticky;
+      top:0;
+      background: rgba(255,255,255,0.86);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1;
+    }
+    .drawer-head h2{
+      margin:0 0 4px;
+      letter-spacing: -0.02em;
+      font-size: 18px;
+    }
+    .drawer-head .org{
+      margin:0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+    .drawer-body{
+      padding: 14px 16px 18px;
+    }
+    .section{
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.70);
+      border-radius: var(--radius2);
+      padding: 12px 12px;
+    }
+    .section h4{
+      margin:0 0 6px;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      font-weight: 950;
+    }
+    .section p, .section li{
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+    .section ul{ margin: 8px 0 0 18px; }
+    .muted{ color: var(--muted) !important; font-weight: 700; }
+
+    .closeRow{
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items:center;
+      margin-top: 10px;
+    }
+
+    /* Compare tray */
+    .compare{
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 40;
+      display:none;
+    }
+    .compare.show{ display:block; }
+    .compare-card{
+      background: rgba(255,255,255,0.90);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position: relative;
+    }
+    .compare-card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: linear-gradient(120deg, rgba(249,115,22,0.18), rgba(251,113,133,0.14), rgba(34,197,94,0.12));
+      filter: blur(18px);
+      opacity: 0.35;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .compare-inner{
+      position: relative;
+      z-index: 1;
+      padding: 12px;
+    }
+    .compare-head{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .compare-head .title{
+      font-weight: 950;
+      letter-spacing: -0.01em;
       margin:0;
     }
-
-    .chipsWrap{ display:flex; gap:8px; flex-wrap:wrap; }
-    .chip{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(17,24,39,0.10);
-      background: rgba(255,255,255,0.88);
-      color: var(--muted);
-    }
-    .chip strong{ color: var(--text); font-weight:600; }
-
-    /* Compare collapse */
-    .collapseBtn{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:16px;
-      border:1px solid rgba(17,24,39,0.12);
-      background: linear-gradient(180deg, rgba(242,178,124,0.20), rgba(255,255,255,0.92));
-      color: var(--text);
-      cursor:pointer;
-    }
-    .collapseBody{
-      margin-top:10px;
-      overflow:hidden;
-      max-height: 0;
-      opacity: 0;
-      transform: translateY(-6px);
-      transition: max-height .30s ease, opacity .22s ease, transform .22s ease;
-    }
-    .collapseBody.open{
-      max-height: 1000px; /* enough for content */
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .compareGrid{
+    .compare-grid{
       display:grid;
-      grid-template-columns: 170px 1fr 1fr 1fr;
-      border: 1px solid rgba(17,24,39,0.10);
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+    @media (max-width: 980px){
+      .compare-grid{ grid-template-columns: 1fr; }
+    }
+    .compare-item{
+      border: 1px solid var(--border);
       border-radius: 18px;
-      overflow:hidden;
-      background: rgba(255,255,255,0.95);
+      padding: 10px;
+      background: rgba(255,255,255,0.72);
     }
-    .compareCell{
-      padding:10px 10px;
-      border-bottom:1px solid rgba(17,24,39,0.08);
-      border-right:1px solid rgba(17,24,39,0.08);
-      font-size:12px;
+    .compare-item h5{
+      margin:0 0 6px;
+      font-size: 13px;
+      font-weight: 950;
+      letter-spacing: -0.01em;
+    }
+    .compare-item .mini{
+      margin:0 0 8px;
       color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
     }
-    .compareCell.head{
-      background: rgba(242,178,124,0.20);
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .kv .line{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px 8px;
+      background: rgba(255,255,255,0.70);
+      font-size: 12.5px;
+      font-weight: 800;
       color: var(--text);
-      font-weight:700;
+      line-height: 1.35;
     }
-    .compareCell.label{
-      color: var(--text);
-      font-weight:700;
-      background: rgba(255,255,255,0.85);
-    }
-    .compareCell:last-child{ border-right:none; }
-    .compareRow:last-child .compareCell{ border-bottom:none; }
 
-    /* Tabs */
-    .sectionHeaderRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-
-    .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-    .tab{
-      padding:9px 11px;
-      border-radius:999px;
-      border:1px solid rgba(17,24,39,0.12);
-      background: rgba(255,255,255,0.9);
+    /* Footer disclaimer */
+    .footer-note{
+      margin-top: 10px;
       color: var(--muted);
-      cursor:pointer;
-      font-size:12px;
-      transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
-    }
-    .tab:hover{ transform: translateY(-1px); box-shadow: 0 10px 26px rgba(17,24,39,0.06); }
-    .tab.active{
-      color: white;
-      border-color: rgba(198,90,58,0.25);
-      background: linear-gradient(180deg, rgba(198,90,58,0.95), rgba(172,70,46,0.95));
+      font-size: 12px;
+      line-height: 1.35;
     }
 
-    .tabPanel{
-      margin-top:10px;
-      animation: fadeIn .22s ease both;
-    }
-
-    @keyframes fadeIn{
-      from{ opacity:0; transform: translateY(6px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
-
-    .sortRow{ display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap; }
-    .sortSelect{
-      width:auto;
-      min-width:160px;
-      padding:9px 10px;
-      border-radius:14px;
-    }
-
-    .subCard{
-      margin-top:12px;
-      padding:12px;
-      border-radius:18px;
-      border:1px solid rgba(17,24,39,0.10);
-      background: rgba(242,178,124,0.14);
-    }
-
-    /* Provider cards */
-    .providerCard{
-      padding:12px;
-      border-radius:18px;
-      border:1px solid rgba(17,24,39,0.10);
-      background: rgba(255,255,255,0.96);
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .providerCard:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 18px 44px rgba(17,24,39,0.08);
-    }
-    .providerTitle{ margin:0; font-size:14px; }
-    .meta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .tag{
-      font-size:11px;
-      padding:5px 9px;
-      border-radius:999px;
-      border:1px solid rgba(17,24,39,0.10);
-      color: var(--muted);
-      background: rgba(255,255,255,0.88);
-    }
-
-    a{ color: var(--accent); text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-
-    /* Subtle entrance for results on first render */
-    .resultsEntrance{
-      animation: fadeIn .28s ease both;
-    }
-
-    /* Print */
-    @media print{
-      body{ background:#fff; color:#000; }
-      .card, .sectionCard, .providerCard{ box-shadow:none !important; }
-      button{ display:none !important; }
-      a{ color:#000; text-decoration:underline; }
+    /* Simple entrance animation */
+    .enter{ animation: enter .22s ease both; }
+    @keyframes enter{
+      from{ opacity: 0; transform: translateY(10px); }
+      to{ opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <div class="brandRow">
+  <div class="container">
+    <div class="topbar">
       <div class="brand">
-        <h1>Dallas Youth Post-Discharge Resource Navigator (V1)</h1>
-        <p class="subtitle">
-          Neutral, informational support to help families explore care options (PHP, IOP, outpatient therapy) in the Dallas area for ages 6–17.
-          This tool does not rank or recommend providers and is not medical advice.
+        <h1>Adolescent Mental Health Resource Directory (Demo)</h1>
+        <p>
+          A neutral, information-forward directory for families seeking programs across levels of care (PHP, IOP, outpatient therapy, and related supports).
+          Listings are not ranked by quality and inclusion does not imply endorsement. Confirm details directly with each organization.
         </p>
       </div>
-      <div class="pill">Dallas area • Ages 6–17 • V1</div>
+      <div class="top-actions">
+        <div class="pill"><span class="dot"></span><span>Neutral by design</span></div>
+        <button class="urgent" id="urgentBtn" type="button">Need urgent help?</button>
+      </div>
     </div>
-  </header>
 
-  <div class="wrap">
-    <div class="grid">
-      <!-- Intake -->
-      <section class="card" aria-label="Intake form">
-        <div class="badge" style="margin-bottom:10px;">
-          Built to reduce overwhelm: short questions, plain language, and a limited set of options.
-        </div>
+    <div class="layout">
+      <!-- Filters -->
+      <div class="card filters">
+        <div class="card-inner">
+          <p class="panel-title">Search & Filters</p>
+          <p class="panel-sub">Filters match practical needs (location, insurance, language, setting). They do not determine clinical fit.</p>
 
-        <label for="zip">Dallas-area ZIP (optional)</label>
-        <input id="zip" type="text" inputmode="numeric" placeholder="e.g., 75201" />
-
-        <label for="seeking">What are you exploring right now? (select one)</label>
-        <select id="seeking">
-          <option value="info" selected>Information about care options (PHP, IOP, therapy)</option>
-          <option value="php">Partial Hospitalization Program (PHP)</option>
-          <option value="iop">Intensive Outpatient Program (IOP)</option>
-          <option value="therapy">Outpatient therapy</option>
-          <option value="not_sure">Not sure yet</option>
-        </select>
-
-        <label for="event">Was there a recent event or change? (optional)</label>
-        <select id="event">
-          <option value="prefer_not" selected>Prefer not to say</option>
-          <option value="ed">Emergency department visit</option>
-          <option value="inpatient">Recent inpatient psychiatric hospitalization</option>
-          <option value="school">Recommendation from school staff</option>
-          <option value="clinician">Recommendation from a clinician</option>
-          <option value="change">Changes in mood/behavior/functioning</option>
-          <option value="ongoing">Ongoing concerns without a specific event</option>
-        </select>
-
-        <label for="timing">When are you hoping to connect with support? (optional)</label>
-        <select id="timing">
-          <option value="info_only" selected>Just gathering information right now</option>
-          <option value="asap">As soon as possible</option>
-          <option value="few_days">In the next few days</option>
-          <option value="week">Within the next week</option>
-        </select>
-
-        <div class="row">
-          <div>
-            <label for="ageBand">Age (6–17)</label>
-            <select id="ageBand">
-              <option value="6-8">6–8</option>
-              <option value="9-11">9–11</option>
-              <option value="12-14" selected>12–14</option>
-              <option value="15-17">15–17</option>
-            </select>
+          <div class="row">
+            <label for="q">Search</label>
+            <input id="q" placeholder="Program name, organization, city, notes…" />
           </div>
-          <div>
-            <label for="setting">Setting preference</label>
-            <select id="setting">
-              <option value="either" selected>Either is fine</option>
-              <option value="in_person">In-person</option>
-              <option value="telehealth">Virtual / telehealth</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="row">
-          <div>
-            <label for="insurance">Insurance</label>
-            <select id="insurance">
-              <option value="insured" selected>Private insurance</option>
-              <option value="medicaid">Medicaid / CHIP</option>
-              <option value="uninsured">Uninsured</option>
-              <option value="unknown">Not sure</option>
-            </select>
+          <div class="row">
+            <label for="city">City (optional)</label>
+            <input id="city" placeholder="e.g., Dallas, Plano, Fort Worth" />
           </div>
-          <div>
-            <label for="language">Language preference</label>
-            <select id="language">
-              <option value="any" selected>Any</option>
-              <option value="english">English</option>
-              <option value="spanish">Spanish</option>
-            </select>
+
+          <div class="row">
+            <label>Level of care</label>
+            <div class="chips" id="chipLevel"></div>
           </div>
-        </div>
 
-        <div class="btns">
-          <button class="primary" id="showBtn">Show information & resources</button>
-          <button id="resetBtn">Reset</button>
-        </div>
+          <div class="row">
+            <label>Insurance type</label>
+            <div class="chips" id="chipIns"></div>
+          </div>
 
-        <div class="hr"></div>
-        <p class="small">
-          Privacy note: this V1 tool does not ask for diagnoses or store identifying information.
-          It is designed to help families understand options and find resources.
-        </p>
-      </section>
+          <div class="row">
+            <label>Language</label>
+            <div class="chips" id="chipLang"></div>
+          </div>
+
+          <div class="row">
+            <label>Service setting</label>
+            <div class="chips" id="chipSetting"></div>
+          </div>
+
+          <div class="row">
+            <label>Availability</label>
+            <div class="chips" id="chipAvail"></div>
+          </div>
+
+          <div class="row">
+            <label for="age">Age (optional)</label>
+            <select id="age">
+              <option value="">Any</option>
+              <option value="12">12</option><option value="13">13</option><option value="14">14</option>
+              <option value="15">15</option><option value="16">16</option><option value="17">17</option>
+            </select>
+            <p class="small">If entered, results include programs whose age range includes that age.</p>
+          </div>
+
+          <div class="row">
+            <label>
+              <input id="includeUnknown" type="checkbox" checked />
+              Include programs with “Unknown” fields
+            </label>
+            <p class="small">Keeping “Unknown” can reduce dead-ends when data is incomplete.</p>
+          </div>
+
+          <div class="row" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button type="button" id="resetBtn">Reset filters</button>
+          </div>
+
+          <div id="filterAlert" class="alert"></div>
+
+          <p class="footer-note">
+            Informational use only. Not medical advice or a recommendation service. Availability and coverage can change quickly.
+          </p>
+        </div>
+      </div>
 
       <!-- Results -->
-      <section class="card" aria-label="Results" id="resultsPanel">
-        <div class="resultsHead">
+      <div>
+        <div class="results-head">
           <div>
-            <h2 style="margin:0; font-size:18px;">Care options and Dallas-area resources (ages 6–17)</h2>
-            <p class="small" style="margin:6px 0 0;">
-              This page provides neutral information about levels of care and lists resources that match the filters you selected.
-              Items are not ranked or recommended.
-            </p>
+            <p class="panel-title" style="margin:0;">Results</p>
+            <p class="meta" id="metaLine"></p>
           </div>
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <div class="pill" id="countsPill">PHP: 0 · IOP: 0 · Therapy: 0</div>
-            <button id="editFiltersBtn" title="Edit filters">Edit filters</button>
+          <div class="sortbar">
+            <label for="sort" style="margin:0 0 6px; width:100%;">Sort (neutral)</label>
+            <select id="sort">
+              <option value="verified_desc">Most recently verified</option>
+              <option value="distance_asc">Closest location (demo distance)</option>
+              <option value="availability_desc">Availability reported (most recent)</option>
+            </select>
           </div>
         </div>
 
-        <div class="hr"></div>
-        <div class="chipsWrap" id="chipsWrap" aria-label="Selected filters"></div>
+        <div class="grid-results" id="results"></div>
 
-        <div class="sectionCard" aria-label="Safety section">
-          <h3 class="sectionTitle">
-            <span>If safety becomes a concern</span>
-            <span class="pill">Support options</span>
-          </h3>
-          <p class="small" style="margin-top:8px;">
-            Some families choose to use crisis supports if concerns increase or feel unmanageable.
-          </p>
-          <ul class="small">
-            <li><strong>Emergency:</strong> Call 911 or go to the nearest emergency department.</li>
-            <li><strong>988:</strong> Call or text 988 for the Suicide &amp; Crisis Lifeline.</li>
-            <li><strong>Dallas crisis linkage:</strong> Metrocare 24/7 hotline (214-743-1215) • NTBHA 24/7 crisis hotline (1-866-260-8000).</li>
-          </ul>
-          <p class="small" style="margin-top:10px;">
-            This is listed for information only; choosing when to use these options depends on your situation and judgment.
-          </p>
+        <p class="footer-note">
+          If safety is an immediate concern, call 911 or go to the nearest emergency department. You can also call or text 988 in the U.S.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2 id="dTitle"></h2>
+      <p class="org" id="dOrg"></p>
+      <div class="closeRow">
+        <button type="button" id="closeDrawer">Close</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn small primary" id="dCall" href="#" role="button">Call intake</a>
+          <a class="btn small" id="dEmail" href="#" role="button">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-body" id="dBody"></div>
+  </aside>
+
+  <!-- Compare tray -->
+  <div class="compare" id="compareTray">
+    <div class="compare-card">
+      <div class="compare-inner">
+        <div class="compare-head">
+          <p class="title">Compare</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" id="clearCompare">Clear</button>
+            <button type="button" id="hideCompare">Hide</button>
+          </div>
+        </div>
+        <div class="compare-grid" id="compareGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***************
+     * Demo data
+     * Replace this with your real database feed later.
+     * Note: distance is mocked for demo UI.
+     ***************/
+    const programs = [
+      {
+        id: "p1",
+        orgName: "North Metro Behavioral Health",
+        programName: "Adolescent IOP – Plano",
+        levelOfCare: "Intensive Outpatient (IOP)",
+        levelPlain: "Intensive outpatient (multiple days per week, several hours per day)",
+        minAge: 12, maxAge: 17,
+        city: "Plano", zip: "75024",
+        serviceSetting: "Hybrid",
+        insuranceTypes: ["Commercial","Medicaid"],
+        selfPay: "Available",
+        languages: ["English","Spanish"],
+        interpreter: "Yes",
+        familyInvolvement: "Required",
+        schoolCoordination: "Varies/Case-by-case",
+        intakePhone: "(214) 555-0456",
+        intakeEmail: "intake@northmetro.org",
+        referralRequired: "Varies",
+        selfReferral: "Yes",
+        intakeSteps: ["Phone screening","Clinical assessment","Insurance verification/authorization","Scheduling"],
+        documents: ["ID","Insurance card","Prior treatment records (if available)"],
+        description: "Structured outpatient treatment for adolescents that typically includes group therapy, individual therapy, and family sessions. Services and schedules may vary based on intake assessment.",
+        typicalWeek: { days: "3–5", hours: "3–4", psychiatry: "May be included", groups: "Yes", individual: "May be included", family: "Required" },
+        acceptingNew: "Unknown",
+        waitlist: "Moderate",
+        typicalTimeToIntake: "2–4 weeks",
+        lastVerified: "2025-12-05",
+        updateSource: "Updated by program staff",
+        availabilityReportedAt: "2025-12-05",
+        distanceMiles: 8
+      },
+      {
+        id: "p2",
+        orgName: "Downtown Youth Wellness Center",
+        programName: "Adolescent PHP – Dallas",
+        levelOfCare: "Partial Hospitalization (PHP)",
+        levelPlain: "Partial hospitalization (day treatment, most weekdays)",
+        minAge: 13, maxAge: 17,
+        city: "Dallas", zip: "75201",
+        serviceSetting: "In-person",
+        insuranceTypes: ["Commercial","CHIP"],
+        selfPay: "Unknown",
+        languages: ["English"],
+        interpreter: "Unknown",
+        familyInvolvement: "Varies by patient",
+        schoolCoordination: "Yes",
+        intakePhone: "(214) 555-0199",
+        intakeEmail: "",
+        referralRequired: "Yes",
+        selfReferral: "No",
+        intakeSteps: ["Phone screening","Clinical assessment","Scheduling"],
+        documents: ["ID","Insurance card","Consent forms"],
+        description: "Day-treatment program providing structured support for adolescents. Services and daily schedule are determined during intake and may change over time.",
+        typicalWeek: { days: "5", hours: "5–6", psychiatry: "May be included", groups: "Yes", individual: "Varies", family: "Varies" },
+        acceptingNew: "Yes",
+        waitlist: "Short",
+        typicalTimeToIntake: "1–2 weeks",
+        lastVerified: "2025-11-28",
+        updateSource: "Updated by organization admin",
+        availabilityReportedAt: "2025-11-28",
+        distanceMiles: 4
+      },
+      {
+        id: "p3",
+        orgName: "Fort Worth Family Counseling Network",
+        programName: "Adolescent Outpatient Therapy – Fort Worth",
+        levelOfCare: "Outpatient therapy",
+        levelPlain: "Outpatient therapy (typically weekly or as scheduled)",
+        minAge: 10, maxAge: 17,
+        city: "Fort Worth", zip: "76102",
+        serviceSetting: "Telehealth",
+        insuranceTypes: ["Commercial","Medicaid","Self-pay","Sliding scale"],
+        selfPay: "Available",
+        languages: ["English","Spanish","Other"],
+        interpreter: "Yes",
+        familyInvolvement: "Optional",
+        schoolCoordination: "Not specified",
+        intakePhone: "",
+        intakeEmail: "referrals@fwfcn.org",
+        referralRequired: "No",
+        selfReferral: "Yes",
+        intakeSteps: ["Phone screening","Scheduling"],
+        documents: ["Insurance card"],
+        description: "Individual and family therapy with scheduling determined collaboratively. Telehealth availability may vary by location and clinician.",
+        typicalWeek: { days: "Varies", hours: "Varies", psychiatry: "No", groups: "Varies", individual: "Yes", family: "Optional" },
+        acceptingNew: "No",
+        waitlist: "Long",
+        typicalTimeToIntake: "8+ weeks",
+        lastVerified: "2025-12-12",
+        updateSource: "Updated by moderator from public sources",
+        availabilityReportedAt: "2025-12-12",
+        distanceMiles: 16
+      },
+      {
+        id: "p4",
+        orgName: "Lakeside Adolescent Services",
+        programName: "Adolescent IOP – Irving",
+        levelOfCare: "Intensive Outpatient (IOP)",
+        levelPlain: "Intensive outpatient (multiple days per week, several hours per day)",
+        minAge: 12, maxAge: 18,
+        city: "Irving", zip: "75039",
+        serviceSetting: "In-person",
+        insuranceTypes: ["Commercial","Unknown"],
+        selfPay: "Available",
+        languages: ["English"],
+        interpreter: "No",
+        familyInvolvement: "Required",
+        schoolCoordination: "No",
+        intakePhone: "(214) 555-0707",
+        intakeEmail: "intake@lakeside.example",
+        referralRequired: "Unknown",
+        selfReferral: "Unknown",
+        intakeSteps: ["Clinical assessment","Insurance verification/authorization","Scheduling"],
+        documents: [],
+        description: "Structured IOP for adolescents with group and family components. Specific services vary by individual needs and intake planning.",
+        typicalWeek: { days: "3–4", hours: "3", psychiatry: "May be included", groups: "Yes", individual: "Varies", family: "Required" },
+        acceptingNew: "Unknown",
+        waitlist: "Unknown",
+        typicalTimeToIntake: "Unknown",
+        lastVerified: "2025-10-30",
+        updateSource: "Updated by program staff",
+        availabilityReportedAt: "2025-10-30",
+        distanceMiles: 11
+      }
+    ];
+
+    const levels = [
+      "Partial Hospitalization (PHP)",
+      "Intensive Outpatient (IOP)",
+      "Outpatient therapy",
+      "Assessment/Evaluation",
+      "Crisis services"
+    ];
+
+    const insTypes = ["Commercial","Medicaid","CHIP","Self-pay","Sliding scale","Unknown"];
+    const langs = ["English","Spanish","Other"];
+    const settings = ["In-person","Telehealth","Hybrid"];
+    const availFilters = ["Accepting new (Yes)","Accepting new (Unknown)","Waitlist: None/Short","Waitlist: Moderate/Long","Availability unknown"];
+
+    // UI state
+    const state = {
+      q: "",
+      city: "",
+      level: new Set(),
+      ins: new Set(),
+      lang: new Set(),
+      setting: new Set(),
+      avail: new Set(),
+      age: "",
+      includeUnknown: true,
+      sort: "verified_desc",
+      compare: [] // program ids (max 3)
+    };
+
+    // Elements
+    const qEl = document.getElementById("q");
+    const cityEl = document.getElementById("city");
+    const ageEl = document.getElementById("age");
+    const includeUnknownEl = document.getElementById("includeUnknown");
+    const sortEl = document.getElementById("sort");
+    const resultsEl = document.getElementById("results");
+    const metaLineEl = document.getElementById("metaLine");
+    const filterAlert = document.getElementById("filterAlert");
+
+    const chipLevel = document.getElementById("chipLevel");
+    const chipIns = document.getElementById("chipIns");
+    const chipLang = document.getElementById("chipLang");
+    const chipSetting = document.getElementById("chipSetting");
+    const chipAvail = document.getElementById("chipAvail");
+
+    // Drawer
+    const overlay = document.getElementById("overlay");
+    const drawer = document.getElementById("drawer");
+    const closeDrawerBtn = document.getElementById("closeDrawer");
+    const dTitle = document.getElementById("dTitle");
+    const dOrg = document.getElementById("dOrg");
+    const dBody = document.getElementById("dBody");
+    const dCall = document.getElementById("dCall");
+    const dEmail = document.getElementById("dEmail");
+
+    // Compare
+    const compareTray = document.getElementById("compareTray");
+    const compareGrid = document.getElementById("compareGrid");
+    const clearCompareBtn = document.getElementById("clearCompare");
+    const hideCompareBtn = document.getElementById("hideCompare");
+
+    // Helpers
+    const fmtDate = (iso) => {
+      if(!iso) return "Unknown";
+      const d = new Date(iso + "T00:00:00");
+      return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+    };
+
+    function showFilterAlert(msg){
+      filterAlert.textContent = msg;
+      filterAlert.classList.add("show");
+    }
+    function hideFilterAlert(){
+      filterAlert.textContent = "";
+      filterAlert.classList.remove("show");
+    }
+
+    function makeChip(label, setRef, container){
+      const el = document.createElement("div");
+      el.className = "chip";
+      el.innerHTML = `<span class="mini-dot"></span><span>${label}</span>`;
+      el.addEventListener("click", () => {
+        if(setRef.has(label)) setRef.delete(label);
+        else setRef.add(label);
+        render();
+      });
+      container.appendChild(el);
+      return el;
+    }
+
+    function syncChips(container, setRef){
+      Array.from(container.children).forEach(ch => {
+        const txt = ch.textContent.trim();
+        if(setRef.has(txt)) ch.classList.add("active");
+        else ch.classList.remove("active");
+      });
+    }
+
+    function programMatchesAvailability(p){
+      if(state.avail.size === 0) return true;
+
+      // Map program to bucket labels
+      const buckets = new Set();
+      if(p.acceptingNew === "Yes") buckets.add("Accepting new (Yes)");
+      if(p.acceptingNew === "Unknown") buckets.add("Accepting new (Unknown)");
+
+      const wl = (p.waitlist || "Unknown");
+      if(wl === "None" || wl === "Short") buckets.add("Waitlist: None/Short");
+      if(wl === "Moderate" || wl === "Long") buckets.add("Waitlist: Moderate/Long");
+      if(wl === "Unknown") buckets.add("Availability unknown");
+
+      // Must intersect selected buckets
+      for(const sel of state.avail){
+        if(buckets.has(sel)) return true;
+      }
+      return false;
+    }
+
+    function hasUnknownFieldRelevant(p){
+      // Treat these as "key access fields"
+      const unknowns = [
+        p.acceptingNew === "Unknown",
+        p.waitlist === "Unknown",
+        (p.insuranceTypes || []).includes("Unknown"),
+        p.interpreter === "Unknown"
+      ];
+      return unknowns.some(Boolean);
+    }
+
+    function matchesFilters(p){
+      const q = state.q.trim().toLowerCase();
+      const city = state.city.trim().toLowerCase();
+
+      if(q){
+        const hay = [
+          p.programName, p.orgName, p.city, p.levelOfCare, p.description,
+          (p.insuranceTypes||[]).join(" "), (p.languages||[]).join(" ")
+        ].join(" ").toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+
+      if(city){
+        if(!(p.city || "").toLowerCase().includes(city)) return false;
+      }
+
+      if(state.age){
+        const a = Number(state.age);
+        if(!(a >= p.minAge && a <= p.maxAge)) return false;
+      }
+
+      if(state.level.size){
+        if(!state.level.has(p.levelOfCare)) return false;
+      }
+
+      if(state.setting.size){
+        if(!state.setting.has(p.serviceSetting)) return false;
+      }
+
+      if(state.ins.size){
+        // Match if any selected insurance is in program insuranceTypes
+        const types = new Set(p.insuranceTypes || []);
+        let ok = false;
+        for(const sel of state.ins){
+          if(types.has(sel)) ok = true;
+        }
+        if(!ok) return false;
+      }
+
+      if(state.lang.size){
+        const langs = new Set(p.languages || []);
+        let ok = false;
+        for(const sel of state.lang){
+          if(langs.has(sel)) ok = true;
+        }
+        if(!ok) return false;
+      }
+
+      if(!programMatchesAvailability(p)) return false;
+
+      // Unknown handling
+      if(!state.includeUnknown){
+        if(hasUnknownFieldRelevant(p)) return false;
+      }
+
+      return true;
+    }
+
+    function sortPrograms(list){
+      const arr = [...list];
+      if(state.sort === "verified_desc"){
+        arr.sort((a,b) => (b.lastVerified || "").localeCompare(a.lastVerified || ""));
+      } else if(state.sort === "distance_asc"){
+        arr.sort((a,b) => (a.distanceMiles ?? 9999) - (b.distanceMiles ?? 9999));
+      } else if(state.sort === "availability_desc"){
+        arr.sort((a,b) => (b.availabilityReportedAt || "").localeCompare(a.availabilityReportedAt || ""));
+      }
+      return arr;
+    }
+
+    function neutralAvailabilityLine(p){
+      const updated = fmtDate(p.availabilityReportedAt || p.lastVerified);
+      const accept = p.acceptingNew || "Unknown";
+      const wl = p.waitlist || "Unknown";
+      return `Availability last updated: ${updated} • Accepting new: ${accept} • Waitlist: ${wl}`;
+    }
+
+    function callHref(phone){
+      if(!phone) return "#";
+      return "tel:" + phone.replace(/[^\d+]/g,"");
+    }
+
+    function emailHref(email){
+      if(!email) return "#";
+      return "mailto:" + encodeURIComponent(email);
+    }
+
+    function toggleCompare(id){
+      const idx = state.compare.indexOf(id);
+      if(idx >= 0){
+        state.compare.splice(idx, 1);
+      } else {
+        if(state.compare.length >= 3){
+          showFilterAlert("Compare is limited to 3 programs at a time.");
+          setTimeout(hideFilterAlert, 2400);
+          return;
+        }
+        state.compare.push(id);
+      }
+      renderCompare();
+      render(); // update button labels
+    }
+
+    function renderCompare(){
+      if(state.compare.length === 0){
+        compareTray.classList.remove("show");
+        compareGrid.innerHTML = "";
+        return;
+      }
+      compareTray.classList.add("show");
+      compareGrid.innerHTML = "";
+
+      state.compare.forEach(id => {
+        const p = programs.find(x => x.id === id);
+        if(!p) return;
+        const div = document.createElement("div");
+        div.className = "compare-item enter";
+        div.innerHTML = `
+          <h5>${escapeHtml(p.programName)}</h5>
+          <p class="mini">${escapeHtml(p.orgName)} • ${escapeHtml(p.city)}</p>
+          <div class="kv">
+            <div class="line">Level: ${escapeHtml(p.levelOfCare)}</div>
+            <div class="line">Ages: ${p.minAge}–${p.maxAge}</div>
+            <div class="line">Setting: ${escapeHtml(p.serviceSetting)}</div>
+            <div class="line">Insurance: ${escapeHtml((p.insuranceTypes||[]).join(", ") || "Unknown")}</div>
+            <div class="line">Language: ${escapeHtml((p.languages||[]).join(", ") || "Unknown")}</div>
+            <div class="line">Interpreter: ${escapeHtml(p.interpreter || "Unknown")}</div>
+            <div class="line">Family involvement: ${escapeHtml(p.familyInvolvement || "Not specified")}</div>
+            <div class="line">Verified: ${escapeHtml(fmtDate(p.lastVerified))}</div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <button class="btn small" type="button" data-remove="${p.id}">Remove</button>
+            <button class="btn small primary" type="button" data-view="${p.id}">View</button>
+          </div>
+        `;
+        compareGrid.appendChild(div);
+      });
+
+      compareGrid.querySelectorAll("[data-remove]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-remove");
+          state.compare = state.compare.filter(x => x !== id);
+          renderCompare();
+          render();
+        });
+      });
+
+      compareGrid.querySelectorAll("[data-view]").forEach(btn => {
+        btn.addEventListener("click", () => openDrawer(btn.getAttribute("data-view")));
+      });
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
+    }
+
+    function renderResults(list){
+      resultsEl.innerHTML = "";
+      if(list.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "card enter";
+        empty.innerHTML = `
+          <div class="card-inner">
+            <p class="panel-title" style="margin:0 0 6px;">No results match these filters</p>
+            <p class="panel-sub">Try broadening filters (e.g., include “Unknown” fields) or removing availability constraints.</p>
+            <button type="button" id="softReset">Reset filters</button>
+          </div>
+        `;
+        resultsEl.appendChild(empty);
+        document.getElementById("softReset").addEventListener("click", () => resetFilters());
+        return;
+      }
+
+      list.forEach(p => {
+        const el = document.createElement("div");
+        el.className = "result enter";
+
+        const insuranceLine = (p.insuranceTypes && p.insuranceTypes.length)
+          ? p.insuranceTypes.filter(Boolean).join(", ")
+          : "Unknown";
+
+        const langLine = (p.languages && p.languages.length) ? p.languages.join(", ") : "Unknown";
+
+        const verifiedLine = `Last verified: ${fmtDate(p.lastVerified)} • Source: ${p.updateSource || "Unknown"}`;
+
+        const compareLabel = state.compare.includes(p.id) ? "Remove from compare" : "Compare";
+
+        el.innerHTML = `
+          <div class="result-inner">
+            <div>
+              <div class="hgroup">
+                <h3>${escapeHtml(p.programName)}</h3>
+                <p class="org">${escapeHtml(p.orgName)} • ${escapeHtml(p.city)}${p.distanceMiles != null ? ` • ~${p.distanceMiles} mi` : ""}</p>
+              </div>
+
+              <div class="tags">
+                <div class="tag"><span class="t-dot"></span><span>${escapeHtml(p.levelOfCare)}</span></div>
+                <div class="tag"><span class="t-dot"></span><span>${escapeHtml(p.serviceSetting)}</span></div>
+              </div>
+
+              <div class="facts">
+                <div class="fact">
+                  <p class="k">Age range</p>
+                  <p class="v">${p.minAge}–${p.maxAge}</p>
+                </div>
+                <div class="fact">
+                  <p class="k">Insurance (types)</p>
+                  <p class="v">${escapeHtml(insuranceLine.includes("Unknown") ? insuranceLine : insuranceLine)}</p>
+                </div>
+                <div class="fact">
+                  <p class="k">Language</p>
+                  <p class="v">${escapeHtml(langLine)}</p>
+                </div>
+                <div class="fact">
+                  <p class="k">Availability (informational)</p>
+                  <p class="v">${escapeHtml(neutralAvailabilityLine(p))}</p>
+                </div>
+              </div>
+
+              <div class="fact" style="margin-top:10px;">
+                <p class="k">Transparency</p>
+                <p class="v">${escapeHtml(verifiedLine)}</p>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" type="button" data-view="${p.id}">View program details</button>
+              <a class="btn" href="${callHref(p.intakePhone)}" ${p.intakePhone ? "" : 'aria-disabled="true" style="opacity:.55; pointer-events:none;"'}>Call intake</a>
+              <a class="btn" href="${emailHref(p.intakeEmail)}" ${p.intakeEmail ? "" : 'aria-disabled="true" style="opacity:.55; pointer-events:none;"'}>Email</a>
+              <button class="btn" type="button" data-compare="${p.id}">${compareLabel}</button>
+            </div>
+          </div>
+        `;
+        resultsEl.appendChild(el);
+      });
+
+      resultsEl.querySelectorAll("[data-view]").forEach(btn => {
+        btn.addEventListener("click", () => openDrawer(btn.getAttribute("data-view")));
+      });
+      resultsEl.querySelectorAll("[data-compare]").forEach(btn => {
+        btn.addEventListener("click", () => toggleCompare(btn.getAttribute("data-compare")));
+      });
+    }
+
+    function openDrawer(id){
+      const p = programs.find(x => x.id === id);
+      if(!p) return;
+
+      dTitle.textContent = p.programName;
+      dOrg.textContent = `${p.orgName} • ${p.city} • ${p.levelOfCare}`;
+
+      dCall.href = callHref(p.intakePhone);
+      dCall.style.opacity = p.intakePhone ? "1" : ".55";
+      dCall.style.pointerEvents = p.intakePhone ? "auto" : "none";
+
+      dEmail.href = emailHref(p.intakeEmail);
+      dEmail.style.opacity = p.intakeEmail ? "1" : ".55";
+      dEmail.style.pointerEvents = p.intakeEmail ? "auto" : "none";
+
+      const docs = (p.documents && p.documents.length) ? p.documents.map(d => `<li>${escapeHtml(d)}</li>`).join("") : `<li class="muted">Not specified</li>`;
+      const steps = (p.intakeSteps && p.intakeSteps.length) ? p.intakeSteps.map(s => `<li>${escapeHtml(s)}</li>`).join("") : `<li class="muted">Not specified</li>`;
+
+      dBody.innerHTML = `
+        <div class="section">
+          <h4>What this program is</h4>
+          <p>${escapeHtml(p.description || "Not specified")}</p>
+          <p class="muted" style="margin-top:8px;">This directory is informational and does not determine appropriateness or fit.</p>
         </div>
 
-        <div class="sectionCard" aria-label="How to use">
-          <h3 class="sectionTitle">
-            <span>How families often use this page</span>
-            <span class="pill">Overview</span>
-          </h3>
-          <ul class="small">
-            <li>Learn what each level of care typically involves.</li>
-            <li>Compare programs based on practical details (age eligibility, schedule, insurance, location, language).</li>
-            <li>Use the call checklist near the bottom to gather the information you need.</li>
+        <div class="section">
+          <h4>What a typical week may look like</h4>
+          <ul>
+            <li>Days/week: ${escapeHtml(p.typicalWeek?.days || "Varies/Unknown")}</li>
+            <li>Hours/day: ${escapeHtml(p.typicalWeek?.hours || "Varies/Unknown")}</li>
+            <li>Groups: ${escapeHtml(p.typicalWeek?.groups || "Varies/Unknown")}</li>
+            <li>Individual sessions: ${escapeHtml(p.typicalWeek?.individual || "Varies/Unknown")}</li>
+            <li>Psychiatry/medication management: ${escapeHtml(p.typicalWeek?.psychiatry || "Varies/Unknown")}</li>
+            <li>Family sessions: ${escapeHtml(p.typicalWeek?.family || p.familyInvolvement || "Varies/Unknown")}</li>
           </ul>
+          <p class="muted" style="margin-top:8px;">Schedules and services may change based on intake and individualized planning.</p>
         </div>
 
-        <div class="sectionCard" aria-label="Compare levels of care">
-          <button class="collapseBtn" id="compareToggle" aria-expanded="false">
-            <span>Compare PHP, IOP, and outpatient therapy</span>
-            <span class="pill" id="comparePill">Expand</span>
-          </button>
+        <div class="section">
+          <h4>Access & intake</h4>
+          <p><strong>Self-referral accepted:</strong> ${escapeHtml(p.selfReferral || "Unknown")}</p>
+          <p><strong>Referral required:</strong> ${escapeHtml(p.referralRequired || "Unknown")}</p>
+          <p style="margin-top:8px;"><strong>Intake steps (typical):</strong></p>
+          <ul>${steps}</ul>
+          <p style="margin-top:8px;"><strong>Documents commonly requested:</strong></p>
+          <ul>${docs}</ul>
+        </div>
 
-          <div id="comparePanel" class="collapseBody">
-            <p class="small" style="margin-top:10px;">
-              The descriptions below are general. Programs vary in structure, schedule, and eligibility.
-            </p>
+        <div class="section">
+          <h4>Insurance, cost, language, accessibility</h4>
+          <p><strong>Insurance types:</strong> ${escapeHtml((p.insuranceTypes||[]).join(", ") || "Unknown")}</p>
+          <p><strong>Self-pay:</strong> ${escapeHtml(p.selfPay || "Unknown")}</p>
+          <p><strong>Languages:</strong> ${escapeHtml((p.languages||[]).join(", ") || "Unknown")}</p>
+          <p><strong>Interpreter services:</strong> ${escapeHtml(p.interpreter || "Unknown")}</p>
+          <p class="muted" style="margin-top:8px;">Coverage depends on plan details and authorization requirements. Confirm directly with the program.</p>
+        </div>
 
-            <div class="compareGrid" role="table" aria-label="Comparison table">
-              <div class="compareHead" role="row">
-                <div class="compareCell head" role="columnheader"></div>
-                <div class="compareCell head" role="columnheader">PHP</div>
-                <div class="compareCell head" role="columnheader">IOP</div>
-                <div class="compareCell head" role="columnheader">Outpatient therapy</div>
-              </div>
+        <div class="section">
+          <h4>Availability (informational)</h4>
+          <p>${escapeHtml(neutralAvailabilityLine(p))}</p>
+          <p class="muted" style="margin-top:8px;">Availability can change quickly. This is not a guarantee of openings.</p>
+        </div>
 
-              <div class="compareRow" role="row">
-                <div class="compareCell label" role="rowheader">Typical schedule</div>
-                <div class="compareCell" role="cell">Often daytime sessions multiple days/week</div>
-                <div class="compareCell" role="cell">Often several days/week for a few hours/session</div>
-                <div class="compareCell" role="cell">Often weekly (varies by clinician)</div>
-              </div>
+        <div class="section">
+          <h4>Important to know</h4>
+          <p>If immediate safety is a concern, seek emergency care (call 911 or go to the nearest emergency department). You can also call or text 988 in the U.S.</p>
+          <p class="muted" style="margin-top:8px;">This platform does not provide medical advice or crisis triage.</p>
+        </div>
 
-              <div class="compareRow" role="row">
-                <div class="compareCell label" role="rowheader">Where the child is</div>
-                <div class="compareCell" role="cell">At program during the day; home evenings</div>
-                <div class="compareCell" role="cell">Home; attends scheduled sessions</div>
-                <div class="compareCell" role="cell">Home; attends appointments as scheduled</div>
-              </div>
+        <div class="section">
+          <h4>Transparency</h4>
+          <p><strong>Last verified:</strong> ${escapeHtml(fmtDate(p.lastVerified))}</p>
+          <p><strong>Update source:</strong> ${escapeHtml(p.updateSource || "Unknown")}</p>
+          <p class="muted" style="margin-top:8px;">See something incorrect? Add a “Report incorrect info” workflow in production (no public comments by default).</p>
+        </div>
+      `;
 
-              <div class="compareRow" role="row">
-                <div class="compareCell label" role="rowheader">Care team structure</div>
-                <div class="compareCell" role="cell">Program team; may include psychiatry and groups</div>
-                <div class="compareCell" role="cell">Program team; groups and structured support</div>
-                <div class="compareCell" role="cell">Single clinician or small practice team</div>
-              </div>
+      overlay.classList.add("show");
+      drawer.classList.add("show");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
 
-              <div class="compareRow" role="row">
-                <div class="compareCell label" role="rowheader">Family involvement</div>
-                <div class="compareCell" role="cell">May include caregiver sessions or family components</div>
-                <div class="compareCell" role="cell">May include caregiver sessions or family compo
+    function closeDrawer(){
+      overlay.classList.remove("show");
+      drawer.classList.remove("show");
+      drawer.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    overlay.addEventListener("click", closeDrawer);
+    closeDrawerBtn.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeDrawer();
+    });
+
+    // Urgent help button
+    document.getElementById("urgentBtn").addEventListener("click", () => {
+      alert("If someone may be in immediate danger, call 911 or go to the nearest emergency department.\n\nFor 24/7 support in the U.S., call or text 988 (Suicide & Crisis Lifeline).");
+    });
+
+    // Reset
+    function resetFilters(){
+      state.q = "";
+      state.city = "";
+      state.level.clear();
+      state.ins.clear();
+      state.lang.clear();
+      state.setting.clear();
+      state.avail.clear();
+      state.age = "";
+      state.includeUnknown = true;
+      state.sort = "verified_desc";
+      // keep compare intact
+      qEl.value = "";
+      cityEl.value = "";
+      ageEl.value = "";
+      includeUnknownEl.checked = true;
+      sortEl.value = "verified_desc";
+      hideFilterAlert();
+      render();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", resetFilters);
+
+    // Build chips
+    levels.forEach(l => makeChip(l, state.level, chipLevel));
+    insTypes.forEach(i => makeChip(i, state.ins, chipIns));
+    langs.forEach(l => makeChip(l, state.lang, chipLang));
+    settings.forEach(s => makeChip(s, state.setting, chipSetting));
+    availFilters.forEach(a => makeChip(a, state.avail, chipAvail));
+
+    // Inputs
+    qEl.addEventListener("input", () => { state.q = qEl.value; render(); });
+    cityEl.addEventListener("input", () => { state.city = cityEl.value; render(); });
+    ageEl.addEventListener("change", () => { state.age = ageEl.value; render(); });
+    includeUnknownEl.addEventListener("change", () => { state.includeUnknown = includeUnknownEl.checked; render(); });
+    sortEl.addEventListener("change", () => { state.sort = sortEl.value; render(); });
+
+    // Compare controls
+    clearCompareBtn.addEventListener("click", () => {
+      state.compare = [];
+      renderCompare();
+      render();
+    });
+    hideCompareBtn.addEventListener("click", () => {
+      compareTray.classList.remove("show");
+    });
+
+    // Render
+    function render(){
+      // chip active states
+      syncChips(chipLevel, state.level);
+      syncChips(chipIns, state.ins);
+      syncChips(chipLang, state.lang);
+      syncChips(chipSetting, state.setting);
+      syncChips(chipAvail, state.avail);
+
+      // filter + sort
+      const filtered = programs.filter(matchesFilters);
+      const sorted = sortPrograms(filtered);
+
+      // meta line (keep neutral)
+      metaLineEl.textContent = `${sorted.length} program(s) shown • DFW demo dataset • Use filters to match access needs (not clinical appropriateness).`;
+
+      // gentle hint if overly narrow
+      const narrowed = (state.avail.size > 0 || state.ins.size > 0 || state.lang.size > 0 || state.level.size > 0 || !!state.age);
+      if(narrowed && sorted.length <= 1){
+        showFilterAlert("If results are limited, consider broadening filters or including “Unknown” fields. Availability and coverage can change quickly.");
+        setTimeout(hideFilterAlert, 2800);
+      } else {
+        hideFilterAlert();
+      }
+
+      renderResults(sorted);
+    }
+
+    render();
+  </script>
+</body>
+</html>
