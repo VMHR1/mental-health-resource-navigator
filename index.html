@@ -1,1186 +1,538 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dallas Youth Post-Discharge Resource Navigator (V1)</title>
+
+  <style>
+    :root{
+      /* Warm, welcoming palette */
+      --bg: #fbfaf7;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: rgba(17, 24, 39, 0.10);
+
+      --accent: #c65a3a;     /* terracotta */
+      --accent2: #f2b27c;    /* warm peach */
+      --accent3: #2f6f6d;    /* calm teal (sparingly) */
+
+      --soft: rgba(198, 90, 58, 0.06);
+      --soft2: rgba(242, 178, 124, 0.18);
+      --shadow: 0 18px 50px rgba(17,24,39,0.08);
+
+      --radius: 16px;
+      --radius2: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 450px at 10% 0%, rgba(242,178,124,0.25) 0%, transparent 55%),
+        radial-gradient(900px 450px at 90% 0%, rgba(47,111,109,0.12) 0%, transparent 60%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    /* Layout */
+    header{
+      max-width:1160px;
+      margin:0 auto;
+      padding:30px 18px 14px;
+    }
+    .brandRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-0.02em;
+      line-height:1.1;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+      max-width:850px;
+    }
+
+    .wrap{ max-width:1160px; margin:0 auto; padding:0 18px 56px; }
+    .grid{ display:grid; gap:16px; grid-template-columns: 1fr; }
+    @media (min-width: 1040px){ .grid{ grid-template-columns: 430px 1fr; } }
+
+    /* Cards */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,1));
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .hr{ height:1px; background: rgba(17,24,39,0.08); margin:14px 0; }
+
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,0.10);
+      color: var(--muted);
+      background: rgba(255,255,255,0.70);
+      backdrop-filter: blur(6px);
+    }
+
+    /* Friendly “callout badge” */
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(198,90,58,0.22);
+      background: rgba(198,90,58,0.06);
+      color: #7a2e1c;
+      max-width:100%;
+    }
+
+    /* Forms */
+    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
+    select, input[type="text"]{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border: 1px solid rgba(17,24,39,0.14);
+      background: rgba(255,255,255,0.95);
+      color: var(--text);
+      outline:none;
+      transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    select:focus, input[type="text"]:focus{
+      border-color: rgba(198,90,58,0.40);
+      box-shadow: 0 0 0 4px rgba(242,178,124,0.25);
+    }
+
+    .row{ display:flex; gap:10px; }
+    .row > div{ flex:1; }
+
+    .btns{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    button{
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid rgba(17,24,39,0.12);
+      background: rgba(255,255,255,0.85);
+      color:var(--text);
+      cursor:pointer;
+      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    }
+    button:hover{ transform: translateY(-1px); box-shadow: 0 10px 30px rgba(17,24,39,0.08); }
+    button:active{ transform: translateY(0px); }
+
+    button.primary{
+      background: linear-gradient(180deg, rgba(198,90,58,0.98), rgba(172,70,46,0.98));
+      border-color: rgba(198,90,58,0.35);
+      color: white;
+    }
+    button.primary:hover{ filter: brightness(1.03); }
+
+    .small{ font-size:12px; color:var(--muted); line-height:1.6; }
+
+    /* Results header */
+    .resultsHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* Sections inside results */
+    .sectionCard{
+      border: 1px solid rgba(17,24,39,0.10);
+      background: rgba(255,255,255,0.88);
+      border-radius: var(--radius2);
+      padding: 14px;
+      margin: 12px 0;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .sectionCard:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 44px rgba(17,24,39,0.06);
+    }
+
+    .sectionTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:16px;
+      margin:0;
+    }
+
+    .chipsWrap{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,0.10);
+      background: rgba(255,255,255,0.88);
+      color: var(--muted);
+    }
+    .chip strong{ color: var(--text); font-weight:600; }
+
+    /* Compare collapse */
+    .collapseBtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(17,24,39,0.12);
+      background: linear-gradient(180deg, rgba(242,178,124,0.20), rgba(255,255,255,0.92));
+      color: var(--text);
+      cursor:pointer;
+    }
+    .collapseBody{
+      margin-top:10px;
+      overflow:hidden;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: max-height .30s ease, opacity .22s ease, transform .22s ease;
+    }
+    .collapseBody.open{
+      max-height: 1000px; /* enough for content */
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .compareGrid{
+      display:grid;
+      grid-template-columns: 170px 1fr 1fr 1fr;
+      border: 1px solid rgba(17,24,39,0.10);
+      border-radius: 18px;
+      overflow:hidden;
+      background: rgba(255,255,255,0.95);
+    }
+    .compareCell{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(17,24,39,0.08);
+      border-right:1px solid rgba(17,24,39,0.08);
+      font-size:12px;
+      color: var(--muted);
+    }
+    .compareCell.head{
+      background: rgba(242,178,124,0.20);
+      color: var(--text);
+      font-weight:700;
+    }
+    .compareCell.label{
+      color: var(--text);
+      font-weight:700;
+      background: rgba(255,255,255,0.85);
+    }
+    .compareCell:last-child{ border-right:none; }
+    .compareRow:last-child .compareCell{ border-bottom:none; }
+
+    /* Tabs */
+    .sectionHeaderRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .tab{
+      padding:9px 11px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,0.12);
+      background: rgba(255,255,255,0.9);
+      color: var(--muted);
+      cursor:pointer;
+      font-size:12px;
+      transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+    }
+    .tab:hover{ transform: translateY(-1px); box-shadow: 0 10px 26px rgba(17,24,39,0.06); }
+    .tab.active{
+      color: white;
+      border-color: rgba(198,90,58,0.25);
+      background: linear-gradient(180deg, rgba(198,90,58,0.95), rgba(172,70,46,0.95));
+    }
+
+    .tabPanel{
+      margin-top:10px;
+      animation: fadeIn .22s ease both;
+    }
+
+    @keyframes fadeIn{
+      from{ opacity:0; transform: translateY(6px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    .sortRow{ display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap; }
+    .sortSelect{
+      width:auto;
+      min-width:160px;
+      padding:9px 10px;
+      border-radius:14px;
+    }
+
+    .subCard{
+      margin-top:12px;
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(17,24,39,0.10);
+      background: rgba(242,178,124,0.14);
+    }
+
+    /* Provider cards */
+    .providerCard{
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(17,24,39,0.10);
+      background: rgba(255,255,255,0.96);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .providerCard:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 44px rgba(17,24,39,0.08);
+    }
+    .providerTitle{ margin:0; font-size:14px; }
+    .meta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .tag{
+      font-size:11px;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,0.10);
+      color: var(--muted);
+      background: rgba(255,255,255,0.88);
+    }
+
+    a{ color: var(--accent); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+
+    /* Subtle entrance for results on first render */
+    .resultsEntrance{
+      animation: fadeIn .28s ease both;
+    }
+
+    /* Print */
+    @media print{
+      body{ background:#fff; color:#000; }
+      .card, .sectionCard, .providerCard{ box-shadow:none !important; }
+      button{ display:none !important; }
+      a{ color:#000; text-decoration:underline; }
+    }
   </style>
 </head>
+
 <body>
-<p class="p1">&lt;!doctype html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Dallas Youth Post-Discharge Resource Navigator (V1)&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>:root{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--bg:#0b1220;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--card:#121b2e;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--muted:#98a2b3;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--text:#e6eaf2;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--accent:#5dd6c0;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--border:rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--soft:rgba(255,255,255,0.03);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--warn:#ffcc66;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>*{ box-sizing:border-box; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: radial-gradient(1200px 600px at 20% 10%, #122041 0%, var(--bg) 55%) no-repeat;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color:var(--text);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>header{ padding:30px 18px 18px; max-width:1120px; margin:0 auto; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h1{ margin:0 0 6px; font-size:26px; letter-spacing:-0.02em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>p{ margin:8px 0; color:var(--muted); line-height:1.55; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.wrap{ max-width:1120px; margin:0 auto; padding:0 18px 44px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.grid{ display:grid; gap:14px; grid-template-columns: 1fr; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>@media (min-width: 1020px){ .grid{ grid-template-columns: 420px 1fr; } }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.card{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,0.08);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 14px 40px rgba(0,0,0,0.35);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.hr{ height:1px; background: rgba(255,255,255,0.08); margin:14px 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.badge{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display:inline-flex; align-items:center; gap:8px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:8px 10px; border-radius:999px; font-size:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.03);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.badge.warn{ border-color: rgba(255,204,102,0.35); color:#ffe7b3; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>select, input[type="text"]{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>width:100%; padding:10px 12px; border-radius:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(10,16,28,0.6);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>outline:none;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>select:focus, input[type="text"]:focus{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(93,214,192,0.55);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 0 0 3px rgba(93,214,192,0.15);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.row{ display:flex; gap:10px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.row &gt; div{ flex:1; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.btns{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>button{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:10px 12px; border-radius:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.12);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.05);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color:var(--text);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>button.primary{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(93,214,192,0.16);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(93,214,192,0.35);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>button:hover{ filter: brightness(1.08); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>button:active{ transform: translateY(1px); }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.small{ font-size:12px; color:var(--muted); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.pill{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px; padding:6px 10px; border-radius:999px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border); color:var(--muted); background: var(--soft);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.resultsHead{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>gap:10px; flex-wrap:wrap;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sectionTitle{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>gap:10px; flex-wrap:wrap;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:16px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sectionCard{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: var(--soft);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin: 12px 0;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.twoCol{ display:grid; gap:12px; grid-template-columns: 1fr; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>@media (min-width: 720px){ .twoCol{ grid-template-columns: 1fr 1fr; } }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>ul{ margin:10px 0 0 18px; padding:0; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>li{ margin:6px 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>a{ color: var(--accent); text-decoration:none; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>a:hover{ text-decoration:underline; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* Provider cards */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.providerCard{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius:14px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.03);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.providerTitle{ margin:0; font-size:14px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.meta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tag{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:11px; padding:4px 8px; border-radius:999px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border); color:var(--muted);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* Results wireframe additions */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.chipsWrap{ display:flex; gap:8px; flex-wrap:wrap; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.chip{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px; padding:6px 10px; border-radius:999px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.03);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.chip strong{ color: var(--text); font-weight:600; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sectionHeaderRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.collapseBtn{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>width:100%;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>gap:10px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:10px 12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.12);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.04);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.collapseBody{ margin-top:10px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareGrid{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 180px 1fr 1fr 1fr;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>overflow:hidden;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.02);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareCell{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:10px 10px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-bottom:1px solid rgba(255,255,255,0.08);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-right:1px solid rgba(255,255,255,0.08);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareCell.head{ background: rgba(255,255,255,0.04); color: var(--text); font-weight:600; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareCell.label{ color: var(--text); font-weight:600; background: rgba(255,255,255,0.02); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareHead .compareCell{ border-bottom:1px solid rgba(255,255,255,0.10); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareRow:last-child .compareCell{ border-bottom:none; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.compareCell:last-child{ border-right:none; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tab{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:8px 10px; border-radius:999px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.03);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tab.active{ color: var(--text); border-color: rgba(93,214,192,0.35); background: rgba(93,214,192,0.10); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tabPanel{ margin-top:10px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sortRow{ display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sortSelect{ width:auto; min-width:160px; padding:8px 10px; border-radius:12px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.subCard{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin-top:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding:12px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius:14px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,0.10);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,0.02);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* Print: show checklist cleanly */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>@media print{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body{ background:#fff; color:#000; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>header, .wrap{ max-width:none; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>section.card{ box-shadow:none; border:1px solid #ddd; background:#fff; color:#000; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>.pill, .chip, .tag, .badge{ border:1px solid #ddd; color:#000; background:#fff; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>a{ color:#000; text-decoration:underline; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>button{ display:none !important; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;header&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;Dallas Youth Post-Discharge Resource Navigator (V1)&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>This tool provides &lt;strong&gt;neutral information&lt;/strong&gt; about care options and Dallas-area resources for ages 6–17.</p>
-<p class="p1"><span class="Apple-converted-space">      </span>It does not recommend or rank programs. It is not medical advice and does not replace professional evaluation.</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Intake --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;section class="card" aria-label="Intake form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="badge warn" style="margin-bottom:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>Designed to reduce overwhelm: short questions, plain language, and a limited set of options.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="zip"&gt;Dallas-area ZIP (optional)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;input id="zip" type="text" inputmode="numeric" placeholder="e.g., 75201" /&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="seeking"&gt;What are you exploring right now? (select one)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;select id="seeking"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="info" selected&gt;Information about care options (PHP, IOP, therapy)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="php"&gt;Partial Hospitalization Program (PHP)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="iop"&gt;Intensive Outpatient Program (IOP)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="therapy"&gt;Outpatient therapy&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="not_sure"&gt;Not sure yet&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="event"&gt;Was there a recent event or change? (optional)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;select id="event"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="prefer_not" selected&gt;Prefer not to say&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="ed"&gt;Emergency department visit&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="inpatient"&gt;Recent inpatient psychiatric hospitalization&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="school"&gt;Recommendation from school staff&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="clinician"&gt;Recommendation from a clinician&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="change"&gt;Changes in mood/behavior/functioning&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="ongoing"&gt;Ongoing concerns without a specific event&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="timing"&gt;When are you hoping to connect with support? (optional)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;select id="timing"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="info_only" selected&gt;Just gathering information right now&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="asap"&gt;As soon as possible&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="few_days"&gt;In the next few days&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="week"&gt;Within the next week&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label for="ageBand"&gt;Age (6–17)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="ageBand"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="6-8"&gt;6–8&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="9-11"&gt;9–11&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="12-14" selected&gt;12–14&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="15-17"&gt;15–17&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label for="setting"&gt;Setting preference&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="setting"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="either" selected&gt;Either is fine&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="in_person"&gt;In-person&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="telehealth"&gt;Virtual / telehealth&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label for="insurance"&gt;Insurance&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="insurance"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="insured" selected&gt;Private insurance&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="medicaid"&gt;Medicaid / CHIP&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="uninsured"&gt;Uninsured&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="unknown"&gt;Not sure&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label for="language"&gt;Language preference&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="language"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="any" selected&gt;Any&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="english"&gt;English&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="spanish"&gt;Spanish&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="btns"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="primary" id="showBtn"&gt;Show information &amp; resources&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="resetBtn"&gt;Reset&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hr"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>Privacy note: this V1 tool does not ask for diagnoses or store identifying information. It is designed to help families</p>
-<p class="p1"><span class="Apple-converted-space">          </span>understand options and find resources.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Results --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;section class="card" aria-label="Results" id="resultsPanel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="resultsHead"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 style="margin:0; font-size:18px;"&gt;Care options and Dallas-area resources (ages 6–17)&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small" style="margin:6px 0 0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>This page provides neutral information about levels of care and lists resources that match the filters you selected.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>Items are not ranked or recommended.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="pill" id="countsPill"&gt;PHP: 0 · IOP: 0 · Therapy: 0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="editFiltersBtn" title="Edit filters"&gt;Edit filters&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Filters chips --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hr"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="chipsWrap" id="chipsWrap" aria-label="Selected filters"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Safety backstop --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="Safety section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;h3 class="sectionTitle"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;If safety becomes a concern&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="pill"&gt;Support options&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>Some families choose to use crisis supports if concerns increase or feel unmanageable.</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;strong&gt;Emergency:&lt;/strong&gt; Call 911 or go to the nearest emergency department.&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;strong&gt;988:&lt;/strong&gt; Call or text 988 for the Suicide &amp;amp; Crisis Lifeline.&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;strong&gt;Dallas crisis linkage:&lt;/strong&gt; Metrocare 24/7 hotline (214-743-1215) • NTBHA 24/7 crisis hotline (1-866-260-8000).&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p class="small" style="margin-top:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>This is listed for information only; choosing when to use these options depends on your situation and judgment.</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- How to use --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="How to use"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;h3 class="sectionTitle"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;How families often use this page&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="pill"&gt;Overview&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;Learn what each level of care typically involves.&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;Compare programs based on practical details (age eligibility, schedule, insurance, location, language).&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;Use the call checklist near the bottom to gather the information you need.&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Compare panel --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="Compare levels of care"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="collapseBtn" id="compareToggle" aria-expanded="false"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;Compare PHP, IOP, and outpatient therapy&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="pill"&gt;Expand&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="comparePanel" class="collapseBody" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small" style="margin-top:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>The descriptions below are general. Programs vary in structure, schedule, and eligibility.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="compareGrid" role="table" aria-label="Comparison table"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareHead" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell head" role="columnheader"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell head" role="columnheader"&gt;PHP&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell head" role="columnheader"&gt;IOP&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell head" role="columnheader"&gt;Outpatient therapy&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Typical schedule&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Often daytime sessions multiple days/week&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Often several days/week for a few hours/session&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Often weekly (varies by clinician)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Where the child is&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;At program during the day; home evenings&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Home; attends scheduled sessions&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Home; attends appointments as scheduled&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Care team structure&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Program team; may include psychiatry and groups&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Program team; groups and structured support&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Single clinician or small practice team&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Family involvement&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;May include caregiver sessions or family components&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;May include caregiver sessions or family components&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;May be individual and/or family-based&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Common intake steps&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Screening call → assessment → scheduling/authorization (varies)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Screening call → assessment → scheduling (varies)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Consult/screening → intake appointment (varies)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;Common practical considerations&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;School coordination, transportation, day schedule&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;After-school timing, attendance, transportation/telehealth&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Availability, fit, scheduling flexibility&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compareRow" role="row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell label" role="rowheader"&gt;If you’re waitlisted&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Some families contact multiple programs and ask about cancellations&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Some families ask about telehealth or alternate start dates&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="compareCell" role="cell"&gt;Some families request a short-term bridge option while searching&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- PHP --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="PHP section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sectionHeaderRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="sectionTitle" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span&gt;Partial Hospitalization Program (PHP)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="pill" id="phpCount"&gt;0 resources&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="tabs" role="tablist" aria-label="PHP tabs"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab active" role="tab" aria-selected="true" id="phpTabResources"&gt;Resources&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="phpTabWhat"&gt;What it is&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="phpTabLike"&gt;What it may be like&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="phpPanelResources" class="tabPanel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="sortRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="small"&gt;Sort:&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="phpSort" class="sortSelect" aria-label="PHP sort"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="alpha" selected&gt;Alphabetical&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="phpResults" class="grid" style="grid-template-columns: 1fr; gap:12px;"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>If a detail is marked &lt;strong&gt;Verify&lt;/strong&gt;, it means the provider did not clearly list that information and it may require confirmation.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Not seeing what you need? You can adjust filters (insurance, setting, language) or use a directory search tool to broaden the search.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Directory: &lt;a href="https://findtreatment.gov/" target="_blank" rel="noopener"&gt;FindTreatment.gov&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="phpPanelWhat" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What this is&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>A structured program that typically meets during the day several days per week. The child returns home in the evenings.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What programs may provide&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Structured schedule and skills-based groups&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Ongoing clinical monitoring&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Coordination across members of a care team&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="phpPanelLike" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What it may be like&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Consistent attendance over a set period (varies by program)&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Intake steps and possible insurance authorization&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Planning around school schedules and transportation&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What families often ask&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;What are the hours and days?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;How soon can intake happen?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Do you accept our insurance plan?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;How are caregivers involved?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- IOP --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="IOP section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sectionHeaderRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="sectionTitle" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span&gt;Intensive Outpatient Program (IOP)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="pill" id="iopCount"&gt;0 resources&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="tabs" role="tablist" aria-label="IOP tabs"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab active" role="tab" aria-selected="true" id="iopTabResources"&gt;Resources&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="iopTabWhat"&gt;What it is&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="iopTabLike"&gt;What it may be like&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="iopPanelResources" class="tabPanel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="sortRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="small"&gt;Sort:&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="iopSort" class="sortSelect" aria-label="IOP sort"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="alpha" selected&gt;Alphabetical&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="iopResults" class="grid" style="grid-template-columns: 1fr; gap:12px;"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>If a detail is marked &lt;strong&gt;Verify&lt;/strong&gt;, it means the provider did not clearly list that information and it may require confirmation.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Not seeing what you need? You can adjust filters (insurance, setting, language) or use a directory search tool to broaden the search.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Directory: &lt;a href="https://findtreatment.gov/" target="_blank" rel="noopener"&gt;FindTreatment.gov&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="iopPanelWhat" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What this is&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>A structured program meeting several days per week for a few hours per session. Some programs run after school or virtually.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What programs may provide&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Skills-based groups and structured support&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Care while living at home&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Coordination with outpatient supports&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="iopPanelLike" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What it may be like&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Set weekly schedule (varies by program)&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;May be in-person, virtual, or hybrid&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Intake steps and possible authorization depending on insurance&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What families often ask&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Is this after school, daytime, or virtual?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;How soon can we start?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Do you accept our insurance plan?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;How are caregivers involved?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Therapy --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="Therapy section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sectionHeaderRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="sectionTitle" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span&gt;Outpatient Therapy&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="pill" id="therapyCount"&gt;0 resources&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="tabs" role="tablist" aria-label="Therapy tabs"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab active" role="tab" aria-selected="true" id="thTabResources"&gt;Resources&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="thTabWhat"&gt;What it is&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" role="tab" aria-selected="false" id="thTabLike"&gt;What it may be like&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="thPanelResources" class="tabPanel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="sortRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="small"&gt;Sort:&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="thSort" class="sortSelect" aria-label="Therapy sort"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="alpha" selected&gt;Alphabetical&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="therapyResults" class="grid" style="grid-template-columns: 1fr; gap:12px;"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>If a detail is marked &lt;strong&gt;Verify&lt;/strong&gt;, it means the provider did not clearly list that information and it may require confirmation.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Not seeing what you need? You can adjust filters (insurance, setting, language) or broaden the search using a directory.</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Directory: &lt;a href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener"&gt;Psychology Today&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="thPanelWhat" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What this is&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>Therapy visits (often weekly, but variable) that may be individual and/or family-based, in-person or via telehealth.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What therapy may provide&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Ongoing support, skill-building, and problem-solving&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Caregiver involvement when appropriate&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Continuity during transitions after discharge&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="thPanelLike" class="tabPanel" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What it may be like&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Scheduling and availability vary widely&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Practices differ in family involvement and structure&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Insurance, copays, and paperwork differ by provider&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="small"&gt;&lt;strong&gt;What families often ask&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Are you accepting new clients?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Do you work with children/adolescents in this age range?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;Do you accept our insurance plan?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;li&gt;What does caregiver involvement look like?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Call checklist --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sectionCard" aria-label="Call checklist"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sectionHeaderRow"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="sectionTitle" style="margin:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;span&gt;Questions you can ask when you contact a program&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="display:flex; gap:10px; flex-wrap:wrap;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;button id="copyChecklistBtn" class="primary"&gt;Copy checklist&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;button id="printChecklistBtn"&gt;Print&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="callChecklist" class="twoCol" style="margin-top:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small"&gt;&lt;strong&gt;Eligibility&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;What ages do you accept?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Do you require a referral?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Do you accept this insurance plan (or Medicaid/CHIP)?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small"&gt;&lt;strong&gt;Timing&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;What is the earliest intake date?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Do you have a cancellation list?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;How long does the intake process usually take?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small"&gt;&lt;strong&gt;Logistics&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;What are the days and hours?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Is it in-person, telehealth, or hybrid?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;How do you coordinate with school schedules?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;What does caregiver involvement look like?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="subCard"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p class="small"&gt;&lt;strong&gt;Financial&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul class="small"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;What are typical out-of-pocket costs (copay/deductible)?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Are there payment plans or sliding-scale options?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;Are there any fees families should expect up front?&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p class="small" style="margin-top:12px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>Transparency: this tool filters listings only when they explicitly do not match selected filters (age band, setting, language, insurance when specified).</p>
-<p class="p1"><span class="Apple-converted-space">            </span>It does not score, rank, or recommend.</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>/***********************</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* DATA (V1 placeholders)</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* Replace DEMO entries with verified Dallas-area youth programs.</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* Policy A: if setting/language/insurance fields are missing, keep the listing (inclusive) and show "Verify".</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* Age is required; if missing ages, listing is excluded.</p>
-<p class="p1"><span class="Apple-converted-space">     </span>***********************/</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const PROVIDERS = [</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// --- DEMO placeholders (replace with verified Dallas youth programs) ---</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "DEMO: Dallas Youth PHP Program A",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "#",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Add phone",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "PHP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["in_person"],<span class="Apple-converted-space">        </span>// or ["hybrid"], ["telehealth"], etc.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured","medicaid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Replace with a verified Dallas-area adolescent PHP program."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "DEMO: Dallas Youth IOP Program B (Telehealth)",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "#",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Add phone",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "IOP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["9-11","12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["telehealth"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured","medicaid","uninsured"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Replace with a verified Dallas-area youth IOP program (virtual or in-person)."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "DEMO: Youth Outpatient Therapy Practice C",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "#",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Add phone",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "THERAPY",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["6-8","9-11","12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["in_person","telehealth"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Replace with a verified Dallas-area outpatient therapy clinic that serves youth."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// --- Example of incomplete fields to demonstrate Policy A ---</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "DEMO: Program D (missing insurance/language fields)",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "#",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Add phone",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "IOP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["hybrid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// insurance: missing</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// language: missing</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Demo entry showing Policy A behavior: missing fields are included but marked Verify."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// --- Neutral directories (functional fallbacks; not Dallas-specific listings) ---</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "FindTreatment.gov (SAMHSA) – Search local programs",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "https://findtreatment.gov/",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Directory",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "PHP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["6-8","9-11","12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["in_person","telehealth","hybrid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured","medicaid","uninsured"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Use filters for Dallas, youth services, and the level of care."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "FindTreatment.gov (SAMHSA) – Search local programs",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "https://findtreatment.gov/",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Directory",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "IOP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["6-8","9-11","12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["in_person","telehealth","hybrid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured","medicaid","uninsured"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Use filters for Dallas, youth services, and the level of care."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>},</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{</p>
-<p class="p1"><span class="Apple-converted-space">        </span>name: "Psychology Today – Therapist Finder",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>url: "https://www.psychologytoday.com/us/therapists",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>phone: "Directory",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>level: "THERAPY",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ages: ["6-8","9-11","12-14","15-17"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: ["in_person","telehealth","hybrid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: ["insured","medicaid"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: ["english","spanish"],</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cost: "Varies",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>notes: "Use filters (Dallas, child/adolescent, insurance, telehealth). Verify availability directly."</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const el = (id) =&gt; document.getElementById(id);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function escapeHtml(s) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return String(s ?? "").replace(/[&amp;&lt;&gt;"']/g, (c) =&gt; ({</p>
-<p class="p1"><span class="Apple-converted-space">        </span>"&amp;":"&amp;amp;","&lt;":"&amp;lt;","&gt;":"&amp;gt;",'"':"&amp;quot;","'":"&amp;#039;"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[c]));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/***********************</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* POLICY A FILTERING</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* - Age is required and always hard-filtered</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* - Setting/language/insurance are filtered only when explicitly incompatible</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* - Unknown/missing fields are included and shown as "Verify"</p>
-<p class="p1"><span class="Apple-converted-space">     </span>***********************/</p>
-<p class="p1"><span class="Apple-converted-space">    </span>function includesOrUnknown(arr, value) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!Array.isArray(arr) || arr.length === 0) return "unknown";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return arr.includes(value) ? "yes" : "no";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function settingMatchOrUnknown(listingSetting, selectedSetting) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (selectedSetting === "either") return "yes";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!Array.isArray(listingSetting) || listingSetting.length === 0) return "unknown";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const hasInPerson = listingSetting.includes("in_person") || listingSetting.includes("hybrid");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const hasTele = listingSetting.includes("telehealth") || listingSetting.includes("hybrid");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (selectedSetting === "in_person") return hasInPerson ? "yes" : "no";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (selectedSetting === "telehealth") return hasTele ? "yes" : "no";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return "unknown";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function matchesFilters(p, f) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// 1) Age is required and always hard</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!Array.isArray(p.ages) || p.ages.length === 0) return false;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!p.ages.includes(f.ageBand)) return false;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// 2) Setting: hard only if explicit mismatch; unknown is allowed</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const settingRes = settingMatchOrUnknown(p.setting, f.setting);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (settingRes === "no") return false;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// 3) Language: if "any", ignore; else mismatch only excludes when explicitly known</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (f.language !== "any") {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const langRes = includesOrUnknown(p.language, f.language);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (langRes === "no") return false;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// 4) Insurance: if "unknown", ignore; else mismatch only excludes when explicitly known</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (f.insurance !== "unknown") {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const insRes = includesOrUnknown(p.insurance, f.insurance);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (insRes === "no") return false;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>return true;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/***********************</p>
-<p class="p1"><span class="Apple-converted-space">     </span>* Rendering helpers</p>
-<p class="p1"><span class="Apple-converted-space">     </span>***********************/</p>
-<p class="p1"><span class="Apple-converted-space">    </span>function chip(label, value) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const span = document.createElement("span");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>span.className = "chip";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>span.innerHTML = `&lt;strong&gt;${escapeHtml(label)}:&lt;/strong&gt; ${escapeHtml(value)}`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return span;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function renderChips(filters) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const wrap = el("chipsWrap");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.innerHTML = "";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const insuranceText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insured: "Private insurance",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>medicaid: "Medicaid/CHIP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>uninsured: "Uninsured",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>unknown: "Not sure"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.insurance] || "Not sure";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const settingText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>either: "Either",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>in_person: "In-person",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>telehealth: "Telehealth"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.setting] || "Either";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const languageText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>any: "Any",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>english: "English",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>spanish: "Spanish"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.language] || "Any";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const seekingText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>info: "Information",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>php: "PHP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>iop: "IOP",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>therapy: "Outpatient therapy",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>not_sure: "Not sure"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.seeking] || "Information";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const eventText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>prefer_not: "Prefer not to say",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ed: "Emergency department visit",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>inpatient: "Recent inpatient hospitalization",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>school: "School recommendation",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>clinician: "Clinician recommendation",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>change: "Changes in functioning",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ongoing: "Ongoing concerns"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.event] || "Prefer not to say";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const timingText = {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>info_only: "Gathering information",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>asap: "As soon as possible",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>few_days: "Next few days",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>week: "Within a week"</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}[filters.timing] || "Gathering information";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.appendChild(chip("Age", filters.ageBand));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.appendChild(chip("Setting", settingText));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.appendChild(chip("Insurance", insuranceText));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.appendChild(chip("Language", languageText));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>wrap.appendChild(chip("Seeking", seekingText));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (filters.event &amp;&amp; filters.event !== "prefer_not") wrap.appendChild(chip("Recent event", eventText));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (filters.timing &amp;&amp; filters.timing !== "info_only") wrap.appendChild(chip("Timing", timingText));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (filters.zip) wrap.appendChild(chip("ZIP", filters.zip));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function sortAlpha(list) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return [...list].sort((a, b) =&gt; (a.name || "").localeCompare(b.name || ""));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function labelOrVerify(arr, formatter) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!Array.isArray(arr) || arr.length === 0) return "Verify";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return formatter(arr);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function renderProviderCards(list, containerId) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const container = el(containerId);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>container.innerHTML = "";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!list.length) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const empty = document.createElement("div");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>empty.className = "providerCard";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>empty.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;h4 class="providerTitle"&gt;No entries shown for the selected filters&lt;/h4&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p class="small" style="margin-top:8px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>This can happen if a provider explicitly lists different age, setting, language, or insurance criteria.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>You may adjust filters or use the directory links to broaden the search.</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>container.appendChild(empty);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>for (const p of list) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const card = document.createElement("div");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>card.className = "providerCard";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const ageText = (Array.isArray(p.ages) &amp;&amp; p.ages.length) ? p.ages.join(", ") : "Verify";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const setText = labelOrVerify(p.setting, (sArr) =&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>sArr.map(s =&gt; s === "in_person" ? "In-person" : (s === "telehealth" ? "Telehealth" : "Hybrid")).join(" / ")</p>
-<p class="p1"><span class="Apple-converted-space">        </span>);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const insText = labelOrVerify(p.insurance, (iArr) =&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>iArr.map(i =&gt; i === "insured" ? "Private" : (i === "medicaid" ? "Medicaid/CHIP" : "Uninsured")).join(", ")</p>
-<p class="p1"><span class="Apple-converted-space">        </span>);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const langText = labelOrVerify(p.language, (lArr) =&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>lArr.map(l =&gt; l === "english" ? "English" : "Spanish").join(", ")</p>
-<p class="p1"><span class="Apple-converted-space">        </span>);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const linkHtml = (p.url &amp;&amp; p.url !== "#")</p>
-<p class="p1"><span class="Apple-converted-space">          </span>? `&lt;a href="${p.url}" target="_blank" rel="noopener"&gt;Open&lt;/a&gt;`</p>
-<p class="p1"><span class="Apple-converted-space">          </span>: `&lt;span class="small"&gt;Link not added&lt;/span&gt;`;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>card.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;h4 class="providerTitle"&gt;${escapeHtml(p.name || "Resource")}&lt;/h4&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="meta"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;Ages: ${escapeHtml(ageText)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;Setting: ${escapeHtml(setText)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;Insurance: ${escapeHtml(insText)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;Language: ${escapeHtml(langText)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p class="small" style="margin-top:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>${escapeHtml(p.notes || "Details vary by program. Please verify directly with the provider.")}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="meta" style="margin-top:10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;${escapeHtml(p.phone || "Contact: verify")}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;Cost: ${escapeHtml(p.cost || "Varies")}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="tag"&gt;${linkHtml}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>container.appendChild(card);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function setCount(id, n) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el(id).textContent = `${n} ${n === 1 ? "resource" : "resources"}`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function updateCounts(phpN, iopN, thN) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("countsPill").textContent = `PHP: ${phpN} · IOP: ${iopN} · Therapy: ${thN}`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setCount("phpCount", phpN);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setCount("iopCount", iopN);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setCount("therapyCount", thN);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function setActiveTab(prefix, which) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const tabs = [</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{ tab: `${prefix}TabResources`, panel: `${prefix}PanelResources`, key: "Resources" },</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{ tab: `${prefix}TabWhat`, panel: `${prefix}PanelWhat`, key: "What" },</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{ tab: `${prefix}TabLike`, panel: `${prefix}PanelLike`, key: "Like" },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>];</p>
-<p class="p1"><span class="Apple-converted-space">      </span>for (const t of tabs) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tabEl = el(t.tab);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const panelEl = el(t.panel);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const active = (t.key === which);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>tabEl.classList.toggle("active", active);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>tabEl.setAttribute("aria-selected", active ? "true" : "false");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>panelEl.style.display = active ? "" : "none";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function wireTabs() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("phpTabResources").onclick = () =&gt; setActiveTab("php", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("phpTabWhat").onclick = () =&gt; setActiveTab("php", "What");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("phpTabLike").onclick = () =&gt; setActiveTab("php", "Like");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("iopTabResources").onclick = () =&gt; setActiveTab("iop", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("iopTabWhat").onclick = () =&gt; setActiveTab("iop", "What");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("iopTabLike").onclick = () =&gt; setActiveTab("iop", "Like");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("thTabResources").onclick = () =&gt; setActiveTab("th", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("thTabWhat").onclick = () =&gt; setActiveTab("th", "What");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("thTabLike").onclick = () =&gt; setActiveTab("th", "Like");</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function wireCompareToggle() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const btn = el("compareToggle");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const panel = el("comparePanel");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.onclick = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const open = panel.style.display !== "none";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>panel.style.display = open ? "none" : "";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>btn.setAttribute("aria-expanded", open ? "false" : "true");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>btn.querySelector(".pill").textContent = open ? "Expand" : "Collapse";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>};</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function wireChecklistButtons() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const copyBtn = el("copyChecklistBtn");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const printBtn = el("printChecklistBtn");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>copyBtn.onclick = async () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const text = [</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"Questions you can ask when you contact a program",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"Eligibility:",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- What ages do you accept?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Do you require a referral?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Do you accept this insurance plan (or Medicaid/CHIP)?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"Timing:",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- What is the earliest intake date?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Do you have a cancellation list?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- How long does the intake process usually take?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"Logistics:",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- What are the days and hours?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Is it in-person, telehealth, or hybrid?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- How do you coordinate with school schedules?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- What does caregiver involvement look like?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"Financial:",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- What are typical out-of-pocket costs (copay/deductible)?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Are there payment plans or sliding-scale options?",</p>
-<p class="p1"><span class="Apple-converted-space">          </span>"- Are there any fees families should expect up front?",</p>
-<p class="p1"><span class="Apple-converted-space">        </span>].join("\n");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>await navigator.clipboard.writeText(text);</p>
-<p class="p1"><span class="Apple-converted-space">          </span>copyBtn.textContent = "Copied";</p>
-<p class="p1"><span class="Apple-converted-space">          </span>setTimeout(() =&gt; (copyBtn.textContent = "Copy checklist"), 1200);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>} catch {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>alert("Copy failed in this browser. You can manually select and copy the checklist text.");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>printBtn.onclick = () =&gt; window.print();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function wireEditFilters() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("editFiltersBtn").onclick = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const intake = document.querySelector('section[aria-label="Intake form"]');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (intake) intake.scrollIntoView({ behavior: "smooth", block: "start" });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>};</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function renderResults(filters) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderChips(filters);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const eligible = PROVIDERS.filter(p =&gt; matchesFilters(p, filters));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const php = sortAlpha(eligible.filter(p =&gt; p.level === "PHP"));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const iop = sortAlpha(eligible.filter(p =&gt; p.level === "IOP"));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const th<span class="Apple-converted-space">  </span>= sortAlpha(eligible.filter(p =&gt; p.level === "THERAPY"));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderProviderCards(php, "phpResults");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderProviderCards(iop, "iopResults");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderProviderCards(th, "therapyResults");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>updateCounts(php.length, iop.length, th.length);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Default tabs: Resources</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("php", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("iop", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("th", "Resources");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Neutral convenience only: open the section matching "seeking" by scrolling</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// (does not hide or rank anything)</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const seeking = filters.seeking;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (seeking === "php") el("phpResults").scrollIntoView({ behavior: "smooth", block: "start" });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (seeking === "iop") el("iopResults").scrollIntoView({ behavior: "smooth", block: "start" });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (seeking === "therapy") el("therapyResults").scrollIntoView({ behavior: "smooth", block: "start" });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function getFiltersFromForm() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>zip: el("zip").value.trim(),</p>
-<p class="p1"><span class="Apple-converted-space">        </span>seeking: el("seeking").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>event: el("event").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>timing: el("timing").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>ageBand: el("ageBand").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setting: el("setting").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>insurance: el("insurance").value,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>language: el("language").value</p>
-<p class="p1"><span class="Apple-converted-space">      </span>};</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function onShow() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const filters = getFiltersFromForm();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderResults(filters);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>// If user is on mobile, scroll results into view</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("resultsPanel").scrollIntoView({ behavior: "smooth", block: "start" });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function onReset() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("zip").value = "";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("seeking").value = "info";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("event").value = "prefer_not";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("timing").value = "info_only";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("ageBand").value = "12-14";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("setting").value = "either";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("insurance").value = "insured";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("language").value = "any";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("chipsWrap").innerHTML = "";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("phpResults").innerHTML = "";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("iopResults").innerHTML = "";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el("therapyResults").innerHTML = "";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>updateCounts(0, 0, 0);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// Reset tabs</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("php", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("iop", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setActiveTab("th", "Resources");</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Wire UI</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el("showBtn").addEventListener("click", onShow);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el("resetBtn").addEventListener("click", onReset);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>wireTabs();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>wireCompareToggle();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>wireChecklistButtons();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>wireEditFilters();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Initialize empty state</p>
-<p class="p1"><span class="Apple-converted-space">    </span>updateCounts(0, 0, 0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
-<p class="p2"><br></p>
-</body>
-</html>
+  <header>
+    <div class="brandRow">
+      <div class="brand">
+        <h1>Dallas Youth Post-Discharge Resource Navigator (V1)</h1>
+        <p class="subtitle">
+          Neutral, informational support to help families explore care options (PHP, IOP, outpatient therapy) in the Dallas area for ages 6–17.
+          This tool does not rank or recommend providers and is not medical advice.
+        </p>
+      </div>
+      <div class="pill">Dallas area • Ages 6–17 • V1</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- Intake -->
+      <section class="card" aria-label="Intake form">
+        <div class="badge" style="margin-bottom:10px;">
+          Built to reduce overwhelm: short questions, plain language, and a limited set of options.
+        </div>
+
+        <label for="zip">Dallas-area ZIP (optional)</label>
+        <input id="zip" type="text" inputmode="numeric" placeholder="e.g., 75201" />
+
+        <label for="seeking">What are you exploring right now? (select one)</label>
+        <select id="seeking">
+          <option value="info" selected>Information about care options (PHP, IOP, therapy)</option>
+          <option value="php">Partial Hospitalization Program (PHP)</option>
+          <option value="iop">Intensive Outpatient Program (IOP)</option>
+          <option value="therapy">Outpatient therapy</option>
+          <option value="not_sure">Not sure yet</option>
+        </select>
+
+        <label for="event">Was there a recent event or change? (optional)</label>
+        <select id="event">
+          <option value="prefer_not" selected>Prefer not to say</option>
+          <option value="ed">Emergency department visit</option>
+          <option value="inpatient">Recent inpatient psychiatric hospitalization</option>
+          <option value="school">Recommendation from school staff</option>
+          <option value="clinician">Recommendation from a clinician</option>
+          <option value="change">Changes in mood/behavior/functioning</option>
+          <option value="ongoing">Ongoing concerns without a specific event</option>
+        </select>
+
+        <label for="timing">When are you hoping to connect with support? (optional)</label>
+        <select id="timing">
+          <option value="info_only" selected>Just gathering information right now</option>
+          <option value="asap">As soon as possible</option>
+          <option value="few_days">In the next few days</option>
+          <option value="week">Within the next week</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label for="ageBand">Age (6–17)</label>
+            <select id="ageBand">
+              <option value="6-8">6–8</option>
+              <option value="9-11">9–11</option>
+              <option value="12-14" selected>12–14</option>
+              <option value="15-17">15–17</option>
+            </select>
+          </div>
+          <div>
+            <label for="setting">Setting preference</label>
+            <select id="setting">
+              <option value="either" selected>Either is fine</option>
+              <option value="in_person">In-person</option>
+              <option value="telehealth">Virtual / telehealth</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="insurance">Insurance</label>
+            <select id="insurance">
+              <option value="insured" selected>Private insurance</option>
+              <option value="medicaid">Medicaid / CHIP</option>
+              <option value="uninsured">Uninsured</option>
+              <option value="unknown">Not sure</option>
+            </select>
+          </div>
+          <div>
+            <label for="language">Language preference</label>
+            <select id="language">
+              <option value="any" selected>Any</option>
+              <option value="english">English</option>
+              <option value="spanish">Spanish</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="primary" id="showBtn">Show information & resources</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+
+        <div class="hr"></div>
+        <p class="small">
+          Privacy note: this V1 tool does not ask for diagnoses or store identifying information.
+          It is designed to help families understand options and find resources.
+        </p>
+      </section>
+
+      <!-- Results -->
+      <section class="card" aria-label="Results" id="resultsPanel">
+        <div class="resultsHead">
+          <div>
+            <h2 style="margin:0; font-size:18px;">Care options and Dallas-area resources (ages 6–17)</h2>
+            <p class="small" style="margin:6px 0 0;">
+              This page provides neutral information about levels of care and lists resources that match the filters you selected.
+              Items are not ranked or recommended.
+            </p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="pill" id="countsPill">PHP: 0 · IOP: 0 · Therapy: 0</div>
+            <button id="editFiltersBtn" title="Edit filters">Edit filters</button>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="chipsWrap" id="chipsWrap" aria-label="Selected filters"></div>
+
+        <div class="sectionCard" aria-label="Safety section">
+          <h3 class="sectionTitle">
+            <span>If safety becomes a concern</span>
+            <span class="pill">Support options</span>
+          </h3>
+          <p class="small" style="margin-top:8px;">
+            Some families choose to use crisis supports if concerns increase or feel unmanageable.
+          </p>
+          <ul class="small">
+            <li><strong>Emergency:</strong> Call 911 or go to the nearest emergency department.</li>
+            <li><strong>988:</strong> Call or text 988 for the Suicide &amp; Crisis Lifeline.</li>
+            <li><strong>Dallas crisis linkage:</strong> Metrocare 24/7 hotline (214-743-1215) • NTBHA 24/7 crisis hotline (1-866-260-8000).</li>
+          </ul>
+          <p class="small" style="margin-top:10px;">
+            This is listed for information only; choosing when to use these options depends on your situation and judgment.
+          </p>
+        </div>
+
+        <div class="sectionCard" aria-label="How to use">
+          <h3 class="sectionTitle">
+            <span>How families often use this page</span>
+            <span class="pill">Overview</span>
+          </h3>
+          <ul class="small">
+            <li>Learn what each level of care typically involves.</li>
+            <li>Compare programs based on practical details (age eligibility, schedule, insurance, location, language).</li>
+            <li>Use the call checklist near the bottom to gather the information you need.</li>
+          </ul>
+        </div>
+
+        <div class="sectionCard" aria-label="Compare levels of care">
+          <button class="collapseBtn" id="compareToggle" aria-expanded="false">
+            <span>Compare PHP, IOP, and outpatient therapy</span>
+            <span class="pill" id="comparePill">Expand</span>
+          </button>
+
+          <div id="comparePanel" class="collapseBody">
+            <p class="small" style="margin-top:10px;">
+              The descriptions below are general. Programs vary in structure, schedule, and eligibility.
+            </p>
+
+            <div class="compareGrid" role="table" aria-label="Comparison table">
+              <div class="compareHead" role="row">
+                <div class="compareCell head" role="columnheader"></div>
+                <div class="compareCell head" role="columnheader">PHP</div>
+                <div class="compareCell head" role="columnheader">IOP</div>
+                <div class="compareCell head" role="columnheader">Outpatient therapy</div>
+              </div>
+
+              <div class="compareRow" role="row">
+                <div class="compareCell label" role="rowheader">Typical schedule</div>
+                <div class="compareCell" role="cell">Often daytime sessions multiple days/week</div>
+                <div class="compareCell" role="cell">Often several days/week for a few hours/session</div>
+                <div class="compareCell" role="cell">Often weekly (varies by clinician)</div>
+              </div>
+
+              <div class="compareRow" role="row">
+                <div class="compareCell label" role="rowheader">Where the child is</div>
+                <div class="compareCell" role="cell">At program during the day; home evenings</div>
+                <div class="compareCell" role="cell">Home; attends scheduled sessions</div>
+                <div class="compareCell" role="cell">Home; attends appointments as scheduled</div>
+              </div>
+
+              <div class="compareRow" role="row">
+                <div class="compareCell label" role="rowheader">Care team structure</div>
+                <div class="compareCell" role="cell">Program team; may include psychiatry and groups</div>
+                <div class="compareCell" role="cell">Program team; groups and structured support</div>
+                <div class="compareCell" role="cell">Single clinician or small practice team</div>
+              </div>
+
+              <div class="compareRow" role="row">
+                <div class="compareCell label" role="rowheader">Family involvement</div>
+                <div class="compareCell" role="cell">May include caregiver sessions or family components</div>
+                <div class="compareCell" role="cell">May include caregiver sessions or family compo
