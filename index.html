@@ -258,13 +258,13 @@
 
     .floating-card{
       position:absolute;
-      background: rgba(255,255,255,.84);
+      background: rgba(255,255,255,.80);     /* UPDATED: softer layering */
       border: 1px solid var(--stroke);
       border-radius: var(--radius);
       padding: 14px 14px;
       box-shadow: var(--shadow-lg);
       animation: float 6.5s ease-in-out infinite;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);           /* UPDATED: smoother overlap */
       width: min(220px, 72%);
     }
     .floating-card strong{
@@ -284,9 +284,28 @@
       0%,100%{ transform: translateY(0) rotate(0deg); }
       50%{ transform: translateY(-16px) rotate(1.5deg); }
     }
-    .floating-card:nth-child(1){ top: 16%; left: 10%; animation-delay: 0s; }
-    .floating-card:nth-child(2){ top: 52%; right: 12%; animation-delay: 1.2s; }
-    .floating-card:nth-child(3){ bottom: 12%; left: 18%; animation-delay: 2.2s; }
+
+    /* UPDATED: explicit z-index + reposition to reduce blocking */
+    .floating-card:nth-child(1){
+      top: 14%;
+      left: 10%;
+      z-index: 3;
+      animation-delay: 0s;
+    }
+    .floating-card:nth-child(2){
+      top: 38%;
+      right: 8%;
+      z-index: 1;              /* back */
+      transform: scale(.98);   /* depth */
+      opacity: .92;
+      animation-delay: 1.2s;
+    }
+    .floating-card:nth-child(3){
+      bottom: 10%;
+      left: 14%;
+      z-index: 2;              /* middle */
+      animation-delay: 2.2s;
+    }
 
     /* Search section (Elite layout: big “premium” panel) */
     .search-section{
