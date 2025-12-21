@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Texas Youth Mental Health Resource Finder</title>
   <meta name="description" content="A neutral directory of adolescent and youth mental health programs across Texas. Filter by level of care, location, and needs." />
+
   <style>
     :root{
-      /* Calm, non-orange palette */
       --bg0:#f7f7fb;
       --bg1:#f3fbff;
       --ink:#0f172a;
@@ -68,6 +68,12 @@
       50%{transform: translate(18px,-22px) scale(1.03)}
     }
 
+    /* Accessibility / motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+      .blob{display:none;}
+    }
+
     header{
       position:relative;
       border:1px solid var(--stroke);
@@ -84,10 +90,7 @@
       margin-bottom: 14px;
     }
 
-    .brand{
-      display:flex;align-items:center;gap:12px;
-      font-weight:700; letter-spacing:-.02em;
-    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:-.02em;}
     .mark{
       width:44px;height:44px;border-radius:14px;
       background: linear-gradient(135deg, rgba(79,209,197,.9), rgba(196,181,253,.9));
@@ -115,13 +118,11 @@
 
     .hero{
       display:grid;
-      grid-template-columns: 1.2fr .8fr;
+      grid-template-columns: 1.25fr .75fr;
       gap: 18px;
       align-items: stretch;
     }
-    @media (max-width: 900px){
-      .hero{grid-template-columns:1fr; }
-    }
+    @media (max-width: 900px){ .hero{grid-template-columns:1fr;} }
 
     h1{
       margin:0;
@@ -134,7 +135,7 @@
       color:var(--muted);
       font-size: 15px;
       line-height:1.55;
-      max-width: 60ch;
+      max-width: 62ch;
     }
 
     .heroCard{
@@ -146,15 +147,21 @@
       box-shadow: 0 12px 34px rgba(15,23,42,.08);
     }
 
+    /* Sticky filter header (helps families keep context) */
+    .stickyWrap{
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      border-radius: var(--radius);
+    }
+
     .controls{
       display:grid;
       grid-template-columns: 1.2fr .9fr .9fr;
       gap: 10px;
       align-items:end;
     }
-    @media (max-width: 900px){
-      .controls{grid-template-columns:1fr;}
-    }
+    @media (max-width: 900px){ .controls{grid-template-columns:1fr;} }
 
     label{
       font-size: 12px;
@@ -173,15 +180,16 @@
       color: var(--ink);
       box-shadow: 0 8px 20px rgba(15,23,42,.05);
     }
-    input[type="search"]:focus, select:focus{ box-shadow: var(--focus); border-color: rgba(122,167,255,.55); }
+    input[type="search"]:focus, select:focus{
+      box-shadow: var(--focus);
+      border-color: rgba(122,167,255,.55);
+    }
 
     .toggleRow{
       display:flex;flex-wrap:wrap;gap:10px; align-items:center; justify-content:space-between;
       padding-top: 6px;
     }
-    .toggles{
-      display:flex; flex-wrap:wrap; gap: 8px;
-    }
+    .toggles{display:flex;flex-wrap:wrap;gap: 8px;}
 
     .chip{
       display:inline-flex; align-items:center; gap:10px;
@@ -198,10 +206,7 @@
     .chip:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15,23,42,.08);}
     .chip input{ accent-color: #5b8cff; }
 
-    .ctaRow{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      justify-content:flex-end;
-    }
+    .ctaRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;}
 
     .btn{
       border:1px solid var(--stroke);
@@ -209,11 +214,12 @@
       padding: 10px 12px;
       border-radius: 14px;
       cursor:pointer;
-      font-weight: 600;
+      font-weight: 650;
       box-shadow: 0 10px 24px rgba(15,23,42,.08);
       transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 16px 34px rgba(15,23,42,.12); }
+    .btn:focus{ outline:none; box-shadow: var(--focus); }
     .btn.primary{
       background: linear-gradient(135deg, rgba(79,209,197,.92), rgba(196,181,253,.92));
       border-color: rgba(255,255,255,.55);
@@ -242,9 +248,7 @@
       letter-spacing:.08em;
       text-transform: uppercase;
     }
-    .count{
-      font-size: 13px; color: var(--muted);
-    }
+    .count{font-size: 13px; color: var(--muted);}
 
     .grid{
       display:grid;
@@ -255,26 +259,35 @@
     @media (max-width: 980px){ .grid{grid-template-columns: repeat(2, 1fr);} }
     @media (max-width: 640px){ .grid{grid-template-columns: 1fr;} }
 
+    /* Two-state card */
     .card{
       border:1px solid var(--stroke);
       border-radius: var(--radius);
-      background: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.86);
       box-shadow: 0 12px 30px rgba(15,23,42,.08);
       padding: 14px;
-      cursor:pointer;
-      transition: transform .18s ease, box-shadow .18s ease;
       position:relative;
       overflow:hidden;
+      transform: translateZ(0);
+      transition: transform .18s ease, box-shadow .18s ease;
       animation: rise .35s ease both;
     }
     .card:hover{ transform: translateY(-3px); box-shadow: 0 18px 44px rgba(15,23,42,.14); }
+    .card:focus-within{ box-shadow: var(--focus), 0 18px 44px rgba(15,23,42,.12); }
 
     @keyframes rise{
-      from{ opacity:0; transform: translateY(8px); }
+      from{ opacity:0; transform: translateY(10px); }
       to{ opacity:1; transform: translateY(0); }
     }
 
-    .badgeRow{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .badgeRow{ display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 10px; }
     .badge{
       font-size: 12px;
       padding: 6px 10px;
@@ -282,91 +295,88 @@
       border: 1px solid var(--stroke);
       background: rgba(241,245,249,.85);
       color: var(--muted);
+      white-space:nowrap;
     }
     .badge.loc{ background: rgba(122,167,255,.12); border-color: rgba(122,167,255,.25); }
     .badge.loc2{ background: rgba(79,209,197,.12); border-color: rgba(79,209,197,.25); }
     .badge.crisis{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.22); color:#7f1d1d; }
 
     .title{
-      font-weight: 750;
+      font-weight: 820;
       letter-spacing:-.02em;
       margin:0 0 6px;
       font-size: 16px;
       line-height:1.25;
     }
     .org{ margin:0; color: var(--muted); font-size: 13px; line-height:1.45; }
+
     .meta{
-      margin-top: 12px;
+      margin-top: 10px;
       display:flex; gap:10px; flex-wrap:wrap;
       color: var(--muted);
       font-size: 13px;
     }
 
-    .empty{
-      padding: 18px 16px 22px;
-      color: var(--muted);
-      line-height:1.55;
-    }
-
-    /* Drawer */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(15,23,42,.40);
-      backdrop-filter: blur(4px);
-      opacity:0; pointer-events:none;
-      transition: opacity .18s ease;
-    }
-    .overlay.open{ opacity:1; pointer-events:auto; }
-
-    .drawer{
-      position:fixed;
-      top:0; right:0; height:100%;
-      width:min(520px, 94vw);
-      background: rgba(255,255,255,.92);
-      border-left: 1px solid var(--stroke);
-      box-shadow: -24px 0 70px rgba(15,23,42,.18);
-      transform: translateX(110%);
-      transition: transform .22s ease;
-      display:flex; flex-direction:column;
-    }
-    .drawer.open{ transform: translateX(0); }
-
-    .drawerHead{
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid var(--stroke);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-    }
-    .drawerTitle{
-      margin:0;
-      font-size: 18px;
-      letter-spacing:-.02em;
-    }
-    .drawerSub{ margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height:1.4; }
-    .closeBtn{
-      border:1px solid var(--stroke);
-      background: rgba(241,245,249,.85);
-      width:40px; height:40px;
+    /* Expand button */
+    .expandBtn{
+      flex: 0 0 auto;
+      border: 1px solid var(--stroke);
+      background: rgba(241,245,249,.78);
       border-radius: 14px;
+      height: 40px;
+      min-width: 40px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       cursor:pointer;
-      font-weight: 800;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
     }
-    .drawerBody{
-      padding: 14px 16px 18px;
-      overflow:auto;
+    .expandBtn:hover{ transform: translateY(-1px); box-shadow: 0 12px 24px rgba(15,23,42,.10); }
+    .expandBtn:focus{ outline:none; box-shadow: var(--focus); }
+    .chev{
+      width: 14px; height: 14px;
+      border-right: 2px solid rgba(15,23,42,.55);
+      border-bottom: 2px solid rgba(15,23,42,.55);
+      transform: rotate(45deg);
+      transition: transform .22s ease;
     }
+
+    .card[data-open="true"] .chev{ transform: rotate(-135deg); }
+
+    /* Expand panel animation */
+    .panel{
+      margin-top: 12px;
+      border-top: 1px dashed rgba(226,232,240,.95);
+      padding-top: 12px;
+      max-height: 0px;
+      opacity: 0;
+      transform: translateY(-6px);
+      overflow:hidden;
+      transition: max-height .28s ease, opacity .22s ease, transform .22s ease;
+      will-change: max-height, opacity, transform;
+    }
+    .card[data-open="true"] .panel{
+      max-height: 520px; /* enough for typical content */
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .kv{
       display:grid;
-      grid-template-columns: 140px 1fr;
+      grid-template-columns: 130px 1fr;
       gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px dashed rgba(226,232,240,.9);
+      padding: 9px 0;
+      border-bottom: 1px dashed rgba(226,232,240,.85);
     }
-    .k{ color: var(--muted); font-size: 12px; text-transform:uppercase; letter-spacing:.08em;}
-    .v{ color: var(--ink); font-size: 14px; line-height:1.45; }
+    .kv:last-child{ border-bottom:none; }
+    .k{ color: var(--muted); font-size: 11px; text-transform:uppercase; letter-spacing:.09em;}
+    .v{ color: var(--ink); font-size: 13px; line-height:1.45; }
 
-    .callRow{
-      margin-top: 14px;
-      display:flex; gap:10px; flex-wrap:wrap;
+    .actions{
+      margin-top: 12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
     .linkBtn{
       display:inline-flex; align-items:center; justify-content:center;
@@ -376,11 +386,24 @@
       border:1px solid var(--stroke);
       background: rgba(255,255,255,.9);
       box-shadow: 0 10px 22px rgba(15,23,42,.08);
-      font-weight: 650;
+      font-weight: 700;
+      transition: transform .15s ease, box-shadow .15s ease;
     }
+    .linkBtn:hover{ transform: translateY(-1px); box-shadow: 0 16px 32px rgba(15,23,42,.12); }
     .linkBtn.primary{
       background: linear-gradient(135deg, rgba(122,167,255,.92), rgba(196,181,253,.92));
       border-color: rgba(255,255,255,.55);
+    }
+    .linkBtn.danger{
+      background: linear-gradient(135deg, rgba(239,68,68,.16), rgba(239,68,68,.08));
+      border-color: rgba(239,68,68,.22);
+      color:#7f1d1d;
+    }
+
+    .empty{
+      padding: 18px 16px 22px;
+      color: var(--muted);
+      line-height:1.55;
     }
 
     /* Hero illustration */
@@ -410,22 +433,6 @@
       0%,100%{transform: scale(1); opacity:.55}
       50%{transform: scale(1.5); opacity:.9}
     }
-    /* Hero person: calm "breathing" motion */
-.heroHuman {
-  transform-origin: 50% 60%;
-  animation: breathe 6.5s ease-in-out infinite;
-  filter: drop-shadow(0 18px 30px rgba(15,23,42,.10));
-}
-
-@keyframes breathe {
-  0%, 100% { transform: translateY(0) scale(1); opacity: .98; }
-  50%      { transform: translateY(-6px) scale(1.015); opacity: 1; }
-}
-
-/* Optional: extra gentle drift on the whole illustration area */
-.illustration svg {
-  will-change: transform;
-}
 
     footer{
       margin-top: 16px;
@@ -447,6 +454,41 @@
       display:none;
     }
     .warnBox.show{display:block;}
+
+    /* subtle top “accuracy” strip when expanded */
+    .accuracyStrip{
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(34,197,94,.20);
+      background: rgba(34,197,94,.06);
+      padding: 10px 12px;
+      color: rgba(15,23,42,.80);
+      font-size: 13px;
+      line-height:1.45;
+      display:none;
+    }
+    .card[data-open="true"] .accuracyStrip{ display:block; }
+
+    /* Skeletons */
+    .skeleton{
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.78);
+      overflow:hidden;
+      position:relative;
+      min-height: 150px;
+      box-shadow: 0 12px 30px rgba(15,23,42,.06);
+    }
+    .shimmer{
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(241,245,249,0) 0%, rgba(241,245,249,.75) 50%, rgba(241,245,249,0) 100%);
+      transform: translateX(-100%);
+      animation: shimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-100%); }
+      100%{ transform: translateX(100%); }
+    }
   </style>
 </head>
 
@@ -472,11 +514,12 @@
       </div>
 
       <div class="hero">
-        <div class="heroCard">
+        <div class="heroCard stickyWrap">
           <div>
             <h1>Find the right level of support—clearly, calmly, and without judgment.</h1>
             <p class="sub">
-              Search programs by level of care (PHP, IOP, outpatient) and location. Crisis resources are available too, but kept separate by default for clarity.
+              This directory is designed for families: fast filtering, readable cards, and verification fields visible without extra clicks.
+              Crisis resources are kept separate by default to reduce noise.
             </p>
           </div>
 
@@ -522,12 +565,12 @@
             </div>
 
             <div class="ctaRow">
-              <button class="btn" id="reset">Reset</button>
-              <button class="btn primary" id="viewAll">View all</button>
+              <button class="btn" id="reset" type="button">Reset</button>
+              <button class="btn primary" id="viewAll" type="button">View all</button>
             </div>
           </div>
 
-          <div id="loadWarn" class="warnBox"></div>
+          <div id="loadWarn" class="warnBox" role="status" aria-live="polite"></div>
 
           <footer>
             If someone is in immediate danger, call 911. This directory is informational and does not provide clinical advice.
@@ -537,8 +580,7 @@
         <div class="illustration" aria-label="Friendly illustration">
           <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
 
-          <!-- Simple “happy person” SVG illustration -->
-          <svg width="320" height="240" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Happy person illustration">
+          <svg width="320" height="240" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Friendly illustration">
             <defs>
               <linearGradient id="g1" x1="40" y1="10" x2="280" y2="230" gradientUnits="userSpaceOnUse">
                 <stop stop-color="#4FD1C5" stop-opacity="0.55"/>
@@ -554,18 +596,12 @@
             <circle cx="230" cy="80" r="32" fill="#ffffff" opacity="0.85" filter="url(#soft)"/>
             <circle cx="88" cy="70" r="22" fill="#ffffff" opacity="0.75" filter="url(#soft)"/>
 
-            <!-- Body -->
             <path d="M130 210 C 128 170, 132 150, 150 138 C 165 128, 185 128, 200 138 C 218 150, 222 170, 220 210"
                   stroke="#0F172A" stroke-opacity="0.75" stroke-width="10" stroke-linecap="round"/>
-            <!-- Head -->
             <circle cx="175" cy="110" r="36" fill="#fff" stroke="#0F172A" stroke-opacity="0.75" stroke-width="7"/>
-  
-            <!-- Smile -->
             <path d="M160 122 C 168 132, 182 132, 190 122" stroke="#0F172A" stroke-opacity="0.7" stroke-width="6" stroke-linecap="round"/>
-            <!-- Eyes -->
             <circle cx="164" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
             <circle cx="186" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
-            <!-- Heart -->
             <path d="M250 140 C 250 132, 260 130, 264 136 C 268 130, 278 132, 278 140 C 278 152, 264 160, 264 160 C 264 160, 250 152, 250 140Z"
                   fill="#4FD1C5" opacity="0.8"/>
           </svg>
@@ -578,7 +614,7 @@
         <h2>Treatment & Navigation</h2>
         <div class="count" id="treatmentCount">0 results</div>
       </div>
-      <div class="grid" id="treatmentGrid"></div>
+      <div class="grid" id="treatmentGrid" aria-live="polite"></div>
       <div class="empty" id="treatmentEmpty" style="display:none;">
         No matches. Try removing filters, searching by city (e.g., “Plano”), or switching level of care.
       </div>
@@ -589,29 +625,20 @@
         <h2>Crisis resources</h2>
         <div class="count" id="crisisCount">0 results</div>
       </div>
-      <div class="grid" id="crisisGrid"></div>
+      <div class="grid" id="crisisGrid" aria-live="polite"></div>
       <div class="empty" id="crisisEmpty" style="display:none;">
         No crisis resources match your filters.
       </div>
     </section>
   </div>
 
-  <div class="overlay" id="overlay" aria-hidden="true"></div>
-  <aside class="drawer" id="drawer" aria-label="Program details">
-    <div class="drawerHead">
-      <div>
-        <h3 class="drawerTitle" id="dTitle">Details</h3>
-        <p class="drawerSub" id="dSub"></p>
-      </div>
-      <button class="closeBtn" id="closeDrawer" aria-label="Close">×</button>
-    </div>
-    <div class="drawerBody" id="dBody"></div>
-  </aside>
-
   <script>
     // ---------- State ----------
     let programs = [];
     let ready = false;
+
+    // Two-state card: keep only one expanded at a time (cleaner for families)
+    let openId = null;
 
     const els = {
       q: document.getElementById("q"),
@@ -636,17 +663,19 @@
       treatmentEmpty: document.getElementById("treatmentEmpty"),
       crisisEmpty: document.getElementById("crisisEmpty"),
 
-      loadWarn: document.getElementById("loadWarn"),
-
-      overlay: document.getElementById("overlay"),
-      drawer: document.getElementById("drawer"),
-      closeDrawer: document.getElementById("closeDrawer"),
-      dTitle: document.getElementById("dTitle"),
-      dSub: document.getElementById("dSub"),
-      dBody: document.getElementById("dBody")
+      loadWarn: document.getElementById("loadWarn")
     };
 
     function safeStr(x){ return (x ?? "").toString().trim(); }
+
+    function escapeHtml(s){
+      return safeStr(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
     function isCrisis(p){
       return safeStr(p.entry_type).toLowerCase() === "crisis service";
@@ -692,17 +721,7 @@
         });
       });
       const cities = Array.from(set).sort((a,b)=>a.localeCompare(b));
-      // reset
       els.loc.innerHTML = '<option value="">Any</option>' + cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-    }
-
-    function escapeHtml(s){
-      return safeStr(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
     }
 
     function matchesFilters(p){
@@ -749,17 +768,70 @@
       return care;
     }
 
-    function createCard(p){
+    function normalizePhoneForTel(phone){
+      // Preserve leading + but strip other non-digits.
+      const raw = safeStr(phone);
+      if (!raw) return "";
+      const plus = raw.trim().startsWith("+") ? "+" : "";
+      const digits = raw.replace(/[^\d]/g,"");
+      return (plus + digits);
+    }
+
+    function bestAddress(p){
+      const locs = Array.isArray(p.locations) ? p.locations : [];
+      const l = locs[0] || {};
+      const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
+      return parts.join(", ");
+    }
+
+    function mapsLinkFor(p){
+      const addr = bestAddress(p);
+      if (!addr) return "";
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
+    }
+
+    function stableIdFor(p, i){
+      // Deterministic enough for UI state (no backend).
+      const base = `${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
+      let h = 2166136261;
+      for (let k=0; k<base.length; k++){
+        h ^= base.charCodeAt(k);
+        h = Math.imul(h, 16777619);
+      }
+      return `p_${(h>>>0).toString(16)}_${i}`;
+    }
+
+    function createCard(p, idx){
       const crisis = isCrisis(p);
       const loc = locLabel(p);
       const care = badgeForCare(p);
 
-      const div = document.createElement("div");
+      const id = stableIdFor(p, idx);
+      const isOpen = (openId === id);
+
+      const phone = safeStr(p.phone);
+      const tel = normalizePhoneForTel(phone);
+      const maps = mapsLinkFor(p);
+
+      const addresses = (Array.isArray(p.locations) ? p.locations : [])
+        .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
+        .filter(Boolean);
+
+      const verificationSource = safeStr(p.verification_source);
+      const lastVerified = safeStr(p.last_verified);
+
+      const div = document.createElement("article");
       div.className = "card";
-      div.tabIndex = 0;
+      div.dataset.open = isOpen ? "true" : "false";
+      div.setAttribute("data-id", id);
 
       const locBadgeClass = crisis ? "badge crisis" : "badge loc";
       const locBadgeClass2 = crisis ? "badge crisis" : "badge loc2";
+
+      // “Accuracy strip” is shown only when expanded, so families see provenance without extra clicks.
+      const accuracyLine = (verificationSource || lastVerified)
+        ? `Source: ${verificationSource || "—"}${verificationSource && lastVerified ? " • " : ""}${lastVerified ? `Last verified: ${lastVerified}` : ""}`
+        : `Verification info not provided for this listing. Please confirm details with the program directly.`;
 
       div.innerHTML = `
         <div class="badgeRow">
@@ -767,79 +839,99 @@
           <span class="${locBadgeClass}">${escapeHtml(loc)}</span>
           ${hasVirtual(p) ? `<span class="${locBadgeClass2}">Virtual option</span>` : ``}
         </div>
-        <p class="title">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
-        <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
+
+        <div class="cardTop">
+          <div style="min-width:0">
+            <p class="title">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
+            <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
+          </div>
+
+          <button class="expandBtn" type="button"
+            aria-expanded="${isOpen ? "true" : "false"}"
+            aria-controls="panel_${escapeHtml(id)}"
+            title="${isOpen ? "Collapse details" : "Expand details"}">
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+        </div>
+
         <div class="meta">
           <span>Age: ${escapeHtml(safeStr(p.ages_served) || "Unknown")}</span>
           <span>Setting: ${escapeHtml(safeStr(p.service_setting) || "Unknown")}</span>
         </div>
+
+        <div class="accuracyStrip">
+          ${escapeHtml(accuracyLine)}
+        </div>
+
+        <div class="panel" id="panel_${escapeHtml(id)}">
+          ${addresses.length ? `
+            <div class="kv">
+              <div class="k">Address</div>
+              <div class="v">${addresses.map(a=>`<div>${escapeHtml(a)}</div>`).join("")}</div>
+            </div>
+          ` : ``}
+
+          <div class="kv">
+            <div class="k">Type</div>
+            <div class="v">${escapeHtml(safeStr(p.entry_type) || "Unknown")}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Level of care</div>
+            <div class="v">${escapeHtml(safeStr(p.level_of_care) || "Unknown")}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Insurance</div>
+            <div class="v">${escapeHtml(safeStr(p.insurance_notes) || "Unknown")}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Transportation</div>
+            <div class="v">${escapeHtml(safeStr(p.transportation_available) || "Unknown")}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Notes</div>
+            <div class="v">${escapeHtml(safeStr(p.notes) || "—")}</div>
+          </div>
+
+          <div class="actions">
+            ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}">Call</a>` : ``}
+            ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
+            ${!tel && !maps ? `<span style="color:var(--muted);font-size:13px;">No quick actions available for this listing.</span>` : ``}
+          </div>
+        </div>
       `;
 
-      const open = () => openDrawer(p);
-      div.addEventListener("click", open);
-      div.addEventListener("keydown", (e) => { if(e.key==="Enter"||e.key===" ") open(); });
+      // Bind expand/collapse
+      const btn = div.querySelector(".expandBtn");
+      btn.addEventListener("click", () => toggleOpen(id));
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOpen(id); }
+      });
 
       return div;
     }
 
-    function openDrawer(p){
-      els.dTitle.textContent = safeStr(p.program_name) || "Details";
-      els.dSub.textContent = `${safeStr(p.organization) || ""}${safeStr(p.organization) ? " • " : ""}${locLabel(p)}`;
+    function toggleOpen(id){
+      openId = (openId === id) ? null : id;
+      render(true);
 
-      const phone = safeStr(p.phone);
-      const locs = Array.isArray(p.locations) ? p.locations : [];
-      const addresses = locs
-        .map(l => {
-          const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
-          return parts.join(", ");
-        })
-        .filter(Boolean);
-
-      const rows = [
-        ["Type", safeStr(p.entry_type) || "Unknown"],
-        ["Level of care", safeStr(p.level_of_care) || "Unknown"],
-        ["Ages served", safeStr(p.ages_served) || "Unknown"],
-        ["Setting", safeStr(p.service_setting) || "Unknown"],
-        ["Phone", phone || "Not listed"],
-        ["Transportation", safeStr(p.transportation_available) || "Unknown"],
-        ["Insurance", safeStr(p.insurance_notes) || "Unknown"],
-        ["Notes", safeStr(p.notes) || "—"],
-        ["Verification", safeStr(p.verification_source) || "—"],
-        ["Last verified", safeStr(p.last_verified) || "—"]
-      ];
-
-      els.dBody.innerHTML = `
-        ${addresses.length ? `
-          <div class="kv">
-            <div class="k">Address</div>
-            <div class="v">${addresses.map(a=>`<div>${escapeHtml(a)}</div>`).join("")}</div>
-          </div>
-        ` : ``}
-        ${rows.map(([k,v]) => `
-          <div class="kv">
-            <div class="k">${escapeHtml(k)}</div>
-            <div class="v">${escapeHtml(v)}</div>
-          </div>
-        `).join("")}
-        <div class="callRow">
-          ${phone ? `<a class="linkBtn primary" href="tel:${phone.replace(/[^\d+]/g,"")}">Call</a>` : ``}
-        </div>
-      `;
-
-      els.overlay.classList.add("open");
-      els.drawer.classList.add("open");
+      // Optional: scroll the opened card into view gently, without yanking the page.
+      if (openId){
+        const el = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+        if (el){
+          const rect = el.getBoundingClientRect();
+          const top = window.scrollY + rect.top - 14;
+          // only scroll if it's significantly off-screen
+          if (rect.top < 0 || rect.bottom > window.innerHeight){
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }
+      }
     }
 
-    function closeDrawer(){
-      els.overlay.classList.remove("open");
-      els.drawer.classList.remove("open");
-    }
-
-    function render(){
+    function render(skipAnimDelays){
       if (!ready) return;
 
       const showCrisis = els.showCrisis.checked;
-
       const filtered = programs.filter(matchesFilters);
 
       const treatment = filtered.filter(p => !isCrisis(p));
@@ -848,8 +940,8 @@
       // Treatment
       els.treatmentGrid.innerHTML = "";
       treatment.forEach((p, idx) => {
-        const card = createCard(p);
-        card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
+        const card = createCard(p, idx);
+        if (!skipAnimDelays) card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
         els.treatmentGrid.appendChild(card);
       });
       els.treatmentCount.textContent = `${treatment.length} result${treatment.length===1?"":"s"}`;
@@ -860,8 +952,8 @@
       if (showCrisis){
         els.crisisGrid.innerHTML = "";
         crisis.forEach((p, idx) => {
-          const card = createCard(p);
-          card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
+          const card = createCard(p, idx + 10000); // offset for stable ids
+          if (!skipAnimDelays) card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
           els.crisisGrid.appendChild(card);
         });
         els.crisisCount.textContent = `${crisis.length} result${crisis.length===1?"":"s"}`;
@@ -873,12 +965,12 @@
       const on = (el, ev, fn) => el.addEventListener(ev, fn);
 
       ["input","change"].forEach(ev => {
-        on(els.q, ev, render);
-        on(els.loc, ev, render);
-        on(els.care, ev, render);
-        on(els.onlyYouth, ev, render);
-        on(els.onlyVirtual, ev, render);
-        on(els.showCrisis, ev, render);
+        on(els.q, ev, () => { openId = null; render(); });
+        on(els.loc, ev, () => { openId = null; render(); });
+        on(els.care, ev, () => { openId = null; render(); });
+        on(els.onlyYouth, ev, () => { openId = null; render(); });
+        on(els.onlyVirtual, ev, () => { openId = null; render(); });
+        on(els.showCrisis, ev, () => { openId = null; render(); });
       });
 
       on(els.reset, "click", () => {
@@ -888,6 +980,7 @@
         els.onlyYouth.checked = false;
         els.onlyVirtual.checked = false;
         els.showCrisis.checked = false;
+        openId = null;
         render();
       });
 
@@ -897,21 +990,36 @@
         els.care.value = "";
         els.onlyYouth.checked = false;
         els.onlyVirtual.checked = false;
+        openId = null;
         // Keep crisis off by default
         render();
         window.scrollTo({ top: document.getElementById("treatmentSection").offsetTop - 10, behavior: "smooth" });
       });
 
-      on(els.overlay, "click", closeDrawer);
-      on(els.closeDrawer, "click", closeDrawer);
+      // Escape closes expanded card (nice for keyboard users)
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeDrawer();
+        if (e.key === "Escape" && openId){
+          openId = null;
+          render(true);
+        }
       });
+    }
+
+    function renderSkeletons(){
+      const make = () => {
+        const d = document.createElement("div");
+        d.className = "skeleton";
+        d.innerHTML = `<div class="shimmer"></div>`;
+        return d;
+      };
+      els.treatmentGrid.innerHTML = "";
+      for (let i=0; i<6; i++) els.treatmentGrid.appendChild(make());
     }
 
     async function loadPrograms(){
       els.loadWarn.classList.remove("show");
       els.loadWarn.textContent = "";
+      renderSkeletons();
 
       try{
         const res = await fetch("programs.json", { cache:"no-store" });
@@ -932,19 +1040,22 @@
           transportation_available: p.transportation_available || "Unknown",
           insurance_notes: p.insurance_notes || "Unknown",
           verification_source: p.verification_source || "",
-          last_verified: p.last_verified || ""
+          last_verified: p.last_verified || "",
+          website: p.website || p.url || "" // optional if present later
         }));
 
         buildLocationOptions(programs);
         ready = true;
+        openId = null;
         render();
       }catch(err){
         console.error(err);
         els.loadWarn.textContent = `Couldn’t load programs.json. ${err.message}`;
         els.loadWarn.classList.add("show");
-        ready = true; // render empty state
+        ready = true;
         programs = [];
         buildLocationOptions(programs);
+        openId = null;
         render();
       }
     }
