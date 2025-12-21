@@ -8,6 +8,7 @@
 
   <style>
     :root{
+      /* Calm, non-orange palette */
       --bg0:#f7f7fb;
       --bg1:#f3fbff;
       --ink:#0f172a;
@@ -68,7 +69,6 @@
       50%{transform: translate(18px,-22px) scale(1.03)}
     }
 
-    /* Accessibility / motion */
     @media (prefers-reduced-motion: reduce){
       *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
       .blob{display:none;}
@@ -147,14 +147,6 @@
       box-shadow: 0 12px 34px rgba(15,23,42,.08);
     }
 
-    /* Sticky filter header (helps families keep context) */
-    .stickyWrap{
-      position: sticky;
-      top: 10px;
-      z-index: 5;
-      border-radius: var(--radius);
-    }
-
     .controls{
       display:grid;
       grid-template-columns: 1.2fr .9fr .9fr;
@@ -226,7 +218,6 @@
       color: #0b1220;
     }
 
-    /* Results */
     .section{
       margin-top: 18px;
       border:1px solid var(--stroke);
@@ -250,14 +241,30 @@
     }
     .count{font-size: 13px; color: var(--muted);}
 
+    /* IMPORTANT: Flex-wrap grid prevents “row expansion” effect */
     .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
+      display:flex;
+      flex-wrap:wrap;
       gap: 12px;
       padding: 14px 14px 16px;
+      align-items:flex-start;
     }
-    @media (max-width: 980px){ .grid{grid-template-columns: repeat(2, 1fr);} }
-    @media (max-width: 640px){ .grid{grid-template-columns: 1fr;} }
+    .grid > .card, .grid > .skeleton{
+      flex: 1 1 calc(33.333% - 12px);
+      max-width: calc(33.333% - 12px);
+    }
+    @media (max-width: 980px){
+      .grid > .card, .grid > .skeleton{
+        flex-basis: calc(50% - 12px);
+        max-width: calc(50% - 12px);
+      }
+    }
+    @media (max-width: 640px){
+      .grid > .card, .grid > .skeleton{
+        flex-basis: 100%;
+        max-width: 100%;
+      }
+    }
 
     /* Two-state card */
     .card{
@@ -271,6 +278,12 @@
       transform: translateZ(0);
       transition: transform .18s ease, box-shadow .18s ease;
       animation: rise .35s ease both;
+
+      /* Performance: isolate layout/paint and skip offscreen work on long lists */
+      align-self:flex-start;
+      contain: content;
+      content-visibility: auto;
+      contain-intrinsic-size: 220px;
     }
     .card:hover{ transform: translateY(-3px); box-shadow: 0 18px 44px rgba(15,23,42,.14); }
     .card:focus-within{ box-shadow: var(--focus), 0 18px 44px rgba(15,23,42,.12); }
@@ -278,13 +291,6 @@
     @keyframes rise{
       from{ opacity:0; transform: translateY(10px); }
       to{ opacity:1; transform: translateY(0); }
-    }
-
-    .cardTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
     }
 
     .badgeRow{ display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 10px; }
@@ -300,6 +306,13 @@
     .badge.loc{ background: rgba(122,167,255,.12); border-color: rgba(122,167,255,.25); }
     .badge.loc2{ background: rgba(79,209,197,.12); border-color: rgba(79,209,197,.25); }
     .badge.crisis{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.22); color:#7f1d1d; }
+
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
 
     .title{
       font-weight: 820;
@@ -317,7 +330,6 @@
       font-size: 13px;
     }
 
-    /* Expand button */
     .expandBtn{
       flex: 0 0 auto;
       border: 1px solid var(--stroke);
@@ -333,6 +345,7 @@
     }
     .expandBtn:hover{ transform: translateY(-1px); box-shadow: 0 12px 24px rgba(15,23,42,.10); }
     .expandBtn:focus{ outline:none; box-shadow: var(--focus); }
+
     .chev{
       width: 14px; height: 14px;
       border-right: 2px solid rgba(15,23,42,.55);
@@ -340,10 +353,9 @@
       transform: rotate(45deg);
       transition: transform .22s ease;
     }
-
     .card[data-open="true"] .chev{ transform: rotate(-135deg); }
 
-    /* Expand panel animation */
+    /* Expand panel animation (kept modest for performance) */
     .panel{
       margin-top: 12px;
       border-top: 1px dashed rgba(226,232,240,.95);
@@ -352,14 +364,28 @@
       opacity: 0;
       transform: translateY(-6px);
       overflow:hidden;
-      transition: max-height .28s ease, opacity .22s ease, transform .22s ease;
+      transition: max-height .24s ease, opacity .18s ease, transform .18s ease;
       will-change: max-height, opacity, transform;
+      contain: layout paint;
     }
     .card[data-open="true"] .panel{
-      max-height: 520px; /* enough for typical content */
+      max-height: 360px;
       opacity: 1;
       transform: translateY(0);
     }
+
+    .accuracyStrip{
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(34,197,94,.20);
+      background: rgba(34,197,94,.06);
+      padding: 10px 12px;
+      color: rgba(15,23,42,.80);
+      font-size: 13px;
+      line-height:1.45;
+      display:none;
+    }
+    .card[data-open="true"] .accuracyStrip{ display:block; }
 
     .kv{
       display:grid;
@@ -406,7 +432,7 @@
       line-height:1.55;
     }
 
-    /* Hero illustration */
+    /* Illustration */
     .illustration{
       border:1px solid var(--stroke);
       border-radius: var(--radius);
@@ -434,6 +460,17 @@
       50%{transform: scale(1.5); opacity:.9}
     }
 
+    /* Hero person: calm "breathing" motion */
+    .heroHuman{
+      transform-origin: 50% 60%;
+      animation: breathe 6.5s ease-in-out infinite;
+      filter: drop-shadow(0 18px 30px rgba(15,23,42,.10));
+    }
+    @keyframes breathe {
+      0%, 100% { transform: translateY(0) scale(1); opacity: .98; }
+      50%      { transform: translateY(-6px) scale(1.015); opacity: 1; }
+    }
+
     footer{
       margin-top: 16px;
       color: var(--muted);
@@ -455,21 +492,7 @@
     }
     .warnBox.show{display:block;}
 
-    /* subtle top “accuracy” strip when expanded */
-    .accuracyStrip{
-      margin-top: 10px;
-      border-radius: 16px;
-      border: 1px solid rgba(34,197,94,.20);
-      background: rgba(34,197,94,.06);
-      padding: 10px 12px;
-      color: rgba(15,23,42,.80);
-      font-size: 13px;
-      line-height:1.45;
-      display:none;
-    }
-    .card[data-open="true"] .accuracyStrip{ display:block; }
-
-    /* Skeletons */
+    /* Skeleton */
     .skeleton{
       border-radius: var(--radius);
       border:1px solid var(--stroke);
@@ -514,12 +537,11 @@
       </div>
 
       <div class="hero">
-        <div class="heroCard stickyWrap">
+        <div class="heroCard">
           <div>
             <h1>Find the right level of support—clearly, calmly, and without judgment.</h1>
             <p class="sub">
-              This directory is designed for families: fast filtering, readable cards, and verification fields visible without extra clicks.
-              Crisis resources are kept separate by default to reduce noise.
+              Search programs by level of care (PHP, IOP, outpatient) and location. Crisis resources are available too, but kept separate by default for clarity.
             </p>
           </div>
 
@@ -596,12 +618,15 @@
             <circle cx="230" cy="80" r="32" fill="#ffffff" opacity="0.85" filter="url(#soft)"/>
             <circle cx="88" cy="70" r="22" fill="#ffffff" opacity="0.75" filter="url(#soft)"/>
 
-            <path d="M130 210 C 128 170, 132 150, 150 138 C 165 128, 185 128, 200 138 C 218 150, 222 170, 220 210"
-                  stroke="#0F172A" stroke-opacity="0.75" stroke-width="10" stroke-linecap="round"/>
-            <circle cx="175" cy="110" r="36" fill="#fff" stroke="#0F172A" stroke-opacity="0.75" stroke-width="7"/>
-            <path d="M160 122 C 168 132, 182 132, 190 122" stroke="#0F172A" stroke-opacity="0.7" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="164" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
-            <circle cx="186" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
+            <g class="heroHuman">
+              <path d="M130 210 C 128 170, 132 150, 150 138 C 165 128, 185 128, 200 138 C 218 150, 222 170, 220 210"
+                    stroke="#0F172A" stroke-opacity="0.75" stroke-width="10" stroke-linecap="round"/>
+              <circle cx="175" cy="110" r="36" fill="#fff" stroke="#0F172A" stroke-opacity="0.75" stroke-width="7"/>
+              <path d="M160 122 C 168 132, 182 132, 190 122" stroke="#0F172A" stroke-opacity="0.7" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="164" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
+              <circle cx="186" cy="112" r="3.5" fill="#0F172A" opacity="0.7"/>
+            </g>
+
             <path d="M250 140 C 250 132, 260 130, 264 136 C 268 130, 278 132, 278 140 C 278 152, 264 160, 264 160 C 264 160, 250 152, 250 140Z"
                   fill="#4FD1C5" opacity="0.8"/>
           </svg>
@@ -637,7 +662,7 @@
     let programs = [];
     let ready = false;
 
-    // Two-state card: keep only one expanded at a time (cleaner for families)
+    // Two-state card: keep only one expanded at a time
     let openId = null;
 
     const els = {
@@ -706,9 +731,8 @@
         a.includes("adolescent") ||
         a.includes("child") ||
         a.includes("youth") ||
-        a.includes("5") || a.includes("6") || a.includes("7") || a.includes("8") || a.includes("9") ||
-        a.includes("10") || a.includes("11") || a.includes("12") || a.includes("13") || a.includes("14") ||
-        a.includes("15") || a.includes("16") || a.includes("17")
+        a.includes("6+") || a.includes("5+") ||
+        a.includes("12") || a.includes("13") || a.includes("14") || a.includes("15") || a.includes("16") || a.includes("17")
       );
     }
 
@@ -752,8 +776,8 @@
       if (onlyVirtual && !hasVirtual(p)) return false;
 
       // “Prioritize youth” means:
-      // - If we can tell it serves youth, keep it.
-      // - If age is unknown, keep it (don’t hide potentially relevant listings).
+      // - If ages are provided and do not look youth-serving, filter out.
+      // - If ages are unknown, keep it (don’t accidentally hide a relevant option).
       if (onlyYouth){
         const a = safeStr(p.ages_served);
         if (a && !youthLikely(p)) return false;
@@ -762,14 +786,7 @@
       return true;
     }
 
-    function badgeForCare(p){
-      const care = safeStr(p.level_of_care);
-      if (!care) return "Unknown";
-      return care;
-    }
-
     function normalizePhoneForTel(phone){
-      // Preserve leading + but strip other non-digits.
       const raw = safeStr(phone);
       if (!raw) return "";
       const plus = raw.trim().startsWith("+") ? "+" : "";
@@ -791,8 +808,7 @@
     }
 
     function stableIdFor(p, i){
-      // Deterministic enough for UI state (no backend).
-      const base = `${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
+      const base = `${safeStr(p.program_id)}|${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
       let h = 2166136261;
       for (let k=0; k<base.length; k++){
         h ^= base.charCodeAt(k);
@@ -801,11 +817,42 @@
       return `p_${(h>>>0).toString(16)}_${i}`;
     }
 
+    function setCardOpen(cardEl, isOpen){
+      cardEl.dataset.open = isOpen ? "true" : "false";
+      const btn = cardEl.querySelector(".expandBtn");
+      if (btn) btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
+
+    function toggleOpen(id){
+      const nextOpenId = (openId === id) ? null : id;
+
+      // Close previously open card (DOM-only; no re-render => no lag)
+      if (openId){
+        const prev = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+        if (prev) setCardOpen(prev, false);
+      }
+
+      openId = nextOpenId;
+
+      // Open new card (DOM-only)
+      if (openId){
+        const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+        if (cur) setCardOpen(cur, true);
+
+        // Gentle scroll into view if needed
+        if (cur){
+          const rect = cur.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > window.innerHeight){
+            window.scrollTo({ top: window.scrollY + rect.top - 14, behavior: "smooth" });
+          }
+        }
+      }
+    }
+
     function createCard(p, idx){
       const crisis = isCrisis(p);
       const loc = locLabel(p);
-      const care = badgeForCare(p);
-
+      const care = safeStr(p.level_of_care) || "Unknown";
       const id = stableIdFor(p, idx);
       const isOpen = (openId === id);
 
@@ -819,25 +866,20 @@
 
       const verificationSource = safeStr(p.verification_source);
       const lastVerified = safeStr(p.last_verified);
+      const accuracyLine = (verificationSource || lastVerified)
+        ? `Source: ${verificationSource || "—"}${verificationSource && lastVerified ? " • " : ""}${lastVerified ? `Last verified: ${lastVerified}` : ""}`
+        : `Verification info not provided for this listing. Please confirm details with the program directly.`;
 
       const div = document.createElement("article");
       div.className = "card";
       div.dataset.open = isOpen ? "true" : "false";
       div.setAttribute("data-id", id);
 
-      const locBadgeClass = crisis ? "badge crisis" : "badge loc";
-      const locBadgeClass2 = crisis ? "badge crisis" : "badge loc2";
-
-      // “Accuracy strip” is shown only when expanded, so families see provenance without extra clicks.
-      const accuracyLine = (verificationSource || lastVerified)
-        ? `Source: ${verificationSource || "—"}${verificationSource && lastVerified ? " • " : ""}${lastVerified ? `Last verified: ${lastVerified}` : ""}`
-        : `Verification info not provided for this listing. Please confirm details with the program directly.`;
-
       div.innerHTML = `
         <div class="badgeRow">
           <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(care)}</span>
-          <span class="${locBadgeClass}">${escapeHtml(loc)}</span>
-          ${hasVirtual(p) ? `<span class="${locBadgeClass2}">Virtual option</span>` : ``}
+          <span class="badge ${crisis ? "crisis" : "loc"}">${escapeHtml(loc)}</span>
+          ${hasVirtual(p) ? `<span class="badge ${crisis ? "crisis" : "loc2"}">Virtual option</span>` : ``}
         </div>
 
         <div class="cardTop">
@@ -859,9 +901,7 @@
           <span>Setting: ${escapeHtml(safeStr(p.service_setting) || "Unknown")}</span>
         </div>
 
-        <div class="accuracyStrip">
-          ${escapeHtml(accuracyLine)}
-        </div>
+        <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
 
         <div class="panel" id="panel_${escapeHtml(id)}">
           ${addresses.length ? `
@@ -874,10 +914,6 @@
           <div class="kv">
             <div class="k">Type</div>
             <div class="v">${escapeHtml(safeStr(p.entry_type) || "Unknown")}</div>
-          </div>
-          <div class="kv">
-            <div class="k">Level of care</div>
-            <div class="v">${escapeHtml(safeStr(p.level_of_care) || "Unknown")}</div>
           </div>
           <div class="kv">
             <div class="k">Insurance</div>
@@ -895,12 +931,11 @@
           <div class="actions">
             ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}">Call</a>` : ``}
             ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
-            ${!tel && !maps ? `<span style="color:var(--muted);font-size:13px;">No quick actions available for this listing.</span>` : ``}
+            ${(!tel && !maps) ? `<span style="color:var(--muted);font-size:13px;">No quick actions available for this listing.</span>` : ``}
           </div>
         </div>
       `;
 
-      // Bind expand/collapse
       const btn = div.querySelector(".expandBtn");
       btn.addEventListener("click", () => toggleOpen(id));
       btn.addEventListener("keydown", (e) => {
@@ -910,25 +945,7 @@
       return div;
     }
 
-    function toggleOpen(id){
-      openId = (openId === id) ? null : id;
-      render(true);
-
-      // Optional: scroll the opened card into view gently, without yanking the page.
-      if (openId){
-        const el = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-        if (el){
-          const rect = el.getBoundingClientRect();
-          const top = window.scrollY + rect.top - 14;
-          // only scroll if it's significantly off-screen
-          if (rect.top < 0 || rect.bottom > window.innerHeight){
-            window.scrollTo({ top, behavior: "smooth" });
-          }
-        }
-      }
-    }
-
-    function render(skipAnimDelays){
+    function render(){
       if (!ready) return;
 
       const showCrisis = els.showCrisis.checked;
@@ -937,11 +954,17 @@
       const treatment = filtered.filter(p => !isCrisis(p));
       const crisis = filtered.filter(p => isCrisis(p));
 
+      // If the open card is no longer in the filtered set, close it
+      if (openId){
+        const stillExists = filtered.some((p, idx) => stableIdFor(p, idx) === openId);
+        if (!stillExists) openId = null;
+      }
+
       // Treatment
       els.treatmentGrid.innerHTML = "";
       treatment.forEach((p, idx) => {
         const card = createCard(p, idx);
-        if (!skipAnimDelays) card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
+        card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
         els.treatmentGrid.appendChild(card);
       });
       els.treatmentCount.textContent = `${treatment.length} result${treatment.length===1?"":"s"}`;
@@ -952,8 +975,9 @@
       if (showCrisis){
         els.crisisGrid.innerHTML = "";
         crisis.forEach((p, idx) => {
-          const card = createCard(p, idx + 10000); // offset for stable ids
-          if (!skipAnimDelays) card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
+          // offset index so ids remain stable between lists
+          const card = createCard(p, idx + 10000);
+          card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
           els.crisisGrid.appendChild(card);
         });
         els.crisisCount.textContent = `${crisis.length} result${crisis.length===1?"":"s"}`;
@@ -990,8 +1014,8 @@
         els.care.value = "";
         els.onlyYouth.checked = false;
         els.onlyVirtual.checked = false;
+        // Keep crisis off by default (unchanged)
         openId = null;
-        // Keep crisis off by default
         render();
         window.scrollTo({ top: document.getElementById("treatmentSection").offsetTop - 10, behavior: "smooth" });
       });
@@ -999,8 +1023,9 @@
       // Escape closes expanded card (nice for keyboard users)
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && openId){
+          const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+          if (cur) setCardOpen(cur, false);
           openId = null;
-          render(true);
         }
       });
     }
@@ -1013,7 +1038,9 @@
         return d;
       };
       els.treatmentGrid.innerHTML = "";
-      for (let i=0; i<6; i++) els.treatmentGrid.appendChild(make());
+      for (let i=0; i<9; i++) els.treatmentGrid.appendChild(make());
+      els.treatmentCount.textContent = "Loading…";
+      els.treatmentEmpty.style.display = "none";
     }
 
     async function loadPrograms(){
@@ -1028,6 +1055,7 @@
         if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
 
         programs = data.programs.map(p => ({
+          program_id: p.program_id || "",
           entry_type: p.entry_type || "Treatment Program",
           organization: p.organization || "",
           program_name: p.program_name || "",
@@ -1040,8 +1068,7 @@
           transportation_available: p.transportation_available || "Unknown",
           insurance_notes: p.insurance_notes || "Unknown",
           verification_source: p.verification_source || "",
-          last_verified: p.last_verified || "",
-          website: p.website || p.url || "" // optional if present later
+          last_verified: p.last_verified || ""
         }));
 
         buildLocationOptions(programs);
