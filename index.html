@@ -8,6 +8,7 @@
 
   <style>
     :root{
+      color-scheme: light;
       /* Bright, clean “premium” palette (Elite layout, light theme) */
       --bg0:#f6f8ff;
       --bg1:#f2fbff;
@@ -339,7 +340,7 @@
 
     .search-grid{
       display:grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 12px;
       align-items:end;
     }
@@ -379,6 +380,122 @@
       box-shadow: 0 10px 22px rgba(15,23,42,.06);
     }
     select{ padding-left: 12px; }
+    /* Custom dropdown (used for Age) to avoid OS-styled dark popovers */
+    .dropdown{ position:relative; width:100%; }
+
+    .dd-btn{
+      width:100%;
+      padding: 12px 44px 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      outline: none;
+      transition: var(--transition);
+      box-shadow: 0 10px 22px rgba(15,23,42,.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      cursor:pointer;
+      text-align:left;
+      line-height: 1.1;
+    }
+    .dd-btn:hover{
+      box-shadow: 0 14px 28px rgba(15,23,42,.08);
+      transform: translateY(-1px);
+    }
+    .dd-btn:focus-visible{
+      border-color: rgba(122,167,255,.55);
+      box-shadow: var(--focus), 0 16px 34px rgba(15,23,42,.10);
+    }
+
+    .dd-icon{
+      opacity:.75;
+      transition: transform .18s ease, opacity .18s ease;
+      font-size: 14px;
+      transform-origin: 50% 55%;
+    }
+    .dropdown.open .dd-icon{ transform: rotate(180deg); opacity:.95; }
+
+    .dd-menu{
+      position:absolute;
+      left:0; right:0;
+      top: calc(100% + 8px);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.98);
+      box-shadow: 0 22px 60px rgba(15,23,42,.20);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      max-height: 320px;
+      overflow:auto;
+
+      opacity: 0;
+      transform: translateY(-6px) scale(.985);
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+    }
+    .dropdown.open .dd-menu{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+      visibility: visible;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .dd-option{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      user-select:none;
+      color: var(--ink);
+    }
+    .dd-option:hover,
+    .dd-option.is-active{
+      background: rgba(122,167,255,.14);
+    }
+    .dd-option.is-selected{
+      background: rgba(45,212,191,.14);
+    }
+    .dd-check{
+      font-weight: 900;
+      opacity: 0;
+      transform: translateX(-2px);
+      transition: opacity .12s ease, transform .12s ease;
+    }
+    .dd-option.is-selected .dd-check{
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* keep the native select for logic, but remove it from layout */
+    .dd-native{
+      position:absolute;
+      width:1px; height:1px;
+      opacity:0;
+      pointer-events:none;
+    }
+
+
+    /* Make the dropdown menu align with the bright theme */
+    select{ color-scheme: light; }
+    .input-group select{
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 44px;
+    }
+    select option{
+      background: #ffffff;
+      color: var(--ink);
+    }
+
     input[type="search"]:focus, select:focus{
       border-color: rgba(122,167,255,.55);
       box-shadow: var(--focus), 0 16px 34px rgba(15,23,42,.10);
@@ -878,6 +995,61 @@
         </div>
 
         <div class="input-group">
+          <label class="dd-label">Age</label>
+          <div class="dropdown" data-dd="age">
+            <button type="button" class="dd-btn" id="ageBtn" aria-haspopup="listbox" aria-controls="ageMenu" aria-expanded="false">
+              <span class="dd-value" id="ageBtnValue">Any age</span>
+              <span class="dd-icon" aria-hidden="true">▾</span>
+            </button>
+
+            <div class="dd-menu" id="ageMenu" role="listbox" tabindex="-1" aria-labelledby="ageBtn">
+              <div class="dd-option is-selected" role="option" aria-selected="true" data-value="">Any age<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="0">0<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="1">1<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="2">2<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="3">3<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="4">4<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="5">5<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="6">6<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="7">7<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="8">8<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="9">9<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="10">10<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="11">11<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="12">12<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="13">13<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="14">14<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="15">15<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="16">16<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-option" role="option" aria-selected="false" data-value="17">17<span class="dd-check" aria-hidden="true">✓</span></div>
+            </div>
+
+            <!-- Hidden native select kept for filtering logic + forms -->
+            <select id="age" class="dd-native" aria-hidden="true" tabindex="-1">
+            <option value="">Any age</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
           <label for="care">Level of care</label>
           <select id="care">
             <option value="">Any</option>
@@ -943,6 +1115,7 @@
     const els = {
       q: document.getElementById("q"),
       loc: document.getElementById("loc"),
+      age: document.getElementById("age"),
       care: document.getElementById("care"),
       showCrisis: document.getElementById("showCrisis"),
       onlyVirtual: document.getElementById("onlyVirtual"),
@@ -967,6 +1140,183 @@
 
       loadWarn: document.getElementById("loadWarn")
     };
+
+
+    // Custom dropdown for Age (keeps native <select id="age"> for filtering logic)
+    function initAgeDropdown(){
+      const root = document.querySelector('.dropdown[data-dd="age"]');
+      if (!root) return;
+
+      const btn = root.querySelector('#ageBtn');
+      const valueEl = root.querySelector('#ageBtnValue');
+      const menu = root.querySelector('#ageMenu');
+      const native = root.querySelector('#age'); // hidden select
+      const label = root.closest('.input-group') ? root.closest('.input-group').querySelector('.dd-label') : null;
+
+      const options = Array.from(menu.querySelectorAll('.dd-option'));
+      let activeIndex = 0;
+      let typeBuf = "";
+      let typeT = null;
+
+      function setActive(i, scroll){
+        activeIndex = Math.max(0, Math.min(options.length - 1, i));
+        options.forEach((o, idx) => o.classList.toggle('is-active', idx === activeIndex));
+        if (scroll) options[activeIndex].scrollIntoView({ block: "nearest" });
+      }
+
+      function syncFromNative(){
+        const val = native.value || "";
+        valueEl.textContent = (val === "") ? "Any age" : String(val);
+        options.forEach(o => {
+          const v = (o.dataset.value ?? "");
+          const isSel = v === String(val);
+          o.classList.toggle('is-selected', isSel);
+          o.setAttribute('aria-selected', isSel ? "true" : "false");
+        });
+      }
+
+      // Expose a lightweight sync hook for reset/view-all without triggering extra renders
+      window.__ageDropdownSync = syncFromNative;
+
+      function open(){
+        if (root.classList.contains('open')) return;
+        root.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+
+        // active option = selected option
+        const val = native.value || "";
+        let idx = options.findIndex(o => (o.dataset.value ?? "") === String(val));
+        if (idx < 0) idx = 0;
+        setActive(idx, true);
+
+        menu.focus({ preventScroll: true });
+      }
+
+      function close(focusBtn){
+        if (!root.classList.contains('open')) return;
+        root.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        if (focusBtn) btn.focus({ preventScroll: true });
+      }
+
+      function toggle(){
+        if (root.classList.contains('open')) close(false);
+        else open();
+      }
+
+      function choose(val){
+        native.value = val;
+        syncFromNative();
+        // This change should trigger the existing filter listeners.
+        native.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      // Initial paint
+      syncFromNative();
+
+      // Native changes (e.g., from other code paths)
+      native.addEventListener("change", syncFromNative);
+
+      // Click / pointer
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggle();
+      });
+
+      if (label){
+        label.style.cursor = "pointer";
+        label.addEventListener("click", () => btn.click());
+      }
+
+      options.forEach((opt, idx) => {
+        opt.addEventListener("click", (e) => {
+          e.preventDefault();
+          choose(opt.dataset.value ?? "");
+          close(true);
+        });
+        opt.addEventListener("mousemove", () => {
+          if (root.classList.contains('open')) setActive(idx, false);
+        });
+      });
+
+      // Keyboard: button opens
+      btn.addEventListener("keydown", (e) => {
+        const k = e.key;
+        if (k === "ArrowDown" || k === "Enter" || k === " "){
+          e.preventDefault();
+          open();
+        } else if (k === "ArrowUp"){
+          e.preventDefault();
+          open();
+          setActive(activeIndex - 1, true);
+        }
+      });
+
+      // Keyboard: menu navigation
+      menu.addEventListener("keydown", (e) => {
+        const k = e.key;
+
+        if (k === "Escape"){
+          e.preventDefault();
+          close(true);
+          return;
+        }
+        if (k === "ArrowDown"){
+          e.preventDefault();
+          setActive(activeIndex + 1, true);
+          return;
+        }
+        if (k === "ArrowUp"){
+          e.preventDefault();
+          setActive(activeIndex - 1, true);
+          return;
+        }
+        if (k === "Home"){
+          e.preventDefault();
+          setActive(0, true);
+          return;
+        }
+        if (k === "End"){
+          e.preventDefault();
+          setActive(options.length - 1, true);
+          return;
+        }
+        if (k === "Enter" || k === " "){
+          e.preventDefault();
+          const opt = options[activeIndex];
+          choose(opt.dataset.value ?? "");
+          close(true);
+          return;
+        }
+
+        // Typeahead for numeric ages (e.g., "1" then "0" -> 10)
+        if (/^\d$/.test(k)){
+          typeBuf += k;
+          if (typeT) clearTimeout(typeT);
+          typeT = setTimeout(() => { typeBuf = ""; }, 650);
+
+          const needle = typeBuf;
+          const idx = options.findIndex(o => (o.dataset.value ?? "") === needle);
+          if (idx >= 0){
+            setActive(idx, true);
+          } else {
+            // fallback: first option whose label starts with the buffer
+            const idx2 = options.findIndex(o => (o.textContent || "").trim().startsWith(needle));
+            if (idx2 >= 0) setActive(idx2, true);
+          }
+        }
+      });
+
+      // Outside click closes
+      document.addEventListener("mousedown", (e) => {
+        if (!root.classList.contains('open')) return;
+        if (root.contains(e.target)) return;
+        close(false);
+      });
+
+      // Resize closes to avoid awkward positioning
+      window.addEventListener("resize", () => close(false));
+    }
 
     function safeStr(x){ return (x ?? "").toString().trim(); }
 
@@ -1000,6 +1350,45 @@
       return locs.some(l => safeStr(l.city).toLowerCase() === "virtual");
     }
 
+
+    // Age parsing: supports "13–17", "13-17", "12+", "All ages"
+    function parseAgeSpec(spec){
+      const s0 = safeStr(spec);
+      if (!s0) return [];
+      const s = s0.toLowerCase();
+
+      // Common non-numeric phrases used in this dataset
+      if (s.includes("all ages") || s.includes("any age")) return [[0, 17]];
+      if (s.includes("child") && s.includes("adolescent")) return [[0, 17]];
+
+      // Normalize dash characters and whitespace
+      const norm = s.replace(/[–—−]/g, "-").replace(/\s+/g, " ").trim();
+
+      // "12+", "12 +", "12 and up", "12 yrs and up"
+      const plus = norm.match(/(\d+)\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up)/);
+      if (plus) return [[Number(plus[1]), 17]];
+
+      // "12-17"
+      const range = norm.match(/(\d+)\s*-\s*(\d+)/);
+      if (range) return [[Number(range[1]), Number(range[2])]];
+
+      // "12 to 17"
+      const to = norm.match(/(\d+)\s*(?:to|through|thru)\s*(\d+)/);
+      if (to) return [[Number(to[1]), Number(to[2])]];
+
+      // Fallback: first two numbers found
+      const nums = (norm.match(/\d+/g) || []).map(n => Number(n)).filter(n => Number.isFinite(n));
+      if (nums.length >= 2) return [[Math.min(nums[0], nums[1]), Math.max(nums[0], nums[1])]];
+      if (nums.length === 1) return [[nums[0], nums[0]]];
+      return [];
+    }
+
+    function programServesAge(p, age){
+      const ranges = parseAgeSpec(p.ages_served);
+      if (!ranges.length) return false; // Unknown ages_served -> exclude when age filter is used
+      return ranges.some(([min, max]) => age >= min && age <= max);
+    }
+
     function buildLocationOptions(list){
       const set = new Set();
       list.forEach(p => {
@@ -1015,6 +1404,7 @@
     function matchesFilters(p){
       const q = safeStr(els.q.value).toLowerCase();
       const loc = safeStr(els.loc.value).toLowerCase();
+      const ageVal = safeStr(els.age.value);
       const care = safeStr(els.care.value).toLowerCase();
       const onlyVirtual = els.onlyVirtual.checked;
 
@@ -1034,6 +1424,11 @@
 
       if (care){
         if (safeStr(p.level_of_care).toLowerCase() !== care) return false;
+      }
+
+      if (ageVal){
+        const age = Number(ageVal);
+        if (!Number.isFinite(age) || !programServesAge(p, age)) return false;
       }
 
       if (onlyVirtual && !hasVirtual(p)) return false;
@@ -1285,6 +1680,7 @@
       ["input","change"].forEach(ev => {
         on(els.q, ev, scheduleRender);
         on(els.loc, ev, scheduleRender);
+        on(els.age, ev, scheduleRender);
         on(els.care, ev, scheduleRender);
 
         on(els.onlyVirtual, ev, () => { scheduleRender(); syncTopToggles(); });
@@ -1310,6 +1706,8 @@
       on(els.reset, "click", () => {
         els.q.value = "";
         els.loc.value = "";
+        els.age.value = "";
+        if (window.__ageDropdownSync) window.__ageDropdownSync();
         els.care.value = "";
         els.onlyVirtual.checked = false;
         els.showCrisis.checked = false;
@@ -1321,6 +1719,8 @@
       on(els.viewAll, "click", () => {
         els.q.value = "";
         els.loc.value = "";
+        els.age.value = "";
+        if (window.__ageDropdownSync) window.__ageDropdownSync();
         els.care.value = "";
         els.onlyVirtual.checked = false;
         // Keep crisis off by default
@@ -1388,6 +1788,7 @@
       }
     }
 
+    initAgeDropdown();
     bind();
     loadPrograms();
   </script>
