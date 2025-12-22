@@ -987,12 +987,25 @@
           </div>
         </div>
 
-        <div class="input-group">
-          <label for="loc">Location</label>
-          <select id="loc">
-            <option value="">Any</option>
-          </select>
-        </div>
+        
+<div class="input-group">
+  <label class="dd-label">Location</label>
+  <div class="dropdown" data-dd="loc">
+    <button type="button" class="dd-btn" id="locBtn" aria-haspopup="listbox" aria-controls="locMenu" aria-expanded="false">
+      <span class="dd-value" id="locBtnValue">Any</span>
+      <span class="dd-icon" aria-hidden="true">▾</span>
+    </button>
+
+    <div class="dd-menu" id="locMenu" role="listbox" tabindex="-1" aria-labelledby="locBtn">
+      <!-- options are built from the hidden native select -->
+    </div>
+
+    <!-- Hidden native select kept for filtering logic -->
+    <select id="loc" class="dd-native" aria-hidden="true" tabindex="-1">
+      <option value="">Any</option>
+    </select>
+  </div>
+</div>
 
         <div class="input-group">
           <label class="dd-label">Age</label>
@@ -1049,16 +1062,30 @@
           </div>
         </div>
 
-        <div class="input-group">
-          <label for="care">Level of care</label>
-          <select id="care">
-            <option value="">Any</option>
-            <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
-            <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
-            <option value="Outpatient">Outpatient</option>
-            <option value="Navigation">Navigation</option>
-          </select>
-        </div>
+        
+<div class="input-group">
+  <label class="dd-label">Level of care</label>
+  <div class="dropdown" data-dd="care">
+    <button type="button" class="dd-btn" id="careBtn" aria-haspopup="listbox" aria-controls="careMenu" aria-expanded="false">
+      <span class="dd-value" id="careBtnValue">Any</span>
+      <span class="dd-icon" aria-hidden="true">▾</span>
+    </button>
+
+    <div class="dd-menu" id="careMenu" role="listbox" tabindex="-1" aria-labelledby="careBtn">
+      <!-- options are built from the hidden native select -->
+    </div>
+
+    <!-- Hidden native select kept for filtering logic -->
+    <select id="care" class="dd-native" aria-hidden="true" tabindex="-1">
+    <option value="">Any</option>
+    <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
+    <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
+    <option value="Outpatient">Outpatient</option>
+    <option value="Navigation">Navigation</option>
+
+    </select>
+  </div>
+</div>
       </div>
 
       <div class="search-actions">
@@ -1142,181 +1169,228 @@
     };
 
 
-    // Custom dropdown for Age (keeps native <select id="age"> for filtering logic)
-    function initAgeDropdown(){
-      const root = document.querySelector('.dropdown[data-dd="age"]');
-      if (!root) return;
+    
+// ---------- Custom dropdowns (Age, Location, Level of care) ----------
+// Replace OS-styled <select> popovers with a consistent, bright dropdown.
+// The native <select> stays hidden in the DOM so existing filtering logic works unchanged.
+window.__ddSync = window.__ddSync || {};
 
-      const btn = root.querySelector('#ageBtn');
-      const valueEl = root.querySelector('#ageBtnValue');
-      const menu = root.querySelector('#ageMenu');
-      const native = root.querySelector('#age'); // hidden select
-      const label = root.closest('.input-group') ? root.closest('.input-group').querySelector('.dd-label') : null;
+function initDropdownFromNative(ddKey, { nativeId, btnId, valueId, menuId, placeholderText }){
+  const root = document.querySelector(`.dropdown[data-dd="${ddKey}"]`);
+  if (!root) return;
 
-      const options = Array.from(menu.querySelectorAll('.dd-option'));
-      let activeIndex = 0;
-      let typeBuf = "";
-      let typeT = null;
+  const btn = document.getElementById(btnId);
+  const valueEl = document.getElementById(valueId);
+  const menu = document.getElementById(menuId);
+  const native = document.getElementById(nativeId);
+  const label = root.closest('.input-group') ? root.closest('.input-group').querySelector('.dd-label') : null;
 
-      function setActive(i, scroll){
-        activeIndex = Math.max(0, Math.min(options.length - 1, i));
-        options.forEach((o, idx) => o.classList.toggle('is-active', idx === activeIndex));
-        if (scroll) options[activeIndex].scrollIntoView({ block: "nearest" });
-      }
+  let activeIndex = 0;
+  let typeBuf = "";
+  let typeT = null;
 
-      function syncFromNative(){
-        const val = native.value || "";
-        valueEl.textContent = (val === "") ? "Any age" : String(val);
-        options.forEach(o => {
-          const v = (o.dataset.value ?? "");
-          const isSel = v === String(val);
-          o.classList.toggle('is-selected', isSel);
-          o.setAttribute('aria-selected', isSel ? "true" : "false");
-        });
-      }
+  const getOptions = () => Array.from(menu.querySelectorAll('.dd-option'));
 
-      // Expose a lightweight sync hook for reset/view-all without triggering extra renders
-      window.__ageDropdownSync = syncFromNative;
+  function rebuildMenu(){
+    menu.innerHTML = "";
+    Array.from(native.options).forEach((opt) => {
+      const d = document.createElement("div");
+      d.className = "dd-option";
+      d.setAttribute("role", "option");
+      d.setAttribute("aria-selected", "false");
+      d.dataset.value = opt.value ?? "";
 
-      function open(){
-        if (root.classList.contains('open')) return;
-        root.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
+      const t = document.createElement("span");
+      t.textContent = opt.textContent ?? "";
 
-        // active option = selected option
-        const val = native.value || "";
-        let idx = options.findIndex(o => (o.dataset.value ?? "") === String(val));
-        if (idx < 0) idx = 0;
-        setActive(idx, true);
+      const check = document.createElement("span");
+      check.className = "dd-check";
+      check.setAttribute("aria-hidden", "true");
+      check.textContent = "✓";
 
-        menu.focus({ preventScroll: true });
-      }
+      d.appendChild(t);
+      d.appendChild(check);
+      menu.appendChild(d);
+    });
+  }
 
-      function close(focusBtn){
-        if (!root.classList.contains('open')) return;
-        root.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-        if (focusBtn) btn.focus({ preventScroll: true });
-      }
+  function setActive(i, scroll){
+    const opts = getOptions();
+    if (!opts.length) return;
+    activeIndex = Math.max(0, Math.min(opts.length - 1, i));
+    opts.forEach((o, idx) => o.classList.toggle('is-active', idx === activeIndex));
+    if (scroll) opts[activeIndex].scrollIntoView({ block: "nearest" });
+  }
 
-      function toggle(){
-        if (root.classList.contains('open')) close(false);
-        else open();
-      }
+  function syncFromNative({ rebuild = false } = {}){
+    if (rebuild) rebuildMenu();
 
-      function choose(val){
-        native.value = val;
-        syncFromNative();
-        // This change should trigger the existing filter listeners.
-        native.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+    const opts = getOptions();
+    const val = native.value || "";
+    const selOpt = (native.selectedOptions && native.selectedOptions[0]) ? native.selectedOptions[0] : null;
 
-      // Initial paint
-      syncFromNative();
+    valueEl.textContent = (val === "")
+      ? placeholderText
+      : (selOpt ? (selOpt.textContent || selOpt.value || val) : val);
 
-      // Native changes (e.g., from other code paths)
-      native.addEventListener("change", syncFromNative);
+    opts.forEach((o) => {
+      const v = (o.dataset.value ?? "");
+      const isSel = v === String(val);
+      o.classList.toggle('is-selected', isSel);
+      o.setAttribute('aria-selected', isSel ? "true" : "false");
+    });
+  }
 
-      // Click / pointer
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        toggle();
-      });
+  function open(){
+    if (root.classList.contains('open')) return;
+    root.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
 
-      if (label){
-        label.style.cursor = "pointer";
-        label.addEventListener("click", () => btn.click());
-      }
+    const val = native.value || "";
+    const opts = getOptions();
+    let idx = opts.findIndex(o => (o.dataset.value ?? "") === String(val));
+    if (idx < 0) idx = 0;
+    setActive(idx, true);
 
-      options.forEach((opt, idx) => {
-        opt.addEventListener("click", (e) => {
-          e.preventDefault();
-          choose(opt.dataset.value ?? "");
-          close(true);
-        });
-        opt.addEventListener("mousemove", () => {
-          if (root.classList.contains('open')) setActive(idx, false);
-        });
-      });
+    menu.focus({ preventScroll: true });
+  }
 
-      // Keyboard: button opens
-      btn.addEventListener("keydown", (e) => {
-        const k = e.key;
-        if (k === "ArrowDown" || k === "Enter" || k === " "){
-          e.preventDefault();
-          open();
-        } else if (k === "ArrowUp"){
-          e.preventDefault();
-          open();
-          setActive(activeIndex - 1, true);
-        }
-      });
+  function close(focusBtn){
+    if (!root.classList.contains('open')) return;
+    root.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) btn.focus({ preventScroll: true });
+  }
 
-      // Keyboard: menu navigation
-      menu.addEventListener("keydown", (e) => {
-        const k = e.key;
+  function toggle(){
+    if (root.classList.contains('open')) close(false);
+    else open();
+  }
 
-        if (k === "Escape"){
-          e.preventDefault();
-          close(true);
-          return;
-        }
-        if (k === "ArrowDown"){
-          e.preventDefault();
-          setActive(activeIndex + 1, true);
-          return;
-        }
-        if (k === "ArrowUp"){
-          e.preventDefault();
-          setActive(activeIndex - 1, true);
-          return;
-        }
-        if (k === "Home"){
-          e.preventDefault();
-          setActive(0, true);
-          return;
-        }
-        if (k === "End"){
-          e.preventDefault();
-          setActive(options.length - 1, true);
-          return;
-        }
-        if (k === "Enter" || k === " "){
-          e.preventDefault();
-          const opt = options[activeIndex];
-          choose(opt.dataset.value ?? "");
-          close(true);
-          return;
-        }
+  function choose(val){
+    native.value = val;
+    syncFromNative();
+    native.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 
-        // Typeahead for numeric ages (e.g., "1" then "0" -> 10)
-        if (/^\d$/.test(k)){
-          typeBuf += k;
-          if (typeT) clearTimeout(typeT);
-          typeT = setTimeout(() => { typeBuf = ""; }, 650);
+  // Public sync hook (used after dynamic option changes + reset/view all)
+  window.__ddSync[ddKey] = (rebuild = false) => syncFromNative({ rebuild });
 
-          const needle = typeBuf;
-          const idx = options.findIndex(o => (o.dataset.value ?? "") === needle);
-          if (idx >= 0){
-            setActive(idx, true);
-          } else {
-            // fallback: first option whose label starts with the buffer
-            const idx2 = options.findIndex(o => (o.textContent || "").trim().startsWith(needle));
-            if (idx2 >= 0) setActive(idx2, true);
-          }
-        }
-      });
+  // Initial paint (build menu from the native <select>)
+  syncFromNative({ rebuild: true });
 
-      // Outside click closes
-      document.addEventListener("mousedown", (e) => {
-        if (!root.classList.contains('open')) return;
-        if (root.contains(e.target)) return;
-        close(false);
-      });
+  // Native changes (e.g., reset)
+  native.addEventListener("change", () => syncFromNative());
 
-      // Resize closes to avoid awkward positioning
-      window.addEventListener("resize", () => close(false));
+  // Button click
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggle();
+  });
+
+  // Label click
+  if (label){
+    label.style.cursor = "pointer";
+    label.addEventListener("click", () => btn.click());
+  }
+
+  // Menu click (delegated) — supports rebuilds
+  menu.addEventListener("click", (e) => {
+    const opt = e.target.closest(".dd-option");
+    if (!opt) return;
+    choose(opt.dataset.value ?? "");
+    close(true);
+  });
+
+  // Hover sets active
+  menu.addEventListener("mousemove", (e) => {
+    if (!root.classList.contains('open')) return;
+    const opt = e.target.closest(".dd-option");
+    if (!opt) return;
+    const opts = getOptions();
+    const idx = opts.indexOf(opt);
+    if (idx >= 0) setActive(idx, false);
+  });
+
+  // Keyboard: button opens
+  btn.addEventListener("keydown", (e) => {
+    const k = e.key;
+    if (k === "ArrowDown" || k === "Enter" || k === " "){
+      e.preventDefault();
+      open();
+    } else if (k === "ArrowUp"){
+      e.preventDefault();
+      open();
+      setActive(activeIndex - 1, true);
     }
+  });
+
+  // Keyboard: menu navigation + typeahead
+  menu.addEventListener("keydown", (e) => {
+    const k = e.key;
+    const opts = getOptions();
+
+    if (k === "Escape"){
+      e.preventDefault();
+      close(true);
+      return;
+    }
+    if (k === "ArrowDown"){
+      e.preventDefault();
+      setActive(activeIndex + 1, true);
+      return;
+    }
+    if (k === "ArrowUp"){
+      e.preventDefault();
+      setActive(activeIndex - 1, true);
+      return;
+    }
+    if (k === "Home"){
+      e.preventDefault();
+      setActive(0, true);
+      return;
+    }
+    if (k === "End"){
+      e.preventDefault();
+      setActive(opts.length - 1, true);
+      return;
+    }
+    if (k === "Enter" || k === " "){
+      e.preventDefault();
+      const opt = opts[activeIndex];
+      if (opt) choose(opt.dataset.value ?? "");
+      close(true);
+      return;
+    }
+
+    // Typeahead (letters/digits): "pla" -> Plano, "io" -> IOP, "1" "0" -> 10
+    if (k.length === 1 && /[a-zA-Z0-9]/.test(k)){
+      typeBuf += k;
+      if (typeT) clearTimeout(typeT);
+      typeT = setTimeout(() => { typeBuf = ""; }, 650);
+
+      const needle = typeBuf.toLowerCase();
+      const idx = opts.findIndex(o => (o.textContent || "").trim().toLowerCase().startsWith(needle));
+      if (idx >= 0) setActive(idx, true);
+    }
+  });
+
+  // Outside click closes
+  document.addEventListener("mousedown", (e) => {
+    if (!root.classList.contains('open')) return;
+    if (root.contains(e.target)) return;
+    close(false);
+  });
+
+  // Resize closes
+  window.addEventListener("resize", () => close(false));
+}
+
+function initDropdowns(){
+  initDropdownFromNative("loc", { nativeId: "loc", btnId: "locBtn", valueId: "locBtnValue", menuId: "locMenu", placeholderText: "Any" });
+  initDropdownFromNative("age", { nativeId: "age", btnId: "ageBtn", valueId: "ageBtnValue", menuId: "ageMenu", placeholderText: "Any age" });
+  initDropdownFromNative("care", { nativeId: "care", btnId: "careBtn", valueId: "careBtnValue", menuId: "careMenu", placeholderText: "Any" });
+}
 
     function safeStr(x){ return (x ?? "").toString().trim(); }
 
@@ -1399,6 +1473,7 @@
       });
       const cities = Array.from(set).sort((a,b)=>a.localeCompare(b));
       els.loc.innerHTML = '<option value="">Any</option>' + cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      if (window.__ddSync && window.__ddSync.loc) window.__ddSync.loc(true);
     }
 
     function matchesFilters(p){
@@ -1707,7 +1782,12 @@
         els.q.value = "";
         els.loc.value = "";
         els.age.value = "";
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
+
+if (window.__ddSync){
+  if (window.__ddSync.loc) window.__ddSync.loc();
+  if (window.__ddSync.age) window.__ddSync.age();
+  if (window.__ddSync.care) window.__ddSync.care();
+}
         els.care.value = "";
         els.onlyVirtual.checked = false;
         els.showCrisis.checked = false;
@@ -1720,7 +1800,12 @@
         els.q.value = "";
         els.loc.value = "";
         els.age.value = "";
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
+
+if (window.__ddSync){
+  if (window.__ddSync.loc) window.__ddSync.loc();
+  if (window.__ddSync.age) window.__ddSync.age();
+  if (window.__ddSync.care) window.__ddSync.care();
+}
         els.care.value = "";
         els.onlyVirtual.checked = false;
         // Keep crisis off by default
@@ -1788,7 +1873,7 @@
       }
     }
 
-    initAgeDropdown();
+    initDropdowns();
     bind();
     loadPrograms();
   </script>
