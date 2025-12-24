@@ -5,953 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Texas Youth Mental Health Resource Finder</title>
   <meta name="description" content="A neutral directory of adolescent and youth mental health programs across the Dallas-Fort Worth Metroplex. Filter by level of care, location, and needs." />
-
-  <style>
-    :root{
-      color-scheme: light;
-      /* Bright, clean “premium” palette (Elite layout, light theme) */
-      --bg0:#f6f8ff;
-      --bg1:#f2fbff;
-      --card:#ffffffcc;
-      --cardSolid:#ffffff;
-      --stroke: rgba(15,23,42,.10);
-      --stroke2: rgba(15,23,42,.08);
-
-      --ink:#0f172a;
-      --muted:#475569;
-      --muted2:#64748b;
-
-      --a:#4fd1c5; /* mint */
-      --b:#7aa7ff; /* soft blue */
-      --c:#c4b5fd; /* lavender */
-
-      --danger:#ef4444;
-      --ok:#22c55e;
-
-      --shadow-sm: 0 6px 18px rgba(15,23,42,.08);
-      --shadow-md: 0 14px 38px rgba(15,23,42,.12);
-      --shadow-lg: 0 26px 70px rgba(15,23,42,.16);
-
-      --radius: 18px;
-      --radius-lg: 26px;
-
-      --focus: 0 0 0 4px rgba(122,167,255,.28);
-      --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color: var(--ink);
-      background: var(--bg0);
-      overflow-x:hidden;
-      line-height:1.6;
-    }
-
-    /* Animated gradient background (Elite-style, bright) */
-    .bg-gradient{
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background:
-        radial-gradient(circle at 18% 18%, rgba(79,209,197,0.22), transparent 52%),
-        radial-gradient(circle at 82% 55%, rgba(122,167,255,0.18), transparent 54%),
-        radial-gradient(circle at 38% 86%, rgba(196,181,253,0.16), transparent 56%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
-      animation: gradientShift 18s ease-in-out infinite;
-    }
-    @keyframes gradientShift{
-      0%,100%{ transform: scale(1) rotate(0deg); filter: saturate(1); opacity: 1; }
-      50%{ transform: scale(1.08) rotate(3deg); filter: saturate(1.05); opacity: .92; }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
-      .bg-gradient{ animation:none !important; }
-    }
-
-    a{color:inherit}
-    .container{
-      position: relative;
-      z-index: 1;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 18px;
-    }
-
-    /* Optional: sticky crisis banner (kept subtle + bright) */
-    .crisis-banner{
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: linear-gradient(135deg, rgba(239,68,68,.92), rgba(190,18,60,.92));
-      color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,.20);
-      box-shadow: 0 10px 30px rgba(239,68,68,.18);
-    }
-    .crisis-banner .inner{
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 10px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 12px;
-      flex-wrap:wrap;
-      font-weight: 700;
-      letter-spacing: -.01em;
-      text-align:center;
-      font-size: 13px;
-    }
-    .crisis-banner a{
-      color:#fff;
-      text-decoration:none;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.20);
-      transition: var(--transition);
-      font-weight: 800;
-    }
-    .crisis-banner a:hover{ transform: translateY(-1px); background: rgba(255,255,255,.26); }
-
-    header{
-      padding: 26px 0 18px;
-    }
-
-    .header-content{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 18px;
-      flex-wrap:wrap;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-    }
-    .mark{
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(79,209,197,.95), rgba(196,181,253,.95));
-      box-shadow: 0 16px 46px rgba(79,209,197,.26);
-      position:relative;
-      flex: 0 0 auto;
-    }
-    .mark:after{
-      content:"";
-      position:absolute;
-      inset: 11px 12px 12px 11px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.75);
-      transform: rotate(10deg);
-    }
-
-    .brand .kicker{
-      font-size: 13px;
-      color: var(--muted2);
-      font-weight: 800;
-      letter-spacing: .02em;
-      margin:0;
-    }
-    .brand .title{
-      font-size: 20px;
-      font-weight: 950;
-      letter-spacing: -.03em;
-      margin:0;
-      line-height: 1.15;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.74);
-      box-shadow: var(--shadow-sm);
-      color: var(--muted);
-      font-size: 13px;
-      white-space:nowrap;
-    }
-    .pill .dot{
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--a), var(--b));
-      box-shadow: 0 0 0 4px rgba(79,209,197,.18);
-    }
-
-    /* Hero */
-    .hero{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-      align-items: stretch;
-      margin-top: 16px;
-    }
-    @media (max-width: 980px){ .hero{ grid-template-columns: 1fr; } }
-
-    .hero-copy{
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke2);
-      background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,255,255,.52));
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-md);
-      overflow:hidden;
-      padding: 22px;
-      position: relative;
-    }
-
-    h1{
-      margin: 0;
-      font-size: clamp(26px, 3.2vw, 40px);
-      line-height: 1.08;
-      letter-spacing: -.03em;
-    }
-    .sub{
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 15px;
-      max-width: 70ch;
-    }
-
-    .hero-bullets{
-      margin-top: 14px;
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-    }
-    .hero-bullets .chip{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.78);
-      padding: 10px 12px;
-      font-size: 13px;
-      color: var(--muted);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-      user-select:none;
-    }
-    .chip input{ accent-color: #5b8cff; }
-
-    /* Hero visual (floating cards like Elite, but bright) */
-    .hero-visual{
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke2);
-      background: linear-gradient(135deg, rgba(79,209,197,.14), rgba(196,181,253,.14));
-      box-shadow: var(--shadow-md);
-      position:relative;
-      overflow:hidden;
-      min-height: 260px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .floating-card{
-      position:absolute;
-      background: rgba(255,255,255,.80);     /* UPDATED: softer layering */
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 14px 14px;
-      box-shadow: var(--shadow-lg);
-      animation: float 6.5s ease-in-out infinite;
-      backdrop-filter: blur(14px);           /* UPDATED: smoother overlap */
-      width: min(220px, 72%);
-    }
-    .floating-card strong{
-      display:block;
-      font-size: 13px;
-      letter-spacing: -.01em;
-      margin-bottom: 4px;
-    }
-    .floating-card span{
-      display:block;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-
-    @keyframes float{
-      0%,100%{ transform: translateY(0) rotate(0deg); }
-      50%{ transform: translateY(-16px) rotate(1.5deg); }
-    }
-
-    /* UPDATED: explicit z-index + reposition to reduce blocking */
-    .floating-card:nth-child(1){
-      top: 14%;
-      left: 10%;
-      z-index: 3;
-      animation-delay: 0s;
-    }
-    .floating-card:nth-child(2){
-      top: 38%;
-      right: 8%;
-      z-index: 1;              /* back */
-      transform: scale(.98);   /* depth */
-      opacity: .92;
-      animation-delay: 1.2s;
-    }
-    .floating-card:nth-child(3){
-      bottom: 10%;
-      left: 14%;
-      z-index: 2;              /* middle */
-      animation-delay: 2.2s;
-    }
-
-    /* Search section (Elite layout: big “premium” panel) */
-    .search-section{
-      margin: -34px 0 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke2);
-      background: rgba(255,255,255,.80);
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(16px);
-      padding: 18px;
-      position: relative;
-      z-index: 10;
-    }
-
-    .search-header{
-      text-align:center;
-      margin: 4px 0 16px;
-    }
-    .search-header h3{
-      margin:0;
-      font-size: 18px;
-      font-weight: 950;
-      letter-spacing: -.02em;
-    }
-    .search-header p{
-      margin: 6px auto 0;
-      color: var(--muted);
-      font-size: 14px;
-      max-width: 70ch;
-    }
-
-    .search-grid{
-      display:grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 12px;
-      align-items:end;
-    }
-    @media (max-width: 980px){ .search-grid{ grid-template-columns: 1fr; } }
-
-    .input-group label{
-      display:block;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--muted2);
-      margin: 0 0 8px 2px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .input-wrapper{ position:relative; }
-
-    .input-icon{
-      position:absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: rgba(100,116,139,.9);
-      pointer-events:none;
-      font-size: 14px;
-    }
-
-    input[type="search"], select{
-      width: 100%;
-      padding: 12px 12px 12px 40px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.92);
-      color: var(--ink);
-      outline: none;
-      transition: var(--transition);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-    }
-    select{ padding-left: 12px; }
-    /* Custom dropdown (used for Age) to avoid OS-styled dark popovers */
-    .dropdown{ position:relative; width:100%; }
-
-    .dd-btn{
-      width:100%;
-      padding: 12px 44px 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.92);
-      color: var(--ink);
-      outline: none;
-      transition: var(--transition);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      cursor:pointer;
-      text-align:left;
-      line-height: 1.1;
-    }
-    .dd-btn:hover{
-      box-shadow: 0 14px 28px rgba(15,23,42,.08);
-      transform: translateY(-1px);
-    }
-    .dd-btn:focus-visible{
-      border-color: rgba(122,167,255,.55);
-      box-shadow: var(--focus), 0 16px 34px rgba(15,23,42,.10);
-    }
-
-    .dd-icon{
-      opacity:.75;
-      transition: transform .18s ease, opacity .18s ease;
-      font-size: 14px;
-      transform-origin: 50% 55%;
-    }
-    .dropdown.open .dd-icon{ transform: rotate(180deg); opacity:.95; }
-
-    .dd-menu{
-      position:absolute;
-      left:0; right:0;
-      top: calc(100% + 8px);
-      padding: 6px;
-      border-radius: 14px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.98);
-      box-shadow: 0 22px 60px rgba(15,23,42,.20);
-      backdrop-filter: blur(10px);
-      z-index: 50;
-      max-height: 320px;
-      overflow:auto;
-
-      opacity: 0;
-      transform: translateY(-6px) scale(.985);
-      pointer-events: none;
-      visibility: hidden;
-      transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
-    }
-    .dropdown.open .dd-menu{
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-      visibility: visible;
-      transition: opacity .18s ease, transform .18s ease;
-    }
-
-    .dd-option{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 10px 10px;
-      border-radius: 12px;
-      cursor:pointer;
-      user-select:none;
-      color: var(--ink);
-    }
-    .dd-option:hover,
-    .dd-option.is-active{
-      background: rgba(122,167,255,.14);
-    }
-    .dd-option.is-selected{
-      background: rgba(45,212,191,.14);
-    }
-    .dd-check{
-      font-weight: 900;
-      opacity: 0;
-      transform: translateX(-2px);
-      transition: opacity .12s ease, transform .12s ease;
-    }
-    .dd-option.is-selected .dd-check{
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    /* keep the native select for logic, but remove it from layout */
-    .dd-native{
-      position:absolute;
-      width:1px; height:1px;
-      opacity:0;
-      pointer-events:none;
-    }
-
-
-    /* Make the dropdown menu align with the bright theme */
-    select{ color-scheme: light; }
-    .input-group select{
-      -webkit-appearance: none;
-      appearance: none;
-      padding-right: 44px;
-    }
-    select option{
-      background: #ffffff;
-      color: var(--ink);
-    }
-
-    input[type="search"]:focus, select:focus{
-      border-color: rgba(122,167,255,.55);
-      box-shadow: var(--focus), 0 16px 34px rgba(15,23,42,.10);
-    }
-
-    .search-actions{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      gap: 12px;
-      flex-wrap:wrap;
-      padding-top: 14px;
-      margin-top: 14px;
-      border-top: 1px solid rgba(15,23,42,.06);
-    }
-
-    .toggles{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .toggle-chip{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.76);
-      padding: 10px 12px;
-      font-size: 13px;
-      color: var(--muted);
-      cursor:pointer;
-      user-select:none;
-      transition: var(--transition);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-    }
-    .toggle-chip:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(15,23,42,.10);
-    }
-    .toggle-chip input[type="checkbox"]{
-      width: 18px;
-      height: 18px;
-      cursor:pointer;
-      accent-color: var(--a);
-    }
-
-    .btns{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    button{
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      padding: 10px 12px;
-      cursor:pointer;
-      font-weight: 900;
-      letter-spacing: -.01em;
-      background: rgba(255,255,255,.82);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-      transition: var(--transition);
-      color: var(--ink);
-    }
-    button:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(15,23,42,.10);
-    }
-    button:focus{ outline:none; box-shadow: var(--focus); }
-
-    
-    .header-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    a.btnlike{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 8px;
-      text-decoration:none;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      padding: 10px 12px;
-      cursor:pointer;
-      font-weight: 900;
-      letter-spacing: -.01em;
-      background: rgba(255,255,255,.82);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-      transition: var(--transition);
-      color: var(--ink);
-      white-space: nowrap;
-    }
-    a.btnlike:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(15,23,42,.10);
-    }
-    a.btnlike:active{
-      transform: translateY(0px);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-    }
-    a.btnlike:focus{
-      outline:none;
-      box-shadow: var(--focus);
-    }
-
-.btn-primary{
-      background: linear-gradient(135deg, rgba(79,209,197,.92), rgba(122,167,255,.92));
-      border-color: rgba(255,255,255,.55);
-    }
-
-    /* Results header */
-    .results-header{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      gap: 12px;
-      flex-wrap:wrap;
-      margin: 16px 0 10px;
-      padding: 10px 2px 12px;
-      border-bottom: 1px solid rgba(15,23,42,.08);
-    }
-    .results-info{
-      display:flex;
-      align-items: baseline;
-      gap: 12px;
-      flex-wrap:wrap;
-    }
-    .results-count{
-      font-size: 26px;
-      font-weight: 950;
-      color: rgba(79,209,197,1);
-      letter-spacing: -.02em;
-    }
-    .results-label{
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    /* Sections */
-    .section{
-      margin-top: 12px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(15,23,42,.08);
-      background: rgba(255,255,255,.62);
-      box-shadow: var(--shadow-md);
-      overflow:hidden;
-      backdrop-filter: blur(12px);
-    }
-    .sectionHead{
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(15,23,42,.06);
-    }
-    .sectionHead h2{
-      margin:0;
-      font-size: 13px;
-      color: var(--muted2);
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      font-weight: 950;
-    }
-    .count{
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    /* KEY FIX: Flex-wrap “masonry-ish” grid (no row expansion effect) */
-    .grid{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 14px;
-      padding: 14px 14px 16px;
-      align-items:flex-start;
-    }
-    .grid > .card, .grid > .skeleton{
-      flex: 1 1 calc(33.333% - 14px);
-      max-width: calc(33.333% - 14px);
-      align-self:flex-start;
-    }
-    @media (max-width: 980px){
-      .grid > .card, .grid > .skeleton{
-        flex-basis: calc(50% - 14px);
-        max-width: calc(50% - 14px);
-      }
-    }
-    @media (max-width: 640px){
-      .grid > .card, .grid > .skeleton{
-        flex-basis: 100%;
-        max-width: 100%;
-      }
-    }
-
-    /* Two-state card */
-    .card{
-      border-radius: var(--radius);
-      border: 1px solid rgba(15,23,42,.09);
-      background: rgba(255,255,255,.88);
-      box-shadow: var(--shadow-sm);
-      padding: 16px;
-      position: relative;
-      overflow:hidden;
-      transform: translateZ(0);
-      transition: var(--transition);
-      animation: rise .35s ease both;
-
-      /* Performance helpers */
-      contain: content;
-      content-visibility: auto;
-      contain-intrinsic-size: 240px;
-    }
-    .card::before{
-      content:"";
-      position:absolute;
-      top:0; left:0; right:0;
-      height: 3px;
-      background: linear-gradient(90deg, rgba(79,209,197,1), rgba(122,167,255,1));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: var(--transition);
-    }
-    .card:hover{
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: rgba(79,209,197,.28);
-    }
-    .card:hover::before{ transform: scaleX(1); }
-    .card:focus-within{ box-shadow: var(--focus), var(--shadow-md); }
-
-    @keyframes rise{
-      from{ opacity:0; transform: translateY(10px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
-
-    .badgeRow{
-      display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-      margin: 0 0 10px;
-    }
-    .badge{
-      font-size: 11px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(241,245,249,.85);
-      color: var(--muted);
-      font-weight: 900;
-      letter-spacing: .02em;
-      white-space:nowrap;
-    }
-    .badge.loc{ background: rgba(122,167,255,.12); border-color: rgba(122,167,255,.22); }
-    .badge.loc2{ background: rgba(79,209,197,.12); border-color: rgba(79,209,197,.22); }
-    .badge.crisis{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.22); color:#7f1d1d; }
-
-    .cardTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .pname{
-      font-weight: 950;
-      letter-spacing: -.02em;
-      margin: 0 0 6px;
-      font-size: 16px;
-      line-height:1.25;
-    }
-    .org{
-      margin:0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height:1.45;
-    }
-
-    .meta{
-      margin-top: 10px;
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 650;
-    }
-
-    .expandBtn{
-      flex: 0 0 auto;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(241,245,249,.80);
-      border-radius: 14px;
-      height: 40px;
-      min-width: 40px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      transition: var(--transition);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-    }
-    .expandBtn:hover{ transform: translateY(-1px); box-shadow: 0 16px 34px rgba(15,23,42,.10); }
-    .expandBtn:focus{ outline:none; box-shadow: var(--focus); }
-
-    .chev{
-      width: 14px;
-      height: 14px;
-      border-right: 2px solid rgba(15,23,42,.55);
-      border-bottom: 2px solid rgba(15,23,42,.55);
-      transform: rotate(45deg);
-      transition: transform .22s ease;
-    }
-    .card[data-open="true"] .chev{ transform: rotate(-135deg); }
-
-    .panel{
-      margin-top: 12px;
-      border-top: 1px dashed rgba(15,23,42,.12);
-      padding-top: 12px;
-      max-height: 0px;
-      opacity: 0;
-      transform: translateY(-6px);
-      overflow:hidden;
-      transition: max-height .24s ease, opacity .18s ease, transform .18s ease;
-      will-change: max-height, opacity, transform;
-      contain: layout paint;
-    }
-    .card[data-open="true"] .panel{
-      max-height: 380px;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .accuracyStrip{
-      margin-top: 10px;
-      border-radius: 16px;
-      border: 1px solid rgba(34,197,94,.22);
-      background: rgba(34,197,94,.06);
-      padding: 10px 12px;
-      color: rgba(15,23,42,.82);
-      font-size: 13px;
-      line-height:1.45;
-      display:none;
-    }
-    .card[data-open="true"] .accuracyStrip{ display:block; }
-
-    .kv{
-      display:grid;
-      grid-template-columns: 130px 1fr;
-      gap: 10px;
-      padding: 9px 0;
-      border-bottom: 1px dashed rgba(15,23,42,.10);
-    }
-    .kv:last-child{ border-bottom:none; }
-    .k{ color: var(--muted2); font-size: 11px; text-transform:uppercase; letter-spacing:.09em; font-weight: 900;}
-    .v{ color: var(--ink); font-size: 13px; line-height:1.45; }
-
-    .actions{
-      margin-top: 12px;
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .linkBtn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      text-decoration:none;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 10px 22px rgba(15,23,42,.06);
-      font-weight: 950;
-      transition: var(--transition);
-    }
-    .linkBtn:hover{ transform: translateY(-1px); box-shadow: 0 16px 34px rgba(15,23,42,.10); }
-    .linkBtn.primary{
-      background: linear-gradient(135deg, rgba(122,167,255,.92), rgba(196,181,253,.92));
-      border-color: rgba(255,255,255,.55);
-    }
-    .linkBtn.danger{
-      background: linear-gradient(135deg, rgba(239,68,68,.16), rgba(239,68,68,.08));
-      border-color: rgba(239,68,68,.22);
-      color:#7f1d1d;
-    }
-
-    .empty{
-      padding: 16px;
-      color: var(--muted);
-      line-height:1.55;
-      font-weight: 650;
-    }
-
-    .warnBox{
-      margin-top: 10px;
-      border: 1px solid rgba(239,68,68,.18);
-      background: rgba(239,68,68,.06);
-      border-radius: 16px;
-      padding: 10px 12px;
-      color:#7f1d1d;
-      font-size: 13px;
-      line-height:1.45;
-      display:none;
-    }
-    .warnBox.show{ display:block; }
-
-    /* Skeleton */
-    .skeleton{
-      border-radius: var(--radius);
-      border: 1px solid rgba(15,23,42,.08);
-      background: rgba(255,255,255,.82);
-      overflow:hidden;
-      position:relative;
-      min-height: 170px;
-      box-shadow: var(--shadow-sm);
-    }
-    .shimmer{
-      position:absolute; inset:0;
-      background: linear-gradient(90deg, rgba(241,245,249,0) 0%, rgba(241,245,249,.85) 50%, rgba(241,245,249,0) 100%);
-      transform: translateX(-100%);
-      animation: shimmer 1.15s ease-in-out infinite;
-    }
-    @keyframes shimmer{
-      0%{ transform: translateX(-100%); }
-      100%{ transform: translateX(100%); }
-    }
-
-    footer{
-      margin: 14px 0 26px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height:1.6;
-      padding: 0 2px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+  <a href="#treatmentSection" class="skip-link">Skip to search results</a>
   <div class="bg-gradient" aria-hidden="true"></div>
 
   <div class="crisis-banner" role="region" aria-label="Crisis information">
     <div class="inner">
       If someone is in immediate danger, call 911.
-      <a href="https://988lifeline.org/" target="_blank" rel="noopener">988 Lifeline</a>
+      <a href="tel:988">988 Lifeline</a>
       <a href="https://www.samhsa.gov/find-help/988" target="_blank" rel="noopener">What is 988?</a>
     </div>
   </div>
@@ -969,12 +33,66 @@
 
         <div class="header-actions">
           <div class="pill" title="Neutral directory principles">
-          <span class="dot" aria-hidden="true"></span>
-          <span>Informational • Not ranked • Verify details</span>
-        </div>
+            <span class="dot" aria-hidden="true"></span>
+            <span>Informational • Not ranked • Verify details</span>
+          </div>
           <a class="btnlike btn-primary" href="submit.html" aria-label="Submit a program for review">Submit a program</a>
         </div>
-</div>
+      </div>
+
+      <!-- Triage Split -->
+      <div class="triage-split">
+        <div class="triage-grid">
+          <div class="triage-card emergency">
+            <div class="triage-icon">🚨</div>
+            <h2>This is an Emergency</h2>
+            <p>Immediate danger, suicidal ideation, or severe crisis</p>
+            <a href="tel:988" class="btn-emergency">Call 988 Now</a>
+            <button class="btn-secondary" id="viewCrisisResources">View All Crisis Resources</button>
+          </div>
+          
+          <div class="triage-card planning">
+            <div class="triage-icon">🗓️</div>
+            <h2>Planning Ahead</h2>
+            <p>Looking for ongoing treatment, assessments, or therapy</p>
+            <button class="btn-primary btn-secondary" id="viewTreatmentOptions">Find Treatment Programs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Strip -->
+      <div class="trust-strip">
+        <div class="trust-grid">
+          <div class="trust-item">
+            <div class="trust-icon">✓</div>
+            <div class="trust-text">
+              <strong><span id="programCount">150+</span> Programs</strong>
+              <span>Verified monthly</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">🔒</div>
+            <div class="trust-text">
+              <strong>Privacy First</strong>
+              <span>No tracking, no data collection</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">⚖️</div>
+            <div class="trust-text">
+              <strong>100% Neutral</strong>
+              <span>No paid placements or rankings</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">📞</div>
+            <div class="trust-text">
+              <strong>Direct Contact</strong>
+              <span>Call programs directly, not us</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="hero">
         <div class="hero-copy">
@@ -1021,105 +139,119 @@
         <p>Neutral directory view. No endorsements. Always confirm details directly with the program.</p>
       </div>
 
-      <div class="search-grid">
-        <div class="input-group">
-          <label for="q">Search</label>
+      <!-- Smart Search -->
+      <div class="search-simple">
+        <div class="input-group-primary">
+          <label for="q">What are you looking for?</label>
           <div class="input-wrapper">
-            <span class="input-icon" aria-hidden="true">⌕</span>
-            <input id="q" type="search" placeholder="Try: Dallas, Plano, PHP, IOP, ‘virtual’…" autocomplete="off" />
+            <span class="input-icon" aria-hidden="true">🔍</span>
+            <input id="q" type="search" placeholder="Try: 'IOP in Plano for 14-year-old' or 'crisis support'" autocomplete="off" />
           </div>
         </div>
+        
+        <button class="btn-smart-search" type="button" id="smartSearchBtn">
+          Find Programs →
+        </button>
+        
+        <button class="btn-advanced" id="showAdvanced" type="button">
+          <span class="icon">⚙️</span>
+          <span>Advanced Filters</span>
+        </button>
+      </div>
 
-        <div class="input-group">
-          <label for="loc">Location</label>
-          <select id="loc">
-            <option value="">Any</option>
-          </select>
-        </div>
+      <!-- Advanced Filters -->
+      <div class="search-advanced" id="advancedFilters" style="display:none">
+        <div class="search-grid">
+          <div class="input-group">
+            <label for="loc">Location</label>
+            <select id="loc">
+              <option value="">Any</option>
+            </select>
+          </div>
 
-        <div class="input-group">
-          <label class="dd-label">Age</label>
-          <div class="dropdown" data-dd="age">
-            <button type="button" class="dd-btn" id="ageBtn" aria-haspopup="listbox" aria-controls="ageMenu" aria-expanded="false">
-              <span class="dd-value" id="ageBtnValue">Any age</span>
-              <span class="dd-icon" aria-hidden="true">▾</span>
-            </button>
+          <div class="input-group">
+            <label class="dd-label">Age</label>
+            <div class="dropdown" data-dd="age">
+              <button type="button" class="dd-btn" id="ageBtn" aria-haspopup="listbox" aria-controls="ageMenu" aria-expanded="false">
+                <span class="dd-value" id="ageBtnValue">Any age</span>
+                <span class="dd-icon" aria-hidden="true">▾</span>
+              </button>
 
-            <div class="dd-menu" id="ageMenu" role="listbox" tabindex="-1" aria-labelledby="ageBtn">
-              <div class="dd-option is-selected" role="option" aria-selected="true" data-value="">Any age<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="0">0<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="1">1<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="2">2<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="3">3<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="4">4<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="5">5<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="6">6<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="7">7<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="8">8<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="9">9<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="10">10<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="11">11<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="12">12<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="13">13<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="14">14<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="15">15<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="16">16<span class="dd-check" aria-hidden="true">✓</span></div>
-              <div class="dd-option" role="option" aria-selected="false" data-value="17">17<span class="dd-check" aria-hidden="true">✓</span></div>
+              <div class="dd-menu" id="ageMenu" role="listbox" tabindex="-1" aria-labelledby="ageBtn">
+                <div class="dd-option is-selected" role="option" aria-selected="true" data-value="">Any age<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="0">0<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="1">1<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="2">2<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="3">3<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="4">4<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="5">5<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="6">6<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="7">7<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="8">8<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="9">9<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="10">10<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="11">11<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="12">12<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="13">13<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="14">14<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="15">15<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="16">16<span class="dd-check" aria-hidden="true">✓</span></div>
+                <div class="dd-option" role="option" aria-selected="false" data-value="17">17<span class="dd-check" aria-hidden="true">✓</span></div>
+              </div>
+
+              <select id="age" class="dd-native" aria-hidden="true" tabindex="-1">
+                <option value="">Any age</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+              </select>
             </div>
+          </div>
 
-            <!-- Hidden native select kept for filtering logic + forms -->
-            <select id="age" class="dd-native" aria-hidden="true" tabindex="-1">
-            <option value="">Any age</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-            <option value="15">15</option>
-            <option value="16">16</option>
-            <option value="17">17</option>
+          <div class="input-group">
+            <label for="care">Level of care</label>
+            <select id="care">
+              <option value="">Any</option>
+              <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
+              <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
+              <option value="Outpatient">Outpatient</option>
+              <option value="Navigation">Navigation</option>
             </select>
           </div>
         </div>
 
-        <div class="input-group">
-          <label for="care">Level of care</label>
-          <select id="care">
-            <option value="">Any</option>
-            <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
-            <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
-            <option value="Outpatient">Outpatient</option>
-            <option value="Navigation">Navigation</option>
-          </select>
-        </div>
-      </div>
+        <div class="search-actions">
+          <div class="toggles">
+            <label class="toggle-chip">
+              <input id="showCrisis" type="checkbox" />
+              <span>Show crisis resources</span>
+            </label>
 
-      <div class="search-actions">
-        <div class="toggles">
-          <label class="toggle-chip">
-            <input id="showCrisis" type="checkbox" />
-            <span>Show crisis resources</span>
-          </label>
+            <label class="toggle-chip">
+              <input id="onlyVirtual" type="checkbox" />
+              <span>Virtual only</span>
+            </label>
+          </div>
 
-          <label class="toggle-chip">
-            <input id="onlyVirtual" type="checkbox" />
-            <span>Virtual only</span>
-          </label>
-        </div>
-
-        <div class="btns">
-          <button id="reset" type="button">Reset</button>
-          <button class="btn-primary" id="viewAll" type="button">View all</button>
+          <div class="btns">
+            <button id="reset" type="button">Reset</button>
+            <button class="btn-primary" id="viewAll" type="button">View all</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1133,12 +265,28 @@
 
     <section class="section" id="treatmentSection">
       <div class="sectionHead">
-        <h2 id="sectionTitle">Treatment & Navigation</h2>
+        <h2 id="sectionTitle">Treatment Programs</h2>
         <div class="count" id="treatmentCount">0 results</div>
       </div>
       <div class="grid" id="treatmentGrid" aria-live="polite"></div>
-      <div class="empty" id="treatmentEmpty" style="display:none;">
-        No matches. Try removing filters, searching by city (e.g., “Plano”), or switching level of care.
+      <div class="empty-state" id="treatmentEmpty" style="display:none;">
+        <div class="empty-icon">🔍</div>
+        <h3>No programs match these filters</h3>
+        <p>Try these search strategies:</p>
+        <ul class="empty-tips">
+          <li><strong>Broaden your search:</strong> Remove age or location filters</li>
+          <li><strong>Try nearby cities:</strong> Many programs serve multiple areas</li>
+          <li><strong>Check virtual options:</strong> Telehealth expands access significantly</li>
+          <li><strong>Consider similar levels:</strong> IOP and PHP often have similar goals</li>
+        </ul>
+        <div class="empty-actions">
+          <button onclick="document.getElementById('loc').value=''; document.getElementById('age').value=''; if(window.__ageDropdownSync) window.__ageDropdownSync(); render();">
+            Clear Location & Age
+          </button>
+          <button onclick="document.getElementById('onlyVirtual').checked=true; render();">
+            Show Virtual Programs
+          </button>
+        </div>
       </div>
     </section>
 
@@ -1147,693 +295,6 @@
     </footer>
   </div>
 
-  <script>
-    // ---------- State ----------
-    let programs = [];
-    let ready = false;
-
-    // Two-state card: keep only one expanded at a time
-    let openId = null;
-
-    const els = {
-      q: document.getElementById("q"),
-      loc: document.getElementById("loc"),
-      age: document.getElementById("age"),
-      care: document.getElementById("care"),
-      showCrisis: document.getElementById("showCrisis"),
-      onlyVirtual: document.getElementById("onlyVirtual"),
-
-      // top chips mirror
-      showCrisisTop: document.getElementById("showCrisisTop"),
-      onlyVirtualTop: document.getElementById("onlyVirtualTop"),
-
-      reset: document.getElementById("reset"),
-      viewAll: document.getElementById("viewAll"),
-
-      treatmentSection: document.getElementById("treatmentSection"),
-
-      treatmentGrid: document.getElementById("treatmentGrid"),
-
-      treatmentCount: document.getElementById("treatmentCount"),
-      totalCount: document.getElementById("totalCount"),
-      resultsLabel: document.getElementById("resultsLabel"),
-      sectionTitle: document.getElementById("sectionTitle"),
-
-      treatmentEmpty: document.getElementById("treatmentEmpty"),
-
-      loadWarn: document.getElementById("loadWarn")
-    };
-
-
-    // Custom dropdown for Age (keeps native <select id="age"> for filtering logic)
-    function initAgeDropdown(){
-      const root = document.querySelector('.dropdown[data-dd="age"]');
-      if (!root) return;
-
-      const btn = root.querySelector('#ageBtn');
-      const valueEl = root.querySelector('#ageBtnValue');
-      const menu = root.querySelector('#ageMenu');
-      const native = root.querySelector('#age'); // hidden select
-      const label = root.closest('.input-group') ? root.closest('.input-group').querySelector('.dd-label') : null;
-
-      const options = Array.from(menu.querySelectorAll('.dd-option'));
-      let activeIndex = 0;
-      let typeBuf = "";
-      let typeT = null;
-
-      function setActive(i, scroll){
-        activeIndex = Math.max(0, Math.min(options.length - 1, i));
-        options.forEach((o, idx) => o.classList.toggle('is-active', idx === activeIndex));
-        if (scroll) options[activeIndex].scrollIntoView({ block: "nearest" });
-      }
-
-      function syncFromNative(){
-        const val = native.value || "";
-        valueEl.textContent = (val === "") ? "Any age" : String(val);
-        options.forEach(o => {
-          const v = (o.dataset.value ?? "");
-          const isSel = v === String(val);
-          o.classList.toggle('is-selected', isSel);
-          o.setAttribute('aria-selected', isSel ? "true" : "false");
-        });
-      }
-
-      // Expose a lightweight sync hook for reset/view-all without triggering extra renders
-      window.__ageDropdownSync = syncFromNative;
-
-      function open(){
-        if (root.classList.contains('open')) return;
-        root.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-
-        // active option = selected option
-        const val = native.value || "";
-        let idx = options.findIndex(o => (o.dataset.value ?? "") === String(val));
-        if (idx < 0) idx = 0;
-        setActive(idx, true);
-
-        menu.focus({ preventScroll: true });
-      }
-
-      function close(focusBtn){
-        if (!root.classList.contains('open')) return;
-        root.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-        if (focusBtn) btn.focus({ preventScroll: true });
-      }
-
-      function toggle(){
-        if (root.classList.contains('open')) close(false);
-        else open();
-      }
-
-      function choose(val){
-        native.value = val;
-        syncFromNative();
-        // This change should trigger the existing filter listeners.
-        native.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-
-      // Initial paint
-      syncFromNative();
-
-      // Native changes (e.g., from other code paths)
-      native.addEventListener("change", syncFromNative);
-
-      // Click / pointer
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        toggle();
-      });
-
-      if (label){
-        label.style.cursor = "pointer";
-        label.addEventListener("click", () => btn.click());
-      }
-
-      options.forEach((opt, idx) => {
-        opt.addEventListener("click", (e) => {
-          e.preventDefault();
-          choose(opt.dataset.value ?? "");
-          close(true);
-        });
-        opt.addEventListener("mousemove", () => {
-          if (root.classList.contains('open')) setActive(idx, false);
-        });
-      });
-
-      // Keyboard: button opens
-      btn.addEventListener("keydown", (e) => {
-        const k = e.key;
-        if (k === "ArrowDown" || k === "Enter" || k === " "){
-          e.preventDefault();
-          open();
-        } else if (k === "ArrowUp"){
-          e.preventDefault();
-          open();
-          setActive(activeIndex - 1, true);
-        }
-      });
-
-      // Keyboard: menu navigation
-      menu.addEventListener("keydown", (e) => {
-        const k = e.key;
-
-        if (k === "Escape"){
-          e.preventDefault();
-          close(true);
-          return;
-        }
-        if (k === "ArrowDown"){
-          e.preventDefault();
-          setActive(activeIndex + 1, true);
-          return;
-        }
-        if (k === "ArrowUp"){
-          e.preventDefault();
-          setActive(activeIndex - 1, true);
-          return;
-        }
-        if (k === "Home"){
-          e.preventDefault();
-          setActive(0, true);
-          return;
-        }
-        if (k === "End"){
-          e.preventDefault();
-          setActive(options.length - 1, true);
-          return;
-        }
-        if (k === "Enter" || k === " "){
-          e.preventDefault();
-          const opt = options[activeIndex];
-          choose(opt.dataset.value ?? "");
-          close(true);
-          return;
-        }
-
-        // Typeahead for numeric ages (e.g., "1" then "0" -> 10)
-        if (/^\d$/.test(k)){
-          typeBuf += k;
-          if (typeT) clearTimeout(typeT);
-          typeT = setTimeout(() => { typeBuf = ""; }, 650);
-
-          const needle = typeBuf;
-          const idx = options.findIndex(o => (o.dataset.value ?? "") === needle);
-          if (idx >= 0){
-            setActive(idx, true);
-          } else {
-            // fallback: first option whose label starts with the buffer
-            const idx2 = options.findIndex(o => (o.textContent || "").trim().startsWith(needle));
-            if (idx2 >= 0) setActive(idx2, true);
-          }
-        }
-      });
-
-      // Outside click closes
-      document.addEventListener("mousedown", (e) => {
-        if (!root.classList.contains('open')) return;
-        if (root.contains(e.target)) return;
-        close(false);
-      });
-
-      // Resize closes to avoid awkward positioning
-      window.addEventListener("resize", () => close(false));
-    }
-
-    function safeStr(x){ return (x ?? "").toString().trim(); }
-
-    function escapeHtml(s){
-      return safeStr(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function isCrisis(p){
-      return safeStr(p.entry_type).toLowerCase() === "crisis service";
-    }
-
-    function locLabel(p){
-      const locs = Array.isArray(p.locations) ? p.locations : [];
-      const first = locs[0] || {};
-      const city = safeStr(first.city);
-      const state = safeStr(first.state);
-      if (city && state) return `${city}, ${state}`;
-      if (city) return city;
-      return "Location not listed";
-    }
-
-    function hasVirtual(p){
-      const setting = safeStr(p.service_setting).toLowerCase();
-      if (setting.includes("virtual") || setting.includes("tele")) return true;
-      const locs = Array.isArray(p.locations) ? p.locations : [];
-      return locs.some(l => safeStr(l.city).toLowerCase() === "virtual");
-    }
-
-
-    // Age parsing: supports "13–17", "13-17", "12+", "All ages"
-    function parseAgeSpec(spec){
-      const s0 = safeStr(spec);
-      if (!s0) return [];
-      const s = s0.toLowerCase();
-
-      // Common non-numeric phrases used in this dataset
-      if (s.includes("all ages") || s.includes("any age")) return [[0, 17]];
-      if (s.includes("child") && s.includes("adolescent")) return [[0, 17]];
-
-      // Normalize dash characters and whitespace
-      const norm = s.replace(/[–—−]/g, "-").replace(/\s+/g, " ").trim();
-
-      // "12+", "12 +", "12 and up", "12 yrs and up"
-      const plus = norm.match(/(\d+)\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up)/);
-      if (plus) return [[Number(plus[1]), 17]];
-
-      // "12-17"
-      const range = norm.match(/(\d+)\s*-\s*(\d+)/);
-      if (range) return [[Number(range[1]), Number(range[2])]];
-
-      // "12 to 17"
-      const to = norm.match(/(\d+)\s*(?:to|through|thru)\s*(\d+)/);
-      if (to) return [[Number(to[1]), Number(to[2])]];
-
-      // Fallback: first two numbers found
-      const nums = (norm.match(/\d+/g) || []).map(n => Number(n)).filter(n => Number.isFinite(n));
-      if (nums.length >= 2) return [[Math.min(nums[0], nums[1]), Math.max(nums[0], nums[1])]];
-      if (nums.length === 1) return [[nums[0], nums[0]]];
-      return [];
-    }
-
-    function programServesAge(p, age){
-      const ranges = parseAgeSpec(p.ages_served);
-      if (!ranges.length) return false; // Unknown ages_served -> exclude when age filter is used
-      return ranges.some(([min, max]) => age >= min && age <= max);
-    }
-
-    function buildLocationOptions(list){
-      const set = new Set();
-      list.forEach(p => {
-        (p.locations || []).forEach(l => {
-          const c = safeStr(l.city);
-          if (c && c.toLowerCase() !== "virtual" && c.toLowerCase() !== "multiple" && c.toLowerCase() !== "n/a") set.add(c);
-        });
-      });
-      const cities = Array.from(set).sort((a,b)=>a.localeCompare(b));
-      els.loc.innerHTML = '<option value="">Any</option>' + cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-    }
-
-    function matchesFilters(p){
-      const q = safeStr(els.q.value).toLowerCase();
-      const loc = safeStr(els.loc.value).toLowerCase();
-      const ageVal = safeStr(els.age.value);
-      const care = safeStr(els.care.value).toLowerCase();
-      const onlyVirtual = els.onlyVirtual.checked;
-
-      const hay = [
-        p.program_name, p.organization, p.level_of_care,
-        p.entry_type, p.service_setting, p.ages_served,
-        locLabel(p),
-        (p.notes || "")
-      ].map(safeStr).join(" ").toLowerCase();
-
-      if (q && !hay.includes(q)) return false;
-
-      if (loc){
-        const cities = (p.locations || []).map(l => safeStr(l.city).toLowerCase());
-        if (!cities.some(c => c === loc)) return false;
-      }
-
-      if (care){
-        if (safeStr(p.level_of_care).toLowerCase() !== care) return false;
-      }
-
-      if (ageVal){
-        const age = Number(ageVal);
-        if (!Number.isFinite(age) || !programServesAge(p, age)) return false;
-      }
-
-      if (onlyVirtual && !hasVirtual(p)) return false;
-
-      return true;
-    }
-
-    function normalizePhoneForTel(phone){
-      const raw = safeStr(phone);
-      if (!raw) return "";
-      const plus = raw.trim().startsWith("+") ? "+" : "";
-      const digits = raw.replace(/[^\d]/g,"");
-      return (plus + digits);
-    }
-
-    function bestAddress(p){
-      const locs = Array.isArray(p.locations) ? p.locations : [];
-      const l = locs[0] || {};
-      const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
-      return parts.join(", ");
-    }
-
-    function mapsLinkFor(p){
-      const addr = bestAddress(p);
-      if (!addr) return "";
-      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
-    }
-
-    function stableIdFor(p, i){
-      const base = `${safeStr(p.program_id)}|${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
-      let h = 2166136261;
-      for (let k=0; k<base.length; k++){
-        h ^= base.charCodeAt(k);
-        h = Math.imul(h, 16777619);
-      }
-      return `p_${(h>>>0).toString(16)}_${i}`;
-    }
-
-    function setCardOpen(cardEl, isOpen){
-      cardEl.dataset.open = isOpen ? "true" : "false";
-      const btn = cardEl.querySelector(".expandBtn");
-      if (btn) btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    }
-
-    function toggleOpen(id){
-      const nextOpenId = (openId === id) ? null : id;
-
-      // Close previously open card (DOM-only; avoids re-render lag)
-      if (openId){
-        const prev = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-        if (prev) setCardOpen(prev, false);
-      }
-
-      openId = nextOpenId;
-
-      // Open new card (DOM-only)
-      if (openId){
-        const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-        if (cur) setCardOpen(cur, true);
-
-        // Gentle scroll into view if needed
-        if (cur){
-          const rect = cur.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > window.innerHeight){
-            window.scrollTo({ top: window.scrollY + rect.top - 14, behavior: "smooth" });
-          }
-        }
-      }
-    }
-
-    function createCard(p, idx){
-      const crisis = isCrisis(p);
-      const loc = locLabel(p);
-      const care = safeStr(p.level_of_care) || "Unknown";
-      const id = stableIdFor(p, idx);
-      const isOpen = (openId === id);
-
-      const phone = safeStr(p.phone);
-      const tel = normalizePhoneForTel(phone);
-      const maps = mapsLinkFor(p);
-
-      const addresses = (Array.isArray(p.locations) ? p.locations : [])
-        .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
-        .filter(Boolean);
-
-      const verificationSource = safeStr(p.verification_source);
-      const lastVerified = safeStr(p.last_verified);
-      const accuracyLine = (verificationSource || lastVerified)
-        ? `Source: ${verificationSource || "—"}${verificationSource && lastVerified ? " • " : ""}${lastVerified ? `Last verified: ${lastVerified}` : ""}`
-        : `Verification info not provided for this listing. Please confirm details with the program directly.`;
-
-      const div = document.createElement("article");
-      div.className = "card";
-      div.dataset.open = isOpen ? "true" : "false";
-      div.setAttribute("data-id", id);
-
-      div.innerHTML = `
-        <div class="badgeRow">
-          <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(care)}</span>
-          <span class="badge ${crisis ? "crisis" : "loc"}">${escapeHtml(loc)}</span>
-          ${hasVirtual(p) ? `<span class="badge ${crisis ? "crisis" : "loc2"}">Virtual option</span>` : ``}
-        </div>
-
-        <div class="cardTop">
-          <div style="min-width:0">
-            <p class="pname">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
-            <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
-          </div>
-
-          <button class="expandBtn" type="button"
-            aria-expanded="${isOpen ? "true" : "false"}"
-            aria-controls="panel_${escapeHtml(id)}"
-            title="${isOpen ? "Collapse details" : "Expand details"}">
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-        </div>
-
-        <div class="meta">
-          <span>Age: ${escapeHtml(safeStr(p.ages_served) || "Unknown")}</span>
-          <span>Setting: ${escapeHtml(safeStr(p.service_setting) || "Unknown")}</span>
-        </div>
-
-        <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
-
-        <div class="panel" id="panel_${escapeHtml(id)}">
-          ${addresses.length ? `
-            <div class="kv">
-              <div class="k">Address</div>
-              <div class="v">${addresses.map(a=>`<div>${escapeHtml(a)}</div>`).join("")}</div>
-            </div>
-          ` : ``}
-
-          <div class="kv">
-            <div class="k">Type</div>
-            <div class="v">${escapeHtml(safeStr(p.entry_type) || "Unknown")}</div>
-          </div>
-          <div class="kv">
-            <div class="k">Insurance</div>
-            <div class="v">${escapeHtml(safeStr(p.insurance_notes) || "Unknown")}</div>
-          </div>
-          <div class="kv">
-            <div class="k">Transportation</div>
-            <div class="v">${escapeHtml(safeStr(p.transportation_available) || "Unknown")}</div>
-          </div>
-          <div class="kv">
-            <div class="k">Notes</div>
-            <div class="v">${escapeHtml(safeStr(p.notes) || "—")}</div>
-          </div>
-
-          <div class="actions">
-            ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}">Call</a>` : ``}
-            ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
-            ${(!tel && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
-          </div>
-        </div>
-      `;
-
-      const btn = div.querySelector(".expandBtn");
-      btn.addEventListener("click", () => toggleOpen(id));
-      btn.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOpen(id); }
-      });
-
-      return div;
-    }
-
-    function renderSkeletons(){
-      const make = () => {
-        const d = document.createElement("div");
-        d.className = "skeleton";
-        d.innerHTML = `<div class="shimmer"></div>`;
-        return d;
-      };
-      els.treatmentGrid.innerHTML = "";
-      for (let i=0; i<9; i++) els.treatmentGrid.appendChild(make());
-      els.treatmentCount.textContent = "Loading…";
-      els.treatmentEmpty.style.display = "none";
-      els.totalCount.textContent = "…";
-    }
-
-    function render(){
-      if (!ready) return;
-
-      const showCrisis = els.showCrisis.checked;
-
-      // Apply shared filters first (search/location/care/virtual)
-      const filtered = programs.filter(matchesFilters);
-
-      const treatment = filtered.filter(p => !isCrisis(p));
-      const crisis = filtered.filter(p => isCrisis(p));
-
-      // Mode switch: crisis replaces treatment list (no separate section)
-      const activeList = showCrisis ? crisis : treatment;
-      const activeLabel = showCrisis ? "Crisis resources" : "Treatment & Navigation";
-
-      // If the open card is no longer visible in the active list, close it
-      if (openId){
-        const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === openId);
-        if (!stillExists) openId = null;
-      }
-
-      // Header labels
-      els.sectionTitle.textContent = activeLabel;
-      els.resultsLabel.textContent = showCrisis ? "crisis matches" : "treatment matches";
-      els.totalCount.textContent = String(activeList.length);
-
-      // Render active list into the single grid
-      els.treatmentGrid.innerHTML = "";
-      activeList.forEach((p, idx) => {
-        // Offset index in crisis mode so ids remain stable across toggles
-        const realIdx = showCrisis ? (idx + 10000) : idx;
-        const card = createCard(p, realIdx);
-        card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
-        els.treatmentGrid.appendChild(card);
-      });
-
-      els.treatmentCount.textContent = `${activeList.length} result${activeList.length===1?"":"s"}`;
-
-      // Empty message should adapt to mode
-      if (activeList.length){
-        els.treatmentEmpty.style.display = "none";
-      } else {
-        els.treatmentEmpty.style.display = "block";
-        els.treatmentEmpty.textContent = showCrisis
-          ? "No crisis resources match your filters."
-          : "No matches. Try removing filters, searching by city (e.g., “Plano”), or switching level of care.";
-      }
-    }
-
-    function syncTopToggles(){
-      els.showCrisisTop.checked = els.showCrisis.checked;
-      els.onlyVirtualTop.checked = els.onlyVirtual.checked;
-    }
-
-    function bind(){
-      const on = (el, ev, fn) => el.addEventListener(ev, fn);
-
-      // Debounced render for text input to feel snappy
-      let raf = null;
-      function scheduleRender(){
-        if (raf) cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(() => {
-          raf = null;
-          openId = null;
-          render();
-        });
-      }
-
-      ["input","change"].forEach(ev => {
-        on(els.q, ev, scheduleRender);
-        on(els.loc, ev, scheduleRender);
-        on(els.age, ev, scheduleRender);
-        on(els.care, ev, scheduleRender);
-
-        on(els.onlyVirtual, ev, () => { scheduleRender(); syncTopToggles(); });
-        on(els.showCrisis, ev, () => {
-          scheduleRender();
-          syncTopToggles();
-          // Switch mode should bring results into view
-          const t = document.getElementById("treatmentSection");
-          window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-        });
-      });
-
-      // Top chips mirror -> main toggles
-      on(els.showCrisisTop, "change", () => {
-        els.showCrisis.checked = els.showCrisisTop.checked;
-        scheduleRender();
-        syncTopToggles();
-        const t = document.getElementById("treatmentSection");
-        window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-      });
-      on(els.onlyVirtualTop, "change", () => { els.onlyVirtual.checked = els.onlyVirtualTop.checked; scheduleRender(); syncTopToggles(); });
-
-      on(els.reset, "click", () => {
-        els.q.value = "";
-        els.loc.value = "";
-        els.age.value = "";
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
-        els.care.value = "";
-        els.onlyVirtual.checked = false;
-        els.showCrisis.checked = false;
-        openId = null;
-        syncTopToggles();
-        render();
-      });
-
-      on(els.viewAll, "click", () => {
-        els.q.value = "";
-        els.loc.value = "";
-        els.age.value = "";
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
-        els.care.value = "";
-        els.onlyVirtual.checked = false;
-        // Keep crisis off by default
-        els.showCrisis.checked = false;
-        openId = null;
-        syncTopToggles();
-        render();
-        const t = document.getElementById("treatmentSection");
-        window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-      });
-
-      // Escape closes expanded card
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && openId){
-          const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-          if (cur) setCardOpen(cur, false);
-          openId = null;
-        }
-      });
-
-      syncTopToggles();
-    }
-
-    async function loadPrograms(){
-      els.loadWarn.classList.remove("show");
-      els.loadWarn.textContent = "";
-      renderSkeletons();
-
-      try{
-        const res = await fetch("programs.json", { cache:"no-store" });
-        if(!res.ok) throw new Error(`programs.json not found (HTTP ${res.status}). Make sure it is in the repo root next to index.html.`);
-        const data = await res.json();
-        if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
-
-        programs = data.programs.map(p => ({
-          program_id: p.program_id || "",
-          entry_type: p.entry_type || "Treatment Program",
-          organization: p.organization || "",
-          program_name: p.program_name || "",
-          level_of_care: p.level_of_care || "Unknown",
-          service_setting: p.service_setting || "Unknown",
-          ages_served: p.ages_served || "Unknown",
-          locations: Array.isArray(p.locations) ? p.locations : [],
-          phone: p.phone || "",
-          notes: p.notes || "",
-          transportation_available: p.transportation_available || "Unknown",
-          insurance_notes: p.insurance_notes || "Unknown",
-          verification_source: p.verification_source || "",
-          last_verified: p.last_verified || ""
-        }));
-
-        buildLocationOptions(programs);
-        ready = true;
-        openId = null;
-        render();
-      }catch(err){
-        console.error(err);
-        els.loadWarn.textContent = `Couldn’t load programs.json. ${err.message}`;
-        els.loadWarn.classList.add("show");
-        ready = true;
-        programs = [];
-        buildLocationOptions(programs);
-        openId = null;
-        render();
-      }
-    }
-
-    initAgeDropdown();
-    bind();
-    loadPrograms();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
