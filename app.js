@@ -692,18 +692,28 @@ function bind(){
   }
 
   ["input","change"].forEach(ev => {
-    on(els.q, ev, scheduleRender);
-    on(els.loc, ev, scheduleRender);
-    on(els.age, ev, scheduleRender);
-    on(els.care, ev, scheduleRender);
-
-    on(els.onlyVirtual, ev, () => { scheduleRender(); syncTopToggles(); });
-    on(els.showCrisis, ev, () => {
-      scheduleRender();
-      syncTopToggles();
-      const t = document.getElementById("treatmentSection");
-      window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-    });
+    if (ev === "input") {
+      let searchDebounce = null;
+      on(els.q, ev, () => {
+        if (searchDebounce) clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+          scheduleRender();
+        }, 300);
+      });
+    } else {
+      on(els.q, ev, scheduleRender);
+    }
+// Debounced search
+  let searchDebounce = null;
+  on(els.q, "input", () => {
+    if (searchDebounce) clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(scheduleRender, 300);
+  });
+  on(els.q, "change", scheduleRender);
+  
+  on(els.loc, "change", scheduleRender);
+  on(els.age, "change", scheduleRender);
+  on(els.care, "change", scheduleRender);
   });
 
   on(els.showCrisisTop, "change", () => {
