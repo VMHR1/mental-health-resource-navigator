@@ -898,6 +898,24 @@ els.treatmentGrid.addEventListener('keydown', (e) => {
     }
   }
 });
+// Handle empty state actions
+document.addEventListener('click', (e) => {
+  const action = e.target.dataset.action;
+  if (action === 'clear-filters') {
+    els.loc.value = '';
+    els.age.value = '';
+    if (window.__ageDropdownSync) window.__ageDropdownSync();
+    render();
+  } else if (action === 'show-virtual') {
+    els.onlyVirtual.checked = true;
+    render();
+  }
+});
+
+// Initialize
+initAgeDropdown();
+bind();
+loadPrograms();
 // Initialize
 initAgeDropdown();
 bind();
