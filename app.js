@@ -238,6 +238,27 @@ function escapeHtml(s){
     .replaceAll("'","&#039;");
 }
 
+
+function safeUrl(u){
+  const s = safeStr(u);
+  if (!s) return "";
+  try{
+    const parsed = new URL(s, window.location.href);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+  }catch(_){}
+  return "";
+}
+
+function domainFromUrl(url){
+  try{
+    const u = new URL(url);
+    return (u.hostname || "").replace(/^www\./i, "");
+  }catch(_){
+    return "";
+  }
+}
+
+
 function isCrisis(p){
   return safeStr(p.entry_type).toLowerCase() === "crisis service";
 }
@@ -440,6 +461,9 @@ function createCard(p, idx){
   const tel = normalizePhoneForTel(phone);
   const maps = mapsLinkFor(p);
 
+  const website = safeUrl(p.website_url || p.website || "");
+  const websiteDomain = website ? (safeStr(p.website_domain) || domainFromUrl(website)) : "";
+
   const addresses = (Array.isArray(p.locations) ? p.locations : [])
     .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
     .filter(Boolean);
@@ -530,8 +554,20 @@ function createCard(p, idx){
       </div>
       <div class="kv">
         <div class="k">Insurance</div>
-        <div class="v">${escapeHtml(safeStr(p.insurance_notes) || "Unknown")}</div>
+        <div class="v">\$\{escapeHtml\(safeStr\(p\.insurance_notes\) \|\| "Unknown"\)\}</div>
       </div>
+
+      ${website ? `
+        <div class="kv">
+          <div class="k">Website</div>
+          <div class="v">
+            <a class="siteLink" href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">
+              Visit website <span aria-hidden="true">↗</span>
+            </a>
+            ${websiteDomain ? `<span class="siteDomain">${escapeHtml(websiteDomain)}</span>` : ``}
+          </div>
+        </div>
+      ` : ``}
       <div class="kv">
         <div class="k">Transportation</div>
         <div class="v">${escapeHtml(safeStr(p.transportation_available) || "Unknown")}</div>
@@ -544,7 +580,8 @@ function createCard(p, idx){
       <div class="actions">
         ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}" onclick="trackCallAttempt(${escapeHtml(JSON.stringify(p))})">Call Now</a>` : ``}
         ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
-        ${(!tel && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
+        ${website ? `<a class="linkBtn site" href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">Website ↗</a>` : ``}
+        ${(!tel && !maps && !website) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
       </div>
     </div>
   `;
@@ -782,6 +819,8 @@ async function loadPrograms(){
       ages_served: p.ages_served || "Unknown",
       locations: Array.isArray(p.locations) ? p.locations : [],
       phone: p.phone || "",
+      website_url: p.website_url || p.website || "",
+      website_domain: p.website_domain || "",
       notes: p.notes || "",
       transportation_available: p.transportation_available || "Unknown",
       insurance_notes: p.insurance_notes || "Unknown",
