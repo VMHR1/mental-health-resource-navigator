@@ -295,7 +295,7 @@ function parseAgeSpec(spec){
   if (s.includes("all ages") || s.includes("any age")) return [[0, 17]];
   if (s.includes("child") && s.includes("adolescent")) return [[0, 17]];
 
-  const norm = s.replace(/[—–−]/g, "-").replace(/\s+/g, " ").trim();
+  const norm = s0.toLowerCase().replace(/[\u2013\u2014\u2212\u2015\u2010\u2011]/g, "-").replace(/\s+/g, " ").trim();
 
   const plus = norm.match(/(\d+)\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up)/);
   if (plus) return [[Number(plus[1]), 17]];
@@ -593,13 +593,6 @@ function createCard(p, idx){
       </div>
     </div>
   `;
-
-  const btn = div.querySelector(".expandBtn");
-  btn.addEventListener("click", () => toggleOpen(id));
-  btn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOpen(id); }
-  });
-
   return div;
 }
 
@@ -880,6 +873,29 @@ document.addEventListener('click', (e) => {
     const programId = callBtn.dataset.programId;
     const program = programDataMap.get(programId);
     if (program) trackCallAttempt(program);
+  }
+});
+// Handle expand button clicks via event delegation
+els.treatmentGrid.addEventListener('click', (e) => {
+  const expandBtn = e.target.closest('.expandBtn');
+  if (expandBtn) {
+    const card = expandBtn.closest('.card');
+    if (card) {
+      const id = card.dataset.id;
+      toggleOpen(id);
+    }
+  }
+});
+
+els.treatmentGrid.addEventListener('keydown', (e) => {
+  const expandBtn = e.target.closest('.expandBtn');
+  if (expandBtn && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    const card = expandBtn.closest('.card');
+    if (card) {
+      const id = card.dataset.id;
+      toggleOpen(id);
+    }
   }
 });
 // Initialize
