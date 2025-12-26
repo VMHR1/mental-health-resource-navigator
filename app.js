@@ -520,7 +520,7 @@ function createCard(p, idx){
     <div class="cardTop">
       <div style="min-width:0">
         <p class="pname">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
-        <p class="org">/$/{escapeHtml(safeStr(p.organization) || "")}</p>
+        <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
       </div>
 
       <button class="expandBtn" type="button"
@@ -554,7 +554,7 @@ function createCard(p, idx){
       </div>
       <div class="kv">
         <div class="k">Insurance</div>
-        <div class="v">${escapeHtml\(safeStr\(p\.insurance_notes\) \|\| "Unknown"\)\}</div>
+        <div class="v">${escapeHtml(safeStr(p.insurance_notes) || "Unknown")}</div>
       </div>
 
       ${website ? `
