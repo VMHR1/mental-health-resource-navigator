@@ -121,7 +121,7 @@
         <div class="hero-visual" aria-label="Summary cards">
           <div class="floating-card">
             <strong>Level of care</strong>
-            <span>PHP • IOP • Outpatient • Navigation</span>
+            <span>PHP • IOP • Navigation</span>
           </div>
           <div class="floating-card">
             <strong>Family-friendly filters</strong>
@@ -172,57 +172,28 @@
           </div>
 
           <div class="input-group">
-            <label class="dd-label">Age</label>
-            <div class="dropdown" data-dd="age">
-              <button type="button" class="dd-btn" id="ageBtn" aria-haspopup="listbox" aria-controls="ageMenu" aria-expanded="false">
-                <span class="dd-value" id="ageBtnValue">Any age</span>
-                <span class="dd-icon" aria-hidden="true">▾</span>
-              </button>
-
-              <div class="dd-menu" id="ageMenu" role="listbox" tabindex="-1" aria-labelledby="ageBtn">
-                <div class="dd-option is-selected" role="option" aria-selected="true" data-value="">Any age<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="0">0<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="1">1<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="2">2<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="3">3<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="4">4<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="5">5<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="6">6<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="7">7<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="8">8<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="9">9<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="10">10<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="11">11<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="12">12<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="13">13<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="14">14<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="15">15<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="16">16<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="17">17<span class="dd-check" aria-hidden="true">✓</span></div>
-              </div>
-
-              <select id="age" class="dd-native" aria-hidden="true" tabindex="-1">
-                <option value="">Any age</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-              </select>
-            </div>
+            <label for="age">Age</label>
+            <select id="age">
+              <option value="">Any age</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+            </select>
           </div>
 
           <div class="input-group">
@@ -231,7 +202,6 @@
               <option value="">Any</option>
               <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
               <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
-              <option value="Outpatient">Outpatient</option>
               <option value="Navigation">Navigation</option>
             </select>
           </div>

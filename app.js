@@ -100,8 +100,6 @@ function parseSmartSearch(query) {
     filters.care = 'Partial Hospitalization (PHP)';
   } else if(q.includes('iop') || q.includes('intensive outpatient')) {
     filters.care = 'Intensive Outpatient (IOP)';
-  } else if(q.includes('outpatient') && !q.includes('intensive')) {
-    filters.care = 'Outpatient';
   } else if(q.includes('navigation')) {
     filters.care = 'Navigation';
   }
@@ -115,9 +113,10 @@ function parseSmartSearch(query) {
 }
 
 // ========== Age Dropdown Custom Component ==========
+// Removed - now using regular select dropdown to match other filters
 function initAgeDropdown(){
-  const root = document.querySelector('.dropdown[data-dd="age"]');
-  if (!root) return;
+  // No longer needed - age uses regular select
+  return;
 
   const btn = root.querySelector('#ageBtn');
   const valueEl = root.querySelector('#ageBtnValue');
@@ -1133,7 +1132,6 @@ function bind(){
     els.q.value = "";
     els.loc.value = "";
     els.age.value = "";
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
     els.care.value = "";
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
@@ -1146,7 +1144,6 @@ function bind(){
     els.q.value = "";
     els.loc.value = "";
     els.age.value = "";
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
     els.care.value = "";
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
@@ -1165,7 +1162,6 @@ function bind(){
     if(parsed.loc) els.loc.value = parsed.loc;
     if(parsed.age) {
       els.age.value = parsed.age;
-      if(window.__ageDropdownSync) window.__ageDropdownSync();
     }
     if(parsed.care) els.care.value = parsed.care;
     els.showCrisis.checked = parsed.showCrisis;
@@ -1431,7 +1427,6 @@ function handleURLParams() {
 }
 
 // Initialize
-initAgeDropdown();
 bind();
 loadPrograms().then(() => {
   handleURLParams();
