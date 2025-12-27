@@ -1,10 +1,66 @@
+// ========== Security ==========
+// Load security module (encryption, validation, etc.)
+// Security functions are available globally after security.js loads
+
 // ========== State Management ==========
 let programs = [];
 let ready = false;
 let openId = null;
 let currentSort = 'relevance';
-let favorites = new Set(JSON.parse(localStorage.getItem('favorites') || '[]'));
-let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+
+// Load encrypted data
+async function loadEncryptedData(key, defaultValue = []) {
+  try {
+    const encrypted = localStorage.getItem(`encrypted_${key}`);
+    if (!encrypted) return defaultValue;
+    if (typeof window.decryptData === 'function') {
+      const decrypted = await window.decryptData(encrypted);
+      return decrypted || defaultValue;
+    }
+    // Fallback if security.js not loaded
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
+  } catch (error) {
+    console.error(`Error loading ${key}:`, error);
+    return defaultValue;
+  }
+}
+
+async function saveEncryptedData(key, data) {
+  try {
+    if (typeof window.encryptData === 'function') {
+      const encrypted = await window.encryptData(data);
+      if (encrypted) {
+        localStorage.setItem(`encrypted_${key}`, encrypted);
+        return;
+      }
+    }
+    // Fallback if security.js not loaded
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error saving ${key}:`, error);
+    // Fallback to unencrypted storage
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      console.error('Failed to save data:', e);
+    }
+  }
+}
+
+// Initialize encrypted storage
+let favorites = new Set();
+let recentSearches = [];
+let callHistory = [];
+
+async function initializeEncryptedStorage() {
+  favorites = new Set(await loadEncryptedData('favorites', []));
+  recentSearches = await loadEncryptedData('recentSearches', []);
+  callHistory = await loadEncryptedData('callHistory', []);
+}
+
+// Initialize on load
+initializeEncryptedStorage();
+
 let comparisonSet = new Set(JSON.parse(localStorage.getItem('comparison') || '[]'));
 
 const programDataMap = new Map();
@@ -290,22 +346,38 @@ function initAgeDropdown(){
 function safeStr(x){ return (x ?? "").toString().trim(); }
 
 function escapeHtml(s){
+  // Use enhanced escapeHtml from security.js if available, otherwise fallback
+  if (typeof window.escapeHtml === 'function') {
+    return window.escapeHtml(s);
+  }
   return safeStr(s)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("'","&#039;")
+    .replaceAll("/","&#x2F;");
 }
 
 
 function safeUrl(u){
   const s = safeStr(u);
   if (!s) return "";
+  // Use validateUrl from security.js if available
+  if (typeof window.validateUrl === 'function' && !window.validateUrl(s)) {
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('invalid_url_attempt', { url: s.substring(0, 100) });
+    }
+    return "";
+  }
   try{
     const parsed = new URL(s, window.location.href);
     if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
-  }catch(_){}
+  }catch(_){
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('url_parse_failed', { url: s.substring(0, 100) });
+    }
+  }
   return "";
 }
 
@@ -578,14 +650,15 @@ function stableIdFor(p, i){
 }
 
 // ========== Call Tracking ==========
-function trackCallAttempt(program) {
-  const calls = JSON.parse(localStorage.getItem('callHistory') || '[]');
-  calls.unshift({
-    program: program.program_name,
-    org: program.organization,
+async function trackCallAttempt(program) {
+  const sanitize = typeof window.sanitizeText === 'function' ? window.sanitizeText : (s) => s;
+  callHistory.unshift({
+    program: sanitize(program.program_name),
+    org: sanitize(program.organization),
     timestamp: new Date().toISOString()
   });
-  localStorage.setItem('callHistory', JSON.stringify(calls.slice(0, 20)));
+  callHistory = callHistory.slice(0, 20);
+  await saveEncryptedData('callHistory', callHistory);
   
   showCallConfirmation(program);
 }
@@ -957,20 +1030,32 @@ function renderComparison() {
   });
 }
 
-function saveFavorites() {
-  localStorage.setItem('favorites', JSON.stringify(Array.from(favorites)));
+async function saveFavorites() {
+  await saveEncryptedData('favorites', Array.from(favorites));
   updateFavoritesCount();
 }
 
-function toggleFavorite(programId) {
-  if (favorites.has(programId)) {
-    favorites.delete(programId);
+async function toggleFavorite(programId) {
+  // Validate program ID
+  const sanitizedId = typeof window.sanitizeId === 'function' 
+    ? window.sanitizeId(programId)
+    : programId.replace(/[^a-zA-Z0-9_-]/g, '');
+  
+  if (sanitizedId !== programId) {
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('suspicious_program_id_favorite', { original: programId, sanitized: sanitizedId });
+    }
+    return;
+  }
+  
+  if (favorites.has(sanitizedId)) {
+    favorites.delete(sanitizedId);
     showToast('Removed from saved programs', 'success');
   } else {
-    favorites.add(programId);
+    favorites.add(sanitizedId);
     showToast('Saved to your programs', 'success');
   }
-  saveFavorites();
+  await saveFavorites();
   render();
 }
 
@@ -1034,12 +1119,24 @@ function shareProgram(programId) {
   const program = programDataMap.get(programId);
   if (!program) return;
   
-  const url = `${window.location.origin}${window.location.pathname}?program=${encodeURIComponent(programId)}`;
+  // Validate programId to prevent injection
+  const sanitizedId = typeof window.sanitizeId === 'function' 
+    ? window.sanitizeId(programId)
+    : programId.replace(/[^a-zA-Z0-9_-]/g, '');
+  
+  if (sanitizedId !== programId) {
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('suspicious_program_id_share', { original: programId, sanitized: sanitizedId });
+    }
+    return;
+  }
+  
+  const pathname = window.location.pathname.split('?')[0];
+  const url = `${window.location.origin}${pathname}?program=${encodeURIComponent(sanitizedId)}`;
   
   if (navigator.share) {
     navigator.share({
       title: `${safeStr(program.program_name)} - ${safeStr(program.organization)}`,
-      text: `Mental health program: ${safeStr(program.program_name)}`,
       url: url
     }).catch(() => {
       copyToClipboard(url);
@@ -1116,13 +1213,13 @@ function printProgram(programId) {
   setTimeout(() => printWindow.print(), 250);
 }
 
-function addRecentSearch(query) {
+async function addRecentSearch(query) {
   if (!query || query.trim().length < 3) return;
-  const trimmed = query.trim();
+  const trimmed = sanitizeText(query.trim(), 200);
   recentSearches = recentSearches.filter(s => s !== trimmed);
   recentSearches.unshift(trimmed);
   recentSearches = recentSearches.slice(0, 5); // Reduced from 10 to 5
-  localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+  await saveEncryptedData('recentSearches', recentSearches);
   renderRecentSearches();
 }
 
@@ -1190,14 +1287,12 @@ function renderFavorites() {
 }
 
 function renderCallHistory() {
-  const calls = JSON.parse(localStorage.getItem('callHistory') || '[]');
-  
-  if (calls.length === 0) {
+  if (callHistory.length === 0) {
     els.historyList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">No call history yet. Call buttons will appear here after you use them.</p>';
     return;
   }
   
-  els.historyList.innerHTML = calls.map(call => {
+  els.historyList.innerHTML = callHistory.map(call => {
     const date = new Date(call.timestamp);
     return `
       <div class="card" style="margin-bottom: 12px;">
@@ -1465,6 +1560,104 @@ function bind(){
   });
 
   syncTopToggles();
+  
+  // Privacy controls
+  setupPrivacyControls();
+}
+
+function setupPrivacyControls() {
+  const privacyModal = document.getElementById('privacyControls');
+  const clearBtn = document.getElementById('clearAllData');
+  const exportBtn = document.getElementById('exportMyData');
+  const trackingToggle = document.getElementById('disableTracking');
+  const closeBtn = privacyModal?.querySelector('.privacy-close');
+  
+  if (!privacyModal) return;
+  
+  // Keyboard shortcut: Ctrl+Shift+P (Cmd+Shift+P on Mac)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+      e.preventDefault();
+      const isHidden = privacyModal.style.display === 'none' || privacyModal.getAttribute('aria-hidden') === 'true';
+      privacyModal.style.display = isHidden ? 'flex' : 'none';
+      privacyModal.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+    }
+  });
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      privacyModal.style.display = 'none';
+      privacyModal.setAttribute('aria-hidden', 'true');
+    });
+  }
+  
+  if (clearBtn) {
+    clearBtn.addEventListener('click', async () => {
+      if (confirm('This will permanently delete all your saved data (favorites, search history, call history). Continue?')) {
+        // Clear encrypted data
+        localStorage.removeItem('encrypted_favorites');
+        localStorage.removeItem('encrypted_recentSearches');
+        localStorage.removeItem('encrypted_callHistory');
+        localStorage.removeItem('comparison');
+        localStorage.removeItem('securityLog');
+        
+        // Reset in memory
+        favorites.clear();
+        recentSearches = [];
+        callHistory = [];
+        comparisonSet.clear();
+        
+        // Update UI
+        updateFavoritesCount();
+        renderRecentSearches();
+        renderCallHistory();
+        renderComparison();
+        render();
+        
+        showToast('All data cleared', 'success');
+        privacyModal.style.display = 'none';
+        privacyModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+  
+  if (exportBtn) {
+    exportBtn.addEventListener('click', async () => {
+      const userData = {
+        favorites: Array.from(favorites),
+        recentSearches: recentSearches,
+        callHistory: callHistory,
+        comparison: Array.from(comparisonSet),
+        exportedAt: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `my-data-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('Data exported', 'success');
+    });
+  }
+  
+  if (trackingToggle) {
+    trackingToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        // Use sessionStorage instead of localStorage for sensitive data
+        localStorage.setItem('disableTracking', 'true');
+        showToast('Tracking disabled - data will clear when browser closes', 'success');
+      } else {
+        localStorage.removeItem('disableTracking');
+        showToast('Tracking enabled', 'success');
+      }
+    });
+    
+    // Check initial state
+    trackingToggle.checked = localStorage.getItem('disableTracking') === 'true';
+  }
 }
 
 async function loadPrograms(){
@@ -1475,8 +1668,39 @@ async function loadPrograms(){
   try{
     const res = await fetch("programs.json", { cache:"no-store" });
     if(!res.ok) throw new Error(`programs.json not found (HTTP ${res.status}). Make sure it is in the repo root next to index.html.`);
-    const data = await res.json();
+    const jsonText = await res.text();
+    
+    // Validate JSON before parsing
+    const jsonValidation = typeof window.validateJSON === 'function' 
+      ? window.validateJSON(jsonText)
+      : { valid: true, data: JSON.parse(jsonText) };
+    
+    if (!jsonValidation.valid) {
+      if (typeof window.logSecurityEvent === 'function') {
+        window.logSecurityEvent('invalid_json_detected', { error: jsonValidation.error });
+      }
+      throw new Error("Invalid JSON structure in programs.json");
+    }
+    
+    const data = jsonValidation.data;
     if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
+    
+    // Validate program structure
+    if (typeof window.validateProgramStructure === 'function') {
+      const invalidPrograms = [];
+      data.programs.forEach((p, idx) => {
+        const validation = window.validateProgramStructure(p);
+        if (!validation.valid) {
+          invalidPrograms.push({ index: idx, programId: p.program_id, errors: validation.errors });
+        }
+      });
+      if (invalidPrograms.length > 0) {
+        if (typeof window.logSecurityEvent === 'function') {
+          window.logSecurityEvent('data_integrity_issues', { count: invalidPrograms.length, programs: invalidPrograms.slice(0, 5) });
+        }
+        console.warn('Some programs failed validation:', invalidPrograms);
+      }
+    }
 
     programs = data.programs.map(p => ({
       program_id: p.program_id || "",
@@ -1641,7 +1865,28 @@ document.addEventListener('click', (e) => {
 // Handle URL parameters for shared programs
 function handleURLParams() {
   const params = new URLSearchParams(window.location.search);
-  const programId = params.get('program');
+  let programId = params.get('program');
+  
+  // Validate and sanitize program ID from URL
+  if (programId) {
+    // Extract only valid program ID format (p_hex_numbers)
+    const programIdMatch = programId.match(/p_[0-9a-f]+_\d+/);
+    if (programIdMatch) {
+      programId = programIdMatch[0];
+    } else if (typeof window.sanitizeId === 'function') {
+      // Fallback: sanitize the ID
+      programId = window.sanitizeId(programId);
+      if (programId !== params.get('program')) {
+        if (typeof window.logSecurityEvent === 'function') {
+          window.logSecurityEvent('suspicious_url_param', { original: params.get('program'), sanitized: programId });
+        }
+      }
+    } else {
+      // Basic sanitization
+      programId = programId.replace(/[^a-zA-Z0-9_-]/g, '');
+    }
+  }
+  
   if (programId && ready) {
     // Find and open the program
     programs.forEach((p, idx) => {

@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Program Submission • Adolescent Mental Health Directory</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://formspree.io; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <script src="security.js"></script>
   <style>
     :root{
       --bg: #ffffff;
@@ -869,7 +874,43 @@ async function submitToFormspree(payload){
 
       // final submit
 if(stepIndex === steps.length - 1){
+  // Rate limiting check
+  if (typeof window.checkRateLimit === 'function') {
+    const rateCheck = window.checkRateLimit('form_submission', 3, 3600000); // 3 per hour
+    if (!rateCheck.allowed) {
+      showAlert(`Please wait ${rateCheck.waitMinutes} minutes before submitting again. This helps prevent spam.`, "warn");
+      return;
+    }
+  }
+  
   const payload = JSON.parse(localStorage.getItem("directoryDraft") || "{}");
+  
+  // Sanitize all text fields
+  if (typeof window.sanitizeText === 'function') {
+    Object.keys(payload).forEach(key => {
+      if (typeof payload[key] === 'string' && key !== 'website_url' && key !== 'general_email' && key !== 'admin_contact_email' && key !== 'intake_email') {
+        payload[key] = window.sanitizeText(payload[key], 5000);
+      }
+    });
+  }
+  
+  // Validate URLs
+  if (payload.website_url && typeof window.validateUrl === 'function' && !window.validateUrl(payload.website_url)) {
+    showAlert("Invalid website URL. Please enter a valid http:// or https:// URL.", "warn");
+    return;
+  }
+  
+  // Validate emails
+  if (payload.general_email && typeof window.validateEmail === 'function' && !window.validateEmail(payload.general_email)) {
+    showAlert("Invalid email address format.", "warn");
+    return;
+  }
+  
+  if (payload.admin_contact_email && typeof window.validateEmail === 'function' && !window.validateEmail(payload.admin_contact_email)) {
+    showAlert("Invalid admin contact email format.", "warn");
+    return;
+  }
+  
   payload._submittedAt = new Date().toISOString();
 
   const nextBtn = document.getElementById("nextBtn");
@@ -877,11 +918,22 @@ if(stepIndex === steps.length - 1){
   nextBtn.disabled = true;
   nextBtn.textContent = "Submitting…";
 
+  // Log submission attempt
+  if (typeof window.logSecurityEvent === 'function') {
+    window.logSecurityEvent('form_submission_attempt', { org: payload.org_name, program: payload.program_name });
+  }
+
   // Send to inbox for manual review
   try{
     await submitToFormspree(payload);
     showAlert("Submitted for review. This information has been sent to the directory moderator.", "success");
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('form_submission_success', { org: payload.org_name });
+    }
   }catch(err){
+    if (typeof window.logSecurityEvent === 'function') {
+      window.logSecurityEvent('form_submission_failed', { error: err.message });
+    }
     if(String(err && err.message) === "FORM_ENDPOINT_NOT_CONFIGURED"){
       showAlert("Admin setup required: paste your Formspree endpoint into FORMSPREE_ENDPOINT in the page source.", "warn");
     } else {
