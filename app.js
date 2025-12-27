@@ -947,54 +947,55 @@ function matchesFilters(p){
       if (orgLower === qLower || progLower === qLower) {
         // Exact match found - continue with other filters but this will score highest
       } else {
-      // Remove location, age, and care level terms from search query for text matching
-      // BUT preserve organization-like terms (don't remove words that might be part of org names)
-      const searchTerms = q
-        .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
-        .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
-        // Only remove city names if they're standalone (not part of organization names)
-        // Use word boundaries to avoid removing city names embedded in org names
-        .replace(/\b(dallas|plano|frisco|mckinney|richardson|denton|arlington|fort worth|mansfield|keller|desoto|de soto|rockwall|sherman|forney|burleson|flower mound|the colony|bedford|lewisville|carrollton|garland|mesquite|irving|grand prairie|corsicana)\b(?=\s|$)/gi, '')
-        .trim();
-      
-      if (searchTerms) {
-        const hay = [
-          p.program_name, p.organization, p.level_of_care,
-          p.entry_type, p.service_setting, p.ages_served,
-          locLabel(p),
-          (p.notes || "")
-        ].map(safeStr).join(" ").toLowerCase();
+        // Remove location, age, and care level terms from search query for text matching
+        // BUT preserve organization-like terms (don't remove words that might be part of org names)
+        const searchTerms = q
+          .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
+          .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
+          // Only remove city names if they're standalone (not part of organization names)
+          // Use word boundaries to avoid removing city names embedded in org names
+          .replace(/\b(dallas|plano|frisco|mckinney|richardson|denton|arlington|fort worth|mansfield|keller|desoto|de soto|rockwall|sherman|forney|burleson|flower mound|the colony|bedford|lewisville|carrollton|garland|mesquite|irving|grand prairie|corsicana)\b(?=\s|$)/gi, '')
+          .trim();
         
-        // Check if all remaining search terms appear (with fuzzy matching for typos)
-        const terms = searchTerms.split(/\s+/).filter(t => t.length > 0);
-        if (terms.length > 0) {
-          // Prioritize organization and program name matches
-          const orgMatch = terms.every(term => {
-            if (orgLower.includes(term)) return true;
-            if (term.length > 3) return fuzzyMatch(term, orgLower, 0.85);
-            return false;
-          });
+        if (searchTerms) {
+          const hay = [
+            p.program_name, p.organization, p.level_of_care,
+            p.entry_type, p.service_setting, p.ages_served,
+            locLabel(p),
+            (p.notes || "")
+          ].map(safeStr).join(" ").toLowerCase();
           
-          const progMatch = terms.every(term => {
-            if (progLower.includes(term)) return true;
-            if (term.length > 3) return fuzzyMatch(term, progLower, 0.85);
-            return false;
-          });
-          
-          // If matches organization or program name, allow it
-          if (orgMatch || progMatch) {
-            // Continue with other filters
-          } else {
-            // Check other fields with fuzzy matching
-            const allMatch = terms.every(term => {
-              if (hay.includes(term)) return true;
-              // Fuzzy match for terms longer than 3 characters
-              if (term.length > 3) {
-                return fuzzyMatch(term, hay, 0.7);
-              }
+          // Check if all remaining search terms appear (with fuzzy matching for typos)
+          const terms = searchTerms.split(/\s+/).filter(t => t.length > 0);
+          if (terms.length > 0) {
+            // Prioritize organization and program name matches
+            const orgMatch = terms.every(term => {
+              if (orgLower.includes(term)) return true;
+              if (term.length > 3) return fuzzyMatch(term, orgLower, 0.85);
               return false;
             });
-            if (!allMatch) return false;
+            
+            const progMatch = terms.every(term => {
+              if (progLower.includes(term)) return true;
+              if (term.length > 3) return fuzzyMatch(term, progLower, 0.85);
+              return false;
+            });
+            
+            // If matches organization or program name, allow it
+            if (orgMatch || progMatch) {
+              // Continue with other filters
+            } else {
+              // Check other fields with fuzzy matching
+              const allMatch = terms.every(term => {
+                if (hay.includes(term)) return true;
+                // Fuzzy match for terms longer than 3 characters
+                if (term.length > 3) {
+                  return fuzzyMatch(term, hay, 0.7);
+                }
+                return false;
+              });
+              if (!allMatch) return false;
+            }
           }
         }
       }
