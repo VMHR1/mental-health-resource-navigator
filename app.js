@@ -647,10 +647,6 @@ function createCard(p, idx){
         <span class="icon">🔗</span>
         <span>Share</span>
       </button>
-      <button type="button" class="card-action-btn" data-print="${escapeHtml(id)}" aria-label="Print program details">
-        <span class="icon">🖨️</span>
-        <span>Print</span>
-      </button>
     </div>
 
     <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
@@ -839,22 +835,21 @@ function shareProgram(programId) {
   
   if (navigator.share) {
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:832',message:'navigator.share available',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:840',message:'navigator.share available',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
-    // Use only URL in share to prevent text from being appended to URL by some share targets
+    // Only share URL and title - removing text field prevents share targets from appending text to URL
     navigator.share({
       title: `${safeStr(program.program_name)} - ${safeStr(program.organization)}`,
-      text: `Mental health program: ${safeStr(program.program_name)}`,
       url: url
     }).catch((err) => {
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:838',message:'navigator.share failed, falling back to clipboard',data:{error:err?.message||String(err),url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:847',message:'navigator.share failed, falling back to clipboard',data:{error:err?.message||String(err),url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
       // #endregion
       copyToClipboard(url);
     });
   } else {
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:841',message:'navigator.share not available, using clipboard',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:851',message:'navigator.share not available, using clipboard',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
     copyToClipboard(url);
   }
@@ -900,44 +895,6 @@ function fallbackCopy(text) {
   document.body.removeChild(textarea);
 }
 
-function printProgram(programId) {
-  const program = programDataMap.get(programId);
-  if (!program) return;
-  
-  const printWindow = window.open('', '_blank');
-  
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>${escapeHtml(safeStr(program.program_name))}</title>
-      <style>
-        body { font-family: system-ui, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-        h1 { margin: 0 0 10px; }
-        .info { margin: 10px 0; }
-        .label { font-weight: bold; color: #666; }
-      </style>
-    </head>
-    <body>
-      <h1>${escapeHtml(safeStr(program.program_name))}</h1>
-      <div class="info"><span class="label">Organization:</span> ${escapeHtml(safeStr(program.organization))}</div>
-      <div class="info"><span class="label">Level of Care:</span> ${escapeHtml(safeStr(program.level_of_care))}</div>
-      <div class="info"><span class="label">Location:</span> ${escapeHtml(locLabel(program))}</div>
-      <div class="info"><span class="label">Phone:</span> ${escapeHtml(safeStr(program.phone))}</div>
-      ${program.website_url ? `<div class="info"><span class="label">Website:</span> <a href="${escapeHtml(safeUrl(program.website_url))}">${escapeHtml(safeUrl(program.website_url))}</a></div>` : ''}
-      <div class="info"><span class="label">Ages Served:</span> ${escapeHtml(safeStr(program.ages_served))}</div>
-      <div class="info"><span class="label">Service Setting:</span> ${escapeHtml(safeStr(program.service_setting))}</div>
-      ${program.notes ? `<div class="info"><span class="label">Notes:</span> ${escapeHtml(safeStr(program.notes))}</div>` : ''}
-      <div style="margin-top: 30px; font-size: 12px; color: #666;">
-        Printed from Texas Youth Mental Health Resource Finder
-      </div>
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => printWindow.print(), 250);
-}
 
 function exportResults() {
   const showCrisis = els.showCrisis.checked;
@@ -1399,13 +1356,6 @@ function setupCardEventDelegation(container) {
     return;
   }
 
-  const printBtn = e.target.closest('[data-print]');
-  if (printBtn) {
-    e.preventDefault();
-    const id = printBtn.dataset.print;
-    printProgram(id);
-    return;
-  }
   });
 }
 
