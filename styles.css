@@ -1098,7 +1098,7 @@ a.btnlike:focus{
   contain: layout paint;
 }
 .card[data-open="true"] .panel{
-  max-height: 380px;
+  max-height: 5000px;
   opacity: 1;
   transform: translateY(0);
 }
@@ -1491,3 +1491,10 @@ footer{
 .linkBtn.site{
   background: rgba(255,255,255,.92);
 }
+
+/* Prevent long strings from breaking layout */
+.v, .org, .pname{
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
