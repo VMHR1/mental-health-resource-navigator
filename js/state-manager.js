@@ -1,7 +1,7 @@
 // ========== State Manager ==========
 // Centralized state management with validation and persistence
 
-export class StateManager {
+class StateManager {
   constructor() {
     this.state = {
       programs: [],
@@ -183,7 +183,7 @@ export class StateManager {
 // Create singleton instance
 let stateManagerInstance = null;
 
-export function getStateManager() {
+function getStateManager() {
   if (!stateManagerInstance) {
     stateManagerInstance = new StateManager();
     stateManagerInstance.loadPersistedState();
@@ -196,4 +196,5 @@ if (typeof window !== 'undefined') {
   window.StateManager = StateManager;
   window.getStateManager = getStateManager;
 }
+
 

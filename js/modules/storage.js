@@ -2,7 +2,7 @@
 // Handles encrypted storage and user data persistence
 
 // Load encrypted data
-export async function loadEncryptedData(key, defaultValue = []) {
+async function loadEncryptedData(key, defaultValue = []) {
   try {
     const encrypted = localStorage.getItem(`encrypted_${key}`);
     if (!encrypted) return defaultValue;
@@ -18,7 +18,7 @@ export async function loadEncryptedData(key, defaultValue = []) {
   }
 }
 
-export async function saveEncryptedData(key, data) {
+async function saveEncryptedData(key, data) {
   try {
     if (typeof window.encryptData === 'function') {
       const encrypted = await window.encryptData(data);
@@ -41,7 +41,7 @@ export async function saveEncryptedData(key, data) {
 }
 
 // User data storage
-export class UserDataStorage {
+class UserDataStorage {
   constructor() {
     this.favorites = new Set();
     this.recentSearches = [];
@@ -109,4 +109,5 @@ if (typeof window !== 'undefined') {
   window.saveEncryptedData = saveEncryptedData;
   window.UserDataStorage = UserDataStorage;
 }
+
 

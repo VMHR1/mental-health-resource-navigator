@@ -1000,14 +1000,14 @@ function matchesFilters(p){
     });
     if (!matches) return false;
   } else {
-  const locationToCheck = parsed.loc ? parsed.loc.toLowerCase() : loc;
-  if (locationToCheck) {
-    const cities = (p.locations || []).map(l => safeStr(l.city).toLowerCase());
-    // Handle "De Soto" matching both "De Soto" and "Desoto"
-    const normalizedLocation = locationToCheck.replace(/\s+/g, ' ').trim();
-    if (normalizedLocation === 'de soto') {
-      if (!cities.some(c => c === 'de soto' || c === 'desoto')) return false;
-    } else {
+    const locationToCheck = parsed.loc ? parsed.loc.toLowerCase() : loc;
+    if (locationToCheck) {
+      const cities = (p.locations || []).map(l => safeStr(l.city).toLowerCase());
+      // Handle "De Soto" matching both "De Soto" and "Desoto"
+      const normalizedLocation = locationToCheck.replace(/\s+/g, ' ').trim();
+      if (normalizedLocation === 'de soto') {
+        if (!cities.some(c => c === 'de soto' || c === 'desoto')) return false;
+      } else {
         // Use fuzzy matching for location
         const matches = cities.some(c => c === normalizedLocation || fuzzyMatch(normalizedLocation, c, 0.8));
         if (!matches) return false;

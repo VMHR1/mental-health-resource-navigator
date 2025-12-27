@@ -1,10 +1,10 @@
 // ========== Utility Functions ==========
 
-export function safeStr(x) {
+function safeStr(x) {
   return (x ?? "").toString().trim();
 }
 
-export function escapeHtml(s) {
+function escapeHtml(s) {
   const str = safeStr(s);
   return str
     .replace(/&/g, "&amp;")
@@ -15,7 +15,7 @@ export function escapeHtml(s) {
     .replace(/\//g, "&#x2F;");
 }
 
-export function safeUrl(u) {
+function safeUrl(u) {
   const s = safeStr(u);
   if (!s) return "";
   // Use validateUrl from security.js if available
@@ -36,7 +36,7 @@ export function safeUrl(u) {
   return "";
 }
 
-export function domainFromUrl(url) {
+function domainFromUrl(url) {
   try {
     const u = new URL(url);
     return (u.hostname || "").replace(/^www\./i, "");
@@ -45,7 +45,7 @@ export function domainFromUrl(url) {
   }
 }
 
-export function normalizePhoneForTel(phone) {
+function normalizePhoneForTel(phone) {
   const raw = safeStr(phone);
   if (!raw) return "";
   const plus = raw.trim().startsWith("+") ? "+" : "";
@@ -53,20 +53,20 @@ export function normalizePhoneForTel(phone) {
   return (plus + digits);
 }
 
-export function bestAddress(p) {
+function bestAddress(p) {
   const locs = Array.isArray(p.locations) ? p.locations : [];
   const l = locs[0] || {};
   const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
   return parts.join(", ");
 }
 
-export function mapsLinkFor(p) {
+function mapsLinkFor(p) {
   const addr = bestAddress(p);
   if (!addr) return "";
   return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
 }
 
-export function stableIdFor(p, i) {
+function stableIdFor(p, i) {
   const base = `${safeStr(p.program_id)}|${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
   let h = 2166136261;
   for (let k = 0; k < base.length; k++) {
@@ -76,7 +76,7 @@ export function stableIdFor(p, i) {
   return `p_${(h >>> 0).toString(16)}_${i}`;
 }
 
-export function locLabel(p) {
+function locLabel(p) {
   const locs = Array.isArray(p.locations) ? p.locations : [];
   const first = locs[0] || {};
   const city = safeStr(first.city);
@@ -86,18 +86,18 @@ export function locLabel(p) {
   return "Location not listed";
 }
 
-export function isCrisis(p) {
+function isCrisis(p) {
   return safeStr(p.entry_type).toLowerCase() === "crisis service";
 }
 
-export function hasVirtual(p) {
+function hasVirtual(p) {
   const setting = safeStr(p.service_setting).toLowerCase();
   if (setting.includes("virtual") || setting.includes("tele")) return true;
   const locs = Array.isArray(p.locations) ? p.locations : [];
   return locs.some(l => safeStr(l.city).toLowerCase() === "virtual");
 }
 
-export function parseAgeSpec(spec) {
+function parseAgeSpec(spec) {
   const s0 = safeStr(spec);
   if (!s0) return [];
   const s = s0.toLowerCase();
@@ -122,7 +122,7 @@ export function parseAgeSpec(spec) {
   return [];
 }
 
-export function programServesAge(p, age) {
+function programServesAge(p, age) {
   const ranges = parseAgeSpec(p.ages_served);
   if (!ranges.length) return false;
   return ranges.some(([min, max]) => age >= min && age <= max);
@@ -144,4 +144,5 @@ if (typeof window !== 'undefined') {
   window.parseAgeSpec = parseAgeSpec;
   window.programServesAge = programServesAge;
 }
+
 

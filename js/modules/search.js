@@ -2,7 +2,7 @@
 // Search functionality including fuzzy matching, autocomplete, and smart parsing
 
 // Fuzzy search utilities
-export function levenshteinDistance(str1, str2) {
+function levenshteinDistance(str1, str2) {
   const m = str1.length;
   const n = str2.length;
   const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
@@ -26,7 +26,7 @@ export function levenshteinDistance(str1, str2) {
   return dp[m][n];
 }
 
-export function fuzzyMatch(query, text, threshold = 0.7) {
+function fuzzyMatch(query, text, threshold = 0.7) {
   if (!query || !text) return false;
   const q = query.toLowerCase();
   const t = text.toLowerCase();
@@ -90,7 +90,7 @@ function fuzzyMatchSingleWord(query, text, threshold = 0.7) {
   return false;
 }
 
-export function findBestCityMatch(query, cities) {
+function findBestCityMatch(query, cities) {
   const q = query.toLowerCase().trim();
   if (!q) return null;
   
@@ -119,7 +119,7 @@ export function findBestCityMatch(query, cities) {
   return bestMatch;
 }
 
-export function parseSmartSearch(query, cities) {
+function parseSmartSearch(query, cities) {
   const q = query.toLowerCase();
   const filters = {
     loc: '',
