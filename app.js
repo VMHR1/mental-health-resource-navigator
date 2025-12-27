@@ -385,10 +385,16 @@ function buildLocationOptions(list){
 }
 
 function buildInsuranceOptions(list){
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:387',message:'buildInsuranceOptions called',data:{listLength:list?.length,hasInsuranceEl:!!els.insurance},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
   const typesSet = new Set();
   const plansSet = new Set();
   
   list.forEach(p => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:392',message:'Processing program insurance',data:{programId:p.program_id,hasAcceptedInsurance:!!p.accepted_insurance,acceptedInsuranceType:typeof p.accepted_insurance,insuranceKeys:p.accepted_insurance?Object.keys(p.accepted_insurance):[]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     const insurance = p.accepted_insurance || {};
     
     // Extract insurance types
@@ -421,6 +427,10 @@ function buildInsuranceOptions(list){
   const types = Array.from(typesSet).sort((a,b)=>a.localeCompare(b));
   const plans = Array.from(plansSet).sort((a,b)=>a.localeCompare(b));
   
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:421',message:'Insurance options extracted',data:{typesCount:types.length,plansCount:plans.length,typesSample:types.slice(0,3),plansSample:plans.slice(0,3)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+  // #endregion
+  
   let html = '<option value="">Any insurance</option>';
   
   // Add insurance types section
@@ -441,8 +451,19 @@ function buildInsuranceOptions(list){
     html += '</optgroup>';
   }
   
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:444',message:'Setting insurance HTML',data:{htmlLength:html.length,hasInsuranceEl:!!els.insurance,htmlPreview:html.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
+  
   if (els.insurance) {
     els.insurance.innerHTML = html;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:447',message:'Insurance HTML set successfully',data:{optionsCount:els.insurance.options.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
+  } else {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:450',message:'Insurance element not found',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
   }
 }
 
@@ -1277,7 +1298,18 @@ function syncTopToggles(){
 }
 
 function bind(){
-  const on = (el, ev, fn) => el.addEventListener(ev, fn);
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1300',message:'bind() called - checking DOM elements',data:{hasShowAdvanced:!!els.showAdvanced,hasAdvancedFilters:!!els.advancedFilters,showAdvancedId:els.showAdvanced?.id,advancedFiltersId:els.advancedFilters?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+  // #endregion
+  const on = (el, ev, fn) => {
+    // #region agent log
+    if (!el) {
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1301',message:'on() called with null element',data:{event:ev},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+      return;
+    }
+    // #endregion
+    el.addEventListener(ev, fn);
+  };
 
   let raf = null;
   function scheduleRender(){
@@ -1378,10 +1410,29 @@ function bind(){
   });
 
   // Advanced filters toggle
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1401',message:'Attaching advanced filters click handler',data:{hasShowAdvanced:!!els.showAdvanced,hasAdvancedFilters:!!els.advancedFilters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+  // #endregion
   on(els.showAdvanced, "click", () => {
-    const isHidden = els.advancedFilters.style.display === "none";
-    els.advancedFilters.style.display = isHidden ? "block" : "none";
-    els.showAdvanced.querySelector('span:last-child').textContent = isHidden ? "Hide Filters" : "Advanced Filters";
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1403',message:'Advanced filters click handler fired',data:{currentDisplay:els.advancedFilters?.style.display,hasAdvancedFilters:!!els.advancedFilters,hasShowAdvanced:!!els.showAdvanced},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+    // #endregion
+    try {
+      const isHidden = els.advancedFilters.style.display === "none";
+      els.advancedFilters.style.display = isHidden ? "block" : "none";
+      const lastSpan = els.showAdvanced.querySelector('span:last-child');
+      if (lastSpan) {
+        lastSpan.textContent = isHidden ? "Hide Filters" : "Advanced Filters";
+      }
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1410',message:'Advanced filters toggle completed',data:{newDisplay:els.advancedFilters.style.display,isHidden,hasLastSpan:!!lastSpan},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+      // #endregion
+    } catch (error) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1413',message:'Error in advanced filters toggle',data:{error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+      // #endregion
+      console.error('Error toggling advanced filters:', error);
+    }
   });
 
   // Triage buttons
@@ -1486,6 +1537,9 @@ async function loadPrograms(){
     const data = await res.json();
     if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
 
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1489',message:'Mapping programs data',data:{rawProgramsCount:data.programs.length,firstProgramHasInsurance:!!data.programs[0]?.accepted_insurance,firstProgramInsuranceKeys:data.programs[0]?.accepted_insurance?Object.keys(data.programs[0].accepted_insurance):[]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     programs = data.programs.map(p => ({
       program_id: p.program_id || "",
       entry_type: p.entry_type || "Treatment Program",
@@ -1504,8 +1558,12 @@ async function loadPrograms(){
       verification_source: p.verification_source || "",
       last_verified: p.last_verified || "",
       accepting_new_patients: p.accepting_new_patients || "Unknown",
-      waitlist_status: p.waitlist_status || "Unknown"
+      waitlist_status: p.waitlist_status || "Unknown",
+      accepted_insurance: p.accepted_insurance || null
     }));
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1509',message:'Programs mapped',data:{mappedProgramsCount:programs.length,firstMappedHasInsurance:!!programs[0]?.accepted_insurance},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
 
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);
