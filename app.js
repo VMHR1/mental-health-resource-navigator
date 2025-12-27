@@ -96,6 +96,7 @@ const els = {
   showCrisisTop: document.getElementById("showCrisisTop"),
   onlyVirtualTop: document.getElementById("onlyVirtualTop"),
   reset: document.getElementById("reset"),
+  resetTop: document.getElementById("resetTop"),
   viewAll: document.getElementById("viewAll"),
   treatmentSection: document.getElementById("treatmentSection"),
   treatmentGrid: document.getElementById("treatmentGrid"),
@@ -127,6 +128,88 @@ const els = {
   helpModal: document.getElementById("helpModal"),
   shareFilters: document.getElementById("shareFilters")
 };
+
+// ========== Document-Level Event Delegation ==========
+// Set up early to handle dynamically added cards (including on first page load)
+document.addEventListener('click', (e) => {
+  // Handle expand button clicks
+  const expandBtn = e.target.closest('.expandBtn');
+  if (expandBtn) {
+    const card = expandBtn.closest('.card');
+    if (card) {
+      const id = card.dataset.id;
+      if (id && typeof toggleOpen === 'function') {
+        toggleOpen(id);
+      }
+    }
+    return;
+  }
+
+  // Handle card action buttons (only if functions are defined)
+  const favoriteBtn = e.target.closest('[data-favorite]');
+  if (favoriteBtn && typeof toggleFavorite === 'function') {
+    e.preventDefault();
+    const id = favoriteBtn.dataset.favorite;
+    toggleFavorite(id);
+    // Update button state
+    const card = favoriteBtn.closest('.card');
+    if (card) {
+      const program = programDataMap.get(id);
+      if (program) {
+        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        if (typeof createCard === 'function') {
+          const newCard = createCard(program, idx);
+          card.replaceWith(newCard);
+        }
+      }
+    }
+    return;
+  }
+
+  const shareBtn = e.target.closest('[data-share]');
+  if (shareBtn && typeof shareProgram === 'function') {
+    e.preventDefault();
+    const id = shareBtn.dataset.share;
+    shareProgram(id);
+    return;
+  }
+
+  // Handle comparison checkbox
+  const compareCheckbox = e.target.closest('[data-compare]');
+  if (compareCheckbox && !compareCheckbox.disabled && typeof toggleComparison === 'function') {
+    e.preventDefault();
+    const programId = compareCheckbox.dataset.compare;
+    toggleComparison(programId);
+    // Update card state
+    const card = compareCheckbox.closest('.card');
+    if (card) {
+      const id = card.dataset.id;
+      const program = programDataMap.get(id);
+      if (program) {
+        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        if (typeof createCard === 'function') {
+          const newCard = createCard(program, idx);
+          card.replaceWith(newCard);
+        }
+      }
+    }
+    return;
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  const expandBtn = e.target.closest('.expandBtn');
+  if (expandBtn && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    const card = expandBtn.closest('.card');
+    if (card) {
+      const id = card.dataset.id;
+      if (id && typeof toggleOpen === 'function') {
+        toggleOpen(id);
+      }
+    }
+  }
+});
 
 // ========== Fuzzy Search Utilities ==========
 function levenshteinDistance(str1, str2) {
@@ -1689,8 +1772,7 @@ function renderProgressive(activeList, isCrisisList = false) {
     els.treatmentGrid.appendChild(card);
   });
   
-  // Setup event delegation for newly rendered cards
-  setupCardEventDelegation(els.treatmentGrid);
+  // Event delegation is handled at document level - no need to set up here
   
   // Show "Load More" button if there are more items
   const loadMoreBtn = document.getElementById('loadMoreBtn');
@@ -1761,7 +1843,7 @@ function render(){
         card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
         els.treatmentGrid.appendChild(card);
       });
-      setupCardEventDelegation(els.treatmentGrid);
+      // Event delegation is handled at document level
     }
     
     // Remove load more button if it exists
@@ -1874,13 +1956,14 @@ function renderAutocomplete(suggestions) {
   input.setAttribute('aria-expanded', 'true');
   
   const html = suggestions.map((suggestion, index) => {
-    const icon = suggestion.type === 'popular' ? '🔥' : 
-                 suggestion.type === 'recent' ? '🕒' :
-                 suggestion.type === 'program' ? '🏥' :
-                 suggestion.type === 'organization' ? '🏢' : '📍';
+    // No emojis - use text labels instead
+    const label = suggestion.type === 'popular' ? 'Popular' : 
+                 suggestion.type === 'recent' ? 'Recent' :
+                 suggestion.type === 'program' ? 'Program' :
+                 suggestion.type === 'organization' ? 'Organization' : 'Location';
     return `
       <div class="suggestion-item" role="option" data-index="${index}" aria-selected="false">
-        <span class="suggestion-icon">${icon}</span>
+        <span class="suggestion-label">${escapeHtml(label)}</span>
         <span class="suggestion-text">${escapeHtml(suggestion.text)}</span>
       </div>
     `;
@@ -2113,18 +2196,25 @@ function bind(){
   });
   on(els.onlyVirtualTop, "change", () => { els.onlyVirtual.checked = els.onlyVirtualTop.checked; scheduleRender(); syncTopToggles(); });
 
-  on(els.reset, "click", () => {
+  function resetFilters() {
     els.q.value = "";
     els.loc.value = "";
     els.age.value = "";
     if (window.__ageDropdownSync) window.__ageDropdownSync();
     els.care.value = "";
+    if (els.insurance) els.insurance.value = "";
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
     openId = null;
     syncTopToggles();
+    updateURLState();
     render();
-  });
+  }
+  
+  on(els.reset, "click", resetFilters);
+  if (els.resetTop) {
+    on(els.resetTop, "click", resetFilters);
+  }
 
   on(els.viewAll, "click", () => {
     els.q.value = "";
@@ -2614,77 +2704,15 @@ document.addEventListener('click', (e) => {
   }
 });
 // Handle expand button clicks via event delegation (for main grid and favorites modal)
+// Note: Main grid uses document-level delegation (see below), but this function is kept
+// for containers that need specific delegation (like modals)
 function setupCardEventDelegation(container) {
-  container.addEventListener('click', (e) => {
-  const expandBtn = e.target.closest('.expandBtn');
-  if (expandBtn) {
-    const card = expandBtn.closest('.card');
-    if (card) {
-      const id = card.dataset.id;
-      toggleOpen(id);
-    }
-    return;
-  }
-
-  // Handle card action buttons
-  const favoriteBtn = e.target.closest('[data-favorite]');
-  if (favoriteBtn) {
-    e.preventDefault();
-    const id = favoriteBtn.dataset.favorite;
-    toggleFavorite(id);
-    // Update button state
-    const card = favoriteBtn.closest('.card');
-    if (card) {
-      const newCard = createCard(programDataMap.get(id), Array.from(programDataMap.keys()).indexOf(id));
-      card.replaceWith(newCard);
-    }
-    return;
-  }
-
-  const shareBtn = e.target.closest('[data-share]');
-  if (shareBtn) {
-    e.preventDefault();
-    const id = shareBtn.dataset.share;
-    shareProgram(id);
-    return;
-  }
-
-  // Handle comparison checkbox
-  const compareCheckbox = e.target.closest('[data-compare]');
-  if (compareCheckbox && !compareCheckbox.disabled) {
-    e.preventDefault();
-    const programId = compareCheckbox.dataset.compare;
-    toggleComparison(programId);
-    // Update card state
-    const card = compareCheckbox.closest('.card');
-    if (card) {
-      const id = card.dataset.id;
-      const program = programDataMap.get(id);
-      if (program) {
-        const idx = Array.from(programDataMap.keys()).indexOf(id);
-        const newCard = createCard(program, idx);
-        card.replaceWith(newCard);
-      }
-    }
-    return;
-  }
-  });
+  if (!container) return;
+  // For specific containers, we can add container-specific handlers if needed
+  // Main grid uses document-level delegation for better dynamic content support
 }
 
-// Setup event delegation for main grid
-setupCardEventDelegation(els.treatmentGrid);
-
-els.treatmentGrid.addEventListener('keydown', (e) => {
-  const expandBtn = e.target.closest('.expandBtn');
-  if (expandBtn && (e.key === "Enter" || e.key === " ")) {
-    e.preventDefault();
-    const card = expandBtn.closest('.card');
-    if (card) {
-      const id = card.dataset.id;
-      toggleOpen(id);
-    }
-  }
-});
+// Document-level event delegation is set up in initialization section above
 // Handle empty state actions
 document.addEventListener('click', (e) => {
   const action = e.target.dataset.action;
@@ -2856,6 +2884,8 @@ function handleURLParams() {
     });
   }
 }
+
+// Document-level event delegation is set up at the top of the file (after DOM elements)
 
 // Initialize
 initAgeDropdown();
