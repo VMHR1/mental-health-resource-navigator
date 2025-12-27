@@ -1835,14 +1835,17 @@ footer{
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: auto;
 }
 
 .comparison-table th,
 .comparison-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   text-align: left;
   border-bottom: 1px solid var(--stroke);
   vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .comparison-table th {
@@ -1857,16 +1860,103 @@ footer{
   background: var(--bg1);
 }
 
+.comparison-label-header {
+  min-width: 180px;
+  width: 180px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg1);
+}
+
 .comparison-label {
   font-weight: 600;
   color: var(--muted);
-  min-width: 150px;
-  max-width: 200px;
+  min-width: 180px;
+  width: 180px;
+  background: rgba(242, 251, 255, 0.5);
+}
+
+.comparison-program-header {
+  min-width: 280px;
+  width: 280px;
 }
 
 .comparison-value {
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 280px;
+  max-width: 400px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.comparison-value:has(.comparison-insurance-list) {
+  padding: 14px 18px;
+  vertical-align: top;
+  overflow: visible;
+}
+
+.comparison-value .comparison-insurance-list {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comparison-link {
+  color: var(--b);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comparison-link:hover {
+  border-bottom-color: var(--b);
+  text-decoration: none;
+}
+
+.comparison-insurance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  margin: 0;
+  min-height: 40px;
+}
+
+.comparison-insurance-list:only-child {
+  width: 100%;
+}
+
+.comparison-insurance-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.comparison-insurance-list::-webkit-scrollbar-track {
+  background: rgba(15,23,42,.05);
+  border-radius: 3px;
+}
+
+.comparison-insurance-list::-webkit-scrollbar-thumb {
+  background: rgba(15,23,42,.15);
+  border-radius: 3px;
+}
+
+.comparison-insurance-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(15,23,42,.25);
+}
+
+.comparison-insurance-item {
+  padding: 6px 10px;
+  background: rgba(122,167,255,.08);
+  border: 1px solid rgba(122,167,255,.15);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  color: var(--ink);
 }
 
 .comparison-header {
@@ -1875,13 +1965,18 @@ footer{
   gap: 12px;
 }
 
+.comparison-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .comparison-header .remove-compare {
   background: var(--danger);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1890,6 +1985,7 @@ footer{
   line-height: 1;
   flex-shrink: 0;
   transition: var(--transition);
+  font-weight: bold;
 }
 
 .comparison-header .remove-compare:hover {
@@ -1897,19 +1993,20 @@ footer{
   transform: scale(1.1);
 }
 
-.comparison-header > div {
-  flex: 1;
-  min-width: 0;
-}
-
 .comparison-header strong {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   word-wrap: break-word;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
-.comparison-header span {
+.comparison-org {
   display: block;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
 @media (max-width: 768px) {
@@ -1923,17 +2020,28 @@ footer{
   
   .comparison-table th,
   .comparison-table td {
-    padding: 8px 12px;
+    padding: 10px 12px;
   }
   
+  .comparison-label-header,
   .comparison-label {
-    min-width: 120px;
-    max-width: 150px;
+    min-width: 140px;
+    width: 140px;
+    font-size: 11px;
   }
   
+  .comparison-program-header,
   .comparison-value {
-    min-width: 150px;
-    max-width: 200px;
+    min-width: 200px;
+    max-width: 250px;
+  }
+  
+  .comparison-header strong {
+    font-size: 13px;
+  }
+  
+  .comparison-org {
+    font-size: 11px;
   }
 }
 

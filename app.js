@@ -888,36 +888,51 @@ function renderComparison() {
   
   // Create comparison table
   const fields = [
-    { label: 'Program Name', getValue: (p) => safeStr(p.program_name) },
-    { label: 'Organization', getValue: (p) => safeStr(p.organization) },
-    { label: 'Level of Care', getValue: (p) => safeStr(p.level_of_care) },
-    { label: 'Location', getValue: (p) => locLabel(p) },
-    { label: 'Ages Served', getValue: (p) => safeStr(p.ages_served) },
-    { label: 'Service Setting', getValue: (p) => safeStr(p.service_setting) },
-    { label: 'Phone', getValue: (p) => safeStr(p.phone) },
+    { label: 'Program Name', getValue: (p) => safeStr(p.program_name), isHtml: false },
+    { label: 'Organization', getValue: (p) => safeStr(p.organization), isHtml: false },
+    { label: 'Level of Care', getValue: (p) => safeStr(p.level_of_care), isHtml: false },
+    { label: 'Location', getValue: (p) => locLabel(p), isHtml: false },
+    { label: 'Ages Served', getValue: (p) => safeStr(p.ages_served), isHtml: false },
+    { label: 'Service Setting', getValue: (p) => safeStr(p.service_setting), isHtml: false },
+    { label: 'Phone', getValue: (p) => {
+      const phone = safeStr(p.phone);
+      if (!phone) return '—';
+      const tel = normalizePhoneForTel(phone);
+      return tel ? `<a href="tel:${escapeHtml(tel)}" class="comparison-link">${escapeHtml(phone)}</a>` : escapeHtml(phone);
+    }, isHtml: true },
     { label: 'Website', getValue: (p) => {
       const url = safeUrl(p.website_url || p.website || '');
-      return url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(domainFromUrl(url) || url)}</a>` : '—';
-    }},
+      if (!url) return '—';
+      const domain = domainFromUrl(url) || url;
+      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="comparison-link">${escapeHtml(domain)} <span aria-hidden="true">↗</span></a>`;
+    }, isHtml: true },
     { label: 'Insurance', getValue: (p) => {
       const ins = p.accepted_insurance || {};
       const types = Array.isArray(ins.types) ? ins.types : [];
       const plans = Array.isArray(ins.plans) ? ins.plans : [];
       if (types.length > 0 || plans.length > 0) {
-        return [...types, ...plans].slice(0, 3).join(', ') + (types.length + plans.length > 3 ? '...' : '');
+        const allItems = [...types, ...plans];
+        if (allItems.length === 0) {
+          return escapeHtml(safeStr(p.insurance_notes) || 'Unknown');
+        }
+        // Display all insurance items in a formatted list
+        const itemsHtml = allItems.map(item => {
+          const cleanItem = safeStr(item).trim();
+          return cleanItem ? `<div class="comparison-insurance-item">${escapeHtml(cleanItem)}</div>` : '';
+        }).filter(Boolean).join('');
+        return `<div class="comparison-insurance-list">${itemsHtml}</div>`;
       }
-      return safeStr(p.insurance_notes) || 'Unknown';
-    }},
-    { label: 'Accepting New Patients', getValue: (p) => safeStr(p.accepting_new_patients) },
-    { label: 'Waitlist Status', getValue: (p) => safeStr(p.waitlist_status) },
-    { label: 'Notes', getValue: (p) => safeStr(p.notes) || '—' }
+      return escapeHtml(safeStr(p.insurance_notes) || 'Unknown');
+    }, isHtml: true },
+    { label: 'Accepting New Patients', getValue: (p) => safeStr(p.accepting_new_patients), isHtml: false },
+    { label: 'Notes', getValue: (p) => safeStr(p.notes) || '—', isHtml: false }
   ];
   
-  let html = '<div class="comparison-table-wrapper"><table class="comparison-table"><thead><tr><th>Field</th>';
+  let html = '<div class="comparison-table-wrapper"><table class="comparison-table"><thead><tr><th class="comparison-label-header">Field</th>';
   comparisonPrograms.forEach((p) => {
     // Find the program ID from the comparisonSet
     const programId = Array.from(comparisonSet).find(id => programDataMap.get(id) === p);
-    html += `<th><div class="comparison-header"><button type="button" class="remove-compare" data-remove="${escapeHtml(programId)}" aria-label="Remove from comparison">×</button><div><strong>${escapeHtml(safeStr(p.program_name))}</strong><br><span style="color: var(--muted); font-size: 12px;">${escapeHtml(safeStr(p.organization))}</span></div></div></th>`;
+    html += `<th class="comparison-program-header"><div class="comparison-header"><button type="button" class="remove-compare" data-remove="${escapeHtml(programId)}" aria-label="Remove from comparison">×</button><div class="comparison-header-content"><strong>${escapeHtml(safeStr(p.program_name))}</strong><br><span class="comparison-org">${escapeHtml(safeStr(p.organization))}</span></div></div></th>`;
   });
   html += '</tr></thead><tbody>';
   
@@ -925,7 +940,7 @@ function renderComparison() {
     html += '<tr><td class="comparison-label">' + escapeHtml(field.label) + '</td>';
     comparisonPrograms.forEach(p => {
       const value = field.getValue(p);
-      html += '<td class="comparison-value">' + (typeof value === 'string' ? escapeHtml(value) : value) + '</td>';
+      html += '<td class="comparison-value">' + (field.isHtml ? value : escapeHtml(value)) + '</td>';
     });
     html += '</tr>';
   });
