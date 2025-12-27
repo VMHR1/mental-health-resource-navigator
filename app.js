@@ -1661,24 +1661,48 @@ function setupPrivacyControls() {
 }
 
 async function loadPrograms(){
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1663',message:'loadPrograms called',data:{securityJsAvailable:typeof window.validateJSON==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
   els.loadWarn.classList.remove("show");
   els.loadWarn.textContent = "";
   renderSkeletons();
 
   try{
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1669',message:'Fetching programs.json',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     const res = await fetch("programs.json", { cache:"no-store" });
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1670',message:'Fetch response received',data:{status:res.status,ok:res.ok,contentType:res.headers.get('content-type')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     if(!res.ok) throw new Error(`programs.json not found (HTTP ${res.status}). Make sure it is in the repo root next to index.html.`);
     const jsonText = await res.text();
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1672',message:'JSON text received',data:{textLength:jsonText.length,firstChars:jsonText.substring(0,50)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
     
     // Parse JSON - use validation if available, but always allow fallback
     let data;
     try {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1677',message:'Attempting JSON.parse',data:{validateJsonAvailable:typeof window.validateJSON==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
       // Try to parse directly first (most reliable)
       data = JSON.parse(jsonText);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1678',message:'JSON.parse succeeded',data:{hasPrograms:!!data.programs,programsLength:data.programs?.length,topLevelKeys:Object.keys(data)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
       
       // If validation is available, run it but don't block on failure
       if (typeof window.validateJSON === 'function') {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1681',message:'Running validateJSON',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
         const jsonValidation = window.validateJSON(jsonText);
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1682',message:'validateJSON result',data:{valid:jsonValidation.valid,error:jsonValidation.error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
         if (!jsonValidation.valid) {
           // Log warning but don't fail - validation might be too strict
           console.warn('JSON validation warning (non-blocking):', jsonValidation.error);
@@ -1687,17 +1711,30 @@ async function loadPrograms(){
           }
           // Continue with parsed data anyway
         }
+      } else {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1689',message:'validateJSON not available',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
       }
     } catch (parseError) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1691',message:'JSON.parse failed',data:{error:parseError.message,errorName:parseError.name,stack:parseError.stack?.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
       if (typeof window.logSecurityEvent === 'function') {
         window.logSecurityEvent('json_parse_error', { error: parseError.message });
       }
       throw new Error(`Failed to parse programs.json: ${parseError.message}`);
     }
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1697',message:'Checking data.programs',data:{hasData:!!data,hasPrograms:!!data?.programs,isArray:Array.isArray(data?.programs),programsLength:data?.programs?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
     
     // Validate program structure
     if (typeof window.validateProgramStructure === 'function') {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1700',message:'Starting program structure validation',data:{programsCount:data.programs.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       const invalidPrograms = [];
       data.programs.forEach((p, idx) => {
         const validation = window.validateProgramStructure(p);
@@ -1705,6 +1742,9 @@ async function loadPrograms(){
           invalidPrograms.push({ index: idx, programId: p.program_id, errors: validation.errors });
         }
       });
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1708',message:'Program validation complete',data:{invalidCount:invalidPrograms.length,firstInvalid:invalidPrograms[0]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       if (invalidPrograms.length > 0) {
         if (typeof window.logSecurityEvent === 'function') {
           window.logSecurityEvent('data_integrity_issues', { count: invalidPrograms.length, programs: invalidPrograms.slice(0, 5) });
@@ -1743,6 +1783,9 @@ async function loadPrograms(){
     openId = null;
     render();
   }catch(err){
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1746',message:'loadPrograms catch block',data:{errorMessage:err.message,errorName:err.name,errorStack:err.stack?.substring(0,300),includesInvalid:err.message.includes('Invalid JSON')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     console.error(err);
     els.loadWarn.textContent = `Couldn't load programs.json. ${err.message}`;
     els.loadWarn.classList.add("show");

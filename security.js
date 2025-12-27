@@ -135,18 +135,36 @@ function escapeHtml(s) {
 
 // ========== JSON Validation ==========
 function validateJSON(jsonString) {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:137',message:'validateJSON called',data:{jsonLength:jsonString?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
   try {
     const parsed = JSON.parse(jsonString);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:140',message:'JSON parsed in validateJSON',data:{type:typeof parsed,isNull:parsed===null,topLevelKeys:parsed&&typeof parsed==='object'?Object.keys(parsed).slice(0,5):[]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     // Check for prototype pollution (only check own properties, not inherited)
     if (typeof parsed === 'object' && parsed !== null) {
       // Only check direct properties, not inherited ones
       const ownProps = Object.keys(parsed);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:144',message:'Checking ownProps',data:{ownPropsCount:ownProps.length,hasProto:ownProps.includes('__proto__'),hasConstructor:ownProps.includes('constructor'),firstProps:ownProps.slice(0,5)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       if (ownProps.includes('__proto__') || ownProps.includes('constructor')) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:145',message:'Dangerous properties detected',data:{hasProto:ownProps.includes('__proto__'),hasConstructor:ownProps.includes('constructor')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
         return { valid: false, error: 'Invalid JSON structure: dangerous properties detected' };
       }
     }
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:148',message:'validateJSON returning valid',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     return { valid: true, data: parsed };
   } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'security.js:150',message:'validateJSON parse error',data:{error:error.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     return { valid: false, error: error.message };
   }
 }
