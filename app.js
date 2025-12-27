@@ -2,11 +2,6 @@
 // Load security module (encryption, validation, etc.)
 // Security functions are available globally after security.js loads
 
-// #region agent log
-console.log('[DEBUG]', {location:'app.js:1',message:'Script starting',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'});
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1',message:'Script starting',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// #endregion
-
 // ========== State Management ==========
 let programs = [];
 let ready = false;
@@ -91,10 +86,6 @@ let comparisonSet = new Set(JSON.parse(localStorage.getItem('comparison') || '[]
 const programDataMap = new Map();
 
 // ========== DOM Elements ==========
-// #region agent log
-console.log('[DEBUG]', {location:'app.js:88',message:'Getting DOM elements',data:{documentReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'});
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:88',message:'Getting DOM elements',data:{documentReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-// #endregion
 const els = {
   q: document.getElementById("q"),
   loc: document.getElementById("loc"),
@@ -137,11 +128,6 @@ const els = {
   helpModal: document.getElementById("helpModal"),
   shareFilters: document.getElementById("shareFilters")
 };
-// #region agent log
-const logEls = {location:'app.js:130',message:'DOM elements retrieved',data:{hasQ:!!els.q,hasTreatmentGrid:!!els.treatmentGrid,hasTreatmentSection:!!els.treatmentSection},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-console.log('[DEBUG]', logEls);
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logEls)}).catch(()=>{});
-// #endregion
 
 // ========== Document-Level Event Delegation ==========
 // Set up early to handle dynamically added cards (including on first page load)
@@ -898,9 +884,6 @@ function calculateRelevanceScore(program, query) {
 }
 
 function matchesFilters(p){
-  // #region agent log
-  const programId = safeStr(p.program_id || p.program_name || 'unknown');
-  // #endregion
   const q = safeStr(els.q?.value || '').toLowerCase();
   const loc = safeStr(els.loc?.value || '').toLowerCase();
   const ageVal = safeStr(els.age?.value || '');
@@ -910,10 +893,6 @@ function matchesFilters(p){
   // Parse smart search to get additional filters
   const parsed = parseSmartSearch(els.q?.value || '');
   const searchMinAge = parsed.minAge;
-  
-  // #region agent log
-  const filterState = {q:q,loc:loc,ageVal:ageVal,care:care,onlyVirtual:onlyVirtual,parsedLoc:parsed.loc,parsedLocs:parsed.locs,parsedAge:parsed.age,parsedCare:parsed.care};
-  // #endregion
 
   // Text search - check if query terms appear in program fields
   if (q && q.trim()) {
@@ -1078,15 +1057,9 @@ function matchesFilters(p){
   }
 
   if (onlyVirtual && !hasVirtual(p)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1050',message:'matchesFilters() return false - onlyVirtual',data:{programId:programId,filterState:filterState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     return false;
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:1055',message:'matchesFilters() return true',data:{programId:programId,filterState:filterState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   return true;
 }
 
@@ -2044,34 +2017,13 @@ function renderProgressive(activeList, isCrisisList = false) {
 }
 
 function render(){
-  // #region agent log
-  const logData1 = {location:'app.js:2016',message:'render() entry',data:{ready:ready,programsLength:programs.length,hasTreatmentGrid:!!els.treatmentGrid},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B,D'};
-  console.log('[DEBUG]', logData1);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData1)}).catch(()=>{});
-  // #endregion
   if (!ready) {
-    // #region agent log
-    const logData2 = {location:'app.js:2017',message:'render() early return - ready=false',data:{ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
-    console.log('[DEBUG]', logData2);
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData2)}).catch(()=>{});
-    // #endregion
     return;
   }
 
   const showCrisis = els.showCrisis?.checked || false;
 
-  // #region agent log
-  let matchesTrueCount = 0;
-  let matchesFalseCount = 0;
-  const filtered = programs.filter(p => {
-    const result = matchesFilters(p);
-    if (result) matchesTrueCount++; else matchesFalseCount++;
-    return result;
-  });
-  const logData3 = {location:'app.js:2021',message:'after filter()',data:{programsLength:programs.length,filteredLength:filtered.length,matchesTrue:matchesTrueCount,matchesFalse:matchesFalseCount},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C,E'};
-  console.log('[DEBUG]', logData3);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData3)}).catch(()=>{});
-  // #endregion
+  const filtered = programs.filter(p => matchesFilters(p));
 
   const treatment = filtered.filter(p => !isCrisis(p));
   const crisis = filtered.filter(p => isCrisis(p));
@@ -2114,41 +2066,20 @@ function render(){
   if (els.resultsLabel) els.resultsLabel.textContent = showCrisis ? "crisis matches" : "treatment matches";
   if (els.totalCount) els.totalCount.textContent = String(activeList.length);
 
-  // #region agent log
-  const logData4 = {location:'app.js:2065',message:'before DOM update',data:{activeListLength:activeList.length,hasTreatmentGrid:!!els.treatmentGrid,showCrisis:showCrisis},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D,E'};
-  console.log('[DEBUG]', logData4);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData4)}).catch(()=>{});
-  // #endregion
   // Use progressive loading for large result sets
   if (activeList.length > 20) {
     renderProgressive(activeList, showCrisis);
   } else {
     // Small result sets - render all at once
-  if (els.treatmentGrid) {
-    els.treatmentGrid.innerHTML = "";
-    // #region agent log
-    const logData5 = {location:'app.js:2071',message:'rendering cards',data:{activeListLength:activeList.length,cardsToRender:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-    console.log('[DEBUG]', logData5);
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData5)}).catch(()=>{});
-    // #endregion
-    activeList.forEach((p, idx) => {
-      const realIdx = showCrisis ? (idx + 10000) : idx;
-      const card = createCard(p, realIdx);
-      card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
-      els.treatmentGrid.appendChild(card);
-    });
-    // #region agent log
-    const logData6 = {location:'app.js:2078',message:'after rendering cards',data:{gridChildrenCount:els.treatmentGrid.children.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-    console.log('[DEBUG]', logData6);
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData6)}).catch(()=>{});
-    // #endregion
+    if (els.treatmentGrid) {
+      els.treatmentGrid.innerHTML = "";
+      activeList.forEach((p, idx) => {
+        const realIdx = showCrisis ? (idx + 10000) : idx;
+        const card = createCard(p, realIdx);
+        card.style.animationDelay = `${Math.min(idx, 18) * 18}ms`;
+        els.treatmentGrid.appendChild(card);
+      });
       // Event delegation is handled at document level
-    } else {
-      // #region agent log
-      const logData7 = {location:'app.js:2081',message:'els.treatmentGrid is null/undefined',data:{activeListLength:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-      console.log('[DEBUG]', logData7);
-      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData7)}).catch(()=>{});
-      // #endregion
     }
     
     // Remove load more button if it exists
@@ -2902,11 +2833,6 @@ function setupPrivacyControls() {
 }
 
 async function loadPrograms(retryCount = 0){
-  // #region agent log
-  const logLoadStart = {location:'app.js:2886',message:'loadPrograms() entry',data:{retryCount:retryCount,hasLoadWarn:!!els.loadWarn},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
-  console.log('[DEBUG]', logLoadStart);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logLoadStart)}).catch(()=>{});
-  // #endregion
   const maxRetries = 3;
   const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
   
@@ -3051,11 +2977,6 @@ async function loadPrograms(retryCount = 0){
     updateStats();
     updateComparisonCount();
     ready = true;
-    // #region agent log
-    const logData8 = {location:'app.js:2990',message:'programs loaded, ready=true',data:{programsLength:programs.length,ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'};
-    console.log('[DEBUG]', logData8);
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData8)}).catch(()=>{});
-    // #endregion
     openId = null;
     render();
   }catch(err){
@@ -3311,30 +3232,10 @@ function handleURLParams() {
 // Document-level event delegation is set up at the top of the file (after DOM elements)
 
 // Initialize
-// #region agent log
-const logInit = {location:'app.js:3280',message:'Initialization starting',data:{hasInitAgeDropdown:typeof initAgeDropdown==='function',hasBind:typeof bind==='function',hasLoadPrograms:typeof loadPrograms==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
-console.log('[DEBUG]', logInit);
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logInit)}).catch(()=>{});
-// #endregion
 initAgeDropdown();
-// #region agent log
-const logBind = {location:'app.js:3285',message:'calling bind()',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
-console.log('[DEBUG]', logBind);
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logBind)}).catch(()=>{});
-// #endregion
 bind();
 initSwipeGestures();
-// #region agent log
-const logLoad = {location:'app.js:3290',message:'calling loadPrograms()',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'};
-console.log('[DEBUG]', logLoad);
-fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logLoad)}).catch(()=>{});
-// #endregion
 loadPrograms().then(() => {
-  // #region agent log
-  const logAfterLoad = {location:'app.js:3293',message:'loadPrograms() resolved',data:{ready:ready,programsLength:programs.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'};
-  console.log('[DEBUG]', logAfterLoad);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logAfterLoad)}).catch(()=>{});
-  // #endregion
   // Clear any stale dataset attributes on initial load if q is empty
   if (els.q && (!els.q.value || !els.q.value.trim())) {
     delete els.q.dataset.exactMatch;
@@ -3344,10 +3245,5 @@ loadPrograms().then(() => {
   renderRecentSearches();
   updateFavoritesCount();
 }).catch(err => {
-  // #region agent log
-  const logLoadError = {location:'app.js:3300',message:'loadPrograms() rejected',data:{error:err.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'};
-  console.log('[DEBUG]', logLoadError);
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logLoadError)}).catch(()=>{});
-  // #endregion
   console.error('Failed to load programs:', err);
 });
