@@ -2030,11 +2030,15 @@ function renderProgressive(activeList, isCrisisList = false) {
 
 function render(){
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2016',message:'render() entry',data:{ready:ready,programsLength:programs.length,hasTreatmentGrid:!!els.treatmentGrid},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B,D'})}).catch(()=>{});
+  const logData1 = {location:'app.js:2016',message:'render() entry',data:{ready:ready,programsLength:programs.length,hasTreatmentGrid:!!els.treatmentGrid},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B,D'};
+  console.log('[DEBUG]', logData1);
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData1)}).catch(()=>{});
   // #endregion
   if (!ready) {
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2017',message:'render() early return - ready=false',data:{ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    const logData2 = {location:'app.js:2017',message:'render() early return - ready=false',data:{ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
+    console.log('[DEBUG]', logData2);
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData2)}).catch(()=>{});
     // #endregion
     return;
   }
@@ -2049,7 +2053,9 @@ function render(){
     if (result) matchesTrueCount++; else matchesFalseCount++;
     return result;
   });
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2021',message:'after filter()',data:{programsLength:programs.length,filteredLength:filtered.length,matchesTrue:matchesTrueCount,matchesFalse:matchesFalseCount},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C,E'})}).catch(()=>{});
+  const logData3 = {location:'app.js:2021',message:'after filter()',data:{programsLength:programs.length,filteredLength:filtered.length,matchesTrue:matchesTrueCount,matchesFalse:matchesFalseCount},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C,E'};
+  console.log('[DEBUG]', logData3);
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData3)}).catch(()=>{});
   // #endregion
 
   const treatment = filtered.filter(p => !isCrisis(p));
@@ -2094,7 +2100,9 @@ function render(){
   if (els.totalCount) els.totalCount.textContent = String(activeList.length);
 
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2065',message:'before DOM update',data:{activeListLength:activeList.length,hasTreatmentGrid:!!els.treatmentGrid,showCrisis:showCrisis},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D,E'})}).catch(()=>{});
+  const logData4 = {location:'app.js:2065',message:'before DOM update',data:{activeListLength:activeList.length,hasTreatmentGrid:!!els.treatmentGrid,showCrisis:showCrisis},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D,E'};
+  console.log('[DEBUG]', logData4);
+  fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData4)}).catch(()=>{});
   // #endregion
   // Use progressive loading for large result sets
   if (activeList.length > 20) {
@@ -2104,7 +2112,9 @@ function render(){
   if (els.treatmentGrid) {
     els.treatmentGrid.innerHTML = "";
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2071',message:'rendering cards',data:{activeListLength:activeList.length,cardsToRender:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    const logData5 = {location:'app.js:2071',message:'rendering cards',data:{activeListLength:activeList.length,cardsToRender:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
+    console.log('[DEBUG]', logData5);
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData5)}).catch(()=>{});
     // #endregion
     activeList.forEach((p, idx) => {
       const realIdx = showCrisis ? (idx + 10000) : idx;
@@ -2113,12 +2123,16 @@ function render(){
       els.treatmentGrid.appendChild(card);
     });
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2078',message:'after rendering cards',data:{gridChildrenCount:els.treatmentGrid.children.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    const logData6 = {location:'app.js:2078',message:'after rendering cards',data:{gridChildrenCount:els.treatmentGrid.children.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
+    console.log('[DEBUG]', logData6);
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData6)}).catch(()=>{});
     // #endregion
       // Event delegation is handled at document level
     } else {
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2081',message:'els.treatmentGrid is null/undefined',data:{activeListLength:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      const logData7 = {location:'app.js:2081',message:'els.treatmentGrid is null/undefined',data:{activeListLength:activeList.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
+      console.log('[DEBUG]', logData7);
+      fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData7)}).catch(()=>{});
       // #endregion
     }
     
@@ -3015,7 +3029,9 @@ async function loadPrograms(retryCount = 0){
     updateComparisonCount();
     ready = true;
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:2990',message:'programs loaded, ready=true',data:{programsLength:programs.length,ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'})}).catch(()=>{});
+    const logData8 = {location:'app.js:2990',message:'programs loaded, ready=true',data:{programsLength:programs.length,ready:ready},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B'};
+    console.log('[DEBUG]', logData8);
+    fetch('http://127.0.0.1:7242/ingest/67f16d41-0ece-449d-bea9-b5a8996fb326',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData8)}).catch(()=>{});
     // #endregion
     openId = null;
     render();
