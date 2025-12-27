@@ -1670,23 +1670,23 @@ async function loadPrograms(){
     if(!res.ok) throw new Error(`programs.json not found (HTTP ${res.status}). Make sure it is in the repo root next to index.html.`);
     const jsonText = await res.text();
     
-    // Validate JSON before parsing
+    // Parse JSON - use validation if available, but always allow fallback
     let data;
     try {
+      // Try to parse directly first (most reliable)
+      data = JSON.parse(jsonText);
+      
+      // If validation is available, run it but don't block on failure
       if (typeof window.validateJSON === 'function') {
         const jsonValidation = window.validateJSON(jsonText);
         if (!jsonValidation.valid) {
+          // Log warning but don't fail - validation might be too strict
+          console.warn('JSON validation warning (non-blocking):', jsonValidation.error);
           if (typeof window.logSecurityEvent === 'function') {
-            window.logSecurityEvent('invalid_json_detected', { error: jsonValidation.error });
+            window.logSecurityEvent('json_validation_warning', { error: jsonValidation.error });
           }
-          // Fallback to regular parse if validation fails but JSON might still be valid
-          console.warn('JSON validation failed, attempting fallback parse:', jsonValidation.error);
-          data = JSON.parse(jsonText);
-        } else {
-          data = jsonValidation.data;
+          // Continue with parsed data anyway
         }
-      } else {
-        data = JSON.parse(jsonText);
       }
     } catch (parseError) {
       if (typeof window.logSecurityEvent === 'function') {
