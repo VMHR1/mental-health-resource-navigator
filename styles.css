@@ -1491,3 +1491,16 @@ footer{
 .linkBtn.site{
   background: rgba(255,255,255,.92);
 }
+
+
+/* FIX: Allow cards to expand fully with long content */
+.card[data-open="true"] .panel {
+  max-height: none !important;
+  opacity: 1;
+  transform: translateY(0);
+  overflow: visible;
+}
+
+.panel {
+  transition: all 0.25s ease;
+}
