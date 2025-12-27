@@ -441,7 +441,9 @@ function buildInsuranceOptions(list){
     html += '</optgroup>';
   }
   
-  els.insurance.innerHTML = html;
+  if (els.insurance) {
+    els.insurance.innerHTML = html;
+  }
 }
 
 function matchesFilters(p){
@@ -516,7 +518,7 @@ function matchesFilters(p){
   }
 
   // Insurance filter
-  const insuranceVal = safeStr(els.insurance.value);
+  const insuranceVal = els.insurance ? safeStr(els.insurance.value) : '';
   if (insuranceVal) {
     const insurance = p.accepted_insurance || {};
     const insuranceTypes = Array.isArray(insurance.types) ? insurance.types.map(t => safeStr(t).toLowerCase()) : [];
@@ -1307,7 +1309,9 @@ function bind(){
   on(els.loc, "change", scheduleRender);
   on(els.age, "change", scheduleRender);
   on(els.care, "change", scheduleRender);
-  on(els.insurance, "change", scheduleRender);
+  if (els.insurance) {
+    on(els.insurance, "change", scheduleRender);
+  }
   
   // Sort functionality
   on(els.sortSelect, "change", (e) => {
@@ -1550,14 +1554,6 @@ function setupCardEventDelegation(container) {
       const id = card.dataset.id;
       toggleOpen(id);
     }
-    return;
-  }
-  
-  // Handle comparison checkbox
-  const compareCheckbox = e.target.closest('[data-compare]');
-  if (compareCheckbox && !compareCheckbox.disabled) {
-    const programId = compareCheckbox.dataset.compare;
-    toggleComparison(programId);
     return;
   }
 
