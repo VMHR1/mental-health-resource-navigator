@@ -939,6 +939,9 @@ a.btnlike:focus{
   contain: content;
   content-visibility: auto;
   contain-intrinsic-size: 240px;
+  min-width: 0; /* Allows flex children to shrink below content size */
+  max-width: 100%; /* Prevents overflow */
+  box-sizing: border-box;
 }
 .card::before{
   content:"";
@@ -1114,6 +1117,11 @@ a.btnlike:focus{
   line-height:1.45;
   display:none;
   animation: breathe 3s ease-in-out infinite;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .card[data-open="true"] .accuracyStrip{ display:block; }
 
