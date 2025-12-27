@@ -1671,18 +1671,29 @@ async function loadPrograms(){
     const jsonText = await res.text();
     
     // Validate JSON before parsing
-    const jsonValidation = typeof window.validateJSON === 'function' 
-      ? window.validateJSON(jsonText)
-      : { valid: true, data: JSON.parse(jsonText) };
-    
-    if (!jsonValidation.valid) {
-      if (typeof window.logSecurityEvent === 'function') {
-        window.logSecurityEvent('invalid_json_detected', { error: jsonValidation.error });
+    let data;
+    try {
+      if (typeof window.validateJSON === 'function') {
+        const jsonValidation = window.validateJSON(jsonText);
+        if (!jsonValidation.valid) {
+          if (typeof window.logSecurityEvent === 'function') {
+            window.logSecurityEvent('invalid_json_detected', { error: jsonValidation.error });
+          }
+          // Fallback to regular parse if validation fails but JSON might still be valid
+          console.warn('JSON validation failed, attempting fallback parse:', jsonValidation.error);
+          data = JSON.parse(jsonText);
+        } else {
+          data = jsonValidation.data;
+        }
+      } else {
+        data = JSON.parse(jsonText);
       }
-      throw new Error("Invalid JSON structure in programs.json");
+    } catch (parseError) {
+      if (typeof window.logSecurityEvent === 'function') {
+        window.logSecurityEvent('json_parse_error', { error: parseError.message });
+      }
+      throw new Error(`Failed to parse programs.json: ${parseError.message}`);
     }
-    
-    const data = jsonValidation.data;
     if(!data || !Array.isArray(data.programs)) throw new Error("programs.json loaded but missing a top-level `programs` array.");
     
     // Validate program structure

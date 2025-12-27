@@ -137,10 +137,12 @@ function escapeHtml(s) {
 function validateJSON(jsonString) {
   try {
     const parsed = JSON.parse(jsonString);
-    // Check for prototype pollution
+    // Check for prototype pollution (only check own properties, not inherited)
     if (typeof parsed === 'object' && parsed !== null) {
-      if ('__proto__' in parsed || 'constructor' in parsed) {
-        return { valid: false, error: 'Invalid JSON structure' };
+      // Only check direct properties, not inherited ones
+      const ownProps = Object.keys(parsed);
+      if (ownProps.includes('__proto__') || ownProps.includes('constructor')) {
+        return { valid: false, error: 'Invalid JSON structure: dangerous properties detected' };
       }
     }
     return { valid: true, data: parsed };
