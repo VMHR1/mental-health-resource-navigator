@@ -293,15 +293,8 @@ if (typeof window !== 'undefined') {
   window.normalizePhoneNumber = normalizePhoneNumber;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    validateProgramSchema,
-    validateProgramsData,
-    checkDataFreshness,
-    normalizeCityName,
-    normalizePhoneNumber,
-    PROGRAM_SCHEMA
-  };
-}
+// Note: Exports are available via window object for browser usage
+// CommonJS exports removed to avoid ESM compatibility warnings
+
 
 

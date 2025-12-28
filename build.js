@@ -3,7 +3,7 @@
 // Simple build process for code splitting, minification, and optimization
 
 import * as esbuild from 'esbuild';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -33,9 +33,48 @@ const buildOptions = {
   logLevel: 'info'
 };
 
+// Copy static assets to dist directory
+function copyStaticAssets() {
+  const staticFiles = [
+    'index.html',
+    'admin.html',
+    'program.html',
+    'submit.html',
+    'styles.css',
+    'security.js',
+    'sw.js',
+    'programs.json'
+  ];
+  
+  // Ensure dist directory exists
+  if (!existsSync('dist')) {
+    mkdirSync('dist', { recursive: true });
+  }
+  
+  // Copy static files
+  staticFiles.forEach(file => {
+    if (existsSync(file)) {
+      writeFileSync(join('dist', file), readFileSync(file, 'utf8'));
+    }
+  });
+  
+  // Copy program-detail.js if it exists
+  if (existsSync('js/program-detail.js')) {
+    if (!existsSync('dist/js')) {
+      mkdirSync('dist/js', { recursive: true });
+    }
+    writeFileSync(join('dist/js', 'program-detail.js'), readFileSync('js/program-detail.js', 'utf8'));
+  }
+  
+  console.log('Static assets copied');
+}
+
 async function build() {
   try {
     console.log('Building...');
+    
+    // Copy static assets first
+    copyStaticAssets();
     
     if (isWatch) {
       const ctx = await esbuild.context(buildOptions);
@@ -78,5 +117,6 @@ build().then(() => {
     createLegacyBundle();
   }
 });
+
 
 

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build.js",
     "dev": "node build.js --watch",
-    "minify": "node build.js --minify"
+    "minify": "node build.js --minify",
+    "deploy": "npx wrangler pages deploy dist"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"
