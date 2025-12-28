@@ -1,9 +1,9 @@
 # Cloudflare Pages redirects and rewrites
 # https://developers.cloudflare.com/pages/platform/redirects/
 
-# SPA fallback - redirect all non-file requests to index.html
-# This ensures client-side routing works
-/*    /index.html   200
+# Note: This is a multi-page app (index.html, program.html, submit.html, admin.html)
+# SPA routing redirect is not needed. If you add client-side routing later, use:
+# /program/:id    /program.html?id=:id    200
 
 # Example: Redirect old URLs (if you have any)
 # /old-path    /new-path    301
