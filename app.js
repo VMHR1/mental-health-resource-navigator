@@ -9,7 +9,6 @@ let openId = null;
 let currentSort = 'relevance';
 let userLocation = null; // { lat, lng } - kept in memory only, never stored
 let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
-let scheduleRenderFn = null; // Set by bind() function
 
 // Load encrypted data
 async function loadEncryptedData(key, defaultValue = []) {
