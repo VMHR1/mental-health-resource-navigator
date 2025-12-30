@@ -2563,8 +2563,10 @@ function bind(){
   // Sort functionality
   on(els.sortSelect, "change", (e) => {
     currentSort = e.target.value;
-    // If switching to distance but no location, prompt for location
-    if (currentSort === 'distance' && !userLocation) {
+    // If switching to distance, always prompt for location (privacy-first: ask every time)
+    if (currentSort === 'distance') {
+      // Clear any previous location to ensure fresh consent
+      userLocation = null;
       handleNearMeClick();
       // Reset sort if user cancels
       setTimeout(() => {
@@ -3031,7 +3033,10 @@ function hideLocationConsent() {
 }
 
 async function handleNearMeClick() {
-  // Show consent modal first
+  // Always clear previous location to ensure fresh consent every time
+  userLocation = null;
+  
+  // Always show consent modal first (privacy-first approach)
   if (!els.locationConsentModal) {
     showToast('Location feature not available', 'error');
     return;
@@ -3505,6 +3510,15 @@ function handleURLParams() {
 initAgeDropdown();
 bind();
 initSwipeGestures();
+
+// Clear location on page load (privacy-first: never persist location)
+userLocation = null;
+
+// Clear location when page unloads (extra privacy measure)
+window.addEventListener('beforeunload', () => {
+  userLocation = null;
+});
+
 loadPrograms().then(() => {
   // Clear any stale dataset attributes on initial load if q is empty
   if (els.q && (!els.q.value || !els.q.value.trim())) {
