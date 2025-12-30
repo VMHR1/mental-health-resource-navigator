@@ -8,7 +8,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://formspree.io; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=()">
   <link rel="stylesheet" href="styles.css">
   <script src="security.js?v=2"></script>
   <script src="js/data-validator.js?v=3"></script>
@@ -16,6 +16,7 @@
   <script src="js/utils/helpers.js?v=3"></script>
   <script src="js/modules/storage.js?v=3"></script>
   <script src="js/modules/search.js?v=3"></script>
+  <script src="js/modules/distance.js?v=1"></script>
   <script src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -287,12 +288,16 @@
       <div class="recent-searches" style="display:none;"></div>
     </section>
 
-    <div class="results-header" aria-label="Results summary">
+      <div class="results-header" aria-label="Results summary">
       <div class="results-info">
         <div class="results-count" id="totalCount">0</div>
         <div class="results-label" id="resultsLabel">matches</div>
       </div>
       <div class="results-actions">
+        <button type="button" class="btn-near-me" id="nearMeBtn" aria-label="Sort by distance from your location">
+          <span class="icon">📍</span>
+          <span class="btn-text">Near Me</span>
+        </button>
         <div class="sort-group">
           <label for="sortSelect" class="sr-only">Sort by</label>
           <select id="sortSelect" class="sort-select" aria-label="Sort results">
@@ -300,6 +305,7 @@
             <option value="name">Sort by name</option>
             <option value="verified">Recently verified</option>
             <option value="location">Location</option>
+            <option value="distance">Distance</option>
           </select>
         </div>
         <button type="button" class="btn-icon" id="viewFavorites" title="View saved programs" aria-label="View saved programs">
@@ -422,6 +428,23 @@
           <div>
             <strong>Enter</strong> - Select autocomplete suggestion or expand card
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Consent Modal -->
+  <div id="locationConsentModal" class="modal" role="dialog" aria-labelledby="locationConsentModalTitle" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="locationConsentModalTitle">Use Your Location</h2>
+        <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 16px;">Used only to sort by proximity. Not stored or shared.</p>
+        <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+          <button type="button" class="btn-secondary" id="locationConsentCancel">Cancel</button>
+          <button type="button" class="btn-primary" id="locationConsentAllow">Use my location</button>
         </div>
       </div>
     </div>

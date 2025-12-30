@@ -1814,9 +1814,57 @@ footer{
   box-shadow: 0 4px 12px rgba(239,68,68,.30);
 }
 
+.btn-near-me{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(79,209,197,.3);
+  background: rgba(79,209,197,.12);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 10px 22px rgba(15,23,42,.06);
+  position: relative;
+  min-height: 44px;
+}
+
+.btn-near-me:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(15,23,42,.10);
+  background: rgba(79,209,197,.2);
+  border-color: rgba(79,209,197,.4);
+}
+
+.btn-near-me:focus{
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.btn-near-me .icon{
+  font-size: 16px;
+  line-height: 1;
+}
+
+.badge.distance-badge{
+  background: rgba(79,209,197,.15);
+  border-color: rgba(79,209,197,.25);
+  color: var(--ink);
+  font-weight: 700;
+}
+
 @media (max-width: 640px){
   .btn-icon .btn-text{
     display: none;
+  }
+  .btn-near-me .btn-text{
+    display: none;
+  }
+  .btn-near-me{
+    padding: 10px 12px;
   }
   .results-actions{
     gap: 8px;

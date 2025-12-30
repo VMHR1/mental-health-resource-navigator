@@ -7,6 +7,9 @@ let programs = [];
 let ready = false;
 let openId = null;
 let currentSort = 'relevance';
+let userLocation = null; // { lat, lng } - kept in memory only, never stored
+let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
+let scheduleRenderFn = null; // Set by bind() function
 
 // Load encrypted data
 async function loadEncryptedData(key, defaultValue = []) {
@@ -126,7 +129,11 @@ const els = {
   comparisonModal: document.getElementById("comparisonModal"),
   comparisonList: document.getElementById("comparisonList"),
   helpModal: document.getElementById("helpModal"),
-  shareFilters: document.getElementById("shareFilters")
+  shareFilters: document.getElementById("shareFilters"),
+  nearMeBtn: document.getElementById("nearMeBtn"),
+  locationConsentModal: document.getElementById("locationConsentModal"),
+  locationConsentAllow: document.getElementById("locationConsentAllow"),
+  locationConsentCancel: document.getElementById("locationConsentCancel")
 };
 
 // ========== Document-Level Event Delegation ==========
@@ -1229,6 +1236,13 @@ function createCard(p, idx){
       <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(care)}</span>
       <span class="badge ${crisis ? "crisis" : "loc"}">${escapeHtml(loc)}</span>
       ${hasVirtual(p) ? `<span class="badge ${crisis ? "crisis" : "loc2"}">Virtual option</span>` : ``}
+      ${userLocation && currentSort === 'distance' && typeof window.calculateProgramDistance === 'function' ? (() => {
+        const distance = window.calculateProgramDistance(p, userLocation.lat, userLocation.lng);
+        if (distance !== null && distance !== Infinity) {
+          return `<span class="badge distance-badge">${distance.toFixed(1)} mi</span>`;
+        }
+        return '';
+      })() : ''}
     </div>
 
     <div class="cardTop">
@@ -1639,6 +1653,44 @@ function sortPrograms(list) {
       });
       break;
     case 'location':
+      sorted.sort((a, b) => {
+        const locA = locLabel(a);
+        const locB = locLabel(b);
+        return locA.localeCompare(locB);
+      });
+      break;
+    case 'distance':
+      if (userLocation && typeof window.calculateProgramDistance === 'function') {
+        // Separate virtual and in-person programs
+        const inPerson = [];
+        const virtual = [];
+        
+        for (const program of sorted) {
+          if (program.service_setting === 'Virtual' || 
+              (program.locations && program.locations.some(loc => loc.city === 'Virtual'))) {
+            virtual.push(program);
+          } else {
+            inPerson.push(program);
+          }
+        }
+        
+        // Calculate distances for in-person programs
+        const withDistances = inPerson.map(program => {
+          const distance = window.calculateProgramDistance(program, userLocation.lat, userLocation.lng);
+          return { program, distance };
+        });
+        
+        // Sort by distance (null/Infinity goes to end)
+        withDistances.sort((a, b) => {
+          if (a.distance === null || a.distance === Infinity) return 1;
+          if (b.distance === null || b.distance === Infinity) return -1;
+          return a.distance - b.distance;
+        });
+        
+        // Combine: sorted in-person first, then virtual
+        return [...withDistances.map(wd => wd.program), ...virtual];
+      }
+      // Fallback to location sort if no user location
       sorted.sort((a, b) => {
         const locA = locLabel(a);
         const locB = locLabel(b);
@@ -2499,9 +2551,48 @@ function bind(){
   // Sort functionality
   on(els.sortSelect, "change", (e) => {
     currentSort = e.target.value;
+    // If switching to distance but no location, prompt for location
+    if (currentSort === 'distance' && !userLocation) {
+      handleNearMeClick();
+      // Reset sort if user cancels
+      setTimeout(() => {
+        if (!userLocation && els.sortSelect) {
+          els.sortSelect.value = 'relevance';
+          currentSort = 'relevance';
+        }
+      }, 100);
+    }
     scheduleRender();
     updateURLState();
   });
+  
+  // Near Me button
+  if (els.nearMeBtn) {
+    on(els.nearMeBtn, "click", handleNearMeClick);
+  }
+  
+  // Location consent modal handlers
+  if (els.locationConsentAllow) {
+    on(els.locationConsentAllow, "click", handleLocationConsentAllow);
+  }
+  if (els.locationConsentCancel) {
+    on(els.locationConsentCancel, "click", handleLocationConsentCancel);
+  }
+  
+  // Close location consent modal with Escape or close button
+  if (els.locationConsentModal) {
+    const closeBtn = els.locationConsentModal.querySelector('.modal-close');
+    if (closeBtn) {
+      on(closeBtn, "click", handleLocationConsentCancel);
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && els.locationConsentModal.getAttribute('aria-hidden') === 'false') {
+        handleLocationConsentCancel();
+      }
+    });
+  }
   
   // Handle browser back/forward buttons
   window.addEventListener('popstate', (e) => {
@@ -2832,6 +2923,133 @@ function setupPrivacyControls() {
   }
 }
 
+// ========== Geolocation Functions ==========
+async function loadGeocodedData() {
+  try {
+    const response = await fetch('programs.geocoded.json');
+    if (response.ok) {
+      const data = await response.json();
+      geocodedPrograms = new Map();
+      if (data.programs && Array.isArray(data.programs)) {
+        data.programs.forEach(program => {
+          geocodedPrograms.set(program.program_id, program);
+        });
+      }
+      return true;
+    }
+  } catch (error) {
+    console.warn('Geocoded data not available:', error.message);
+  }
+  return false;
+}
+
+function mergeGeocodedData(programs) {
+  if (!geocodedPrograms || geocodedPrograms.size === 0) {
+    return programs;
+  }
+  
+  return programs.map(program => {
+    const geocoded = geocodedPrograms.get(program.program_id);
+    if (geocoded && geocoded.locations) {
+      const merged = { ...program };
+      merged.locations = program.locations.map((loc, idx) => {
+        const geoLoc = geocoded.locations[idx];
+        if (geoLoc && geoLoc.geo) {
+          return { ...loc, geo: geoLoc.geo };
+        }
+        return loc;
+      });
+      return merged;
+    }
+    return program;
+  });
+}
+
+function requestUserLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by this browser'));
+      return;
+    }
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0 // Don't use cached location
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+      },
+      (error) => {
+        let message = 'Unable to get your location';
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            message = 'Location access denied';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = 'Location information unavailable';
+            break;
+          case error.TIMEOUT:
+            message = 'Location request timed out';
+            break;
+        }
+        reject(new Error(message));
+      },
+      options
+    );
+  });
+}
+
+function showLocationConsent() {
+  if (!els.locationConsentModal) return;
+  showModal(els.locationConsentModal);
+}
+
+function hideLocationConsent() {
+  if (!els.locationConsentModal) return;
+  hideModal(els.locationConsentModal);
+}
+
+async function handleNearMeClick() {
+  // Show consent modal first
+  showLocationConsent();
+}
+
+async function handleLocationConsentAllow() {
+  hideLocationConsent();
+  
+  try {
+    // Request location
+    userLocation = await requestUserLocation();
+    
+    // Set sort to distance
+    currentSort = 'distance';
+    if (els.sortSelect) {
+      els.sortSelect.value = 'distance';
+    }
+    
+    // Re-render with distance sorting
+    if (typeof scheduleRenderFn === 'function') {
+      scheduleRenderFn();
+    } else {
+      render();
+    }
+    
+    showToast('Location found. Results sorted by distance.', 'success');
+  } catch (error) {
+    showToast(error.message || 'Failed to get location', 'error');
+  }
+}
+
+function handleLocationConsentCancel() {
+  hideLocationConsent();
+}
+
 async function loadPrograms(retryCount = 0){
   const maxRetries = 3;
   const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
@@ -2942,7 +3160,7 @@ async function loadPrograms(retryCount = 0){
       ? window.normalizeCityName 
       : (city) => city;
     
-    programs = data.programs.map(p => {
+    let loadedPrograms = data.programs.map(p => {
       // Normalize locations
       const normalizedLocations = Array.isArray(p.locations) ? p.locations.map(loc => ({
         ...loc,
@@ -2971,6 +3189,12 @@ async function loadPrograms(retryCount = 0){
       accepted_insurance: p.accepted_insurance || null
       };
     });
+    
+    // Try to load and merge geocoded data
+    await loadGeocodedData();
+    if (geocodedPrograms && geocodedPrograms.size > 0) {
+      programs = mergeGeocodedData(programs);
+    }
 
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);
