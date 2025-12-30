@@ -1690,7 +1690,17 @@ function sortPrograms(list) {
         const inPersonWithDistance = withDistances.filter(wd => wd.distance !== null && wd.distance !== Infinity).map(wd => wd.program);
         const inPersonWithoutDistance = withDistances.filter(wd => wd.distance === null || wd.distance === Infinity).map(wd => wd.program);
         
-        return [...inPersonWithDistance, ...inPersonWithoutDistance, ...virtual];
+        const result = [...inPersonWithDistance, ...inPersonWithoutDistance, ...virtual];
+        
+        // Ensure we return all programs (safety check)
+        if (result.length !== sorted.length) {
+          console.warn(`Distance sort: Expected ${sorted.length} programs, got ${result.length}. Adding missing programs.`);
+          const resultIds = new Set(result.map(p => p.program_id));
+          const missing = sorted.filter(p => !resultIds.has(p.program_id));
+          return [...result, ...missing];
+        }
+        
+        return result;
       }
       // Fallback to location sort if no user location
       sorted.sort((a, b) => {
