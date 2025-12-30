@@ -3222,20 +3222,10 @@ async function loadPrograms(retryCount = 0){
       };
     });
     
-    // Try to load and merge geocoded data (non-blocking)
-    loadGeocodedData().then(() => {
-      if (geocodedPrograms && geocodedPrograms.size > 0) {
-        programs = mergeGeocodedData(programs);
-        programDataMap.clear();
-        programs.forEach(p => programDataMap.set(p.program_id, p));
-        // Re-render if already rendered
-        if (ready) {
-          render();
-        }
-      }
-    }).catch(err => {
-      console.warn('Failed to load geocoded data:', err);
-    });
+    // Set programs first (before async geocoded data merge)
+    programs = loadedPrograms;
+    programDataMap.clear();
+    programs.forEach(p => programDataMap.set(p.program_id, p));
 
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);
@@ -3244,6 +3234,21 @@ async function loadPrograms(retryCount = 0){
     ready = true;
     openId = null;
     render();
+    
+    // Try to load and merge geocoded data (non-blocking, after initial render)
+    loadGeocodedData().then(() => {
+      if (geocodedPrograms && geocodedPrograms.size > 0) {
+        programs = mergeGeocodedData(programs);
+        programDataMap.clear();
+        programs.forEach(p => programDataMap.set(p.program_id, p));
+        // Re-render with geocoded data
+        if (ready) {
+          render();
+        }
+      }
+    }).catch(err => {
+      console.warn('Failed to load geocoded data:', err);
+    });
   }catch(err){
     console.error('Error loading programs:', err);
     
