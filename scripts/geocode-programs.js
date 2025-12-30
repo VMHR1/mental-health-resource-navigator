@@ -3,7 +3,13 @@
  * DEV-ONLY script to geocode program addresses
  * Generates programs.geocoded.json with geo:{lat,lng} per location
  * 
- * Usage: node scripts/geocode-programs.js
+ * Usage: 
+ *   node scripts/geocode-programs.js
+ *   node scripts/geocode-programs.js --retry-full-address
+ * 
+ * Flags:
+ *   --retry-full-address  Retry addresses that have coordinates to get full address precision
+ *                          (useful if they were previously geocoded with city/state only)
  * 
  * Requires: npm install node-fetch (or use built-in fetch in Node 18+)
  */
@@ -19,6 +25,12 @@ const rootDir = join(__dirname, '..');
 // Read programs.json
 const programsPath = join(rootDir, 'programs.json');
 const programsData = JSON.parse(readFileSync(programsPath, 'utf-8'));
+
+// Check for command-line flags
+const retryFullAddress = process.argv.includes('--retry-full-address');
+if (retryFullAddress) {
+  console.log('--retry-full-address flag detected: Will retry addresses with existing coordinates to get full address precision.\n');
+}
 
 // Try to load existing geocoded data
 const geocodedPath = join(rootDir, 'programs.geocoded.json');
@@ -156,11 +168,18 @@ async function geocodePrograms() {
           if (addressMatch && cityMatch && existingLoc.geo && 
               typeof existingLoc.geo.lat === 'number' && 
               typeof existingLoc.geo.lng === 'number') {
-            geocodedLocation.geo = existingLoc.geo;
-            geocodedProgram.locations.push(geocodedLocation);
-            preservedCount++;
-            hasExistingGeo = true;
-            continue;
+            
+            // If --retry-full-address flag is set and address exists, retry for more precision
+            if (retryFullAddress && location.address && location.address.trim()) {
+              console.log(`Retrying full address for: ${location.address}, ${location.city}, ${location.state}`);
+              // Don't preserve, let it geocode again with full address
+            } else {
+              geocodedLocation.geo = existingLoc.geo;
+              geocodedProgram.locations.push(geocodedLocation);
+              preservedCount++;
+              hasExistingGeo = true;
+              continue;
+            }
           }
         }
 
