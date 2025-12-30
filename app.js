@@ -1686,8 +1686,11 @@ function sortPrograms(list) {
           return a.distance - b.distance;
         });
         
-        // Combine: sorted in-person first, then virtual
-        return [...withDistances.map(wd => wd.program), ...virtual];
+        // Combine: sorted in-person first (with distances), then in-person without coordinates, then virtual
+        const inPersonWithDistance = withDistances.filter(wd => wd.distance !== null && wd.distance !== Infinity).map(wd => wd.program);
+        const inPersonWithoutDistance = withDistances.filter(wd => wd.distance === null || wd.distance === Infinity).map(wd => wd.program);
+        
+        return [...inPersonWithDistance, ...inPersonWithoutDistance, ...virtual];
       }
       // Fallback to location sort if no user location
       sorted.sort((a, b) => {
