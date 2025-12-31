@@ -20,6 +20,9 @@
   --radius: 18px;
   --radius-lg: 26px;
   --focus: 0 0 0 4px rgba(122,167,255,.28);
+  
+  /* Global accessibility: minimum tap target */
+  --tap-target-min: 44px;
   --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1543,25 +1546,156 @@ footer{
   font-size: clamp(14px, 3vw, 18px);
 }
 
-/* Care levels guide accordion */
-.care-levels-guide summary {
+/* Care levels guide accordion - refactored from inline styles */
+.care-levels-guide {
+  margin: 20px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.care-levels-summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  background: rgba(79,209,197,.08);
+  border: 1px solid rgba(79,209,197,.2);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   transition: background-color 0.2s ease;
+  min-height: 44px;
 }
 
-.care-levels-guide summary:hover {
-  background: rgba(79,209,197,.12) !important;
+.care-levels-summary:hover {
+  background: rgba(79,209,197,.12);
 }
 
-.care-levels-guide summary:focus-visible {
+.care-levels-summary:focus-visible {
   outline: 2px solid rgba(122,167,255,.6);
   outline-offset: 2px;
   box-shadow: var(--focus);
 }
 
+.care-levels-summary-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.care-levels-summary-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.care-levels-guide[open] .care-levels-summary-icon {
+  transform: rotate(180deg);
+}
+
+.care-levels-body {
+  padding: 20px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(15,23,42,.1);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  margin-top: -1px;
+}
+
+.care-levels-grid {
+  display: grid;
+  gap: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.care-levels-section {
+  margin: 0;
+}
+
+.care-levels-heading {
+  margin: 0 0 6px 0;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.care-levels-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
+.care-levels-list li {
+  margin-bottom: 6px;
+}
+
+.care-levels-disclaimer {
+  margin: 16px 0 0 0;
+  font-size: 12px;
+  color: var(--muted2);
+  font-style: italic;
+}
+
+/* Global reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .care-levels-guide summary {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .care-levels-summary,
+  .care-levels-summary-icon {
     transition: none;
   }
+}
+
+@media (max-width: 640px) {
+  .care-levels-guide {
+    margin: 16px 0;
+  }
+  
+  .care-levels-body {
+    padding: 16px;
+  }
+  
+  .care-levels-grid {
+    gap: 12px;
+    font-size: 12px;
+  }
+}
+
+/* Empty state link */
+.empty-state-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--a);
+  text-decoration: underline;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.empty-state-link:hover,
+.empty-state-link:focus-visible {
+  color: var(--b);
+  outline: 2px solid rgba(122,167,255,.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.empty-state-tip {
+  margin: 16px 0 0 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* Screen reader only class */

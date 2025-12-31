@@ -81,7 +81,7 @@
             <div class="trust-icon">✓</div>
             <div class="trust-text">
               <strong><span id="programCount">150+</span> Programs</strong>
-              <span>Verified monthly</span>
+              <span>Information may change—please call to confirm</span>
             </div>
           </div>
           <div class="trust-item">
@@ -336,41 +336,59 @@
     </div>
 
     <!-- Care levels explained accordion -->
-    <details class="care-levels-guide" style="margin: 20px 0; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <summary style="cursor: pointer; padding: 12px 16px; background: rgba(79,209,197,.08); border: 1px solid rgba(79,209,197,.2); border-radius: 12px; font-weight: 700; font-size: 14px; color: var(--ink); outline: none;">
-        <span style="display: inline-flex; align-items: center; gap: 8px;">
-          <span>Care levels explained</span>
-          <span aria-hidden="true" style="font-size: 12px;">▾</span>
-        </span>
+    <details class="care-levels-guide">
+      <summary class="care-levels-summary">
+        <span class="care-levels-summary-text">Care levels explained</span>
+        <span class="care-levels-summary-icon" aria-hidden="true">▾</span>
       </summary>
-      <div style="padding: 20px; background: rgba(255,255,255,.85); border: 1px solid rgba(15,23,42,.1); border-top: none; border-radius: 0 0 12px 12px; margin-top: -1px;">
-        <div style="display: grid; gap: 16px; font-size: 13px; line-height: 1.6; color: var(--ink);">
-          <div>
-            <h4 style="margin: 0 0 6px 0; font-weight: 700; font-size: 14px; color: var(--ink);">PHP (Day Program)</h4>
-            <ul style="margin: 0; padding-left: 20px; color: var(--muted);">
+      <div class="care-levels-body">
+        <div class="care-levels-grid">
+          <div class="care-levels-section">
+            <h4 class="care-levels-heading">PHP (Day Program)</h4>
+            <ul class="care-levels-list">
               <li>Structured outpatient psychiatric services during the day; no overnight stay. Clients go home each evening.</li>
               <li>Often used as an alternative to inpatient care for some people. Can feel similar to "day hospital."</li>
               <li>Typically requires at least 20 hours per week. Schedules vary by program.</li>
             </ul>
           </div>
-          <div>
-            <h4 style="margin: 0 0 6px 0; font-weight: 700; font-size: 14px; color: var(--ink);">IOP (Several Days/Week)</h4>
-            <ul style="margin: 0; padding-left: 20px; color: var(--muted);">
+          <div class="care-levels-section">
+            <h4 class="care-levels-heading">IOP (Several Days/Week)</h4>
+            <ul class="care-levels-list">
               <li>Structured outpatient treatment that can be daily all-day (including school) or after-school.</li>
               <li>Often includes group therapy, individual therapy, family therapy, and medication management.</li>
               <li>May be used as a step-down from inpatient care or added structure when weekly outpatient isn't enough. Schedules vary by program.</li>
             </ul>
           </div>
-          <div>
-            <h4 style="margin: 0 0 6px 0; font-weight: 700; font-size: 14px; color: var(--ink);">Crisis: 988 vs 911</h4>
-            <ul style="margin: 0; padding-left: 20px; color: var(--muted);">
+          <div class="care-levels-section">
+            <h4 class="care-levels-heading">Crisis: 988 vs 911</h4>
+            <ul class="care-levels-list">
               <li><strong>988:</strong> Free, confidential, 24/7 emotional support for people in suicidal crisis or emotional distress when there is no immediate physical danger.</li>
               <li><strong>911:</strong> For immediate physical danger or emergencies.</li>
               <li>If someone is about to act on a suicide or self-harm plan and has means, treat as emergency/911. If distressed or having suicidal thoughts without immediate danger, 988 may be helpful. Emergency rooms are an option for urgent evaluation.</li>
             </ul>
           </div>
-          <p style="margin: 16px 0 0 0; font-size: 12px; color: var(--muted2); font-style: italic;">This site provides information, not medical advice.</p>
         </div>
+        <p class="care-levels-disclaimer">This site provides information, not medical advice.</p>
+      </div>
+    </details>
+
+    <!-- What to ask when you call guide -->
+    <details class="care-levels-guide" id="whatToAskGuide">
+      <summary class="care-levels-summary">
+        <span class="care-levels-summary-text">What to ask when you call a program</span>
+        <span class="care-levels-summary-icon" aria-hidden="true">▾</span>
+      </summary>
+      <div class="care-levels-body">
+        <ul class="care-levels-list">
+          <li>Are you currently accepting new adolescents? Is there a waitlist?</li>
+          <li>What ages do you serve?</li>
+          <li>Do you accept my insurance? Is prior authorization required?</li>
+          <li>What is the schedule (after school vs daytime)? How long is the program?</li>
+          <li>What is the intake process and what documents are needed?</li>
+          <li>Do you offer family sessions or caregiver involvement?</li>
+          <li>What happens after hours if symptoms worsen?</li>
+          <li>What costs should we expect (copays, self-pay, financial assistance)?</li>
+        </ul>
       </div>
     </details>
 
@@ -391,8 +409,9 @@
           <button data-action="broaden-search" class="btn-primary" type="button">
             Broaden search
           </button>
-          <p style="margin: 16px 0 0 0; font-size: 13px; color: var(--muted);">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
+          <a href="#whatToAskGuide" class="empty-state-link" data-action="open-what-to-ask">Not sure what to ask? See questions for programs.</a>
         </div>
+        <p class="empty-state-tip">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
       </div>
     </section>
 
@@ -411,6 +430,9 @@
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="favoritesList"></div>
+      <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(15,23,42,.1); display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn-primary" id="exportFavorites" aria-label="Print or export saved programs list">Print/Export saved list</button>
+      </div>
     </div>
   </div>
 

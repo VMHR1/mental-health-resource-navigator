@@ -1306,6 +1306,10 @@ function createCard(p, idx){
         <span class="icon">⚖️</span>
         <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
       </label>
+      <a href="submit.html?update=${encodeURIComponent(safeStr(p.program_id))}&program_name=${encodeURIComponent(safeStr(p.program_name))}&organization=${encodeURIComponent(safeStr(p.organization))}&phone=${encodeURIComponent(safeStr(p.phone))}&website=${encodeURIComponent(safeStr(p.website_url || p.website))}&city=${encodeURIComponent(safeStr(p.locations && p.locations[0] ? p.locations[0].city : ''))}" class="card-action-btn" aria-label="Report an update for this program">
+        <span class="icon">📝</span>
+        <span>Report update</span>
+      </a>
     </div>
 
     <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
@@ -2019,6 +2023,8 @@ function renderFavorites() {
   
   if (favoritePrograms.length === 0) {
     els.favoritesList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">No saved programs yet. Click the star icon on any program card to save it.</p>';
+    const exportBtn = document.getElementById('exportFavorites');
+    if (exportBtn) exportBtn.style.display = 'none';
     return;
   }
   
@@ -2032,6 +2038,99 @@ function renderFavorites() {
   
   // Setup event delegation for favorites grid
   setupCardEventDelegation(grid);
+  
+  // Show export button
+  const exportBtn = document.getElementById('exportFavorites');
+  if (exportBtn) exportBtn.style.display = 'block';
+}
+
+// Print/Export saved programs list
+function exportFavorites() {
+  const favoritePrograms = programs.filter(p => {
+    const id = stableIdFor(p, programs.indexOf(p));
+    return favorites.has(id);
+  });
+  
+  if (favoritePrograms.length === 0) {
+    showToast('No saved programs to export', 'error');
+    return;
+  }
+  
+  // Create print-friendly HTML
+  const printWindow = window.open('', '_blank');
+  const addresses = (p) => {
+    if (!Array.isArray(p.locations) || p.locations.length === 0) return 'Not listed';
+    return p.locations.map(l => {
+      const parts = [l.address, l.city, l.state, l.zip].filter(Boolean);
+      return parts.join(', ');
+    }).join('; ');
+  };
+  
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Saved Programs - Mental Health Resource Navigator</title>
+      <style>
+        @media print {
+          @page { margin: 1in; }
+          body { margin: 0; }
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.6;
+          color: #1e293b;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .meta { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+        .program {
+          margin-bottom: 32px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #e2e8f0;
+          page-break-inside: avoid;
+        }
+        .program:last-child { border-bottom: none; }
+        .program-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .program-org { font-size: 14px; color: #64748b; margin-bottom: 12px; }
+        .program-details {
+          display: grid;
+          gap: 8px;
+          font-size: 14px;
+        }
+        .program-details strong { color: #1e293b; }
+        .program-notes { margin-top: 12px; font-size: 13px; color: #64748b; font-style: italic; }
+      </style>
+    </head>
+    <body>
+      <h1>Saved Programs</h1>
+      <div class="meta">Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+      ${favoritePrograms.map(p => `
+        <div class="program">
+          <div class="program-name">${escapeHtml(safeStr(p.program_name) || 'Program')}</div>
+          <div class="program-org">${escapeHtml(safeStr(p.organization) || '')}</div>
+          <div class="program-details">
+            ${safeStr(p.phone) ? `<div><strong>Phone:</strong> ${escapeHtml(p.phone)}</div>` : ''}
+            ${safeStr(p.website_url || p.website) ? `<div><strong>Website:</strong> ${escapeHtml(p.website_url || p.website)}</div>` : ''}
+            ${addresses(p) !== 'Not listed' ? `<div><strong>Location:</strong> ${escapeHtml(addresses(p))}</div>` : ''}
+            ${safeStr(p.level_of_care) ? `<div><strong>Level of care:</strong> ${escapeHtml(p.level_of_care)}</div>` : ''}
+            ${safeStr(p.ages_served) ? `<div><strong>Ages served:</strong> ${escapeHtml(p.ages_served)}</div>` : ''}
+          </div>
+          ${safeStr(p.notes) ? `<div class="program-notes">${escapeHtml(p.notes)}</div>` : ''}
+        </div>
+      `).join('')}
+    </body>
+    </html>
+  `);
+  
+  printWindow.document.close();
+  
+  // Wait for content to load, then trigger print dialog
+  setTimeout(() => {
+    printWindow.print();
+  }, 250);
 }
 
 function renderCallHistory() {
@@ -2809,6 +2908,12 @@ function bind(){
     renderFavorites();
     showModal(els.favoritesModal);
   });
+  
+  // Export/print favorites
+  const exportFavoritesBtn = document.getElementById('exportFavorites');
+  if (exportFavoritesBtn) {
+    on(exportFavoritesBtn, "click", exportFavorites);
+  }
 
   // Call history modal
   on(els.viewHistory, "click", () => {
@@ -3489,6 +3594,18 @@ document.addEventListener('click', (e) => {
     if (window.__ageDropdownSync) window.__ageDropdownSync();
     if (els.care) els.care.value = '';
     render();
+  } else if (action === 'open-what-to-ask') {
+    // Scroll to and open the "What to ask" guide
+    const guide = document.getElementById('whatToAskGuide');
+    if (guide) {
+      guide.open = true;
+      guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Focus the summary for keyboard users
+      const summary = guide.querySelector('summary');
+      if (summary) {
+        setTimeout(() => summary.focus(), 300);
+      }
+    }
   } else if (action === 'show-virtual') {
     els.onlyVirtual.checked = true;
     els.onlyVirtualTop.checked = true;
