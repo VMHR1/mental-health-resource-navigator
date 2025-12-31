@@ -1110,6 +1110,7 @@ a.btnlike:focus{
   }
 }
 
+/* Consolidated card styles - single authoritative definition */
 .card{
   border-radius: var(--radius);
   border: 1px solid rgba(15,23,42,.09);
@@ -1117,17 +1118,18 @@ a.btnlike:focus{
   box-shadow: var(--shadow-sm);
   padding: 16px;
   position: relative;
-  overflow:hidden;
+  overflow: visible; /* Changed from hidden to visible for badge */
   transform: translateZ(0);
   transition: var(--transition);
   animation: rise .35s ease both;
-  contain: content;
+  contain: layout style paint;
   content-visibility: auto;
   contain-intrinsic-size: 240px;
   max-width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  page-break-inside: avoid;
 }
 .card::before{
   content:"";
