@@ -10,14 +10,15 @@
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=self, microphone=(), camera=()">
   <link rel="stylesheet" href="styles.css?v=2">
-  <script src="security.js?v=2"></script>
-  <script src="js/data-validator.js?v=3"></script>
-  <script src="js/config/constants.js?v=3"></script>
-  <script src="js/utils/helpers.js?v=3"></script>
-  <script src="js/modules/storage.js?v=3"></script>
-  <script src="js/modules/search.js?v=3"></script>
-  <script src="js/modules/distance.js?v=2"></script>
-  <script src="js/state-manager.js?v=3"></script>
+  <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/data-validator.js?v=3"></script>
+  <script defer src="js/config/constants.js?v=3"></script>
+  <script defer src="js/utils/helpers.js?v=3"></script>
+  <script defer src="js/modules/storage.js?v=3"></script>
+  <script defer src="js/modules/search.js?v=3"></script>
+  <script defer src="js/modules/distance.js?v=2"></script>
+  <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
 
@@ -454,6 +455,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <script defer src="app.js?v=5"></script>
 </body>
 </html>

@@ -87,6 +87,22 @@ let comparisonSet = new Set(JSON.parse(localStorage.getItem('comparison') || '[]
 
 const programDataMap = new Map();
 
+// ========== Autocomplete Indexes ==========
+// Avoid O(n^2) behavior in autocomplete by pre-indexing organizations.
+let orgProgramsIndex = new Map(); // key: lowercased organization name -> Program[]
+
+function buildAutocompleteIndexes(list){
+  orgProgramsIndex = new Map();
+  for (const p of list || []) {
+    const org = safeStr(p.organization).trim();
+    if (!org) continue;
+    const key = org.toLowerCase();
+    const arr = orgProgramsIndex.get(key);
+    if (arr) arr.push(p);
+    else orgProgramsIndex.set(key, [p]);
+  }
+}
+
 // ========== DOM Elements ==========
 const els = {
   q: document.getElementById("q"),
@@ -1091,14 +1107,24 @@ function mapsLinkFor(p){
   return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
 }
 
-function stableIdFor(p, i){
-  const base = `${safeStr(p.program_id)}|${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
+// Stable, cross-sort/cross-filter identifier.
+// IMPORTANT: Do not include the current list index; it changes whenever results are
+// sorted/filtered, which breaks Saved/Compare state.
+function stableIdFor(p, _i){
+  const pid = safeStr(p.program_id);
+  if (pid) return `p_${pid}`;
+
+  // Fallback (should be rare): hash the core identifying fields.
+  const base =
+    `${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`
+    .toLowerCase();
+
   let h = 2166136261;
   for (let k=0; k<base.length; k++){
     h ^= base.charCodeAt(k);
     h = Math.imul(h, 16777619);
   }
-  return `p_${(h>>>0).toString(16)}_${i}`;
+  return `p_${(h>>>0).toString(16)}`;
 }
 
 // ========== Call Tracking ==========
@@ -2214,7 +2240,7 @@ function generateAutocompleteSuggestions(query) {
       if (orgName && orgName !== programName) {
         const orgLower = orgName.toLowerCase();
         // Collect all programs for this organization
-        const orgPrograms = programs.filter(prog => safeStr(prog.organization).toLowerCase() === orgLower);
+        const orgPrograms = orgProgramsIndex.get(orgLower) || [];
         
         if (orgLower === q) {
           exactMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: true });
@@ -3150,8 +3176,10 @@ async function loadPrograms(retryCount = 0){
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
-    const res = await fetch("programs.json", { 
-      cache:"no-store",
+    // Allow browser caching (with revalidation) for faster repeat visits.
+    // "no-store" forces a full network fetch every time and defeats SW caching.
+    const res = await fetch("programs.json", {
+      cache: "no-cache",
       signal: controller.signal
     });
     clearTimeout(timeoutId);
@@ -3282,6 +3310,9 @@ async function loadPrograms(retryCount = 0){
     programs = loadedPrograms;
     programDataMap.clear();
     programs.forEach(p => programDataMap.set(p.program_id, p));
+
+    // Build autocomplete indexes to avoid O(n^2) behavior
+    buildAutocompleteIndexes(programs);
 
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);

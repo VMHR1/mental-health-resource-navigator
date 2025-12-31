@@ -85,12 +85,12 @@ function copyStaticAssets() {
         
         if (!existsSync(distDir)) {
           mkdirSync(distDir, { recursive: true });
-        }
+      }
         
-        try {
+      try {
           writeFileSync(distPath, readFileSync(file, 'utf8'));
-          copiedCount++;
-        } catch (error) {
+        copiedCount++;
+      } catch (error) {
           console.error(`Error copying ${file}:`, error.message);
         }
       }
