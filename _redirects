@@ -5,6 +5,9 @@
 # SPA routing redirect is not needed. If you add client-side routing later, use:
 # /program/:id    /program.html?id=:id    200
 
+# Ensure admin.html is served correctly (not redirected)
+/admin.html    /admin.html    200
+
 # Example: Redirect old URLs (if you have any)
 # /old-path    /new-path    301
 
