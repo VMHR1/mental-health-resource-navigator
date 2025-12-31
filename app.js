@@ -1199,7 +1199,7 @@ function toggleOpen(id){
 function createCard(p, idx){
   const crisis = isCrisis(p);
   const loc = locLabel(p);
-  const care = safeStr(p.level_of_care) || "Unknown";
+  const care = safeStr(p.level_of_care) || "Not listed";
   const id = stableIdFor(p, idx);
   programDataMap.set(id, p);
   const isOpen = (openId === id);
