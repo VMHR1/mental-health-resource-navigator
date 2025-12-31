@@ -3467,9 +3467,27 @@ function setupCardEventDelegation(container) {
 document.addEventListener('click', (e) => {
   const action = e.target.dataset.action;
   if (action === 'clear-filters') {
+    // Clear all filters
+    els.q.value = '';
+    delete els.q.dataset.exactMatch;
+    delete els.q.dataset.matchType;
     els.loc.value = '';
     els.age.value = '';
     if (window.__ageDropdownSync) window.__ageDropdownSync();
+    if (els.care) els.care.value = '';
+    if (els.insurance) els.insurance.value = '';
+    els.onlyVirtual.checked = false;
+    els.onlyVirtualTop.checked = false;
+    els.showCrisis.checked = false;
+    els.showCrisisTop.checked = false;
+    syncTopToggles();
+    render();
+  } else if (action === 'broaden-search') {
+    // Remove most restrictive filters: clear location, age, and care level
+    els.loc.value = '';
+    els.age.value = '';
+    if (window.__ageDropdownSync) window.__ageDropdownSync();
+    if (els.care) els.care.value = '';
     render();
   } else if (action === 'show-virtual') {
     els.onlyVirtual.checked = true;

@@ -1543,6 +1543,40 @@ footer{
   font-size: clamp(14px, 3vw, 18px);
 }
 
+/* Care levels guide accordion */
+.care-levels-guide summary {
+  transition: background-color 0.2s ease;
+}
+
+.care-levels-guide summary:hover {
+  background: rgba(79,209,197,.12) !important;
+}
+
+.care-levels-guide summary:focus-visible {
+  outline: 2px solid rgba(122,167,255,.6);
+  outline-offset: 2px;
+  box-shadow: var(--focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .care-levels-guide summary {
+    transition: none;
+  }
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* FIX 3: Skip Link - Make it Properly Visible on Focus */
 .skip-link{
   position: fixed; /* Changed from absolute to fixed */
