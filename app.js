@@ -3289,6 +3289,12 @@ async function loadPrograms(retryCount = 0){
     updateComparisonCount();
     ready = true;
     openId = null;
+    
+    // Initialize button visibility (TDPSA: ensure opt-out is visible when needed)
+    if (typeof updateLocationButtonVisibility === 'function') {
+      updateLocationButtonVisibility();
+    }
+    
     render();
     
     // Try to load and merge geocoded data (non-blocking, after initial render)
