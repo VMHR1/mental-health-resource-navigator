@@ -553,58 +553,6 @@ async function submitToFormspree(payload){
   }
   return true;
 }
-    // Prefill form from URL query params (for "Report update" flow)
-    function prefillFromQueryParams() {
-      const params = new URLSearchParams(window.location.search);
-      const update = params.get('update');
-      
-      if (update) {
-        // This is an update request - prefill fields
-        const programName = params.get('program_name');
-        const organization = params.get('organization');
-        const phone = params.get('phone');
-        const website = params.get('website');
-        const city = params.get('city');
-        
-        if (programName) {
-          const field = document.getElementById('program_name');
-          if (field) field.value = decodeURIComponent(programName);
-        }
-        if (organization) {
-          const field = document.getElementById('org_name');
-          if (field) field.value = decodeURIComponent(organization);
-        }
-        if (phone) {
-          const field = document.getElementById('general_phone');
-          if (field) field.value = decodeURIComponent(phone);
-        }
-        if (website) {
-          const field = document.getElementById('website_url');
-          if (field) field.value = decodeURIComponent(website);
-        }
-        if (city) {
-          const field = document.getElementById('location_city');
-          if (field) field.value = decodeURIComponent(city);
-        }
-        
-        // Add update type dropdown if it doesn't exist
-        const updateTypeField = document.getElementById('update_type');
-        if (!updateTypeField && formEl) {
-          const firstStep = steps[0];
-          if (firstStep && firstStep.fields) {
-            firstStep.fields.unshift({
-              id: 'update_type',
-              label: 'What needs updating?',
-              type: 'select',
-              required: true,
-              options: ['', 'Phone', 'Website', 'Address/location', 'Ages served', 'Level of care', 'Insurance accepted', 'Languages', 'Availability/waitlist', 'Other'],
-              help: 'Select the primary information that needs updating.'
-            });
-          }
-        }
-      }
-    }
-    
     // --- State ---
     let stepIndex = 0;
     const formEl = document.getElementById("wizard");
@@ -614,9 +562,6 @@ async function submitToFormspree(payload){
     const stepTitle = document.getElementById("stepTitle");
     const stepSub = document.getElementById("stepSub");
     const stepperEl = document.getElementById("stepper");
-    
-    // Prefill on load
-    prefillFromQueryParams();
 
     // --- Helpers ---
     function showAlert(msg, type="warn"){
