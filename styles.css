@@ -1026,6 +1026,7 @@ a.btnlike:focus{
   margin: 16px 0 10px;
   padding: 10px 2px 12px;
   border-bottom: 1px solid rgba(15,23,42,.08);
+  width: 100%;
   max-width: 100%;
 }
 .results-info{
@@ -1053,6 +1054,8 @@ a.btnlike:focus{
   box-shadow: var(--shadow-md);
   overflow:hidden;
   backdrop-filter: blur(12px);
+  width: 100%;
+  max-width: 100%;
 }
 .sectionHead{
   display:flex;
