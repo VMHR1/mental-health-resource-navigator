@@ -1306,10 +1306,6 @@ function createCard(p, idx){
         <span class="icon">⚖️</span>
         <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
       </label>
-      <a href="submit.html?update=${encodeURIComponent(safeStr(p.program_id))}&program_name=${encodeURIComponent(safeStr(p.program_name))}&organization=${encodeURIComponent(safeStr(p.organization))}&phone=${encodeURIComponent(safeStr(p.phone))}&website=${encodeURIComponent(safeStr(p.website_url || p.website))}&city=${encodeURIComponent(safeStr(p.locations && p.locations[0] ? p.locations[0].city : ''))}" class="card-action-btn" aria-label="Report an update for this program">
-        <span class="icon">📝</span>
-        <span>Report update</span>
-      </a>
     </div>
 
     <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
