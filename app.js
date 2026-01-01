@@ -96,20 +96,59 @@ async function initializeEncryptedStorage() {
 // Initialize on load
 initializeEncryptedStorage();
 
+// Detect pointer type early for mobile optimizations
+const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
 // Update crisis banner height CSS variable for sticky positioning
+// Cached to avoid repeated getBoundingClientRect calls during viewport changes
+let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
+  // Skip updates during active viewport changes on mobile to prevent layout thrash
+  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+    return;
+  }
+  
   const banner = document.querySelector('.crisis-banner');
-  const h = banner ? banner.getBoundingClientRect().height : 0;
-  document.documentElement.style.setProperty('--crisis-banner-h', `${h}px`);
+  if (!banner) {
+    if (__cachedBannerHeight !== 0) {
+      __cachedBannerHeight = 0;
+      document.documentElement.style.setProperty('--crisis-banner-h', '0px');
+    }
+    return;
+  }
+  
+  // Use requestAnimationFrame to batch layout reads
+  requestAnimationFrame(() => {
+    const h = banner.getBoundingClientRect().height;
+    // Only update if height actually changed to avoid unnecessary style writes
+    if (Math.abs(h - __cachedBannerHeight) > 0.5) {
+      __cachedBannerHeight = h;
+      document.documentElement.style.setProperty('--crisis-banner-h', `${h}px`);
+    }
+  });
 }
 
 // Throttled resize handler for banner offset (runs on all devices)
 let __bannerOffsetT;
+let __bannerOffsetRAF;
 function handleBannerOffsetResize() {
-  clearTimeout(__bannerOffsetT);
-  __bannerOffsetT = setTimeout(() => {
-    updateCrisisBannerOffset();
-  }, 150);
+  // On mobile, skip during active viewport changes
+  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+    return;
+  }
+  
+  // Cancel any pending RAF
+  if (__bannerOffsetRAF) {
+    cancelAnimationFrame(__bannerOffsetRAF);
+  }
+  
+  // Use rAF to batch resize events before calling getBoundingClientRect
+  __bannerOffsetRAF = requestAnimationFrame(() => {
+    clearTimeout(__bannerOffsetT);
+    __bannerOffsetT = setTimeout(() => {
+      updateCrisisBannerOffset();
+    }, 200); // Increased throttle for mobile stability
+  });
 }
 
 // Disable animations during resize to prevent stuttering (desktop only)
@@ -117,7 +156,6 @@ function handleBannerOffsetResize() {
 let __rzT;
 let __rzRAF;
 let __lastWidth = window.innerWidth;
-const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
 if (!isCoarsePointer) {
   // Only run on fine pointer devices (desktop)
@@ -148,18 +186,13 @@ if (!isCoarsePointer) {
   });
 }
 
-// Update banner offset on resize/orientation (all devices)
-window.addEventListener("resize", handleBannerOffsetResize);
-window.addEventListener("orientationchange", () => {
-  // Small delay to allow layout to settle after orientation change
-  setTimeout(updateCrisisBannerOffset, 100);
-});
-
-// iOS visualViewport change detection for smooth text-size adjustments
-// Temporarily disables expensive animations during viewport changes on mobile
+// Update banner offset on resize/orientation
+// On mobile, prefer visualViewport events to avoid layout thrash during text-size changes
 if (isCoarsePointer && window.visualViewport) {
+  // Use visualViewport for mobile to avoid window resize spam
   let __vvT;
   let __vvRAF;
+  let __lastVvHeight = window.visualViewport.height;
   
   window.visualViewport.addEventListener('resize', () => {
     // Cancel any pending RAF
@@ -170,13 +203,44 @@ if (isCoarsePointer && window.visualViewport) {
     // Use rAF to batch visualViewport events
     __vvRAF = requestAnimationFrame(() => {
       document.documentElement.classList.add('vv-changing');
-      clearTimeout(__vvT);
-      __vvT = setTimeout(() => {
-        document.documentElement.classList.remove('vv-changing');
-      }, 200);
+      
+      // Only update banner offset if viewport height changed significantly
+      const currentHeight = window.visualViewport.height;
+      if (Math.abs(currentHeight - __lastVvHeight) > 10) {
+        __lastVvHeight = currentHeight;
+        // Update banner offset after viewport stabilizes
+        clearTimeout(__vvT);
+        __vvT = setTimeout(() => {
+          document.documentElement.classList.remove('vv-changing');
+          // Update banner offset after viewport change completes
+          updateCrisisBannerOffset();
+        }, 250);
+      } else {
+        // Small height changes - just remove class after short delay
+        clearTimeout(__vvT);
+        __vvT = setTimeout(() => {
+          document.documentElement.classList.remove('vv-changing');
+        }, 200);
+      }
     });
   });
+  
+  // Still listen to orientation changes
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      updateCrisisBannerOffset();
+    }, 300);
+  });
+} else {
+  // Desktop: use window resize
+  window.addEventListener("resize", handleBannerOffsetResize);
+  window.addEventListener("orientationchange", () => {
+    setTimeout(updateCrisisBannerOffset, 100);
+  });
 }
+
+// Initial banner offset calculation
+updateCrisisBannerOffset();
 
 let comparisonSet = new Set(JSON.parse(localStorage.getItem('comparison') || '[]'));
 
