@@ -609,6 +609,61 @@ h1{
     backdrop-filter: none !important;
   }
   
+  /* CRITICAL: Optimize hero section during viewport changes */
+  html.vv-changing .hero-copy {
+    background: rgba(255,255,255,.85) !important; /* Remove gradient, use solid */
+    box-shadow: 0 2px 8px rgba(15,23,42,.08) !important;
+  }
+  
+  /* CRITICAL: Optimize triage cards during viewport changes */
+  html.vv-changing .triage-card {
+    box-shadow: 0 2px 8px rgba(15,23,42,.08) !important;
+    background: rgba(255,255,255,.90) !important; /* Simplify gradient to solid */
+  }
+  
+  html.vv-changing .triage-card.emergency {
+    background: rgba(239,68,68,.05) !important; /* Simplify gradient */
+  }
+  
+  html.vv-changing .triage-card.planning {
+    background: rgba(79,209,197,.05) !important; /* Simplify gradient */
+  }
+  
+  /* CRITICAL: Optimize floating cards during viewport changes */
+  html.vv-changing .floating-card {
+    background: rgba(255,255,255,.90) !important; /* Remove backdrop-filter effect */
+    box-shadow: 0 2px 8px rgba(15,23,42,.08) !important;
+  }
+  
+  /* CRITICAL: Disable clamp() recalculation by using fixed font sizes during viewport changes */
+  html.vv-changing h1 {
+    font-size: 32px !important; /* Fixed size instead of clamp() */
+  }
+  
+  html.vv-changing .triage-card h2 {
+    font-size: 20px !important; /* Fixed size instead of clamp() */
+  }
+  
+  html.vv-changing .triage-card p {
+    font-size: 14px !important; /* Fixed size instead of clamp() */
+  }
+  
+  html.vv-changing .triage-card .btn-emergency,
+  html.vv-changing .triage-card .btn-secondary {
+    font-size: 16px !important; /* Fixed size instead of clamp() */
+  }
+  
+  /* CRITICAL: Disable expensive gradient backgrounds during viewport changes */
+  html.vv-changing .triage-card.emergency,
+  html.vv-changing .triage-card.planning {
+    background-image: none !important; /* Remove gradient, use solid color */
+  }
+  
+  /* CRITICAL: Optimize hero-visual container during viewport changes */
+  html.vv-changing .hero-visual {
+    will-change: auto !important;
+  }
+  
   /* Reduce paint cost by simplifying box-shadows (expensive to recompute) */
   html.vv-changing .card,
   html.vv-changing .search-section,
