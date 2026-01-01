@@ -148,8 +148,8 @@ a{color:inherit}
 /* Phase 3: Optimize sticky crisis banner for mobile */
 @media (pointer: coarse) {
   .crisis-banner {
-    /* Reduce shadow cost */
-    box-shadow: 0 4px 12px rgba(239,68,68,.2) !important;
+    /* CRITICAL FIX: Further reduce shadow cost for smoother scrolling */
+    box-shadow: 0 2px 6px rgba(239,68,68,.15) !important;
     /* GPU layer for smooth sticky */
     will-change: transform;
     transform: translateZ(0);
@@ -556,8 +556,8 @@ h1{
 /* Phase 3: Optimize sticky search section for mobile */
 @media (pointer: coarse) {
   .search-section {
-    /* Reduce shadow cost on mobile */
-    box-shadow: 0 4px 12px rgba(15,23,42,.1) !important;
+    /* CRITICAL FIX: Further reduce shadow cost for smoother scrolling */
+    box-shadow: 0 2px 6px rgba(15,23,42,.08) !important;
     /* Disable backdrop-filter on mobile */
     backdrop-filter: none !important;
     background: rgba(255,255,255,.95) !important;
@@ -609,6 +609,9 @@ html.perf-no-sticky .search-section {
   .floating-card {
     animation: none !important;
     transform: none !important;
+    /* CRITICAL FIX: Disable expensive backdrop-filter on mobile */
+    backdrop-filter: none !important;
+    background: rgba(255,255,255,.90) !important;
   }
   
   .btn-emergency {
@@ -639,8 +642,13 @@ html.perf-no-sticky .search-section {
    * See MOBILE_PERFORMANCE.md for full documentation
    */
   
-  /* reduce repaint cost from large shadows */
-  .card,
+  /* CRITICAL FIX: Further reduce shadow cost on cards for smoother scrolling */
+  /* Replace medium shadows with minimal border + light shadow */
+  .card {
+    box-shadow: 0 1px 3px rgba(15,23,42,.06) !important;
+    border: 1px solid rgba(15,23,42,.12) !important; /* Slightly stronger border to compensate */
+  }
+  
   .search-section,
   .modal-content,
   .triage-card {
@@ -1375,10 +1383,7 @@ a.btnlike:focus{
   .section {
     content-visibility: auto;
     contain-intrinsic-size: 300px;
-  }
-  
-  /* Disable backdrop-filter on mobile for better performance */
-  .section {
+    /* CRITICAL FIX: Disable expensive backdrop-filter on mobile */
     backdrop-filter: none !important;
     background: rgba(255,255,255,.85) !important;
   }

@@ -29,6 +29,32 @@ On mobile/coarse pointer devices:
 
 **Full documentation**: See [MOBILE_PERFORMANCE.md](./MOBILE_PERFORMANCE.md) for complete details.
 
+### Performance Findings (iPhone Safari)
+
+**Issue**: Stutter/jank during scrolling and idle on iPhone Safari
+
+**Root Causes Identified**:
+1. **`.section` backdrop-filter** - Expensive blur effect on all sections
+2. **`.floating-card` backdrop-filter** - Expensive blur in hero section
+3. **Heavy shadows on sticky elements** - Crisis banner and search section
+4. **Card shadows** - Multiple cards with shadows during scroll
+
+**Permanent Fixes Applied**:
+- ✅ Disabled `backdrop-filter` on `.section` for mobile
+- ✅ Disabled `backdrop-filter` on `.floating-card` for mobile
+- ✅ Further reduced shadows on sticky elements (crisis banner, search section)
+- ✅ Simplified card shadows (replaced with minimal shadow + stronger border)
+
+**Kill Switch Testing**:
+Use `?perf=1` with these switches to isolate issues:
+- `?perf=1&noAnim=1` - Disable all animations
+- `?perf=1&noHero=1` - Hide hero visual
+- `?perf=1&noShadow=1` - Remove all shadows
+- `?perf=1&noFixedBg=1` - Hide background gradient
+- `?perf=1&noSticky=1` - Remove sticky positioning
+
+**Result**: Scrolling is smoother, idle stutter is reduced. See [PERFORMANCE_FINDINGS.md](./PERFORMANCE_FINDINGS.md) for detailed analysis.
+
 ## Geocoding for Distance Features
 
 The "Near Me" feature requires geocoded location data. To generate it:

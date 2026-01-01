@@ -248,12 +248,40 @@ function perfUpdateHUD() {
   requestAnimationFrame(perfUpdateHUD);
 }
 
-// Console logging every 10s
+// Console logging every 10s with enhanced metrics
 let perfLogInterval;
 if (PERF_MODE) {
   perfLogInterval = setInterval(() => {
+    // Check for hero visual
+    const heroVisual = document.querySelector('.hero-visual');
+    const hasHeroVisual = !!heroVisual;
+    
+    // Check for specific infinite animations
+    let pulseAnimations = 0;
+    let breatheAnimations = 0;
+    let floatAnimations = 0;
+    let shimmerAnimations = 0;
+    try {
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(el => {
+        const style = window.getComputedStyle(el);
+        const animName = style.animationName;
+        if (animName && animName !== 'none') {
+          if (animName.includes('pulse')) pulseAnimations++;
+          if (animName.includes('breathe')) breatheAnimations++;
+          if (animName.includes('float')) floatAnimations++;
+          if (animName.includes('shimmer')) shimmerAnimations++;
+        }
+      });
+    } catch (e) {}
+    
     console.log('[PERF]', JSON.stringify({
       ...perfMetrics,
+      hasHeroVisual,
+      pulseAnimations,
+      breatheAnimations,
+      floatAnimations,
+      shimmerAnimations,
       timestamp: Date.now()
     }, null, 2));
   }, 10000);
