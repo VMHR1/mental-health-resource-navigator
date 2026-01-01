@@ -3149,6 +3149,98 @@ function mergeGeocodedData(programs) {
   });
 }
 
+// ========== Available Filters Detection ==========
+// Compute which filters are available based on loaded program data
+function computeAvailableFilters(programsList) {
+  if (!programsList || programsList.length === 0) {
+    return {
+      hasCounty: false,
+      hasServiceDomains: false,
+      hasSUD: false,
+      hasVerification: false,
+      hasServiceArea: false
+    };
+  }
+  
+  let hasCounty = false;
+  let hasServiceDomains = false;
+  let hasSUD = false;
+  let hasVerificationCount = 0;
+  let hasServiceArea = false;
+  
+  programsList.forEach(program => {
+    // Check for county data
+    if (!hasCounty) {
+      if (program.primary_county && program.primary_county.trim()) {
+        hasCounty = true;
+      } else if (program.service_area && program.service_area.counties && 
+                 Array.isArray(program.service_area.counties) && 
+                 program.service_area.counties.length > 0) {
+        hasCounty = true;
+      }
+    }
+    
+    // Check for service_domains beyond default mental_health
+    if (!hasServiceDomains && program.service_domains && Array.isArray(program.service_domains)) {
+      const domains = program.service_domains;
+      if (domains.length > 0 && 
+          !(domains.length === 1 && domains[0] === 'mental_health')) {
+        hasServiceDomains = true;
+      }
+    }
+    
+    // Check for SUD services
+    if (!hasSUD) {
+      if (program.service_domains && Array.isArray(program.service_domains)) {
+        if (program.service_domains.includes('substance_use') || 
+            program.service_domains.includes('co_occurring')) {
+          hasSUD = true;
+        }
+      }
+      if (!hasSUD && program.sud_services && 
+          Array.isArray(program.sud_services) && 
+          program.sud_services.length > 0) {
+        hasSUD = true;
+      }
+    }
+    
+    // Check for verification data (new structure or legacy)
+    if (program.verification && program.verification.last_verified_at) {
+      hasVerificationCount++;
+    } else if (program.last_verified && program.last_verified.trim()) {
+      hasVerificationCount++;
+    }
+    
+    // Check for service_area
+    if (!hasServiceArea && program.service_area && program.service_area.type) {
+      hasServiceArea = true;
+    }
+  });
+  
+  // hasVerification is true if >= 50% of programs have verification
+  const hasVerification = hasVerificationCount >= Math.ceil(programsList.length * 0.5);
+  
+  return {
+    hasCounty,
+    hasServiceDomains,
+    hasSUD,
+    hasVerification,
+    hasServiceArea
+  };
+}
+
+// Update filter UI visibility based on availableFilters
+function updateFilterVisibility() {
+  // This function will be called to show/hide filter UI elements
+  // For now, we'll store the state and filters can check it
+  // Future: Add specific UI elements for county, service_domains, SUD, etc.
+  
+  // Log available filters for debugging (can be removed in production)
+  if (typeof window !== 'undefined' && window.console) {
+    console.log('Available filters:', availableFilters);
+  }
+}
+
 function requestUserLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
