@@ -3998,32 +3998,31 @@ async function loadPrograms(retryCount = 0){
       }
       
       return {
-      program_id: p.program_id || "",
-      entry_type: p.entry_type || "Treatment Program",
-      organization: p.organization || "",
-      program_name: p.program_name || "",
-      level_of_care: p.level_of_care || "Unknown",
-      service_setting: p.service_setting || "Unknown",
-      ages_served: p.ages_served || "Unknown",
+        program_id: p.program_id || "",
+        entry_type: p.entry_type || "Treatment Program",
+        organization: p.organization || "",
+        program_name: p.program_name || "",
+        level_of_care: p.level_of_care || "Unknown",
+        service_setting: p.service_setting || "Unknown",
+        ages_served: p.ages_served || "Unknown",
         locations: normalizedLocations,
-      phone: p.phone || "",
-      website_url: p.website_url || p.website || "",
-      website_domain: p.website_domain || "",
-      notes: p.notes || "",
-      transportation_available: p.transportation_available || "Unknown",
-      insurance_notes: p.insurance_notes || "Unknown",
-      verification_source: p.verification_source || "", // Keep for backward compatibility
-      last_verified: p.last_verified || "", // Keep for backward compatibility
-      accepting_new_patients: p.accepting_new_patients || "Unknown",
-      waitlist_status: p.waitlist_status || "Unknown",
-      accepted_insurance: p.accepted_insurance || null,
-      // New statewide-ready fields (all optional)
-      primary_county: p.primary_county || undefined,
-      service_area: p.service_area || undefined,
-      geo: p.geo || undefined, // Program-level geo (if different from location-level)
-      verification: verification || undefined,
-      service_domains: service_domains,
-      sud_services: p.sud_services || undefined
+        website_url: p.website_url || p.website || "",
+        website_domain: p.website_domain || "",
+        notes: p.notes || "",
+        transportation_available: p.transportation_available || "Unknown",
+        insurance_notes: p.insurance_notes || "Unknown",
+        verification_source: p.verification_source || "", // Keep for backward compatibility
+        last_verified: p.last_verified || "", // Keep for backward compatibility
+        accepting_new_patients: p.accepting_new_patients || "Unknown",
+        waitlist_status: p.waitlist_status || "Unknown",
+        accepted_insurance: p.accepted_insurance || null,
+        // New statewide-ready fields (all optional)
+        primary_county: p.primary_county || undefined,
+        service_area: p.service_area || undefined,
+        geo: p.geo || undefined, // Program-level geo (if different from location-level)
+        verification: verification || undefined,
+        service_domains: service_domains,
+        sud_services: p.sud_services || undefined
       };
     });
     
