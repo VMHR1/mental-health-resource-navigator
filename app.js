@@ -2292,6 +2292,9 @@ function render(){
 
   let activeList = showCrisis ? crisis : treatment;
   const activeLabel = showCrisis ? "Crisis Resources" : "Treatment Programs";
+  
+  // Update active filter chips
+  updateActiveFilterChips();
 
   // Calculate relevance scores for all results
   const query = safeStr(els.q?.value || '').trim();
@@ -3401,6 +3404,131 @@ function updateFilterVisibility() {
   const summary = accordion.querySelector('.advanced-filters-summary');
   if (summary) {
     summary.setAttribute('aria-expanded', accordion.open ? 'true' : 'false');
+  }
+}
+
+// Update active filter chips display
+function updateActiveFilterChips() {
+  const container = document.getElementById('activeFiltersContainer');
+  const chipsContainer = document.getElementById('activeFiltersChips');
+  if (!container || !chipsContainer) return;
+  
+  const activeFilters = [];
+  
+  // County filter
+  if (els.county && els.county.value) {
+    activeFilters.push({
+      type: 'county',
+      label: `County: ${els.county.options[els.county.selectedIndex]?.text || els.county.value}`,
+      removeFn: () => {
+        els.county.value = '';
+        selectedCounty = null;
+        scheduleRender();
+      }
+    });
+  }
+  
+  // Service domain filter
+  if (els.serviceDomain && els.serviceDomain.value) {
+    const domainLabels = {
+      'mental_health': 'Mental Health',
+      'substance_use': 'Substance Use',
+      'co_occurring': 'Co-occurring'
+    };
+    activeFilters.push({
+      type: 'serviceDomain',
+      label: `Service Type: ${domainLabels[els.serviceDomain.value] || els.serviceDomain.value}`,
+      removeFn: () => {
+        els.serviceDomain.value = '';
+        selectedServiceDomains = [];
+        scheduleRender();
+      }
+    });
+  }
+  
+  // SUD services filter (multi-select)
+  if (els.sudServices) {
+    const selectedOptions = Array.from(els.sudServices.selectedOptions);
+    if (selectedOptions.length > 0) {
+      const sudLabels = {
+        'detox': 'Detox',
+        'otp': 'OTP',
+        'moud': 'MOUD',
+        'residential_sud': 'Residential SUD',
+        'outpatient_sud': 'Outpatient SUD',
+        'iop_sud': 'IOP SUD',
+        'php_sud': 'PHP SUD',
+        'osar_referral': 'OSAR Referral'
+      };
+      const labels = selectedOptions.map(opt => sudLabels[opt.value] || opt.value).join(', ');
+      activeFilters.push({
+        type: 'sudServices',
+        label: `SUD Services: ${labels}`,
+        removeFn: () => {
+          Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+          selectedSudServices = [];
+          scheduleRender();
+        }
+      });
+    }
+  }
+  
+  // Verification recency filter
+  if (els.verificationRecency && els.verificationRecency.value) {
+    const recencyLabels = {
+      '30': 'Last 30 days',
+      '90': 'Last 90 days',
+      '180': 'Last 180 days'
+    };
+    activeFilters.push({
+      type: 'verificationRecency',
+      label: `Verified: ${recencyLabels[els.verificationRecency.value] || els.verificationRecency.value}`,
+      removeFn: () => {
+        els.verificationRecency.value = '';
+        verificationRecencyDays = null;
+        scheduleRender();
+      }
+    });
+  }
+  
+  // Show/hide container based on active filters
+  if (activeFilters.length > 0) {
+    container.style.display = 'flex';
+    
+    // Render chips
+    chipsContainer.innerHTML = activeFilters.map((filter, idx) => {
+      const chipId = `filter-chip-${filter.type}-${idx}`;
+      return `
+        <div class="active-filter-chip" role="listitem" id="${chipId}">
+          <span class="active-filter-chip-label">${escapeHtml(filter.label)}</span>
+          <button 
+            type="button" 
+            class="active-filter-chip-remove" 
+            aria-label="Remove ${escapeHtml(filter.label)} filter"
+            data-filter-type="${escapeHtml(filter.type)}"
+            tabindex="0">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+    
+    // Attach remove handlers
+    chipsContainer.querySelectorAll('.active-filter-chip-remove').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        activeFilters[idx].removeFn();
+      });
+      // Keyboard support
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activeFilters[idx].removeFn();
+        }
+      });
+    });
+  } else {
+    container.style.display = 'none';
+    chipsContainer.innerHTML = '';
   }
 }
 
