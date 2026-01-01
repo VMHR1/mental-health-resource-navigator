@@ -9,6 +9,13 @@ let openId = null;
 let currentSort = 'relevance';
 let userLocation = null; // { lat, lng } - kept in memory only, never stored
 let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
+let availableFilters = {
+  hasCounty: false,
+  hasServiceDomains: false,
+  hasSUD: false,
+  hasVerification: false,
+  hasServiceArea: false
+};
 
 // Load encrypted data
 async function loadEncryptedData(key, defaultValue = []) {
@@ -3571,6 +3578,10 @@ async function loadPrograms(retryCount = 0){
     programs = loadedPrograms;
     programDataMap.clear();
     programs.forEach(p => programDataMap.set(p.program_id, p));
+    
+    // Update available filters after programs are loaded
+    availableFilters = computeAvailableFilters(programs);
+    updateFilterVisibility();
 
     // Build autocomplete indexes to avoid O(n^2) behavior
     buildAutocompleteIndexes(programs);
