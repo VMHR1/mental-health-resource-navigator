@@ -596,13 +596,15 @@ html.perf-no-sticky .search-section {
 /* ========== Mobile Performance Policy (Phase 1) ========== */
 /* On small screens and coarse pointers, make background static and simpler */
 @media (max-width: 900px), (pointer: coarse) {
-  /* CRITICAL: No infinite background animations on mobile */
+  /* CRITICAL: Hide fixed full-viewport background layer completely on mobile */
+  /* Even without animation, a fixed full-viewport element with complex gradients is expensive to repaint during scroll */
   .bg-gradient {
-    animation: none !important;
-    background: var(--bg0) !important; /* Use solid color instead of gradient for better scroll performance */
-    transform: none !important; /* Prevent transform-based animations */
-    will-change: auto !important; /* Don't hint for changes */
-    contain: paint !important; /* Isolate paint operations */
+    display: none !important; /* Completely remove from paint/compositing */
+  }
+  
+  /* Use static body background instead */
+  body {
+    background: var(--bg0) !important;
   }
   
   /* CRITICAL: Disable all infinite animations on mobile */

@@ -313,16 +313,28 @@ function perfUpdateHUD() {
     perfMetrics.fps = Math.round(1000 / avgFrameTime);
   }
   
-  // Count active animations
+  // Count active animations (OPTIMIZED: Only check known animated elements, not all elements)
+  // CRITICAL FIX: querySelectorAll('*') + getComputedStyle on every element is extremely expensive
   let animCount = 0;
   try {
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(el => {
-      const style = window.getComputedStyle(el);
-      const animName = style.animationName;
-      if (animName && animName !== 'none') {
-        animCount++;
-      }
+    // Only check known elements that might have animations
+    const knownAnimatedSelectors = [
+      '.bg-gradient',
+      '.floating-card',
+      '.btn-emergency',
+      '.accuracyStrip',
+      '.shimmer',
+      '.card'
+    ];
+    knownAnimatedSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        const style = window.getComputedStyle(el);
+        const animName = style.animationName;
+        if (animName && animName !== 'none') {
+          animCount++;
+        }
+      });
     });
   } catch (e) {}
   perfMetrics.activeAnimations = animCount;
