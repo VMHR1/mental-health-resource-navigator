@@ -71,13 +71,19 @@ body{
   animation: gradientShift 18s ease-in-out infinite;
 }
 @keyframes gradientShift{
-  0%,100%{ transform: scale(1) rotate(0deg); filter: saturate(1); opacity: 1; }
-  50%{ transform: scale(1.08) rotate(3deg); filter: saturate(1.05); opacity: .92; }
+  0%,100%{ transform: scale(1) rotate(0deg); opacity: 1; }
+  50%{ transform: scale(1.04) rotate(1deg); opacity: .96; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
-  .bg-gradient{ animation:none !important; }
+  *, *::before, *::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-gradient{ animation: none !important; }
 }
 
 .sr-only{
@@ -530,14 +536,24 @@ h1{
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-  /* Disable animations and transforms on mobile for performance during text size changes */
+/* On small screens and coarse pointers, make background static and simpler */
+@media (max-width: 900px), (pointer: coarse) {
   .bg-gradient {
     animation: none !important;
-    filter: none !important;
-    transform: none !important;
+    background: linear-gradient(180deg, var(--bg1), var(--bg0)); /* drop the big radial gradients */
   }
   
+  /* reduce repaint cost from large shadows */
+  .card,
+  .search-section,
+  .modal-content,
+  .triage-card {
+    box-shadow: var(--shadow-sm) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Disable animations and transforms on mobile for performance during text size changes */
   .floating-card {
     animation: none !important;
     transform: none !important;
@@ -552,12 +568,6 @@ h1{
   .modal-backdrop,
   .search-section {
     backdrop-filter: none !important;
-  }
-  
-  /* Reduce heavy shadows on mobile for smoother reflow */
-  .card,
-  .search-section {
-    box-shadow: var(--shadow-sm) !important;
   }
   
   .search-section {
