@@ -817,6 +817,84 @@ html.perf-no-sticky .search-section {
   /* REMOVED: content-visibility - causes layout shifts during scrolling */
 }
 
+/* ========== Dense Mode: Text Scale Below 100% (TASK B) ========== */
+/* Activates when iOS Safari text size is below baseline (aA smaller) */
+/* Reduces paint/compositing cost without changing layout */
+@media (pointer: coarse) {
+  /* TASK B.1: Disable ALL infinite/looping animations when text is small */
+  html.text-small .bg-gradient {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  
+  html.text-small .floating-card {
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  html.text-small .btn-emergency {
+    animation: none !important;
+  }
+  
+  html.text-small .accuracyStrip {
+    animation: none !important;
+  }
+  
+  html.text-small .shimmer {
+    animation: none !important;
+  }
+  
+  /* TASK B.2: Flatten heavy shadows on sticky containers */
+  html.text-small .crisis-banner {
+    box-shadow: 0 1px 3px rgba(239,68,68,.1) !important;
+    /* Use border instead of heavy shadow */
+    border-bottom: 2px solid rgba(239,68,68,.2) !important;
+  }
+  
+  html.text-small .search-section {
+    box-shadow: 0 1px 3px rgba(15,23,42,.05) !important;
+    /* Use border instead of heavy shadow */
+    border: 1px solid rgba(15,23,42,.12) !important;
+  }
+  
+  /* TASK B.2: Flatten shadows on cards/modals */
+  html.text-small .card {
+    box-shadow: 0 1px 2px rgba(15,23,42,.04) !important;
+    border: 1px solid rgba(15,23,42,.15) !important; /* Stronger border to compensate */
+  }
+  
+  html.text-small .modal-content,
+  html.text-small .section {
+    box-shadow: 0 1px 3px rgba(15,23,42,.06) !important;
+  }
+  
+  /* TASK B.3: Remove fixed full-viewport background layer */
+  html.text-small .bg-gradient {
+    display: none !important;
+  }
+  
+  /* Move to static body background (non-fixed) */
+  html.text-small body {
+    background: var(--bg0) !important;
+  }
+  
+  /* TASK B.4: Add content-visibility to long results list */
+  html.text-small .grid {
+    content-visibility: auto !important;
+    contain-intrinsic-size: 1200px !important; /* Prevent jump when content loads */
+  }
+  
+  /* TASK C: While-scrolling optimization (dense mode only) */
+  /* Temporarily remove shadows during active scrolling for better FPS */
+  html.text-small.is-scrolling .card,
+  html.text-small.is-scrolling .crisis-banner,
+  html.text-small.is-scrolling .search-section {
+    box-shadow: none !important;
+    /* Keep borders for visual separation */
+  }
+}
+
 @media (max-width: 768px) {
   /* Disable animations and transforms on mobile for performance during text size changes */
   .floating-card {

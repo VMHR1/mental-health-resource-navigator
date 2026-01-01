@@ -55,6 +55,22 @@ Use `?perf=1` with these switches to isolate issues:
 
 **Result**: Scrolling is smoother, idle stutter is reduced. See [PERFORMANCE_FINDINGS.md](./PERFORMANCE_FINDINGS.md) for detailed analysis.
 
+### Dense Mode (Text Size < 100%)
+
+**Issue**: Jank occurs when iPhone Safari text size is below 100% (aA smaller)
+
+**Solution**: Automatic "dense mode" activates when text is smaller than baseline:
+- Detects text scale by comparing current root font size to baseline
+- Activates `html.text-small` class when text is < baseline - 0.5px
+- Applies performance optimizations without changing layout:
+  - Disables infinite animations (hero float, pulse, breathe, shimmer, gradient)
+  - Flattens heavy shadows (replaces with minimal shadow + border)
+  - Removes fixed full-viewport background layer
+  - Adds content-visibility to long card lists
+  - While-scrolling: temporarily removes shadows for better FPS
+
+**Note**: Dense mode activates automatically when iOS aA text size is below baseline. No layout changes, only visual/performance optimizations.
+
 ## Geocoding for Distance Features
 
 The "Near Me" feature requires geocoded location data. To generate it:

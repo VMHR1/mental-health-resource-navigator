@@ -116,6 +116,126 @@ initializeEncryptedStorage();
 // Detect pointer type early for mobile optimizations
 const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
+// ========== Dense Mode: Text Scale Detection (TASK A) ==========
+// Activates when iOS Safari text size is below 100% to reduce jank
+let baselineRootPx = null;
+let __textScaleRAF = null;
+let __textScaleT = null;
+let __lastTextScaleCheck = 0;
+const TEXT_SCALE_CHECK_INTERVAL = 200; // Max one check per 200ms
+
+function updateTextScaleClass() {
+  // Throttle: only check once per 200ms burst
+  const now = Date.now();
+  if (now - __lastTextScaleCheck < TEXT_SCALE_CHECK_INTERVAL) {
+    return;
+  }
+  __lastTextScaleCheck = now;
+  
+  try {
+    // Get current root font size
+    const currentRootPx = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+    
+    // Initialize baseline on first call
+    if (baselineRootPx === null) {
+      baselineRootPx = currentRootPx;
+      return; // Don't set class on first call, just store baseline
+    }
+    
+    // If current is smaller than baseline by more than 0.5px, activate dense mode
+    if (currentRootPx < baselineRootPx - 0.5) {
+      document.documentElement.classList.add('text-small');
+    } else {
+      document.documentElement.classList.remove('text-small');
+    }
+  } catch (e) {
+    // Silently fail if getComputedStyle fails
+  }
+}
+
+// Initialize baseline and check on DOM ready
+function initTextScaleDetection() {
+  // Set baseline immediately if DOM is ready
+  if (document.readyState !== 'loading') {
+    updateTextScaleClass(); // Sets baseline
+    updateTextScaleClass(); // Checks current state
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      updateTextScaleClass(); // Sets baseline
+      updateTextScaleClass(); // Checks current state
+    });
+  }
+  
+  // Check on visualViewport resize (throttled with rAF + timeout)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      if (__textScaleRAF) cancelAnimationFrame(__textScaleRAF);
+      __textScaleRAF = requestAnimationFrame(() => {
+        if (__textScaleT) clearTimeout(__textScaleT);
+        __textScaleT = setTimeout(() => {
+          updateTextScaleClass();
+        }, 50); // Small delay to batch rapid events
+      });
+    });
+  }
+  
+  // Check on orientation change (throttled)
+  window.addEventListener('orientationchange', () => {
+    if (__textScaleT) clearTimeout(__textScaleT);
+    __textScaleT = setTimeout(() => {
+      updateTextScaleClass();
+    }, 300); // Wait for orientation to settle
+  });
+  
+  // Check when page becomes visible (user returns to tab)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      if (__textScaleT) clearTimeout(__textScaleT);
+      __textScaleT = setTimeout(() => {
+        updateTextScaleClass();
+      }, 100);
+    }
+  });
+  
+  // Also check on pageshow (back/forward navigation)
+  window.addEventListener('pageshow', () => {
+    if (__textScaleT) clearTimeout(__textScaleT);
+    __textScaleT = setTimeout(() => {
+      updateTextScaleClass();
+    }, 100);
+  });
+}
+
+// Initialize text scale detection
+initTextScaleDetection();
+
+// ========== TASK C: While-scrolling optimization (dense mode only) ==========
+// Add is-scrolling class during active scrolling to further optimize
+let __isScrollingRAF = null;
+let __isScrollingT = null;
+let __lastScrollTime = 0;
+
+if (isCoarsePointer) {
+  window.addEventListener('scroll', () => {
+    __lastScrollTime = Date.now();
+    
+    // Add class immediately
+    if (!document.documentElement.classList.contains('is-scrolling')) {
+      document.documentElement.classList.add('is-scrolling');
+    }
+    
+    // Clear class after scrolling stops (150-250ms)
+    if (__isScrollingT) clearTimeout(__isScrollingT);
+    __isScrollingT = setTimeout(() => {
+      // Double-check that scrolling has actually stopped
+      const timeSinceLastScroll = Date.now() - __lastScrollTime;
+      if (timeSinceLastScroll >= 200) {
+        document.documentElement.classList.remove('is-scrolling');
+      }
+    }, 200);
+  }, { passive: true });
+}
+
 // ========== Performance Monitoring (Phase 0) ==========
 // Only active when ?perf=1 is in URL
 const PERF_MODE = new URLSearchParams(window.location.search).get('perf') === '1';
