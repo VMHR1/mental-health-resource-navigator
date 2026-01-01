@@ -1153,21 +1153,7 @@ a.btnlike:focus{
 .card:hover::before{ transform: scaleX(1); }
 .card:focus-within{ box-shadow: var(--focus), var(--shadow-md); }
 
-.card[data-recent="true"]::after{
-  content: "Recently Updated";
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(34,197,94,.12);
-  color: #15803d;
-  font-size: 10px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(34,197,94,.25);
-  font-weight: 800;
-  letter-spacing: .03em;
-  text-transform: uppercase;
-}
+/* Badge definition moved to line 1496 with overflow handling */
 
 @keyframes rise{
   from{ opacity:0; transform: translateY(10px); }
@@ -1496,44 +1482,25 @@ footer{
 .card[data-recent="true"]::after{
   content: "Recently Updated";
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 14px;
+  right: 14px;
   background: rgba(34,197,94,.12);
   color: #15803d;
-  font-size: 9px;
-  padding: 4px 7px;
+  font-size: 10px;
+  padding: 4px 8px;
   border-radius: 999px;
   border: 1px solid rgba(34,197,94,.25);
   font-weight: 800;
   letter-spacing: .03em;
   text-transform: uppercase;
   z-index: 5;
-  max-width: 90px;
+  max-width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Ensure card has proper overflow handling */
-/* Consolidated card styles - single authoritative definition */
-.card{
-  border-radius: var(--radius);
-  border: 1px solid rgba(15,23,42,.09);
-  background: rgba(255,255,255,.88);
-  box-shadow: var(--shadow-sm);
-  padding: 16px;
-  position: relative;
-  overflow: visible; /* Changed from hidden to visible for badge */
-  transform: translateZ(0);
-  transition: var(--transition);
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  page-break-inside: avoid;
-  animation: rise .35s ease both;
-  contain: layout style paint;
-  content-visibility: auto;
-  contain-intrinsic-size: 240px;
-}
+/* Ensure card has proper overflow handling - properties already defined above at line 1118 */
 
 /* FIX 2: Triage Section Centering & Sizing */
 .triage-card h2{
@@ -1920,22 +1887,20 @@ footer{
 }
 
 /* FIX 4: Card Content - Prevent Badge from Covering Text */
-.cardTop{
-  display:flex;
-  align-items:flex-start;
-  justify-content: space-between;
-  gap: 10px;
+/* Only apply padding when card has "Recently Updated" badge */
+.card[data-recent="true"] .cardTop{
   padding-right: 100px; /* Add space for the "Recently Updated" badge */
   position: relative;
-  max-width: 100%;
-  min-width: 0;
 }
 
 /* Responsive adjustment for smaller screens */
 @media (max-width: 640px){
   .cardTop{
-    padding-right: 100px;
     gap: 8px;
+  }
+  
+  .card[data-recent="true"] .cardTop{
+    padding-right: 100px;
   }
   
   .card[data-recent="true"]::after{
