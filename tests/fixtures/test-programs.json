@@ -1,0 +1,149 @@
+{
+  "metadata": {
+    "generated_at": "2025-01-01",
+    "notes": "Test fixtures for statewide field validation"
+  },
+  "programs": [
+    {
+      "program_id": "test-legacy-program",
+      "entry_type": "Treatment Program",
+      "organization": "Legacy Health Center",
+      "program_name": "Legacy Program",
+      "level_of_care": "Outpatient",
+      "service_setting": "In-person",
+      "ages_served": "13+",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75201",
+          "address": "123 Main St"
+        }
+      ],
+      "phone": "214-555-0100",
+      "notes": "Legacy program with no new statewide fields",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Unknown",
+      "verification_source": "https://example.com",
+      "last_verified": "2025-01-01"
+    },
+    {
+      "program_id": "test-statewide-program",
+      "entry_type": "Treatment Program",
+      "organization": "Statewide Health Services",
+      "program_name": "Statewide Program",
+      "level_of_care": "IOP",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75202",
+          "address": "456 Oak Ave"
+        }
+      ],
+      "phone": "214-555-0200",
+      "notes": "Program with service_area.counties",
+      "transportation_available": "Yes",
+      "insurance_notes": "Accepts most insurance",
+      "verification_source": "https://example.com",
+      "last_verified": "2025-01-01",
+      "primary_county": "Dallas",
+      "service_area": {
+        "type": "counties",
+        "counties": ["Dallas", "Collin", "Tarrant"]
+      },
+      "service_domains": ["mental_health"]
+    },
+    {
+      "program_id": "test-sud-program",
+      "entry_type": "Treatment Program",
+      "organization": "SUD Treatment Center",
+      "program_name": "Substance Use Program",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76101",
+          "address": "789 Elm St"
+        }
+      ],
+      "phone": "817-555-0300",
+      "notes": "Program with SUD services",
+      "transportation_available": "Yes",
+      "insurance_notes": "Accepts insurance",
+      "verification_source": "https://example.com",
+      "last_verified": "2025-01-01",
+      "service_domains": ["substance_use", "co_occurring"],
+      "sud_services": ["detox", "otp", "moud", "residential_sud"]
+    },
+    {
+      "program_id": "test-verified-program",
+      "entry_type": "Treatment Program",
+      "organization": "Verified Health Center",
+      "program_name": "Verified Program",
+      "level_of_care": "PHP",
+      "service_setting": "In-person",
+      "ages_served": "6+",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75023",
+          "address": "321 Pine Rd"
+        }
+      ],
+      "phone": "972-555-0400",
+      "notes": "Program with verification.last_verified_at",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Unknown",
+      "verification_source": "https://example.com",
+      "last_verified": "2025-01-01",
+      "verification": {
+        "last_verified_at": "2025-12-15T00:00:00Z",
+        "sources": [
+          {
+            "name": "Provider Website",
+            "type": "website",
+            "url": "https://example.com",
+            "verified_at": "2025-12-15T00:00:00Z"
+          }
+        ]
+      },
+      "service_domains": ["mental_health"]
+    },
+    {
+      "program_id": "test-edge-case-nulls",
+      "entry_type": "Treatment Program",
+      "organization": "Edge Case Center",
+      "program_name": "Edge Case Program",
+      "level_of_care": "Outpatient",
+      "service_setting": "In-person",
+      "ages_served": "13+",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75201",
+          "address": "999 Test St"
+        }
+      ],
+      "phone": "214-555-0500",
+      "notes": "Program with null/empty arrays to test edge cases",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Unknown",
+      "verification_source": "https://example.com",
+      "last_verified": "2025-01-01",
+      "primary_county": null,
+      "service_area": null,
+      "service_domains": [],
+      "sud_services": null,
+      "verification": null
+    }
+  ]
+}
+

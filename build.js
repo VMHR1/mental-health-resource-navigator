@@ -133,6 +133,41 @@ async function build() {
     // Copy static assets first
     copyStaticAssets();
     
+    // Run filter validation in dev mode (non-production)
+    if (!shouldMinify) {
+      console.log('\nRunning filter validation...');
+      try {
+        const { spawn } = await import('child_process');
+        
+        const validationProcess = spawn('node', ['scripts/validate-filters.js'], {
+          cwd: __dirname,
+          stdio: 'inherit',
+          shell: false
+        });
+        
+        await new Promise((resolve, reject) => {
+          validationProcess.on('close', (code) => {
+            if (code === 0) {
+              console.log('✓ Filter validation passed\n');
+              resolve();
+            } else {
+              console.warn(`⚠ Filter validation failed with code ${code}`);
+              console.warn('Continuing with build (validation is non-blocking in dev mode)...\n');
+              resolve(); // Don't fail the build, just warn
+            }
+          });
+          validationProcess.on('error', (err) => {
+            console.warn('Warning: Filter validation could not run:', err.message);
+            console.warn('Continuing with build...\n');
+            resolve(); // Don't fail the build if validation script doesn't exist
+          });
+        });
+      } catch (validationError) {
+        console.warn('Warning: Filter validation failed or could not run:', validationError.message);
+        console.warn('Continuing with build...\n');
+      }
+    }
+    
     if (isWatch) {
       const ctx = await esbuild.context(buildOptions);
       await ctx.watch();
