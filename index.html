@@ -286,6 +286,62 @@
         </div>
       </div>
 
+      <!-- Statewide/Advanced Filters Accordion -->
+      <details class="advanced-filters-accordion" id="statewideFiltersAccordion" style="display: none;">
+        <summary class="advanced-filters-summary" aria-expanded="false" aria-controls="statewideFiltersContent">
+          <span class="advanced-filters-summary-text">Additional Filters</span>
+          <span class="advanced-filters-summary-icon" aria-hidden="true">▾</span>
+        </summary>
+        <div class="advanced-filters-content" id="statewideFiltersContent">
+          <div class="search-grid">
+            <!-- County selector (conditional) -->
+            <div class="input-group" id="countyFilterGroup" style="display: none;">
+              <label for="county">County</label>
+              <select id="county">
+                <option value="">Any county</option>
+              </select>
+            </div>
+
+            <!-- Service Domain toggle (conditional) -->
+            <div class="input-group" id="serviceDomainFilterGroup" style="display: none;">
+              <label for="serviceDomain">Service Type</label>
+              <select id="serviceDomain">
+                <option value="">Any type</option>
+                <option value="mental_health">Mental Health</option>
+                <option value="substance_use">Substance Use</option>
+                <option value="co_occurring">Co-occurring</option>
+              </select>
+            </div>
+
+            <!-- SUD-specific options (conditional) -->
+            <div class="input-group" id="sudServicesFilterGroup" style="display: none;">
+              <label for="sudServices">SUD Services</label>
+              <select id="sudServices" multiple size="4">
+                <option value="detox">Detox</option>
+                <option value="otp">OTP (Opioid Treatment Program)</option>
+                <option value="moud">MOUD (Medication for Opioid Use Disorder)</option>
+                <option value="residential_sud">Residential SUD</option>
+                <option value="outpatient_sud">Outpatient SUD</option>
+                <option value="iop_sud">IOP SUD</option>
+                <option value="php_sud">PHP SUD</option>
+                <option value="osar_referral">OSAR Referral</option>
+              </select>
+            </div>
+
+            <!-- Verified recency filter (conditional) -->
+            <div class="input-group" id="verificationFilterGroup" style="display: none;">
+              <label for="verificationRecency">Verified within</label>
+              <select id="verificationRecency">
+                <option value="">Any time</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="180">Last 180 days</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </details>
+
       <div class="recent-searches" style="display:none;"></div>
     </section>
 
