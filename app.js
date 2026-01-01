@@ -2177,6 +2177,17 @@ function renderFavorites() {
   favoritePrograms.forEach((p, idx) => {
     const card = createCard(p, idx);
     
+    // Add "Recently Updated" badge to badgeRow if card is recent (instead of ::after overlay)
+    if (card.dataset.recent === 'true') {
+      const badgeRow = card.querySelector('.badgeRow');
+      if (badgeRow) {
+        const recentBadge = document.createElement('span');
+        recentBadge.className = 'badge recent';
+        recentBadge.textContent = 'Recently Updated';
+        badgeRow.appendChild(recentBadge);
+      }
+    }
+    
     // Make modal cards self-contained: replace panel with modal-local details
     const panel = card.querySelector('.panel');
     if (panel) {

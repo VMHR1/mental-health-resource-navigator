@@ -515,6 +515,18 @@ h1{
 }
 
 @media (max-width: 768px) {
+  /* Disable animations and transforms on mobile for performance during text size changes */
+  .bg-gradient {
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  
+  .floating-card {
+    animation: none !important;
+    transform: none !important;
+  }
+  
   /* Disable backdrop-filter on mobile for performance */
   .glass,
   .blur,
@@ -524,6 +536,12 @@ h1{
   .modal-backdrop,
   .search-section {
     backdrop-filter: none !important;
+  }
+  
+  /* Reduce heavy shadows on mobile for smoother reflow */
+  .card,
+  .search-section {
+    box-shadow: var(--shadow-sm) !important;
   }
   
   .search-section {
@@ -1403,10 +1421,23 @@ a.btnlike:focus{
   pointer-events: auto;
 }
 
-/* Ensure badges are static (not absolute) in modal to prevent overlap */
+/* Disable ::after badge in favorites modal (replaced with normal badge in badgeRow) */
 #favoritesModal .card[data-recent="true"]::after {
-  position: static !important;
-  z-index: 1;
+  content: none !important;
+}
+
+/* Style the "Recently Updated" badge in modal */
+#favoritesModal .badge.recent {
+  background: rgba(34,197,94,.12);
+  color: #15803d;
+  border: 1px solid rgba(34,197,94,.25);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Card details display is handled by general .card-details rules above */
