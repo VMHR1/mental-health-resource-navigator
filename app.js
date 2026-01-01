@@ -3123,7 +3123,16 @@ function mergeGeocodedData(programs) {
       merged.locations = program.locations.map((loc, idx) => {
         const geoLoc = geocoded.locations[idx];
         if (geoLoc && geoLoc.geo) {
-          return { ...loc, geo: geoLoc.geo };
+          // Merge geo data, preserving any existing geo structure
+          const existingGeo = loc.geo || {};
+          return { 
+            ...loc, 
+            geo: {
+              lat: geoLoc.geo.lat !== undefined ? geoLoc.geo.lat : existingGeo.lat,
+              lng: geoLoc.geo.lng !== undefined ? geoLoc.geo.lng : existingGeo.lng,
+              precision: geoLoc.geo.precision || existingGeo.precision || 'street'
+            }
+          };
         }
         return loc;
       });
