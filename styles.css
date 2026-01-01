@@ -72,6 +72,9 @@ body{
     radial-gradient(circle at 38% 86%, rgba(196,181,253,0.16), transparent 56%),
     linear-gradient(180deg, var(--bg1), var(--bg0));
   animation: gradientShift 18s ease-in-out infinite;
+  /* Optimize for scroll performance on all devices */
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Promote to GPU layer */
 }
 @keyframes gradientShift{
   0%,100%{ transform: scale(1) rotate(0deg); opacity: 1; }
@@ -543,8 +546,10 @@ h1{
 @media (max-width: 900px), (pointer: coarse) {
   .bg-gradient {
     animation: none !important;
-    background: linear-gradient(180deg, var(--bg1), var(--bg0)); /* drop the big radial gradients */
+    background: var(--bg0) !important; /* Use solid color instead of gradient for better scroll performance */
     transform: none !important; /* Prevent transform-based animations */
+    will-change: auto !important; /* Don't hint for changes */
+    contain: paint !important; /* Isolate paint operations */
   }
   
   /* reduce repaint cost from large shadows */
