@@ -2333,6 +2333,32 @@ footer{
   padding: 0;
 }
 
+/* Favorites grid in modal - 2 cards per row on desktop */
+.favorites-grid {
+  gap: 14px;
+}
+
+.favorites-grid > .card {
+  flex: 1 1 calc(50% - 14px);
+  max-width: calc(50% - 14px);
+  min-width: 320px;
+}
+
+@media (max-width: 760px) {
+  .favorites-grid > .card {
+    flex-basis: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Prevent per-character wrapping on titles in favorites modal */
+#favoritesModal .card h3,
+#favoritesModal .card .title {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
 /* Toast Notification */
 .toast{
   position: fixed;

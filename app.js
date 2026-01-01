@@ -2123,7 +2123,7 @@ function renderFavorites() {
     return;
   }
   
-  els.favoritesList.innerHTML = '<div class="grid"></div>';
+  els.favoritesList.innerHTML = '<div class="grid favorites-grid"></div>';
   const grid = els.favoritesList.querySelector('.grid');
   
   favoritePrograms.forEach((p, idx) => {
