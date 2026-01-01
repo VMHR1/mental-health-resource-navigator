@@ -580,22 +580,41 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   const MIN_EVENTS_FOR_TEXT_SIZE = 3; // Require multiple events to confirm text-size change
   const SCROLL_COOLDOWN_MS = 400; // Don't trigger vv-changing if scroll happened within this time
   
+  // CRITICAL FIX: Throttle visualViewport listener to reduce work during scroll
+  // Don't process every single resize event - batch them
+  let __vvResizeT = null;
   window.visualViewport.addEventListener('resize', () => {
     const now = Date.now();
     const timeSinceLastEvent = now - __vvLastEventTime;
     __vvLastEventTime = now;
     __vvEventCount++;
     
-    // Cancel any pending RAF
-    if (__vvRAF) {
-      cancelAnimationFrame(__vvRAF);
+    // CRITICAL: Check scroll state FIRST (before any expensive work)
+    const timeSinceScroll = now - lastScrollTs;
+    const isScrolling = timeSinceScroll < SCROLL_COOLDOWN_MS;
+    
+    // If scrolling, skip all processing to avoid work during scroll
+    if (isScrolling) {
+      // Just update cached height and reset counters, then exit
+      __lastVvHeight = window.visualViewport.height;
+      __vvEventCount = 0;
+      __vvEventSequence = [];
+      return; // Exit early - don't do any work during scroll
     }
     
-    // Use rAF to batch visualViewport events
-    __vvRAF = requestAnimationFrame(() => {
-      // TASK A: Check if user is actively scrolling - if so, ignore this viewport change
-      const timeSinceScroll = Date.now() - lastScrollTs;
-      const isScrolling = timeSinceScroll < SCROLL_COOLDOWN_MS;
+    // Throttle: Only process every 150ms to reduce work
+    if (__vvResizeT) clearTimeout(__vvResizeT);
+    __vvResizeT = setTimeout(() => {
+      // Cancel any pending RAF
+      if (__vvRAF) {
+        cancelAnimationFrame(__vvRAF);
+      }
+      
+      // Use rAF to batch visualViewport events
+      __vvRAF = requestAnimationFrame(() => {
+        // Double-check scroll state (may have changed during timeout)
+        const timeSinceScroll = Date.now() - lastScrollTs;
+        const isScrolling = timeSinceScroll < SCROLL_COOLDOWN_MS;
       
       // On real devices, check height more frequently but still use thresholds
       // This prevents applying optimizations during normal scrolling
