@@ -2198,14 +2198,27 @@ function renderFavorites() {
         expandBtn.setAttribute('aria-controls', `modal-details-${card.dataset.id}`);
         expandBtn.setAttribute('aria-expanded', 'false');
         expandBtn.setAttribute('title', 'Expand details');
+        expandBtn.setAttribute('type', 'button'); // Ensure it's a button
         modalDetails.id = `modal-details-${card.dataset.id}`;
         
-        // Remove any existing click handlers and add modal-local handler
-        expandBtn.onclick = (e) => {
+        // Remove any existing handlers
+        expandBtn.onclick = null;
+        expandBtn.ontouchend = null;
+        
+        // Create a unified handler for both click and touch events
+        const handleExpand = (e) => {
           e.preventDefault();
           e.stopPropagation();
+          e.stopImmediatePropagation(); // Prevent other handlers
           toggleModalCardDetails(card);
         };
+        
+        // Attach both click and touchend for mobile support
+        expandBtn.addEventListener('click', handleExpand, { passive: false });
+        expandBtn.addEventListener('touchend', handleExpand, { passive: false });
+        
+        // Also handle pointerup for broader device support
+        expandBtn.addEventListener('pointerup', handleExpand, { passive: false });
       }
     }
     

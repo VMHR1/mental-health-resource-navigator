@@ -1307,11 +1307,13 @@ a.btnlike:focus{
 }
 
 .card-details[hidden] {
-  display: none;
+  display: none !important;
 }
 
 .card[data-open="true"] .card-details {
-  display: block;
+  display: block !important;
+  height: auto;
+  max-height: none;
 }
 
 /* Ensure chevron rotates correctly in modal cards */
@@ -1322,6 +1324,40 @@ a.btnlike:focus{
 #favoritesModal .card[data-open="false"] .chev {
   transform: rotate(45deg);
 }
+
+/* Ensure expand button is clickable on mobile - no pointer-events blocking */
+#favoritesModal .expandBtn {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
+  touch-action: manipulation; /* Improve touch responsiveness */
+  -webkit-tap-highlight-color: rgba(79, 209, 197, 0.2); /* iOS tap highlight */
+}
+
+/* Ensure modal body and cards don't block pointer events */
+#favoritesModal .modal-body,
+#favoritesModal .card {
+  pointer-events: auto;
+}
+
+/* Ensure card-meta-header doesn't overlap expand button */
+#favoritesModal .card-meta-header {
+  position: relative;
+  z-index: 1;
+}
+
+#favoritesModal .cardTop {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure badges are static (not absolute) in modal to prevent overlap */
+#favoritesModal .card[data-recent="true"]::after {
+  position: static !important;
+  z-index: 1;
+}
+
+/* Card details display is handled by general .card-details rules above */
 
 .accuracyStrip{
   margin-top: 10px;
