@@ -7,7 +7,9 @@ const PROGRAM_SCHEMA = {
     'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
     'website_url', 'website', 'website_domain', 'notes', 'transportation_available',
     'insurance_notes', 'verification_source', 'last_verified', 'accepting_new_patients',
-    'waitlist_status', 'accepted_insurance'
+    'waitlist_status', 'accepted_insurance',
+    // New statewide-ready fields (all optional for backward compatibility)
+    'primary_county', 'service_area', 'geo', 'verification', 'service_domains', 'sud_services'
   ],
   types: {
     program_id: 'string',
@@ -29,7 +31,14 @@ const PROGRAM_SCHEMA = {
     last_verified: 'string',
     accepting_new_patients: 'string',
     waitlist_status: 'string',
-    accepted_insurance: 'object'
+    accepted_insurance: 'object',
+    // New field types (all optional, backward compatible)
+    primary_county: 'string',
+    service_area: 'object',
+    geo: 'object',
+    verification: 'object',
+    service_domains: 'array',
+    sud_services: 'array'
   }
 };
 
@@ -88,6 +97,63 @@ function validateProgramSchema(program, index) {
     if (ins.plans && !Array.isArray(ins.plans)) {
       errors.push('accepted_insurance.plans should be an array');
     }
+  }
+  
+  // Validate new statewide-ready fields (all optional, so only validate if present)
+  if (program.service_area && typeof program.service_area === 'object') {
+    const sa = program.service_area;
+    const validTypes = ['point', 'counties', 'statewide', 'multi_region'];
+    if (sa.type && !validTypes.includes(sa.type)) {
+      errors.push(`service_area.type should be one of: ${validTypes.join(', ')}`);
+    }
+    if (sa.counties && !Array.isArray(sa.counties)) {
+      errors.push('service_area.counties should be an array');
+    }
+    if (sa.regions && !Array.isArray(sa.regions)) {
+      errors.push('service_area.regions should be an array');
+    }
+  }
+  
+  if (program.geo && typeof program.geo === 'object') {
+    const geo = program.geo;
+    if (geo.lat !== undefined && (typeof geo.lat !== 'number' || isNaN(geo.lat))) {
+      errors.push('geo.lat should be a number');
+    }
+    if (geo.lng !== undefined && (typeof geo.lng !== 'number' || isNaN(geo.lng))) {
+      errors.push('geo.lng should be a number');
+    }
+    if (geo.precision && !['rooftop', 'street', 'zip', 'city'].includes(geo.precision)) {
+      errors.push('geo.precision should be one of: rooftop, street, zip, city');
+    }
+  }
+  
+  if (program.verification && typeof program.verification === 'object') {
+    const ver = program.verification;
+    if (ver.last_verified_at && typeof ver.last_verified_at !== 'string') {
+      errors.push('verification.last_verified_at should be a string (ISO date)');
+    }
+    if (ver.sources && !Array.isArray(ver.sources)) {
+      errors.push('verification.sources should be an array');
+    } else if (ver.sources) {
+      ver.sources.forEach((src, idx) => {
+        if (typeof src !== 'object' || !src.name || !src.type) {
+          errors.push(`verification.sources[${idx}] should have name and type fields`);
+        }
+      });
+    }
+  }
+  
+  if (program.service_domains && Array.isArray(program.service_domains)) {
+    const validDomains = ['mental_health', 'substance_use', 'co_occurring'];
+    program.service_domains.forEach((domain, idx) => {
+      if (!validDomains.includes(domain)) {
+        errors.push(`service_domains[${idx}] should be one of: ${validDomains.join(', ')}`);
+      }
+    });
+  }
+  
+  if (program.sud_services && !Array.isArray(program.sud_services)) {
+    errors.push('sud_services should be an array');
   }
   
   // Validate URLs

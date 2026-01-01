@@ -3463,11 +3463,70 @@ async function loadPrograms(retryCount = 0){
       : (city) => city;
     
     let loadedPrograms = data.programs.map(p => {
-      // Normalize locations
-      const normalizedLocations = Array.isArray(p.locations) ? p.locations.map(loc => ({
-        ...loc,
-        city: loc.city ? normalizeCity(loc.city) : loc.city
-      })) : [];
+      // Normalize locations and migrate lat/lng to geo structure
+      const normalizedLocations = Array.isArray(p.locations) ? p.locations.map(loc => {
+        const normalized = {
+          ...loc,
+          city: loc.city ? normalizeCity(loc.city) : loc.city
+        };
+        
+        // Migrate existing lat/lng to geo structure (backward compatibility)
+        if (loc.lat !== undefined || loc.lng !== undefined) {
+          normalized.geo = {
+            lat: typeof loc.lat === 'number' ? loc.lat : (loc.geo?.lat),
+            lng: typeof loc.lng === 'number' ? loc.lng : (loc.geo?.lng),
+            precision: loc.geo?.precision || (loc.lat && loc.lng ? 'street' : 'city')
+          };
+          // Remove old lat/lng from location to avoid duplication
+          delete normalized.lat;
+          delete normalized.lng;
+        } else if (loc.geo) {
+          // Preserve existing geo structure
+          normalized.geo = loc.geo;
+        }
+        
+        return normalized;
+      }) : [];
+      
+      // Determine service_domains based on SUD tags or default to mental_health
+      let service_domains = p.service_domains;
+      if (!service_domains || !Array.isArray(service_domains) || service_domains.length === 0) {
+        // Check for SUD indicators in existing fields
+        const hasSUD = p.sud_services && Array.isArray(p.sud_services) && p.sud_services.length > 0;
+        const levelOfCare = (p.level_of_care || '').toLowerCase();
+        const notes = (p.notes || '').toLowerCase();
+        const hasSUDKeywords = levelOfCare.includes('substance') || 
+                              levelOfCare.includes('sud') ||
+                              notes.includes('substance') ||
+                              notes.includes('detox') ||
+                              notes.includes('opioid') ||
+                              notes.includes('addiction');
+        
+        if (hasSUD || hasSUDKeywords) {
+          // Check if it's co-occurring (mental health + SUD)
+          const hasMentalHealth = levelOfCare.includes('mental') || 
+                                 levelOfCare.includes('psychiatric') ||
+                                 levelOfCare.includes('behavioral');
+          service_domains = hasMentalHealth ? ['co_occurring'] : ['substance_use'];
+        } else {
+          // Default to mental_health
+          service_domains = ['mental_health'];
+        }
+      }
+      
+      // Migrate verification data to new structure (backward compatible)
+      let verification = p.verification;
+      if (!verification && (p.verification_source || p.last_verified)) {
+        verification = {
+          last_verified_at: p.last_verified || undefined,
+          sources: p.verification_source ? [{
+            name: p.verification_source,
+            type: 'website',
+            url: p.verification_source.startsWith('http') ? p.verification_source : undefined,
+            verified_at: p.last_verified || undefined
+          }] : []
+        };
+      }
       
       return {
       program_id: p.program_id || "",
@@ -3484,11 +3543,18 @@ async function loadPrograms(retryCount = 0){
       notes: p.notes || "",
       transportation_available: p.transportation_available || "Unknown",
       insurance_notes: p.insurance_notes || "Unknown",
-      verification_source: p.verification_source || "",
-      last_verified: p.last_verified || "",
+      verification_source: p.verification_source || "", // Keep for backward compatibility
+      last_verified: p.last_verified || "", // Keep for backward compatibility
       accepting_new_patients: p.accepting_new_patients || "Unknown",
       waitlist_status: p.waitlist_status || "Unknown",
-      accepted_insurance: p.accepted_insurance || null
+      accepted_insurance: p.accepted_insurance || null,
+      // New statewide-ready fields (all optional)
+      primary_county: p.primary_county || undefined,
+      service_area: p.service_area || undefined,
+      geo: p.geo || undefined, // Program-level geo (if different from location-level)
+      verification: verification || undefined,
+      service_domains: service_domains,
+      sud_services: p.sud_services || undefined
       };
     });
     
