@@ -3706,6 +3706,9 @@ async function loadPrograms(retryCount = 0){
         programs.forEach(p => programDataMap.set(p.program_id, p));
         // Rebuild autocomplete indexes after merge
         buildAutocompleteIndexes(programs);
+        // Recompute available filters after geocoded data merge
+        availableFilters = computeAvailableFilters(programs);
+        updateFilterVisibility();
         // Re-render with geocoded data
         if (ready) {
           render();
