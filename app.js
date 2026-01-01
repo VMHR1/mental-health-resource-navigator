@@ -215,32 +215,34 @@ function initTextScaleDetection() {
 // Initialize text scale detection
 initTextScaleDetection();
 
-// ========== TASK C: While-scrolling optimization (dense mode only) ==========
-// Add is-scrolling class during active scrolling to further optimize
-let __isScrollingRAF = null;
+// ========== Scroll Activity Tracker (COMBINED) ==========
+// CRITICAL FIX: Combined scroll listener to avoid duplicate work
+// Track scroll activity for both is-scrolling class AND visualViewport cooldown
+let lastScrollTs = 0;
 let __isScrollingT = null;
-let __lastScrollTime = 0;
+let __isScrollingActive = false; // Use flag instead of classList.contains() to avoid style recalculation
 
-if (isCoarsePointer) {
-  window.addEventListener('scroll', () => {
-    __lastScrollTime = Date.now();
-    
-    // Add class immediately
-    if (!document.documentElement.classList.contains('is-scrolling')) {
-      document.documentElement.classList.add('is-scrolling');
+// Single scroll listener for all scroll tracking
+window.addEventListener('scroll', () => {
+  const now = Date.now();
+  lastScrollTs = now;
+  
+  // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
+  // classList.contains() forces the browser to recalculate styles on every scroll event
+  if (!__isScrollingActive && isCoarsePointer) {
+    __isScrollingActive = true;
+    document.documentElement.classList.add('is-scrolling');
+  }
+  
+  // Clear class after scrolling stops (throttled)
+  if (__isScrollingT) clearTimeout(__isScrollingT);
+  __isScrollingT = setTimeout(() => {
+    if (__isScrollingActive) {
+      __isScrollingActive = false;
+      document.documentElement.classList.remove('is-scrolling');
     }
-    
-    // Clear class after scrolling stops (150-250ms)
-    if (__isScrollingT) clearTimeout(__isScrollingT);
-    __isScrollingT = setTimeout(() => {
-      // Double-check that scrolling has actually stopped
-      const timeSinceLastScroll = Date.now() - __lastScrollTime;
-      if (timeSinceLastScroll >= 200) {
-        document.documentElement.classList.remove('is-scrolling');
-      }
-    }, 200);
-  }, { passive: true });
-}
+  }, 200);
+}, { passive: true });
 
 // ========== Performance Monitoring (Phase 0) ==========
 // Only active when ?perf=1 is in URL
@@ -546,11 +548,8 @@ window.addEventListener("resize", () => {
 }
 
 // ========== Scroll Activity Tracker (TASK A) ==========
-// Track scroll activity to prevent vv-changing from activating during Safari toolbar collapse/expand
-let lastScrollTs = 0;
-window.addEventListener('scroll', () => {
-  lastScrollTs = Date.now();
-}, { passive: true });
+// NOTE: Scroll tracking is now combined with is-scrolling listener above
+// lastScrollTs is updated in the combined scroll listener
 
 // Update banner offset on resize/orientation
 // On mobile, prefer visualViewport events to avoid layout thrash during text-size changes
