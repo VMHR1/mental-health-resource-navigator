@@ -116,85 +116,6 @@ initializeEncryptedStorage();
 // Detect pointer type early for mobile optimizations
 const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
-// ========== CRITICAL: Forcibly Hide Expensive Elements on Mobile ==========
-// CSS media queries might not apply fast enough during text size changes
-// Forcibly remove expensive elements from the DOM on mobile to eliminate ALL stutter
-if (isCoarsePointer) {
-  // Execute immediately, don't wait for DOMContentLoaded
-  const forceHideExpensiveElements = () => {
-    // CRITICAL PERFORMANCE FIXES - simplify expensive elements but keep them visible
-    
-    // Remove .bg-gradient completely
-    const bgGradient = document.querySelector('.bg-gradient');
-    if (bgGradient) bgGradient.remove();
-    
-    // Remove floating cards (decorative only)
-    document.querySelectorAll('.floating-card').forEach(el => el.remove());
-    
-    // Simplify triage cards - remove gradients, shadows, transitions
-    document.querySelectorAll('.triage-card').forEach(card => {
-      card.style.background = 'rgba(255,255,255,.95)';
-      card.style.boxShadow = 'none';
-      card.style.backdropFilter = 'none';
-      card.style.transition = 'none';
-      card.style.transform = 'none';
-      card.style.animation = 'none';
-    });
-    
-    // Simplify trust strip
-    const trustStrip = document.querySelector('.trust-strip');
-    if (trustStrip) {
-      trustStrip.style.background = 'rgba(255,255,255,.95)';
-      trustStrip.style.boxShadow = 'none';
-    }
-    
-    document.querySelectorAll('.trust-item').forEach(item => {
-      item.style.background = 'rgba(255,255,255,.95)';
-      item.style.boxShadow = 'none';
-    });
-    
-    // Simplify hero sections
-    const heroCopy = document.querySelector('.hero-copy');
-    if (heroCopy) {
-      heroCopy.style.backdropFilter = 'none';
-      heroCopy.style.webkitBackdropFilter = 'none';
-      heroCopy.style.background = 'rgba(255,255,255,.95)';
-      heroCopy.style.boxShadow = 'none';
-    }
-    
-    const heroVisual = document.querySelector('.hero-visual');
-    if (heroVisual) {
-      heroVisual.style.background = 'rgba(245,245,245,.95)';
-      heroVisual.style.boxShadow = 'none';
-    }
-    
-    // Disable search-section sticky
-    const searchSection = document.querySelector('.search-section');
-    if (searchSection) {
-      searchSection.style.position = 'static';
-      searchSection.style.top = 'auto';
-    }
-    
-    // Disable ALL card animations
-    document.querySelectorAll('.card').forEach(card => {
-      card.style.animation = 'none';
-      card.style.transform = 'none';
-      card.style.transition = 'none';
-      card.style.opacity = '1';
-    });
-  };
-  
-  // Run immediately
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', forceHideExpensiveElements);
-  } else {
-    forceHideExpensiveElements();
-  }
-  
-  // Also run after a short delay to catch any dynamically added elements
-  setTimeout(forceHideExpensiveElements, 100);
-}
-
 // ========== Dense Mode: Text Scale Detection (TASK A) ==========
 // Activates when iOS Safari text size is below 100% to reduce jank
 let baselineRootPx = null;
@@ -202,18 +123,16 @@ let __textScaleRAF = null;
 let __textScaleT = null;
 let __lastTextScaleCheck = 0;
 let __lastTextScaleState = null; // Cache last state to avoid unnecessary toggles
-// CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
-// This flag is set by the visualViewport listener below, avoiding expensive DOM queries
-let __isVvChangingFlag = false; // Shared flag for vv-changing state
+let __textScaleProcessing = false; // Circuit breaker: prevent re-entry during processing
+let __vvChangingFlag = false; // Track vv-changing state without classList check (avoids layout)
 const TEXT_SCALE_CHECK_INTERVAL = 200; // Max one check per 200ms
 const TEXT_SCALE_STABILIZE_DELAY = 300; // Wait for text size to stabilize before checking
 
 function updateTextScaleClass() {
-  // #region agent log
-  const logData = {location:'updateTextScaleClass',message:'Text scale check',data:{lastCheck:__lastTextScaleCheck,throttled:(Date.now()-__lastTextScaleCheck<TEXT_SCALE_CHECK_INTERVAL)},timestamp:Date.now(),hypothesisId:'A'};
-  console.log('[TEXT SCALE]', logData);
-  fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData)}).catch(e=>console.error('Fetch failed:',e));
-  // #endregion
+  // Circuit breaker: if already processing, skip to prevent feedback loop
+  if (__textScaleProcessing) {
+    return;
+  }
   
   // Throttle: only check once per 200ms burst
   const now = Date.now();
@@ -221,63 +140,56 @@ function updateTextScaleClass() {
     return;
   }
   __lastTextScaleCheck = now;
+  __textScaleProcessing = true; // Set circuit breaker
   
   try {
-    // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
-    // classList.contains() forces the browser to recalculate styles synchronously on every call
-    // Using a flag eliminates this expensive operation during rapid resize events
-    const isVvChanging = __isVvChangingFlag;
-    const stabilizeDelay = isVvChanging ? TEXT_SCALE_STABILIZE_DELAY + 200 : TEXT_SCALE_STABILIZE_DELAY;
+    // Use cached flag instead of classList.contains to avoid layout-forcing operation
+    const stabilizeDelay = __vvChangingFlag ? TEXT_SCALE_STABILIZE_DELAY + 200 : TEXT_SCALE_STABILIZE_DELAY;
     
     // Clear any pending check
     if (__textScaleT) clearTimeout(__textScaleT);
     
     // Defer the expensive getComputedStyle call until after text size stabilizes
     __textScaleT = setTimeout(() => {
-      // CRITICAL FIX: Use double rAF to ensure layout has settled before reading
-      // Single rAF may fire before layout completes, causing forced reflow
+      // Use rAF to batch with browser's layout cycle
       if (__textScaleRAF) cancelAnimationFrame(__textScaleRAF);
       __textScaleRAF = requestAnimationFrame(() => {
-        // Second rAF ensures we're reading after layout, not during
-        requestAnimationFrame(() => {
-          try {
-            // Get current root font size (this forces layout, so we do it after stabilization)
-            const currentRootPx = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
-            
-            // Initialize baseline on first call
-            if (baselineRootPx === null) {
-              baselineRootPx = currentRootPx;
-              __lastTextScaleState = null;
-              return; // Don't set class on first call, just store baseline
-            }
-            
-            // Determine new state
-            const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
-            
-            // Only toggle class if state actually changed (avoid unnecessary repaints)
-            // CRITICAL: Class toggle triggers massive CSS recalculation, so we must be certain
-            if (__lastTextScaleState !== shouldBeSmall) {
-              // #region agent log
-              fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'textScaleToggle',message:'text-small class toggle',data:{shouldBeSmall:shouldBeSmall,currentRootPx:currentRootPx,baselineRootPx:baselineRootPx},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
-              // #endregion
-              __lastTextScaleState = shouldBeSmall;
-              // Use rAF for class toggle to batch with browser's style recalculation
-              requestAnimationFrame(() => {
-                if (shouldBeSmall) {
-                  document.documentElement.classList.add('text-small');
-                } else {
-                  document.documentElement.classList.remove('text-small');
-                }
-              });
-            }
-          } catch (e) {
-            // Silently fail if getComputedStyle fails
+        try {
+          // Get current root font size (this forces layout, so we do it after stabilization)
+          const currentRootPx = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+          
+          // Initialize baseline on first call
+          if (baselineRootPx === null) {
+            baselineRootPx = currentRootPx;
+            __lastTextScaleState = null;
+            __textScaleProcessing = false; // Release circuit breaker
+            return; // Don't set class on first call, just store baseline
           }
-        });
+          
+          // Determine new state
+          const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
+          
+          // Only toggle class if state actually changed (avoid unnecessary repaints)
+          if (__lastTextScaleState !== shouldBeSmall) {
+            __lastTextScaleState = shouldBeSmall;
+            if (shouldBeSmall) {
+              document.documentElement.classList.add('text-small');
+            } else {
+              document.documentElement.classList.remove('text-small');
+            }
+          }
+          
+          // Release circuit breaker after processing complete
+          __textScaleProcessing = false;
+        } catch (e) {
+          // Silently fail if getComputedStyle fails
+          __textScaleProcessing = false; // Always release circuit breaker
+        }
       });
     }, stabilizeDelay);
   } catch (e) {
     // Silently fail
+    __textScaleProcessing = false; // Always release circuit breaker
   }
 }
 
@@ -302,13 +214,9 @@ function initTextScaleDetection() {
       // Clear any pending check
       if (__vvResizeForTextScale) clearTimeout(__vvResizeForTextScale);
       
-      // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
-      // This prevents expensive style recalculation on every visualViewport resize event
-      const isVvChanging = __isVvChangingFlag;
-      
-      // Use longer delay during active text size changes to avoid layout thrashing
-      // This prevents getComputedStyle from being called during rapid resize events
-      const delay = isVvChanging ? 400 : 150;
+      // Use cached flag instead of classList.contains to avoid layout-forcing operation
+      // This prevents triggering the feedback loop
+      const delay = __vvChangingFlag ? 400 : 150;
       
       __vvResizeForTextScale = setTimeout(() => {
         // Only check after viewport has stabilized
@@ -381,13 +289,8 @@ window.addEventListener('scroll', () => {
 // Cached to avoid repeated getBoundingClientRect calls during viewport changes
 let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
-  // #region agent log
-  fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'updateCrisisBannerOffset',message:'Banner offset update',data:{isVvChanging:__isVvChangingFlag,isCoarse:isCoarsePointer},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
-  
   // Skip updates during active viewport changes on mobile to prevent layout thrash
-  // CRITICAL FIX: Use flag instead of classList.contains() to avoid style recalculation
-  if (isCoarsePointer && __isVvChangingFlag) {
+  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
     return;
   }
   
@@ -416,8 +319,7 @@ let __bannerOffsetT;
 let __bannerOffsetRAF;
 function handleBannerOffsetResize() {
   // On mobile, skip during active viewport changes
-  // CRITICAL FIX: Use flag instead of classList.contains() to avoid style recalculation
-  if (isCoarsePointer && __isVvChangingFlag) {
+  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
     return;
   }
   
@@ -485,9 +387,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   let __vvRAF;
   let __vvHeightCheckT;
   let __lastVvHeight = window.visualViewport.height;
-  // CRITICAL FIX: Use shared flag instead of local variable
-  // This allows updateTextScaleClass() to check state without classList.contains()
-  // __isVvChangingFlag is declared above in the text scale detection section
+  let __isVvChanging = false;
   let __vvEventCount = 0;
   let __vvStartTime = 0;
   let __vvLastEventTime = 0;
@@ -509,12 +409,6 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   // Don't process every single resize event - batch them
   let __vvResizeT = null;
   window.visualViewport.addEventListener('resize', () => {
-    // #region agent log
-    const logData = {location:'vvResize',message:'visualViewport resize',data:{vvHeight:window.visualViewport.height,vvWidth:window.visualViewport.width,isVvChanging:__isVvChangingFlag},timestamp:Date.now(),hypothesisId:'C'};
-    console.log('[VV RESIZE]', logData);
-    fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(logData)}).catch(e=>console.error('Fetch failed:',e));
-    // #endregion
-    
     const now = Date.now();
     const timeSinceLastEvent = now - __vvLastEventTime;
     __vvLastEventTime = now;
@@ -592,43 +486,34 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
                                       sequenceDuration >= 250;
           
           // Only apply if we have sustained pattern and NOT scrolling
-          if (hasSustainedPattern && !__isVvChangingFlag && !isScrolling) {
-            // #region agent log
-            fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'vvChangingStart',message:'vv-changing ADDED',data:{eventCount:__vvEventCount,heightChange:heightDiff,isScrolling:isScrolling},timestamp:Date.now(),hypothesisId:'C,E'})}).catch(()=>{});
-            // #endregion
-            __isVvChangingFlag = true;
+          if (hasSustainedPattern && !__isVvChanging && !isScrolling) {
+            __isVvChanging = true;
+            __vvChangingFlag = true; // Set shared flag for text-scale detection
             __vvStartTime = Date.now();
             document.documentElement.classList.add('vv-changing');
-          } else if (__isVvChangingFlag) {
+          } else if (__isVvChanging) {
             // Already active, keep it active (but only if not scrolling)
             if (!isScrolling) {
               clearTimeout(__vvT);
               __vvT = setTimeout(() => {
-                // #region agent log
-                fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'vvChangingEnd',message:'vv-changing REMOVED',data:{duration:Date.now()-__vvStartTime},timestamp:Date.now(),hypothesisId:'C,E'})}).catch(()=>{});
-                // #endregion
-                __isVvChangingFlag = false;
+                __isVvChanging = false;
+                __vvChangingFlag = false; // Clear shared flag
                 __vvEventCount = 0;
                 __vvEventSequence = [];
                 document.documentElement.classList.remove('vv-changing');
                 // TASK C: Only update banner offset after confirmed text-size change completes
                 // Do NOT update during scroll-driven viewport changes
                 updateCrisisBannerOffset();
-                
-                // CRITICAL FIX: Trigger ONE render after text size stabilizes
-                // This ensures cards display properly after text size change completes
-                if (typeof render === 'function') {
-                  setTimeout(() => render(), 100);
-                }
               }, isRealIOSDevice ? 500 : 400);
             }
           }
         } else if (heightDiff < STABILIZE_THRESHOLD) {
           // Height has stabilized - reset event count and remove class if active
-          if (__isVvChangingFlag) {
+          if (__isVvChanging) {
             clearTimeout(__vvT);
             __vvT = setTimeout(() => {
-              __isVvChangingFlag = false;
+              __isVvChanging = false;
+              __vvChangingFlag = false; // Clear shared flag
               __vvEventCount = 0;
               __vvEventSequence = [];
               document.documentElement.classList.remove('vv-changing');
@@ -3047,14 +2932,6 @@ function render(){
   if (!ready) {
     return;
   }
-  
-  // CRITICAL FIX: Block rendering during text size changes on mobile
-  // Continuous re-rendering during vv-changing causes non-stop stutter
-  if (isCoarsePointer && __isVvChangingFlag) {
-    console.log('[RENDER BLOCKED] Skipping render during vv-changing to prevent stutter');
-    return;
-  }
-  
   const showCrisis = els.showCrisis?.checked || false;
 
   const filtered = programs.filter(p => matchesFilters(p));
@@ -3120,20 +2997,14 @@ function render(){
     if (els.treatmentGrid) {
       els.treatmentGrid.innerHTML = "";
       
-      // #region agent log
-      fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'cardsRender',message:'Cards rendering',data:{cardCount:activeList.length,isVvChanging:__isVvChangingFlag,textSmallActive:document.documentElement.classList.contains('text-small')},timestamp:Date.now(),hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
-      
       // Use DocumentFragment to batch DOM operations
       const fragment = document.createDocumentFragment();
       
       activeList.forEach((p, idx) => {
         const realIdx = showCrisis ? (idx + 10000) : idx;
         const card = createCard(p, realIdx);
-        // CRITICAL FIX: Don't set animation delays on mobile - they cause continuous stutter
-        if (!isCoarsePointer) {
-          card.style.setProperty('--enter-delay', `${Math.min(idx, 18) * 18}ms`);
-        }
+        // Use CSS variable instead of inline style for animation delay
+        card.style.setProperty('--enter-delay', `${Math.min(idx, 18) * 18}ms`);
         fragment.appendChild(card);
       });
       
