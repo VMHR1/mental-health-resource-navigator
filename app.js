@@ -123,6 +123,9 @@ let __textScaleRAF = null;
 let __textScaleT = null;
 let __lastTextScaleCheck = 0;
 let __lastTextScaleState = null; // Cache last state to avoid unnecessary toggles
+// CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
+// This flag is set by the visualViewport listener below, avoiding expensive DOM queries
+let __isVvChangingFlag = false; // Shared flag for vv-changing state
 const TEXT_SCALE_CHECK_INTERVAL = 200; // Max one check per 200ms
 const TEXT_SCALE_STABILIZE_DELAY = 300; // Wait for text size to stabilize before checking
 
@@ -135,9 +138,10 @@ function updateTextScaleClass() {
   __lastTextScaleCheck = now;
   
   try {
-    // CRITICAL FIX: Check vv-changing state using cached flag, not classList.contains()
-    // classList.contains() can force style recalculation if styles are dirty
-    const isVvChanging = __isVvChanging; // Use cached flag from visualViewport listener
+    // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
+    // classList.contains() forces the browser to recalculate styles synchronously on every call
+    // Using a flag eliminates this expensive operation during rapid resize events
+    const isVvChanging = __isVvChangingFlag;
     const stabilizeDelay = isVvChanging ? TEXT_SCALE_STABILIZE_DELAY + 200 : TEXT_SCALE_STABILIZE_DELAY;
     
     // Clear any pending check
@@ -145,41 +149,43 @@ function updateTextScaleClass() {
     
     // Defer the expensive getComputedStyle call until after text size stabilizes
     __textScaleT = setTimeout(() => {
-      // CRITICAL FIX: Double-check that viewport is still stable before reading layout
-      // If vv-changing became active during the delay, abort this check
-      if (__isVvChanging) {
-        return; // Abort - viewport is still changing
-      }
-      
-      // Use rAF to batch with browser's layout cycle
+      // CRITICAL FIX: Use double rAF to ensure layout has settled before reading
+      // Single rAF may fire before layout completes, causing forced reflow
       if (__textScaleRAF) cancelAnimationFrame(__textScaleRAF);
       __textScaleRAF = requestAnimationFrame(() => {
-        try {
-          // Get current root font size (this forces layout, so we do it after stabilization)
-          const currentRootPx = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
-          
-          // Initialize baseline on first call
-          if (baselineRootPx === null) {
-            baselineRootPx = currentRootPx;
-            __lastTextScaleState = null;
-            return; // Don't set class on first call, just store baseline
-          }
-          
-          // Determine new state
-          const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
-          
-          // Only toggle class if state actually changed (avoid unnecessary repaints)
-          if (__lastTextScaleState !== shouldBeSmall) {
-            __lastTextScaleState = shouldBeSmall;
-            if (shouldBeSmall) {
-              document.documentElement.classList.add('text-small');
-            } else {
-              document.documentElement.classList.remove('text-small');
+        // Second rAF ensures we're reading after layout, not during
+        requestAnimationFrame(() => {
+          try {
+            // Get current root font size (this forces layout, so we do it after stabilization)
+            const currentRootPx = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+            
+            // Initialize baseline on first call
+            if (baselineRootPx === null) {
+              baselineRootPx = currentRootPx;
+              __lastTextScaleState = null;
+              return; // Don't set class on first call, just store baseline
             }
+            
+            // Determine new state
+            const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
+            
+            // Only toggle class if state actually changed (avoid unnecessary repaints)
+            // CRITICAL: Class toggle triggers massive CSS recalculation, so we must be certain
+            if (__lastTextScaleState !== shouldBeSmall) {
+              __lastTextScaleState = shouldBeSmall;
+              // Use rAF for class toggle to batch with browser's style recalculation
+              requestAnimationFrame(() => {
+                if (shouldBeSmall) {
+                  document.documentElement.classList.add('text-small');
+                } else {
+                  document.documentElement.classList.remove('text-small');
+                }
+              });
+            }
+          } catch (e) {
+            // Silently fail if getComputedStyle fails
           }
-        } catch (e) {
-          // Silently fail if getComputedStyle fails
-        }
+        });
       });
     }, stabilizeDelay);
   } catch (e) {
@@ -208,9 +214,9 @@ function initTextScaleDetection() {
       // Clear any pending check
       if (__vvResizeForTextScale) clearTimeout(__vvResizeForTextScale);
       
-      // CRITICAL FIX: Use cached flag instead of classList.contains()
-      // classList.contains() can force style recalc if styles are dirty
-      const isVvChanging = __isVvChanging; // Use the global flag
+      // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
+      // This prevents expensive style recalculation on every visualViewport resize event
+      const isVvChanging = __isVvChangingFlag;
       
       // Use longer delay during active text size changes to avoid layout thrashing
       // This prevents getComputedStyle from being called during rapid resize events
@@ -287,9 +293,9 @@ window.addEventListener('scroll', () => {
 // Cached to avoid repeated getBoundingClientRect calls during viewport changes
 let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
-  // CRITICAL FIX: Skip updates during active viewport changes using cached flag
-  // Avoid classList.contains() which can force style recalculation
-  if (isCoarsePointer && __isVvChanging) {
+  // Skip updates during active viewport changes on mobile to prevent layout thrash
+  // CRITICAL FIX: Use flag instead of classList.contains() to avoid style recalculation
+  if (isCoarsePointer && __isVvChangingFlag) {
     return;
   }
   
@@ -317,9 +323,9 @@ function updateCrisisBannerOffset() {
 let __bannerOffsetT;
 let __bannerOffsetRAF;
 function handleBannerOffsetResize() {
-  // CRITICAL FIX: On mobile, skip during active viewport changes using cached flag
-  // Avoid classList.contains() which forces style recalculation
-  if (isCoarsePointer && __isVvChanging) {
+  // On mobile, skip during active viewport changes
+  // CRITICAL FIX: Use flag instead of classList.contains() to avoid style recalculation
+  if (isCoarsePointer && __isVvChangingFlag) {
     return;
   }
   
@@ -387,7 +393,9 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   let __vvRAF;
   let __vvHeightCheckT;
   let __lastVvHeight = window.visualViewport.height;
-  let __isVvChanging = false;
+  // CRITICAL FIX: Use shared flag instead of local variable
+  // This allows updateTextScaleClass() to check state without classList.contains()
+  // __isVvChangingFlag is declared above in the text scale detection section
   let __vvEventCount = 0;
   let __vvStartTime = 0;
   let __vvLastEventTime = 0;
@@ -486,16 +494,16 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
                                       sequenceDuration >= 250;
           
           // Only apply if we have sustained pattern and NOT scrolling
-          if (hasSustainedPattern && !__isVvChanging && !isScrolling) {
-            __isVvChanging = true;
+          if (hasSustainedPattern && !__isVvChangingFlag && !isScrolling) {
+            __isVvChangingFlag = true;
             __vvStartTime = Date.now();
             document.documentElement.classList.add('vv-changing');
-          } else if (__isVvChanging) {
+          } else if (__isVvChangingFlag) {
             // Already active, keep it active (but only if not scrolling)
             if (!isScrolling) {
               clearTimeout(__vvT);
               __vvT = setTimeout(() => {
-                __isVvChanging = false;
+                __isVvChangingFlag = false;
                 __vvEventCount = 0;
                 __vvEventSequence = [];
                 document.documentElement.classList.remove('vv-changing');
@@ -507,10 +515,10 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
           }
         } else if (heightDiff < STABILIZE_THRESHOLD) {
           // Height has stabilized - reset event count and remove class if active
-          if (__isVvChanging) {
+          if (__isVvChangingFlag) {
             clearTimeout(__vvT);
             __vvT = setTimeout(() => {
-              __isVvChanging = false;
+              __isVvChangingFlag = false;
               __vvEventCount = 0;
               __vvEventSequence = [];
               document.documentElement.classList.remove('vv-changing');
