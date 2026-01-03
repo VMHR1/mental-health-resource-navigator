@@ -122,38 +122,35 @@ const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 if (isCoarsePointer) {
   // Execute immediately, don't wait for DOMContentLoaded
   const forceHideExpensiveElements = () => {
-    // Hide .bg-gradient completely
-    const bgGradient = document.querySelector('.bg-gradient');
-    if (bgGradient) {
-      bgGradient.style.display = 'none';
-      bgGradient.style.visibility = 'hidden';
-      bgGradient.remove(); // Remove from DOM entirely
-    }
+    // CRITICAL: Hide ALL sections from triage through hero (user confirmed these cause stutter)
+    const sectionsToHide = [
+      '.bg-gradient',
+      '.triage-split',
+      '.trust-strip', 
+      '.hero'
+    ];
     
-    // Hide all .floating-card elements
-    document.querySelectorAll('.floating-card').forEach(card => {
-      card.style.display = 'none';
-      card.style.visibility = 'hidden';
-      card.remove(); // Remove from DOM entirely
+    sectionsToHide.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.remove(); // Remove from DOM entirely
+      });
     });
     
-    // Remove backdrop-filter from hero-copy
-    const heroCopy = document.querySelector('.hero-copy');
-    if (heroCopy) {
-      heroCopy.style.backdropFilter = 'none';
-      heroCopy.style.webkitBackdropFilter = 'none';
-      heroCopy.style.background = 'rgba(255,255,255,.92)';
-      heroCopy.style.boxShadow = '0 2px 6px rgba(15,23,42,.08)';
+    // Disable search-section sticky
+    const searchSection = document.querySelector('.search-section');
+    if (searchSection) {
+      searchSection.style.position = 'static';
+      searchSection.style.top = 'auto';
     }
     
-    // Simplify triage cards
-    document.querySelectorAll('.triage-card').forEach(card => {
-      card.style.boxShadow = '0 2px 6px rgba(15,23,42,.08)';
-      if (card.classList.contains('emergency')) {
-        card.style.background = 'rgba(239,68,68,.04)';
-      } else if (card.classList.contains('planning')) {
-        card.style.background = 'rgba(79,209,197,.04)';
-      }
+    // Disable ALL card animations
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.animation = 'none';
+      card.style.transform = 'none';
+      card.style.transition = 'none';
+      card.style.opacity = '1';
     });
     
     // Disable ALL animations globally on mobile

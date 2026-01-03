@@ -608,6 +608,14 @@ html.perf-no-sticky .search-section {
     -webkit-backdrop-filter: none !important;
   }
   
+  /* CRITICAL FIX: Hide ALL expensive elements from triage cards through search section */
+  /* User confirmed: hiding these sections stops ALL stuttering */
+  .triage-split,
+  .trust-strip,
+  .hero {
+    display: none !important; /* Completely remove from layout */
+  }
+  
   /* CRITICAL FIX: Disable sticky positioning on mobile to eliminate stutter */
   /* Sticky elements cause continuous repaints during text size changes */
   .search-section {
