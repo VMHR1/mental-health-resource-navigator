@@ -144,7 +144,7 @@ function validateProgramSchema(program, index) {
   }
   
   if (program.service_domains && Array.isArray(program.service_domains)) {
-    const validDomains = ['mental_health', 'substance_use', 'co_occurring'];
+    const validDomains = ['mental_health', 'substance_use', 'co_occurring', 'eating_disorders'];
     program.service_domains.forEach((domain, idx) => {
       if (!validDomains.includes(domain)) {
         errors.push(`service_domains[${idx}] should be one of: ${validDomains.join(', ')}`);
