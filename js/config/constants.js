@@ -47,7 +47,7 @@ const MAX_COMPARISON_ITEMS = 3;
 // Set to true to enable features; false to keep UI minimal
 const FEATURE_FLAGS = {
   STATEWIDE_MODE: false,           // Enable county filtering and statewide location support
-  SHOW_SUD_FILTERS: false,        // Enable service_domain and sud_services filters
+  SHOW_SUD_FILTERS: true,         // Enable service_domain and sud_services filters (needed for eating disorders and substance use)
   SHOW_VERIFICATION_FILTERS: false // Enable verification recency filter
 };
 
