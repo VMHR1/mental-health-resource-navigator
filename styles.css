@@ -148,11 +148,10 @@ a{color:inherit}
 /* Phase 3: Optimize sticky crisis banner for mobile */
 @media (pointer: coarse) {
   .crisis-banner {
-    /* CRITICAL FIX: Further reduce shadow cost for smoother scrolling */
-    box-shadow: 0 2px 6px rgba(239,68,68,.15) !important;
-    /* GPU layer for smooth sticky */
-    will-change: transform;
-    transform: translateZ(0);
+    /* CRITICAL FIX: Disable sticky positioning - causes scroll jank */
+    position: relative !important;
+    /* Remove shadow entirely - expensive on scroll */
+    box-shadow: none !important;
   }
 }
 .crisis-banner .inner{
@@ -562,14 +561,16 @@ h1{
 /* Phase 3: Optimize sticky search section for mobile */
 @media (pointer: coarse) {
   .search-section {
-    /* CRITICAL FIX: Further reduce shadow cost for smoother scrolling */
-    box-shadow: 0 2px 6px rgba(15,23,42,.08) !important;
+    /* CRITICAL FIX: Disable sticky positioning - causes scroll jank */
+    position: relative !important;
+    /* Remove shadow entirely - expensive on scroll */
+    box-shadow: none !important;
     /* Disable backdrop-filter on mobile */
     backdrop-filter: none !important;
     background: rgba(255,255,255,.95) !important;
-    /* Optimize for sticky positioning */
-    will-change: transform;
-    transform: translateZ(0); /* GPU layer for smooth sticky */
+    /* DISABLE will-change and transform - causes stutter */
+    will-change: auto !important;
+    transform: none !important;
   }
 }
 
@@ -677,6 +678,24 @@ html.perf-no-sticky .search-section {
   
   .shimmer {
     animation: none !important;
+  }
+}
+
+/* CRITICAL FIX: Refined mobile performance fix - disable only the problematic combinations */
+@media (pointer: coarse) {
+  /* Disable performance-hazard properties that cause cumulative stutter */
+  *, *::before, *::after {
+    /* These three together cause the worst stutter */
+    animation: none !important;
+    transition: none !important;
+    content-visibility: visible !important;
+    contain: none !important;
+  }
+  
+  /* Force sticky elements to relative positioning */
+  .crisis-banner,
+  .search-section {
+    position: relative !important;
   }
 }
 

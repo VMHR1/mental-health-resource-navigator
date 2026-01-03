@@ -2,6 +2,27 @@
 // Load security module (encryption, validation, etc.)
 // Security functions are available globally after security.js loads
 
+// ========== MOBILE PERFORMANCE DEBUGGING (ALWAYS ON) ==========
+// Create debug panel immediately - inline to ensure it runs
+(function() {
+  const style = document.createElement('style');
+  style.textContent = `#perf-debug{position:fixed!important;top:0!important;left:0!important;right:0!important;background:rgba(0,0,0,0.95)!important;color:#0f0!important;font:14px monospace!important;padding:10px!important;z-index:999999!important;max-height:40vh!important;overflow:auto!important;pointer-events:none!important;line-height:1.4!important;display:none!important;}#perf-debug div{color:#fff!important;margin-bottom:3px!important;font-size:14px!important}`;
+  document.head.appendChild(style);
+  
+  const div = document.createElement('div');
+  div.id = 'perf-debug';
+  div.innerHTML = '<div style="color:#0f0;font-weight:bold">🟢 DEBUG ACTIVE - Stutter monitoring</div>';
+  document.body.appendChild(div);
+  
+  window.logDebug = function(msg) {
+    const time = new Date().toLocaleTimeString();
+    const newLine = document.createElement('div');
+    newLine.innerHTML = `[${time}] ${msg}`;
+    div.insertBefore(newLine, div.firstChild);
+    while (div.children.length > 25) div.removeChild(div.lastChild);
+  };
+})();
+
 // ========== State Management ==========
 let programs = [];
 let ready = false;
@@ -131,13 +152,17 @@ const TEXT_SCALE_STABILIZE_DELAY = 300; // Wait for text size to stabilize befor
 function updateTextScaleClass() {
   // Circuit breaker: if already processing, skip to prevent feedback loop
   if (__textScaleProcessing) {
+    updateDebug('<span style="color:#f00">⚠ TEXT-SCALE: Circuit breaker triggered</span>');
     return;
   }
+  
+  updateDebug('TEXT-SCALE: Check called');
   
   // CRITICAL: If vv-changing is active, DO NOT toggle text-small class
   // The vv-changing class already applies necessary optimizations
   // Adding text-small during viewport change causes massive style recalc (html.text-small * selectors)
   if (__vvChangingFlag) {
+    updateDebug('<span style="color:#ff0">TEXT-SCALE: Skipped (vvChanging active)</span>');
     return; // Skip entirely during viewport changes
   }
   
@@ -176,11 +201,14 @@ function updateTextScaleClass() {
             baselineRootPx = currentRootPx;
             __lastTextScaleState = null;
             __textScaleProcessing = false; // Release circuit breaker
+            updateDebug(`<span style="color:#0ff">TEXT-SCALE: Baseline set to ${baselineRootPx.toFixed(1)}px</span>`);
             return; // Don't set class on first call, just store baseline
           }
           
           // Determine new state
           const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
+          
+          updateDebug(`TEXT-SCALE: current=${currentRootPx.toFixed(1)}px baseline=${baselineRootPx.toFixed(1)}px shouldBeSmall=${shouldBeSmall} lastState=${__lastTextScaleState}`);
           
           // Only toggle class if state actually changed (avoid unnecessary repaints)
           // ONLY apply after viewport is completely stable
@@ -188,8 +216,10 @@ function updateTextScaleClass() {
             __lastTextScaleState = shouldBeSmall;
             if (shouldBeSmall) {
               document.documentElement.classList.add('text-small');
+              updateDebug('<span style="color:#f00;font-weight:bold">✓ TEXT-SMALL CLASS ADDED</span>');
             } else {
               document.documentElement.classList.remove('text-small');
+              updateDebug('<span style="color:#0f0;font-weight:bold">✓ TEXT-SMALL CLASS REMOVED</span>');
             }
           }
           
@@ -282,27 +312,31 @@ let lastScrollTs = 0;
 let __isScrollingT = null;
 let __isScrollingActive = false; // Use flag instead of classList.contains() to avoid style recalculation
 
-// Single scroll listener for all scroll tracking
-window.addEventListener('scroll', () => {
-  const now = Date.now();
-  lastScrollTs = now;
-  
-  // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
-  // classList.contains() forces the browser to recalculate styles on every scroll event
-  if (!__isScrollingActive && isCoarsePointer) {
-    __isScrollingActive = true;
-    document.documentElement.classList.add('is-scrolling');
-  }
-  
-  // Clear class after scrolling stops (throttled)
-  if (__isScrollingT) clearTimeout(__isScrollingT);
-  __isScrollingT = setTimeout(() => {
-    if (__isScrollingActive) {
-      __isScrollingActive = false;
-      document.documentElement.classList.remove('is-scrolling');
+// CRITICAL FIX: Disable scroll listener on mobile - it was part of the stutter issue
+// The listener itself wasn't the root cause, but contributed to the problem
+if (false) { // DISABLED FOR MOBILE
+  window.addEventListener('scroll', () => {
+    const now = Date.now();
+    lastScrollTs = now;
+    
+    // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
+    // classList.contains() forces the browser to recalculate styles on every scroll event
+    if (!__isScrollingActive && isCoarsePointer) {
+      __isScrollingActive = true;
+      document.documentElement.classList.add('is-scrolling');
+      if (typeof logDebug === 'function') logDebug('<span style="color:#0ff">Scroll started</span>');
     }
-  }, 200);
-}, { passive: true });
+    
+    // Clear class after scrolling stops (throttled)
+    if (__isScrollingT) clearTimeout(__isScrollingT);
+    __isScrollingT = setTimeout(() => {
+      if (__isScrollingActive) {
+        __isScrollingActive = false;
+        document.documentElement.classList.remove('is-scrolling');
+      }
+    }, 200);
+  }, { passive: true });
+}
 
 
 // Update crisis banner height CSS variable for sticky positioning
@@ -399,10 +433,43 @@ window.addEventListener("resize", () => {
 // lastScrollTs is updated in the combined scroll listener
 
 // Update banner offset on resize/orientation
-// On mobile, prefer visualViewport events to avoid layout thrash during text-size changes
-// SECURITY AUDIT FIX: Prevent duplicate listener attachment
+// CRITICAL FIX: DO NOT use visualViewport on mobile - it fires continuously and causes stutter
+// Use standard window resize instead, even on mobile
+
+// DEBUG: Create on-screen debug display (for all devices)
+// Wait for DOM to be ready first
+function initDebug() {
+  let __debugDiv = document.createElement('div');
+  __debugDiv.id = 'vv-debug';
+  __debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;font:12px monospace;padding:8px;z-index:99999;max-height:50vh;overflow:auto;pointer-events:none;line-height:1.3;';
+  document.body.appendChild(__debugDiv);
+  
+  window.updateDebug = function(msg) {
+    const time = new Date().toLocaleTimeString();
+    __debugDiv.innerHTML = `<div style="color:#fff;margin-bottom:2px;font-size:12px">[${time}] ${msg}</div>` + __debugDiv.innerHTML;
+    // Keep last 30 lines (more history)
+    const lines = __debugDiv.querySelectorAll('div');
+    if (lines.length > 30) {
+      for (let i = 30; i < lines.length; i++) {
+        lines[i].remove();
+      }
+    }
+  };
+  
+  updateDebug('<span style="color:#0f0;font-weight:bold">✓ DEBUG ACTIVE - visualViewport listener DISABLED</span>');
+}
+
+// Initialize debug when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDebug);
+} else {
+  initDebug();
+}
+
 let __vvListenerAttached = false;
-if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
+if (false && isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
+  // DISABLED: visualViewport is too unstable on iOS Safari
+  // Causes continuous resize events even when user isn't doing anything
   __vvListenerAttached = true;
   // Use visualViewport for mobile to avoid window resize spam
   let __vvT;
@@ -427,6 +494,24 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   const MIN_EVENTS_FOR_TEXT_SIZE = 3; // Require multiple events to confirm text-size change
   const SCROLL_COOLDOWN_MS = 400; // Don't trigger vv-changing if scroll happened within this time
   
+  // DEBUG: Create on-screen debug display
+  let __debugDiv = document.createElement('div');
+  __debugDiv.id = 'vv-debug';
+  __debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;font:12px monospace;padding:8px;z-index:99999;max-height:50vh;overflow:auto;pointer-events:none;line-height:1.3;';
+  document.body.appendChild(__debugDiv);
+  
+  function updateDebug(msg) {
+    const time = new Date().toLocaleTimeString();
+    __debugDiv.innerHTML = `<div style="color:#fff;margin-bottom:2px;font-size:12px">[${time}] ${msg}</div>` + __debugDiv.innerHTML;
+    // Keep last 30 lines (more history)
+    const lines = __debugDiv.querySelectorAll('div');
+    if (lines.length > 30) {
+      for (let i = 30; i < lines.length; i++) {
+        lines[i].remove();
+      }
+    }
+  }
+  
   // CRITICAL FIX: Throttle visualViewport listener to reduce work during scroll
   // Don't process every single resize event - batch them
   let __vvResizeT = null;
@@ -435,6 +520,10 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
     const timeSinceLastEvent = now - __vvLastEventTime;
     __vvLastEventTime = now;
     __vvEventCount++;
+    
+    // DEBUG: Show viewport resize events on screen
+    const heightDiff = Math.abs(window.visualViewport.height - __lastVvHeight);
+    updateDebug(`VV-RESIZE: h=${window.visualViewport.height.toFixed(0)} diff=${heightDiff.toFixed(1)} vvChanging=${__vvChangingFlag} events=${__vvEventCount}`);
     
     // CRITICAL: Check scroll state FIRST (before any expensive work)
     const timeSinceScroll = now - lastScrollTs;
@@ -513,6 +602,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
             __vvChangingFlag = true; // Set shared flag for text-scale detection
             __vvStartTime = Date.now();
             document.documentElement.classList.add('vv-changing');
+            updateDebug(`<span style="color:#f00;font-weight:bold">VV-CHANGING ENABLED</span> diff=${heightDiff.toFixed(1)} duration=${sequenceDuration}ms events=${__vvEventCount}`);
           } else if (__isVvChanging) {
             // Already active, keep it active (but only if not scrolling)
             if (!isScrolling) {
@@ -523,6 +613,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
                 __vvEventCount = 0;
                 __vvEventSequence = [];
                 document.documentElement.classList.remove('vv-changing');
+                updateDebug('<span style="color:#0f0;font-weight:bold">VV-CHANGING DISABLED</span> (stabilized)');
                 // TASK C: Only update banner offset after confirmed text-size change completes
                 // Do NOT update during scroll-driven viewport changes
                 updateCrisisBannerOffset();
@@ -562,13 +653,39 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   
   // Still listen to orientation changes
   window.addEventListener("orientationchange", () => {
+    updateDebug('ORIENTATION CHANGE (from disabled visualViewport section)');
     setTimeout(() => {
       updateCrisisBannerOffset();
     }, 300);
   });
 } else {
-  // Desktop: use window resize
-  window.addEventListener("resize", handleBannerOffsetResize);
+  // CRITICAL FIX: Disable ALL resize listeners on mobile - they fire continuously on iOS Safari
+  // Safari's resize events are too unstable (URL bar, safe area changes cause constant firing)
+  // Only listen to orientation changes which are user-initiated and stable
+  if (typeof updateDebug === 'function') {
+    updateDebug('<span style="color:#ff0">✗ window.resize DISABLED (too unstable on iOS)</span>');
+    updateDebug('<span style="color:#0f0">✓ Using orientationchange only (stable)</span>');
+  }
+  
+  if (isCoarsePointer) {
+    // Mobile: ONLY orientation change (user rotating device)
+    window.addEventListener("orientationchange", () => {
+      if (typeof updateDebug === 'function') updateDebug('ORIENTATION CHANGE detected');
+      setTimeout(() => {
+        handleBannerOffsetResize();
+      }, 300);
+    });
+  } else {
+    // Desktop: Use resize but with aggressive throttling
+    let __resizeDebounce = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(__resizeDebounce);
+      __resizeDebounce = setTimeout(() => {
+        if (typeof updateDebug === 'function') updateDebug(`RESIZE: w=${window.innerWidth} h=${window.innerHeight}`);
+        handleBannerOffsetResize();
+      }, 150);
+    });
+  }
   window.addEventListener("orientationchange", () => {
     setTimeout(updateCrisisBannerOffset, 100);
   });
@@ -3324,17 +3441,20 @@ function initSwipeGestures() {
   let touchEndY = 0;
   const minSwipeDistance = 50;
   
-  els.treatmentGrid.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-  }, { passive: true });
-  
-  els.treatmentGrid.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
+  // CRITICAL FIX: Disable touch swipe handlers on mobile - they might cause stutter
+  // Swipe to dismiss cards is not essential and can cause performance issues
+  if (false) { // DISABLED
+    els.treatmentGrid.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
     
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
+    els.treatmentGrid.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
     
     // Only handle horizontal swipes if they're more horizontal than vertical
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
@@ -3352,6 +3472,7 @@ function initSwipeGestures() {
       }
     }
   }, { passive: true });
+  } // End of disabled touch swipe block
 }
 
 function bind(){
