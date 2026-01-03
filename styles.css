@@ -602,77 +602,10 @@ html.perf-no-sticky .search-section {
 /* ========== Mobile Performance Policy (Phase 1) ========== */
 /* On small screens and coarse pointers, make background static and simpler */
 @media (max-width: 900px), (pointer: coarse) {
-  /* CRITICAL: Disable ALL backdrop-filters on mobile - EXTREMELY expensive on iOS */
-  *:not(.modal-backdrop):not(.dd-menu):not(.search-suggestions) {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  
-  /* CRITICAL PERFORMANCE FIXES: Keep sections visible but optimize them heavily */
-  
-  /* Fix triage cards - remove ALL expensive properties */
-  .triage-card {
-    background: rgba(255,255,255,.95) !important; /* Solid color, no gradient */
-    box-shadow: none !important; /* Remove shadow completely */
-    border: 2px solid rgba(15,23,42,.12) !important;
-    transform: none !important;
-    transition: none !important;
-    will-change: auto !important;
-    contain: layout style paint; /* Isolate from rest of page */
-  }
-  
-  .triage-card.emergency {
-    background: rgba(255,255,255,.95) !important;
-    border-color: rgba(239,68,68,.3) !important;
-  }
-  
-  .triage-card.planning {
-    background: rgba(255,255,255,.95) !important;
-    border-color: rgba(79,209,197,.3) !important;
-  }
-  
-  /* Fix trust strip - simplify completely */
-  .trust-strip {
-    background: rgba(255,255,255,.95) !important; /* Solid, no gradient */
-    box-shadow: none !important;
-    border: 1px solid rgba(15,23,42,.1) !important;
-    contain: layout style paint;
-  }
-  
-  .trust-item {
-    background: rgba(255,255,255,.95) !important;
-    box-shadow: none !important;
-    border: 1px solid rgba(15,23,42,.08) !important;
-  }
-  
-  /* Fix hero section - remove ALL backdrop-filters and gradients */
-  .hero-copy {
-    background: rgba(255,255,255,.95) !important; /* Solid color */
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-    border: 1px solid rgba(15,23,42,.12) !important;
-  }
-  
-  .hero-visual {
-    background: rgba(245,245,245,.95) !important; /* Simple solid */
-    box-shadow: none !important;
-  }
-  
-  /* Hide floating cards on mobile - they're decorative and expensive */
-  .floating-card {
-    display: none !important;
-  }
-  
-  /* CRITICAL FIX: Disable sticky positioning on mobile to eliminate stutter */
-  .search-section {
-    position: static !important;
-    margin-top: 0 !important;
-  }
-  
-  /* CRITICAL: Hide fixed full-viewport background */
+  /* CRITICAL: Hide fixed full-viewport background layer completely on mobile */
+  /* Even without animation, a fixed full-viewport element with complex gradients is expensive to repaint during scroll */
   .bg-gradient {
-    display: none !important;
+    display: none !important; /* Completely remove from paint/compositing */
   }
   
   /* Use static body background instead */
@@ -690,28 +623,6 @@ html.perf-no-sticky .search-section {
   .hero-visual {
     background: rgba(79,209,197,.05) !important; /* Simple solid color instead of gradient */
     box-shadow: none !important; /* Remove shadow */
-  }
-  
-  /* CRITICAL FIX: Remove backdrop-filter from hero-copy on mobile - VERY expensive */
-  /* backdrop-filter requires reading pixels from layers beneath, causing massive repaints during text size changes */
-  .hero-copy {
-    backdrop-filter: none !important; /* Disable blur completely */
-    background: rgba(255,255,255,.92) !important; /* Use solid color instead of gradient */
-    box-shadow: 0 2px 6px rgba(15,23,42,.08) !important; /* Lighter shadow */
-  }
-  
-  /* CRITICAL FIX: Simplify triage cards on mobile - remove gradients and heavy shadows */
-  /* Large cards with gradients are expensive to repaint during layout shifts */
-  .triage-card {
-    box-shadow: 0 2px 6px rgba(15,23,42,.08) !important; /* Lighter shadow */
-  }
-  
-  .triage-card.emergency {
-    background: rgba(239,68,68,.04) !important; /* Solid color instead of gradient */
-  }
-  
-  .triage-card.planning {
-    background: rgba(79,209,197,.04) !important; /* Solid color instead of gradient */
   }
   
   .btn-emergency {
@@ -734,13 +645,11 @@ html.perf-no-sticky .search-section {
   
   /* Phase 1 Complete: All infinite animations disabled on mobile
    * Inventory:
-   * - .bg-gradient (gradientShift) - DISABLED + HIDDEN
-   * - .floating-card (float) - DISABLED + HIDDEN
+   * - .bg-gradient (gradientShift) - DISABLED
+   * - .floating-card (float) - DISABLED
    * - .btn-emergency (pulse) - DISABLED
    * - .accuracyStrip (breathe) - DISABLED
    * - .shimmer (shimmer) - DISABLED
-   * - .hero-copy backdrop-filter - DISABLED (blur removed)
-   * - .triage-card gradients - SIMPLIFIED (solid colors)
    * See MOBILE_PERFORMANCE.md for full documentation
    */
   
@@ -749,11 +658,6 @@ html.perf-no-sticky .search-section {
   .card {
     box-shadow: 0 1px 3px rgba(15,23,42,.06) !important;
     border: 1px solid rgba(15,23,42,.12) !important; /* Slightly stronger border to compensate */
-    /* CRITICAL: Disable card entrance animation on mobile - causes stutter during text size changes */
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important; /* Disable all transitions */
   }
   
   .search-section,
@@ -788,13 +692,6 @@ html.perf-no-sticky .search-section {
   
   html.vv-changing .btn-emergency {
     animation: none !important;
-  }
-  
-  /* CRITICAL: Disable card entrance animation during viewport changes */
-  html.vv-changing .card {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
   
   html.vv-changing .accuracyStrip {
@@ -908,11 +805,15 @@ html.perf-no-sticky .search-section {
   }
   
   /* Use CSS containment to isolate paint operations during viewport changes */
-  html.vv-changing .card,
+  /* OPTIMIZED: Reduce scope to only high-impact containers, not every element */
   html.vv-changing .section,
-  html.vv-changing .search-section,
-  html.vv-changing .grid {
+  html.vv-changing .search-section {
     contain: layout style paint !important;
+  }
+  
+  /* Cards get lighter containment to avoid too much work */
+  html.vv-changing .grid {
+    contain: layout style !important;
   }
   
   /* REMOVED: Disabling hover effects - causes visual glitches during scrolling */
@@ -946,13 +847,6 @@ html.perf-no-sticky .search-section {
   /* CRITICAL: Hide floating cards completely in dense mode (already hidden on mobile, but ensure it) */
   html.text-small .floating-card {
     display: none !important;
-  }
-  
-  /* CRITICAL FIX: Disable card entrance animation completely - causes stutter during text size changes */
-  html.text-small .card {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
   
   html.text-small .btn-emergency {
@@ -1001,37 +895,39 @@ html.perf-no-sticky .search-section {
     background: var(--bg0) !important;
   }
   
-  /* CRITICAL FIX: REMOVED content-visibility - causes continuous reflow on iOS Safari
-   * iOS Safari has poor content-visibility support and recalculates visibility continuously
-   * at smaller text sizes, causing severe stuttering
-   * Use lighter containment only */
+  /* CRITICAL: More aggressive content-visibility for dense mode */
+  /* At smaller text sizes, more cards are visible - need better optimization */
+  /* OPTIMIZED: Apply only to grid container, let browser handle individual cards */
   html.text-small .grid {
-    contain: layout style !important; /* Layout + style only, no paint containment */
+    content-visibility: auto !important;
+    contain-intrinsic-size: 800px !important; /* Smaller intrinsic size for denser content */
+    contain: layout style !important; /* Lighter containment */
   }
   
-  /* Use lighter containment on cards - no content-visibility */
-  html.text-small .card {
-    contain: layout style !important; /* Lighter containment to avoid iOS bugs */
-  }
+  /* REMOVED: Individual card content-visibility rules */
+  /* Applying content-visibility to 50-100 cards at once causes massive recalc */
+  /* Let the grid-level optimization handle visibility instead */
   
-  /* CRITICAL FIX: Target specific animated elements, not wildcards
-   * Wildcard selectors on * cause massive style recalculation (thousands of elements)
-   * Only disable transitions on elements that actually have animations */
-  html.text-small .bg-gradient,
+  /* CRITICAL: Disable all transitions in dense mode - too many elements */
+  /* REMOVED UNIVERSAL SELECTOR - was causing massive style recalc on toggle */
+  /* Instead, target specific high-impact elements only */
+  html.text-small .card,
+  html.text-small .section,
+  html.text-small .grid,
+  html.text-small .floating-card,
   html.text-small .btn-emergency,
-  html.text-small .accuracyStrip,
   html.text-small .shimmer,
-  html.text-small .floating-card,
-  html.text-small .card::before,
-  html.text-small .hero-copy,
-  html.text-small .triage-card {
-    transition: none !important; /* Remove transitions from animated elements only */
+  html.text-small .accuracyStrip,
+  html.text-small .bg-gradient {
+    transition: none !important; /* Remove transitions to prevent repaints */
   }
   
-  /* CRITICAL FIX: Only remove will-change from elements that use it
-   * Wildcard will-change removal forces recomposite of entire page */
-  html.text-small .bg-gradient,
+  /* CRITICAL: Disable will-change hints in dense mode - reduces compositing cost */
+  /* REMOVED UNIVERSAL SELECTOR - was causing massive style recalc on toggle */
+  /* Target only elements that typically use will-change */
+  html.text-small .card,
   html.text-small .floating-card,
+  html.text-small .hero-visual,
   html.text-small .crisis-banner,
   html.text-small .search-section {
     will-change: auto !important;
@@ -1066,18 +962,18 @@ html.perf-no-sticky .search-section {
   }
   
   .search-section {
-    position: static !important; /* CRITICAL: Disable sticky - causes massive stutter during text size changes */
-    top: auto !important;
-    z-index: 10;
-    margin-top: 0 !important;
+    position: sticky;
+    top: calc(var(--crisis-banner-h, 0px) + env(safe-area-inset-top, 0px));
+    z-index: 15;
+    margin-top: -34px;
     margin-bottom: 12px;
-    border-radius: var(--radius-lg);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     width: 100%;
     max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 18px;
-    padding-right: 18px;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
   
   /* Ensure crisis banner doesn't overlap */

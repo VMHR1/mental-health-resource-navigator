@@ -309,8 +309,9 @@ window.addEventListener('scroll', () => {
 // Cached to avoid repeated getBoundingClientRect calls during viewport changes
 let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
-  // Skip updates during active viewport changes on mobile to prevent layout thrash
-  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+  // CRITICAL FIX: Use flag instead of classList.contains() to avoid layout thrashing
+  // classList.contains() forces style recalculation on every call
+  if (isCoarsePointer && __vvChangingFlag) {
     return;
   }
   
@@ -338,8 +339,9 @@ function updateCrisisBannerOffset() {
 let __bannerOffsetT;
 let __bannerOffsetRAF;
 function handleBannerOffsetResize() {
-  // On mobile, skip during active viewport changes
-  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+  // CRITICAL FIX: Use flag instead of classList.contains() to avoid layout thrashing
+  // classList.contains() forces style recalculation on every call
+  if (isCoarsePointer && __vvChangingFlag) {
     return;
   }
   
