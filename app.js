@@ -210,7 +210,7 @@ const TEXT_SCALE_STABILIZE_DELAY = 300; // Wait for text size to stabilize befor
 
 function updateTextScaleClass() {
   // #region agent log
-  console.log('[DEBUG A] updateTextScaleClass called', {lastCheck:__lastTextScaleCheck, now:Date.now(), throttled:(Date.now() - __lastTextScaleCheck < TEXT_SCALE_CHECK_INTERVAL)});
+  fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'updateTextScaleClass',message:'Text scale check',data:{lastCheck:__lastTextScaleCheck,throttled:(Date.now()-__lastTextScaleCheck<TEXT_SCALE_CHECK_INTERVAL)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
   // #endregion
   
   // Throttle: only check once per 200ms burst
@@ -256,7 +256,7 @@ function updateTextScaleClass() {
             // CRITICAL: Class toggle triggers massive CSS recalculation, so we must be certain
             if (__lastTextScaleState !== shouldBeSmall) {
               // #region agent log
-              console.log('[DEBUG E] text-small class toggle', {shouldBeSmall:shouldBeSmall, currentRootPx:currentRootPx, baselineRootPx:baselineRootPx, timestamp:Date.now()});
+              fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'textScaleToggle',message:'text-small class toggle',data:{shouldBeSmall:shouldBeSmall,currentRootPx:currentRootPx,baselineRootPx:baselineRootPx},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
               // #endregion
               __lastTextScaleState = shouldBeSmall;
               // Use rAF for class toggle to batch with browser's style recalculation
@@ -380,7 +380,7 @@ window.addEventListener('scroll', () => {
 let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
   // #region agent log
-  console.log('[DEBUG B] updateCrisisBannerOffset called', {isVvChanging:__isVvChangingFlag, isCoarse:isCoarsePointer, timestamp:Date.now()});
+  fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'updateCrisisBannerOffset',message:'Banner offset update',data:{isVvChanging:__isVvChangingFlag,isCoarse:isCoarsePointer},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
   // #endregion
   
   // Skip updates during active viewport changes on mobile to prevent layout thrash
@@ -508,7 +508,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
   let __vvResizeT = null;
   window.visualViewport.addEventListener('resize', () => {
     // #region agent log
-    console.log('[DEBUG C] visualViewport resize', {vvHeight:window.visualViewport.height, vvWidth:window.visualViewport.width, isVvChanging:__isVvChangingFlag, timestamp:Date.now()});
+    fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'vvResize',message:'visualViewport resize',data:{vvHeight:window.visualViewport.height,vvWidth:window.visualViewport.width,isVvChanging:__isVvChangingFlag},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
     // #endregion
     
     const now = Date.now();
@@ -590,7 +590,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
           // Only apply if we have sustained pattern and NOT scrolling
           if (hasSustainedPattern && !__isVvChangingFlag && !isScrolling) {
             // #region agent log
-            console.log('[DEBUG C,E] vv-changing class ADDED', {eventCount:__vvEventCount, heightChange:heightDiff, isScrolling:isScrolling, timestamp:Date.now()});
+            fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'vvChangingStart',message:'vv-changing ADDED',data:{eventCount:__vvEventCount,heightChange:heightDiff,isScrolling:isScrolling},timestamp:Date.now(),hypothesisId:'C,E'})}).catch(()=>{});
             // #endregion
             __isVvChangingFlag = true;
             __vvStartTime = Date.now();
@@ -601,7 +601,7 @@ if (isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
               clearTimeout(__vvT);
               __vvT = setTimeout(() => {
                 // #region agent log
-                console.log('[DEBUG C,E] vv-changing class REMOVED', {duration:Date.now()-__vvStartTime, timestamp:Date.now()});
+                fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'vvChangingEnd',message:'vv-changing REMOVED',data:{duration:Date.now()-__vvStartTime},timestamp:Date.now(),hypothesisId:'C,E'})}).catch(()=>{});
                 // #endregion
                 __isVvChangingFlag = false;
                 __vvEventCount = 0;
@@ -3103,7 +3103,7 @@ function render(){
       els.treatmentGrid.innerHTML = "";
       
       // #region agent log
-      console.log('[DEBUG D] Cards rendering', {cardCount:activeList.length, isVvChanging:__isVvChangingFlag, textSmallActive:document.documentElement.classList.contains('text-small'), timestamp:Date.now()});
+      fetch('http://192.168.1.244:8888/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'cardsRender',message:'Cards rendering',data:{cardCount:activeList.length,isVvChanging:__isVvChangingFlag,textSmallActive:document.documentElement.classList.contains('text-small')},timestamp:Date.now(),hypothesisId:'D'})}).catch(()=>{});
       // #endregion
       
       // Use DocumentFragment to batch DOM operations
