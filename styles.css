@@ -891,29 +891,39 @@ html.perf-no-sticky .search-section {
     background: var(--bg0) !important;
   }
   
-  /* CRITICAL: More aggressive content-visibility for dense mode */
-  /* At smaller text sizes, more cards are visible - need better optimization */
+  /* CRITICAL FIX: REMOVED content-visibility - causes continuous reflow on iOS Safari
+   * iOS Safari has poor content-visibility support and recalculates visibility continuously
+   * at smaller text sizes, causing severe stuttering
+   * Use lighter containment only */
   html.text-small .grid {
-    content-visibility: auto !important;
-    contain-intrinsic-size: 800px !important; /* Smaller intrinsic size for denser content */
-    contain: layout style paint !important; /* Aggressive containment */
+    contain: layout style !important; /* Layout + style only, no paint containment */
   }
   
-  /* CRITICAL: Apply content-visibility to individual cards in dense mode */
-  /* This prevents offscreen cards from painting during scroll */
+  /* Use lighter containment on cards - no content-visibility */
   html.text-small .card {
-    content-visibility: auto !important;
-    contain-intrinsic-size: 150px !important; /* Smaller for denser text */
-    contain: layout style paint !important;
+    contain: layout style !important; /* Lighter containment to avoid iOS bugs */
   }
   
-  /* CRITICAL: Disable all transitions in dense mode - too many elements */
-  html.text-small * {
-    transition: none !important; /* Remove all transitions to prevent repaints */
+  /* CRITICAL FIX: Target specific animated elements, not wildcards
+   * Wildcard selectors on * cause massive style recalculation (thousands of elements)
+   * Only disable transitions on elements that actually have animations */
+  html.text-small .bg-gradient,
+  html.text-small .btn-emergency,
+  html.text-small .accuracyStrip,
+  html.text-small .shimmer,
+  html.text-small .floating-card,
+  html.text-small .card::before,
+  html.text-small .hero-copy,
+  html.text-small .triage-card {
+    transition: none !important; /* Remove transitions from animated elements only */
   }
   
-  /* CRITICAL: Disable will-change hints in dense mode - reduces compositing cost */
-  html.text-small * {
+  /* CRITICAL FIX: Only remove will-change from elements that use it
+   * Wildcard will-change removal forces recomposite of entire page */
+  html.text-small .bg-gradient,
+  html.text-small .floating-card,
+  html.text-small .crisis-banner,
+  html.text-small .search-section {
     will-change: auto !important;
   }
   

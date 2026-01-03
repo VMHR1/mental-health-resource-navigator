@@ -135,9 +135,9 @@ function updateTextScaleClass() {
   __lastTextScaleCheck = now;
   
   try {
-    // CRITICAL FIX: Defer getComputedStyle call to avoid layout thrashing during active text size changes
-    // If vv-changing class is active, wait longer for stabilization
-    const isVvChanging = document.documentElement.classList.contains('vv-changing');
+    // CRITICAL FIX: Check vv-changing state using cached flag, not classList.contains()
+    // classList.contains() can force style recalculation if styles are dirty
+    const isVvChanging = __isVvChanging; // Use cached flag from visualViewport listener
     const stabilizeDelay = isVvChanging ? TEXT_SCALE_STABILIZE_DELAY + 200 : TEXT_SCALE_STABILIZE_DELAY;
     
     // Clear any pending check
@@ -145,6 +145,12 @@ function updateTextScaleClass() {
     
     // Defer the expensive getComputedStyle call until after text size stabilizes
     __textScaleT = setTimeout(() => {
+      // CRITICAL FIX: Double-check that viewport is still stable before reading layout
+      // If vv-changing became active during the delay, abort this check
+      if (__isVvChanging) {
+        return; // Abort - viewport is still changing
+      }
+      
       // Use rAF to batch with browser's layout cycle
       if (__textScaleRAF) cancelAnimationFrame(__textScaleRAF);
       __textScaleRAF = requestAnimationFrame(() => {
@@ -202,8 +208,9 @@ function initTextScaleDetection() {
       // Clear any pending check
       if (__vvResizeForTextScale) clearTimeout(__vvResizeForTextScale);
       
-      // Check if vv-changing is active (text size is being adjusted)
-      const isVvChanging = document.documentElement.classList.contains('vv-changing');
+      // CRITICAL FIX: Use cached flag instead of classList.contains()
+      // classList.contains() can force style recalc if styles are dirty
+      const isVvChanging = __isVvChanging; // Use the global flag
       
       // Use longer delay during active text size changes to avoid layout thrashing
       // This prevents getComputedStyle from being called during rapid resize events
@@ -280,8 +287,9 @@ window.addEventListener('scroll', () => {
 // Cached to avoid repeated getBoundingClientRect calls during viewport changes
 let __cachedBannerHeight = 0;
 function updateCrisisBannerOffset() {
-  // Skip updates during active viewport changes on mobile to prevent layout thrash
-  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+  // CRITICAL FIX: Skip updates during active viewport changes using cached flag
+  // Avoid classList.contains() which can force style recalculation
+  if (isCoarsePointer && __isVvChanging) {
     return;
   }
   
@@ -309,8 +317,9 @@ function updateCrisisBannerOffset() {
 let __bannerOffsetT;
 let __bannerOffsetRAF;
 function handleBannerOffsetResize() {
-  // On mobile, skip during active viewport changes
-  if (isCoarsePointer && document.documentElement.classList.contains('vv-changing')) {
+  // CRITICAL FIX: On mobile, skip during active viewport changes using cached flag
+  // Avoid classList.contains() which forces style recalculation
+  if (isCoarsePointer && __isVvChanging) {
     return;
   }
   
