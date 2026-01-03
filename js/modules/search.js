@@ -209,6 +209,34 @@ function parseSmartSearch(query, cities) {
     filters.serviceDomain = 'substance_use';
   }
   
+  // Specific program name recognition for better search matching
+  // Evergreen Path / Fort Behavioral
+  if(q.includes('evergreen path') || q.includes('evergreen') || q.includes('fort behavioral')) {
+    filters.organization = 'Fort Behavioral'; // Helps match Fort Behavioral programs
+  }
+  
+  // Eating Disorder Solutions / Weatherford
+  if(q.includes('eating disorder solutions') || q.includes('eds weatherford') || q.includes('ranch weatherford')) {
+    filters.serviceDomain = 'eating_disorders';
+  }
+  
+  // Andrews Center / Crisis
+  if(q.includes('andrews center') || q.includes('andrews crisis')) {
+    filters.showCrisis = true;
+    filters.organization = 'Andrews Center';
+  }
+  
+  // Changes locations
+  if(q.includes('changes frisco') || q.includes('changes mckinney') || q.includes('carrollton springs')) {
+    filters.organization = 'Changes'; // Helps match Changes programs
+  }
+  
+  // Weatherford location (for Eating Disorder Solutions)
+  if(q.includes('weatherford') && !filters.loc) {
+    // Weatherford will be picked up by city matching, but ensure it's recognized
+    filters.loc = 'Weatherford';
+  }
+  
   // Crisis detection
   if(q.includes('crisis') || q.includes('emergency') || q.includes('urgent')) {
     filters.showCrisis = true;

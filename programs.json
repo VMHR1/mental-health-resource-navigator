@@ -4579,7 +4579,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "See Children's Health contracted insurance plans",
       "verification_source": "Children's Health Eating Disorders Program: https://www.childrens.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["eating_disorders"],
       "accepted_insurance": {
         "status": "varies_by_service",
@@ -4639,7 +4639,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Center for Discovery Plano: https://www.centerfordiscoveryplano.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["eating_disorders"],
       "accepted_insurance": {
         "status": "contact_for_info",
@@ -4661,7 +4661,7 @@
           "city": "Plano",
           "state": "TX",
           "zip": "75024",
-          "address": "5120 Legacy Dr"
+          "address": "5120 Legacy Dr, Plano, TX 75024"
         }
       ],
       "phone": "469-613-1722",
@@ -4669,7 +4669,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Eating Recovery Center of Dallas: https://www.eatingrecoverycenter.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["eating_disorders"],
       "accepted_insurance": {
         "status": "contact_for_info",
@@ -4679,10 +4679,10 @@
       "website_domain": "eatingrecoverycenter.com"
     },
     {
-      "program_id": "eating-disorder-eating-disorder-solutions-weatherford",
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-residential",
       "entry_type": "Treatment Program",
       "organization": "Eating Disorder Solutions",
-      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford",
+      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (Residential)",
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "18+",
@@ -4695,15 +4695,75 @@
         }
       ],
       "phone": "855-808-4213",
-      "notes": "Dallas location no longer current. Current location: The Ranch at Weatherford. Services: Residential and Partial Hospitalization Program for adults (18+) with eating disorders and co-occurring mental health conditions. Residential treatment center with homelike setting.",
+      "notes": "Dallas location no longer current. Current location: The Ranch at Weatherford. Residential treatment center with homelike setting for adults (18+) with eating disorders and co-occurring mental health conditions.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["eating_disorders"],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2025-01-03"
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_domain": "eatingdisordersolutions.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-php",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Disorder Solutions",
+      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (PHP)",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Weatherford",
+          "state": "TX",
+          "zip": "76085",
+          "address": "879 Eureka St"
+        }
+      ],
+      "phone": "855-808-4213",
+      "notes": "Partial Hospitalization Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
+      "last_verified": "2026-01-03",
+      "service_domains": ["eating_disorders"],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_domain": "eatingdisordersolutions.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-iop",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Disorder Solutions",
+      "program_name": "Eating Disorder Treatment - Outpatient Center (IOP)",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Weatherford",
+          "state": "TX",
+          "zip": "76086",
+          "address": "879 Eureka St"
+        }
+      ],
+      "phone": "855-808-4213",
+      "notes": "Intensive Outpatient Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
+      "last_verified": "2026-01-03",
+      "service_domains": ["eating_disorders"],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2026-01-03"
       },
       "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
       "website_domain": "eatingdisordersolutions.com"
@@ -4739,36 +4799,6 @@
       "website_domain": "childrens.com"
     },
     {
-      "program_id": "substance-use-newport-academy-dallas",
-      "entry_type": "Treatment Program",
-      "organization": "Newport Academy",
-      "program_name": "Substance Use and Mental Health Treatment",
-      "level_of_care": "Partial Hospitalization (PHP)",
-      "service_setting": "In-person",
-      "ages_served": "13-17",
-      "locations": [
-        {
-          "city": "Dallas",
-          "state": "TX",
-          "zip": "75225",
-          "address": "9201 North Central Expressway, Ste 150"
-        }
-      ],
-      "phone": "469-733-1515",
-      "notes": "Dallas location closed / no longer listed. Intensive Outpatient Program and Partial Hospitalization Program for teens, ages 13-17, with co-occurring substance use and mental health diagnoses. Offers out-of-state residential programs.",
-      "transportation_available": "Unknown",
-      "insurance_notes": "Contact for insurance information",
-      "verification_source": "Newport Academy: https://www.newportacademy.com",
-      "last_verified": "2025-01-03",
-      "service_domains": ["co_occurring", "substance_use"],
-      "accepted_insurance": {
-        "status": "contact_for_info",
-        "last_verified": "2025-01-03"
-      },
-      "website_url": "https://www.newportacademy.com",
-      "website_domain": "newportacademy.com"
-    },
-    {
       "program_id": "substance-use-youth180-dallas",
       "entry_type": "Treatment Program",
       "organization": "Youth180",
@@ -4789,7 +4819,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Youth180: https://www.youth180tx.org",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["substance_use"],
       "accepted_insurance": {
         "status": "contact_for_info",
@@ -5014,12 +5044,12 @@
           "address": "7140 Oakmont Boulevard"
         }
       ],
-      "phone": "855-965-4280",
+      "phone": "844-332-1807",
       "notes": "Residential Treatment Program for adolescents ages 11-17, with co-occurring substance use and mental health diagnoses. Also treats primary mental health disorders.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Fort Behavioral Health official website: https://fortbehavioral.com/contact-fort-behavioral-health-texas/ and https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["co_occurring", "substance_use"],
       "sud_services": ["residential_sud"],
       "accepted_insurance": {
@@ -5149,7 +5179,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "Recovery Resource Council: https://www.recoverycouncil.org",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-03",
       "service_domains": ["substance_use"],
       "sud_services": ["osar_referral"],
       "accepted_insurance": {
@@ -5160,11 +5190,11 @@
       "website_domain": "recoverycouncil.org"
     },
     {
-      "program_id": "osar-mhmr-tarrant-county",
+      "program_id": "crisis-mhmr-tarrant-county",
       "entry_type": "Crisis Service",
       "organization": "MHMR of Tarrant County",
-      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
-      "level_of_care": "Navigation",
+      "program_name": "Crisis Line / Access Line",
+      "level_of_care": "Crisis Hotline",
       "service_setting": "Phone",
       "ages_served": "All ages",
       "locations": [
@@ -5176,13 +5206,12 @@
         }
       ],
       "phone": "800-866-2465",
-      "notes": "Covers Cooke, Denton, Erath, Fannin, Grayson, Hood, Johnson, Palo Pinto, Parker, Somervell, Tarrant and Wise Counties. OSAR contact number needs verification - check official MHMR of Tarrant County website for current OSAR contact information. Note: 817-332-6329 is Recovery Resource Council's OSAR line (listed separately). Crisis phone: 800-866-2465. Contact MHMR directly for OSAR services.",
+      "notes": "Covers Cooke, Denton, Erath, Fannin, Grayson, Hood, Johnson, Palo Pinto, Parker, Somervell, Tarrant and Wise Counties. 24/7 Crisis Hotline: 800-866-2465. For OSAR services, contact Recovery Resource Council at 817-332-6329 (listed separately).",
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "MHMR of Tarrant County: https://www.mhmrtarrant.org",
-      "last_verified": "2025-01-03",
-      "service_domains": ["substance_use"],
-      "sud_services": ["osar_referral"],
+      "last_verified": "2026-01-03",
+      "service_domains": ["mental_health"],
       "accepted_insurance": {
         "status": "not_applicable",
         "last_verified": "2025-01-03"
@@ -5191,10 +5220,10 @@
       "website_domain": "mhmrtarrant.org"
     },
     {
-      "program_id": "osar-andrews-center-east-texas",
+      "program_id": "osar-etcada-longview",
       "entry_type": "Crisis Service",
-      "organization": "Andrews Center Behavioral Healthcare System",
-      "program_name": "OSAR (Outreach, Screening, Assessment and Referral) / Crisis Services",
+      "organization": "East Texas Council on Alcoholism and Drug Abuse (ETCADA)",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
@@ -5207,19 +5236,49 @@
         }
       ],
       "phone": "903-753-7633",
-      "notes": "Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties. 24/7 Hotline: 877-934-2131. OSAR services to assist with linkage to substance use services.",
+      "notes": "OSAR services to assist with linkage to substance use services. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
-      "verification_source": "Andrews Center official website and Texas resource directories: https://texassuicideprevention.org/texas-community-centers/ and https://www.uttua.org/families-students/mental-health-resources/index.php",
-      "last_verified": "2025-01-03",
+      "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
+      "last_verified": "2026-01-03",
       "service_domains": ["substance_use"],
       "sud_services": ["osar_referral"],
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2025-01-03"
+        "last_verified": "2026-01-03"
       },
       "website_url": "https://www.etcada.com",
       "website_domain": "etcada.com"
+    },
+    {
+      "program_id": "crisis-andrews-center-east-texas",
+      "entry_type": "Crisis Service",
+      "organization": "Andrews Center Behavioral Healthcare System",
+      "program_name": "24/7 Hotline",
+      "level_of_care": "Crisis Hotline",
+      "service_setting": "Phone",
+      "ages_served": "All ages",
+      "locations": [
+        {
+          "city": "Longview",
+          "state": "TX",
+          "zip": "75601",
+          "address": "708 Glencrest Lane"
+        }
+      ],
+      "phone": "877-934-2131",
+      "notes": "24/7 Crisis Hotline for mental health emergencies. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
+      "transportation_available": "N/A",
+      "insurance_notes": "N/A (not an insurance-billed service)",
+      "verification_source": "Andrews Center official website and Texas resource directories: https://texassuicideprevention.org/texas-community-centers/ and https://www.uttua.org/families-students/mental-health-resources/index.php",
+      "last_verified": "2026-01-03",
+      "service_domains": ["mental_health"],
+      "accepted_insurance": {
+        "status": "not_applicable",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://www.andrewscenter.com",
+      "website_domain": "andrewscenter.com"
     }
   ]
 }
