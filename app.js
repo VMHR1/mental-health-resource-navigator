@@ -440,7 +440,6 @@ window.addEventListener("resize", () => {
 // Use standard window resize instead, even on mobile
 
 
-}
 
 let __vvListenerAttached = false;
 if (false && isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
