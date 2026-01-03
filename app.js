@@ -470,23 +470,6 @@ if (false && isCoarsePointer && window.visualViewport && !__vvListenerAttached) 
   const MIN_EVENTS_FOR_TEXT_SIZE = 3; // Require multiple events to confirm text-size change
   const SCROLL_COOLDOWN_MS = 400; // Don't trigger vv-changing if scroll happened within this time
   
-  // DEBUG: Create on-screen debug display
-  let __debugDiv = document.createElement('div');
-  __debugDiv.id = 'vv-debug';
-  __debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;font:12px monospace;padding:8px;z-index:99999;max-height:50vh;overflow:auto;pointer-events:none;line-height:1.3;';
-  document.body.appendChild(__debugDiv);
-  
-  function updateDebug(msg) {
-    const time = new Date().toLocaleTimeString();
-    __debugDiv.innerHTML = `<div style="color:#fff;margin-bottom:2px;font-size:12px">[${time}] ${msg}</div>` + __debugDiv.innerHTML;
-    // Keep last 30 lines (more history)
-    const lines = __debugDiv.querySelectorAll('div');
-    if (lines.length > 30) {
-      for (let i = 30; i < lines.length; i++) {
-        lines[i].remove();
-      }
-    }
-  }
   
   // CRITICAL FIX: Throttle visualViewport listener to reduce work during scroll
   // Don't process every single resize event - batch them
