@@ -4,22 +4,6 @@
 
 // ========== MOBILE PERFORMANCE DEBUGGING (REMOVED) ==========
 // All debug code has been removed
-// Remove any existing debug elements from DOM
-(function() {
-  const debugElements = [
-    document.getElementById('perf-debug'),
-    document.getElementById('vv-debug'),
-    document.querySelector('#perf-debug'),
-    document.querySelector('#vv-debug'),
-    document.querySelector('.perf-debug'),
-    document.querySelector('.vv-debug')
-  ];
-  debugElements.forEach(el => {
-    if (el) {
-      el.remove();
-    }
-  });
-})();
 
 // ========== State Management ==========
 let programs = [];
