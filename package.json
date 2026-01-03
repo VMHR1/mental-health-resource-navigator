@@ -16,9 +16,9 @@
     "verify": "npm run build && npm run validate-data && npm run test:e2e && npm run audit"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.12.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.40.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.27.2",
     "http-server": "^14.1.1"
   },
   "keywords": [
