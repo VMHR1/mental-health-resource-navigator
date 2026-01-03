@@ -11,6 +11,7 @@
     "validate-data": "node scripts/validate-data.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:mobile": "playwright test --project=mobile --project=mobile-webkit",
     "audit": "lhci autorun --config=lighthouserc.json",
     "verify": "npm run build && npm run validate-data && npm run test:e2e && npm run audit"
   },

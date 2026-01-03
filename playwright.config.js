@@ -14,21 +14,27 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    screenshot: { mode: 'only-on-failure', fullPage: true },
   },
 
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop',
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'mobile',
+      use: {
+        ...devices['iPhone 13'],
+      },
     },
     {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      name: 'mobile-webkit',
+      use: {
+        ...devices['iPhone 13'],
+        // Use WebKit browser to match iOS Safari
+        browserName: 'webkit',
+      },
     },
   ],
 

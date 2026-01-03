@@ -126,12 +126,29 @@ Runs Playwright smoke tests that validate core UI behaviors:
 npm run test:e2e:ui
 ```
 
+**Mobile Testing (`npm run test:mobile`)**
+
+Runs mobile-specific verification tests on emulated iPhone viewport:
+- No horizontal overflow (scrollWidth <= clientWidth)
+- Critical controls visible and clickable (search, buttons, filters)
+- Advanced filters work on mobile (dropdowns can be opened and values selected)
+- Results section renders correctly after search
+- Screenshot snapshots for homepage and results view
+
+**Run mobile tests:**
+```bash
+npm run test:mobile
+```
+
 **What failures mean:**
 - If tests fail, check the Playwright HTML report in `playwright-report/`
+- Screenshots are captured automatically on failure (full-page)
 - Common issues:
   - Build output (`dist/`) is missing or outdated → Run `npm run build` first
   - Server port conflict → Ensure port 4173 is available
   - Selector changes → Update `data-testid` attributes in `index.html`
+  - Horizontal overflow → Check CSS for elements wider than viewport
+  - Mobile controls not clickable → Verify touch target sizes and z-index
 
 #### Performance Audit (`npm run audit`)
 
