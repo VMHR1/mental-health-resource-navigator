@@ -14,7 +14,7 @@
       "with_website_url": 92,
       "missing_website_url": 0
     },
-    "geocoded_at": "2025-12-30T08:42:06.867Z",
+    "geocoded_at": "2026-01-03T22:59:24.316Z",
     "geocoding_service": "Nominatim OpenStreetMap",
     "geocoding_attribution": "© OpenStreetMap contributors",
     "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
@@ -4919,6 +4919,912 @@
       },
       "website_url": "https://www.metrocareservices.org/contact-us/",
       "website_domain": "metrocareservices.org"
+    },
+    {
+      "program_id": "eating-disorder-childrens-health-plano",
+      "entry_type": "Treatment Program",
+      "organization": "Children's Medical Center",
+      "program_name": "Children's Eating Disorders Program",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "Child & Adolescent",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75024",
+          "address": "7609 Preston Rd",
+          "geo": {
+            "lat": 33.0754642,
+            "lng": -96.7959521
+          }
+        }
+      ],
+      "phone": "469-303-5900",
+      "notes": "Services: Partial (day treatment), Intensive Outpatient, Inpatient Children's Eating Disorders Program",
+      "transportation_available": "Unknown",
+      "insurance_notes": "See Children's Health contracted insurance plans",
+      "verification_source": "Children's Health Eating Disorders Program: https://www.childrens.com",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "varies_by_service",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.childrens.com",
+      "website_domain": "childrens.com"
+    },
+    {
+      "program_id": "eating-disorder-walker-wellness-dallas",
+      "entry_type": "Treatment Program",
+      "organization": "Walker Wellness Clinics",
+      "program_name": "Eating Disorder Treatment",
+      "level_of_care": "Outpatient",
+      "service_setting": "In-person",
+      "ages_served": "Child & Adolescent",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75230",
+          "address": "12200 Preston Road @ Cooper Aerobics Center",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
+        }
+      ],
+      "phone": "214-549-2901",
+      "notes": "Services: Outpatient, Day Treatment services for children with eating disorders, depression, anxiety",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Walker Wellness Clinics: https://www.walkerwellness.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "eating_disorders",
+        "mental_health"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.walkerwellness.com",
+      "website_domain": "walkerwellness.com"
+    },
+    {
+      "program_id": "eating-disorder-center-discovery-plano",
+      "entry_type": "Treatment Program",
+      "organization": "Center for Discovery Plano",
+      "program_name": "Eating Disorder Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "10-17",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75093",
+          "address": "5124 Corinthian Bay Drive",
+          "geo": {
+            "lat": 33.0378587,
+            "lng": -96.8012782
+          }
+        }
+      ],
+      "phone": "800-760-3934",
+      "notes": "Services: Residential Program and Partial Hospitalization Program for children ages 10-17 who have been diagnosed with an eating disorder",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Center for Discovery Plano: https://www.centerfordiscoveryplano.com",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.centerfordiscoveryplano.com",
+      "website_domain": "centerfordiscoveryplano.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-recovery-center-dallas",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Recovery Center of Dallas",
+      "program_name": "Eating Disorder Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "10+",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75024",
+          "address": "5120 Legacy Dr, Plano, TX 75024",
+          "geo": {
+            "lat": 33.0136764,
+            "lng": -96.6925096
+          }
+        }
+      ],
+      "phone": "469-613-1722",
+      "notes": "Services: 7 day per week Partial Hospitalization Program and three day per week Intensive Outpatient Program for children ages 10 and older with anorexia, bulimia and binge eating disorders",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Recovery Center of Dallas: https://www.eatingrecoverycenter.com",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.eatingrecoverycenter.com",
+      "website_domain": "eatingrecoverycenter.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-residential",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Disorder Solutions",
+      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (Residential)",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Weatherford",
+          "state": "TX",
+          "zip": "76085",
+          "address": "1664 Whippoorwill Trail",
+          "geo": {
+            "lat": 32.7589648,
+            "lng": -97.7970748
+          }
+        }
+      ],
+      "phone": "855-808-4213",
+      "notes": "Dallas location no longer current. Current location: The Ranch at Weatherford. Residential treatment center with homelike setting for adults (18+) with eating disorders and co-occurring mental health conditions.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_domain": "eatingdisordersolutions.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-php",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Disorder Solutions",
+      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (PHP)",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Weatherford",
+          "state": "TX",
+          "zip": "76085",
+          "address": "879 Eureka St",
+          "geo": {
+            "lat": 32.7494282,
+            "lng": -97.7805892
+          }
+        }
+      ],
+      "phone": "855-808-4213",
+      "notes": "Partial Hospitalization Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_domain": "eatingdisordersolutions.com"
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-iop",
+      "entry_type": "Treatment Program",
+      "organization": "Eating Disorder Solutions",
+      "program_name": "Eating Disorder Treatment - Outpatient Center (IOP)",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "service_setting": "In-person",
+      "ages_served": "18+",
+      "locations": [
+        {
+          "city": "Weatherford",
+          "state": "TX",
+          "zip": "76086",
+          "address": "879 Eureka St",
+          "geo": {
+            "lat": 32.7494282,
+            "lng": -97.7805892
+          }
+        }
+      ],
+      "phone": "855-808-4213",
+      "notes": "Intensive Outpatient Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "eating_disorders"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_domain": "eatingdisordersolutions.com"
+    },
+    {
+      "program_id": "substance-use-childrens-health-teen-recovery-dallas",
+      "entry_type": "Treatment Program",
+      "organization": "Children's Health",
+      "program_name": "Teen Recovery Program",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75247",
+          "address": "1341 West Mockingbird Lane, Ste 500E",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
+        }
+      ],
+      "phone": "214-456-7200",
+      "notes": "Intensive Outpatient Program for teens, 13-17, with co-occurring substance use and depression. Meets twice per week. Program is five weeks long.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "See Children's Health contracted insurance plans",
+      "verification_source": "Children's Health Teen Recovery Program: https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/teen-recovery-program",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "varies_by_service",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/teen-recovery-program",
+      "website_domain": "childrens.com"
+    },
+    {
+      "program_id": "substance-use-youth180-dallas",
+      "entry_type": "Treatment Program",
+      "organization": "Youth180",
+      "program_name": "Substance Abuse Counseling",
+      "level_of_care": "Outpatient",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75208",
+          "address": "201 S. Tyler St.",
+          "geo": {
+            "lat": 32.744057,
+            "lng": -96.837693
+          }
+        }
+      ],
+      "phone": "214-942-5166",
+      "notes": "Outpatient counseling program for substance abuse. Offers individual, group and family counseling for teens, ages 13-17. Also offers parent support groups.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Youth180: https://www.youth180tx.org",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.youth180tx.org",
+      "website_domain": "youth180tx.org"
+    },
+    {
+      "program_id": "substance-use-grace-counseling-lewisville",
+      "entry_type": "Treatment Program",
+      "organization": "Grace Counseling",
+      "program_name": "Substance Use Treatment",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "service_setting": "In-person",
+      "ages_served": "14-18",
+      "locations": [
+        {
+          "city": "Lewisville",
+          "state": "TX",
+          "zip": "75067",
+          "address": "105 Kathryn Dr, Building 3, Suite D",
+          "geo": {
+            "lat": 33.046233,
+            "lng": -96.994174
+          }
+        },
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76132",
+          "address": "7535 Oakmont Blvd",
+          "geo": {
+            "lat": 32.6624408,
+            "lng": -97.4239692
+          }
+        }
+      ],
+      "phone": "844-564-0712",
+      "notes": "Intensive outpatient programming and outpatient weekly therapy for teens ages 14-18 who are enrolled in high school. Offers peer, family and individual sessions. Accepts all major insurances for intensive outpatient, and Medicaid plans for individual therapy sessions.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Accepts all major insurances for intensive outpatient, and Medicaid plans for individual therapy sessions",
+      "verification_source": "Grace Counseling: https://www.grace-counseling.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "verified_on_website",
+        "last_verified": "2025-01-03",
+        "types": [
+          "Commercial (all major)",
+          "Medicaid/CHIP"
+        ]
+      },
+      "website_url": "https://www.grace-counseling.com",
+      "website_domain": "grace-counseling.com"
+    },
+    {
+      "program_id": "substance-use-imagine-programs-plano",
+      "entry_type": "Treatment Program",
+      "organization": "Imagine Programs",
+      "program_name": "Substance Use Treatment",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "service_setting": "In-person",
+      "ages_served": "13+",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75074",
+          "address": "1947 K Avenue, Ste A100",
+          "geo": {
+            "lat": 33.0136764,
+            "lng": -96.6925096
+          }
+        }
+      ],
+      "phone": "214-385-4264",
+      "notes": "Intensive outpatient programming for teens ages 13 and up. Group sessions are held in the evenings. Imagine Programs also offers individual counseling, family counseling and a family education class.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Imagine Programs: https://www.imagineprograms.net",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.imagineprograms.net",
+      "website_domain": "imagineprograms.net"
+    },
+    {
+      "program_id": "substance-use-changes-mckinney",
+      "entry_type": "Treatment Program",
+      "organization": "Changes McKinney",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "9-17",
+      "locations": [
+        {
+          "city": "McKinney",
+          "state": "TX",
+          "zip": "75071",
+          "address": "1820 N Lake Forest Drive",
+          "geo": {
+            "lat": 33.2155698,
+            "lng": -96.6792842
+          }
+        }
+      ],
+      "phone": "469-617-6429",
+      "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 9-17. Mental health must be the primary issue.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.carrolltonsprings.com",
+      "website_domain": "carrolltonsprings.com"
+    },
+    {
+      "program_id": "substance-use-changes-frisco",
+      "entry_type": "Treatment Program",
+      "organization": "Changes Frisco",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "11-17",
+      "locations": [
+        {
+          "city": "Frisco",
+          "state": "TX",
+          "zip": "75034",
+          "address": "6870 Lebanon Rd, Suite 300",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
+        }
+      ],
+      "phone": "469-850-2040",
+      "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 11-17. Mental health must be the primary issue.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.carrolltonsprings.com",
+      "website_domain": "carrolltonsprings.com"
+    },
+    {
+      "program_id": "substance-use-basepoint-academy-arlington",
+      "entry_type": "Treatment Program",
+      "organization": "BasePoint Academy",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "11-17",
+      "locations": [
+        {
+          "city": "Arlington",
+          "state": "TX",
+          "zip": "76018",
+          "address": "3900 Arlington Highlands Blvd., Suite 237",
+          "geo": {
+            "lat": 32.7355816,
+            "lng": -97.1071186
+          }
+        },
+        {
+          "city": "McKinney",
+          "state": "TX",
+          "zip": "75069",
+          "address": "4733 Medical Center Dr",
+          "geo": {
+            "lat": 33.1595995,
+            "lng": -96.6353237
+          }
+        },
+        {
+          "city": "Forney",
+          "state": "TX",
+          "zip": "75126",
+          "address": "713 W Broad St, Suite 200",
+          "geo": {
+            "lat": 32.747893,
+            "lng": -96.4719289
+          }
+        }
+      ],
+      "phone": "469-515-7372",
+      "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 11-17. Mental health must be the primary issue.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "BasePoint Academy: https://www.basepointacademy.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.basepointacademy.com",
+      "website_domain": "basepointacademy.com"
+    },
+    {
+      "program_id": "substance-use-carrus-cares-plano",
+      "entry_type": "Treatment Program",
+      "organization": "Carrus Cares Plano",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "12-17",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75093",
+          "address": "4701 Old Shepard Place, Suite 200",
+          "geo": {
+            "lat": 33.0136764,
+            "lng": -96.6925096
+          }
+        }
+      ],
+      "phone": "903-870-1222",
+      "notes": "Intensive Outpatient Program and Partial Hospitalization Program for teens with co-occurring mental health and substance use disorders, ages 12-17. Accepts all insurance including Medicaid and Tricare. Mental health must be the primary issue.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Accepts all insurance including Medicaid and Tricare",
+      "verification_source": "Carrus Cares Plano: https://www.carruscare.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "verified_on_website",
+        "last_verified": "2025-01-03",
+        "types": [
+          "Commercial (all)",
+          "Medicaid/CHIP",
+          "Military (TRICARE)"
+        ]
+      },
+      "website_url": "https://www.carruscare.com",
+      "website_domain": "carruscare.com"
+    },
+    {
+      "program_id": "substance-use-fort-behavioral-evergreen-path-fort-worth",
+      "entry_type": "Treatment Program",
+      "organization": "Fort Behavioral – Evergreen Path Program",
+      "program_name": "Residential Substance Use Treatment",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "11-17",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76132",
+          "address": "7140 Oakmont Boulevard",
+          "geo": {
+            "lat": 32.6631319,
+            "lng": -97.4169113
+          }
+        }
+      ],
+      "phone": "844-332-1807",
+      "notes": "Residential Treatment Program for adolescents ages 11-17, with co-occurring substance use and mental health diagnoses. Also treats primary mental health disorders.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Fort Behavioral Health official website: https://fortbehavioral.com/contact-fort-behavioral-health-texas/ and https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "sud_services": [
+        "residential_sud"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "website_domain": "fortbehavioral.com"
+    },
+    {
+      "program_id": "substance-use-cenikor-odyssey-house-houston",
+      "entry_type": "Treatment Program",
+      "organization": "Cenikor Odyssey House",
+      "program_name": "Substance Use Treatment",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Houston",
+          "state": "TX",
+          "zip": "77085",
+          "address": "5629 Grapevine St",
+          "geo": {
+            "lat": 29.6162698,
+            "lng": -95.4669092
+          }
+        }
+      ],
+      "phone": "713-726-0922",
+      "notes": "Residential treatment and outpatient programming for adolescents, ages 13-17, struggling with substance abuse.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Houston Recovery Center: https://www.houstonrecoverycenter.org",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "sud_services": [
+        "residential_sud",
+        "outpatient_sud"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.houstonrecoverycenter.org",
+      "website_domain": "houstonrecoverycenter.org"
+    },
+    {
+      "program_id": "substance-use-sundown-ranch-canton",
+      "entry_type": "Treatment Program",
+      "organization": "Sundown Ranch",
+      "program_name": "Residential Substance Use Treatment",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Canton",
+          "state": "TX",
+          "zip": "75103",
+          "address": "3120 VZ County Road 2318, Ste 100",
+          "geo": {
+            "lat": 32.5386046,
+            "lng": -95.861812
+          }
+        }
+      ],
+      "phone": "903-479-3933",
+      "notes": "Residential Program for teens, ages 13-17, struggling with chemical dependency.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Sundown Ranch: https://www.sundownranchinc.org",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "sud_services": [
+        "residential_sud"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.sundownranchinc.org",
+      "website_domain": "sundownranchinc.org"
+    },
+    {
+      "program_id": "substance-use-clearfork-academy-fort-worth",
+      "entry_type": "Treatment Program",
+      "organization": "Clearfork Academy",
+      "program_name": "Substance Use Treatment",
+      "level_of_care": "Residential",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76135",
+          "address": "7820 Hanger Cutoff Road",
+          "geo": {
+            "lat": 32.8635398,
+            "lng": -97.5113525
+          }
+        },
+        {
+          "city": "Cleburne",
+          "state": "TX",
+          "zip": "76031",
+          "address": "1632 E FM 4",
+          "geo": {
+            "lat": 32.3410266,
+            "lng": -97.3521776
+          }
+        }
+      ],
+      "phone": "866-650-5212",
+      "notes": "Substance abuse programming for adolescent males and females, ages 13-17. Offers detoxification, residential treatment, partial hospitalization and intensive outpatient programming.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Clearfork Academy: https://www.clearforkacademy.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "sud_services": [
+        "detox",
+        "residential_sud",
+        "php_sud",
+        "iop_sud"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.clearforkacademy.com",
+      "website_domain": "clearforkacademy.com"
+    },
+    {
+      "program_id": "osar-recovery-resource-council-fort-worth",
+      "entry_type": "Crisis Service",
+      "organization": "Recovery Resource Council",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "level_of_care": "Navigation",
+      "service_setting": "Phone",
+      "ages_served": "All ages",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76111",
+          "address": "2700 Airport Freeway",
+          "geo": {
+            "lat": 32.766699,
+            "lng": -97.3075363
+          }
+        }
+      ],
+      "phone": "817-332-6329",
+      "notes": "OSAR services to assist with linkage to substance use services. Available to assist with linkage to substance use services.",
+      "transportation_available": "N/A",
+      "insurance_notes": "N/A (not an insurance-billed service)",
+      "verification_source": "Recovery Resource Council: https://www.recoverycouncil.org",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "sud_services": [
+        "osar_referral"
+      ],
+      "accepted_insurance": {
+        "status": "not_applicable",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.recoverycouncil.org",
+      "website_domain": "recoverycouncil.org"
+    },
+    {
+      "program_id": "crisis-mhmr-tarrant-county",
+      "entry_type": "Crisis Service",
+      "organization": "MHMR of Tarrant County",
+      "program_name": "Crisis Line / Access Line",
+      "level_of_care": "Crisis Hotline",
+      "service_setting": "Phone",
+      "ages_served": "All ages",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76107",
+          "address": "3840 Hulen Tower North",
+          "geo": {
+            "lat": 32.753177,
+            "lng": -97.3327459
+          }
+        }
+      ],
+      "phone": "800-866-2465",
+      "notes": "Covers Cooke, Denton, Erath, Fannin, Grayson, Hood, Johnson, Palo Pinto, Parker, Somervell, Tarrant and Wise Counties. 24/7 Crisis Hotline: 800-866-2465. For OSAR services, contact Recovery Resource Council at 817-332-6329 (listed separately).",
+      "transportation_available": "N/A",
+      "insurance_notes": "N/A (not an insurance-billed service)",
+      "verification_source": "MHMR of Tarrant County: https://www.mhmrtarrant.org",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "mental_health"
+      ],
+      "accepted_insurance": {
+        "status": "not_applicable",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.mhmrtarrant.org",
+      "website_domain": "mhmrtarrant.org"
+    },
+    {
+      "program_id": "osar-etcada-longview",
+      "entry_type": "Crisis Service",
+      "organization": "East Texas Council on Alcoholism and Drug Abuse (ETCADA)",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "level_of_care": "Navigation",
+      "service_setting": "Phone",
+      "ages_served": "All ages",
+      "locations": [
+        {
+          "city": "Longview",
+          "state": "TX",
+          "zip": "75601",
+          "address": "708 Glencrest Lane",
+          "geo": {
+            "lat": 32.508348,
+            "lng": -94.7459912
+          }
+        }
+      ],
+      "phone": "903-753-7633",
+      "notes": "OSAR services to assist with linkage to substance use services. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
+      "transportation_available": "N/A",
+      "insurance_notes": "N/A (not an insurance-billed service)",
+      "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "substance_use"
+      ],
+      "sud_services": [
+        "osar_referral"
+      ],
+      "accepted_insurance": {
+        "status": "not_applicable",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://www.etcada.com",
+      "website_domain": "etcada.com"
+    },
+    {
+      "program_id": "crisis-andrews-center-east-texas",
+      "entry_type": "Crisis Service",
+      "organization": "Andrews Center Behavioral Healthcare System",
+      "program_name": "24/7 Hotline",
+      "level_of_care": "Crisis Hotline",
+      "service_setting": "Phone",
+      "ages_served": "All ages",
+      "locations": [
+        {
+          "city": "Longview",
+          "state": "TX",
+          "zip": "75601",
+          "address": "708 Glencrest Lane",
+          "geo": {
+            "lat": 32.508348,
+            "lng": -94.7459912
+          }
+        }
+      ],
+      "phone": "877-934-2131",
+      "notes": "24/7 Crisis Hotline for mental health emergencies. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
+      "transportation_available": "N/A",
+      "insurance_notes": "N/A (not an insurance-billed service)",
+      "verification_source": "Andrews Center official website and Texas resource directories: https://texassuicideprevention.org/texas-community-centers/ and https://www.uttua.org/families-students/mental-health-resources/index.php",
+      "last_verified": "2026-01-03",
+      "service_domains": [
+        "mental_health"
+      ],
+      "accepted_insurance": {
+        "status": "not_applicable",
+        "last_verified": "2026-01-03"
+      },
+      "website_url": "https://www.andrewscenter.com",
+      "website_domain": "andrewscenter.com"
     }
   ]
 }
