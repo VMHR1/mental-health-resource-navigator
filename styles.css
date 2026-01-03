@@ -411,146 +411,6 @@ header{
   color: var(--muted);
 }
 
-/* Specialized Resources Section */
-.specialized-resources-section {
-  margin: 48px auto 0;
-  max-width: 1200px;
-  padding: 0 24px;
-}
-
-.specialized-resources-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.specialized-resources-header h2 {
-  font-size: clamp(24px, 4vw, 32px);
-  font-weight: 700;
-  margin: 0 0 12px;
-  color: var(--ink);
-}
-
-.specialized-resources-header p {
-  font-size: clamp(14px, 2vw, 16px);
-  color: var(--muted);
-  margin: 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.specialized-resources-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-top: 32px;
-}
-
-.specialized-resource-card {
-  background: var(--cardSolid);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.specialized-resource-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.specialized-resource-header h3 {
-  font-size: clamp(20px, 3vw, 24px);
-  font-weight: 700;
-  margin: 0 0 8px;
-  color: var(--ink);
-}
-
-.specialized-resource-examples {
-  font-size: 14px;
-  color: var(--muted);
-  margin: 0 0 20px;
-  font-style: italic;
-}
-
-.specialized-resource-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.specialized-btn {
-  flex: 1 1 auto;
-  min-width: 100px;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid var(--stroke);
-  background: var(--cardSolid);
-  color: var(--ink);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.specialized-btn:hover {
-  background: var(--a);
-  color: white;
-  border-color: var(--a);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-.specialized-btn:active {
-  transform: translateY(0);
-}
-
-@media (pointer: coarse) {
-  .specialized-resource-card {
-    transition: none !important;
-    box-shadow: var(--shadow-sm) !important;
-  }
-  
-  .specialized-resource-card:hover {
-    transform: none !important;
-    box-shadow: var(--shadow-sm) !important;
-  }
-  
-  .specialized-btn {
-    transition: none !important;
-  }
-  
-  .specialized-btn:hover {
-    transform: none !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .specialized-resources-section {
-    margin: 32px auto 0;
-    padding: 0 16px;
-  }
-  
-  .specialized-resources-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 24px;
-  }
-  
-  .specialized-resource-card {
-    padding: 20px;
-  }
-  
-  .specialized-resource-actions {
-    flex-direction: column;
-  }
-  
-  .specialized-btn {
-    width: 100%;
-  }
-}
-
 .hero{
   display:grid;
   grid-template-columns: 1.2fr .8fr;
@@ -2018,22 +1878,31 @@ a.btnlike:focus{
   border-bottom: 1px solid rgba(15,23,42,.08);
   width: 100%;
   max-width: 100%;
+  clear: both; /* Ensure it's below any floated elements */
+  position: relative; /* Establish stacking context */
+  z-index: 1; /* Ensure it's above background elements but below modals */
 }
 .results-info{
   display:flex;
   align-items: baseline;
   gap: 12px;
   flex-wrap:wrap;
+  min-width: 0; /* Allow flex items to shrink */
+  flex: 1 1 auto; /* Allow it to grow and shrink */
 }
 .results-count{
   font-size: 26px;
   font-weight: 950;
   color: rgba(79,209,197,1);
   letter-spacing: -.02em;
+  white-space: nowrap; /* Prevent number from breaking */
+  flex-shrink: 0; /* Don't shrink the count */
 }
 .results-label{
   color: var(--muted);
   font-size: 14px;
+  white-space: nowrap; /* Prevent "matches" from breaking */
+  flex-shrink: 0;
 }
 
 .section{
@@ -2929,6 +2798,10 @@ footer{
   margin: 12px 0;
   padding: 8px 0;
   min-height: 36px;
+  max-width: 100%;
+  overflow: visible; /* Allow chips to wrap, don't clip */
+  position: relative;
+  z-index: 0; /* Below results-header */
 }
 
 .active-filters-label {
@@ -3186,6 +3059,9 @@ footer{
   gap: 10px;
   flex-wrap: wrap;
   max-width: 100%;
+  min-width: 0; /* Allow flex items to shrink */
+  flex: 0 1 auto; /* Don't grow, but can shrink */
+  overflow: visible; /* Allow buttons to wrap */
 }
 
 .sort-group{
@@ -4201,10 +4077,26 @@ body.high-contrast textarea {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    overflow: visible; /* Allow content to wrap */
   }
   
   .results-actions{
     justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
+    overflow: visible;
+  }
+  
+  /* Ensure results count and label don't get cut off */
+  .results-info {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: visible;
+  }
+  
+  .results-count {
+    font-size: 22px; /* Slightly smaller on mobile to prevent overflow */
   }
   
   /* Fix modal sizing */
@@ -4285,12 +4177,33 @@ body.high-contrast textarea {
     font-size: 13px;
   }
   
-  /* Fix gap between search and results */
+  /* Fix gap between search and results - ensure active filters don't overlap */
   .results-header {
-    margin-top: 4px;
+    margin-top: 12px !important; /* Space for active filters container */
     margin-bottom: 8px;
-    padding-top: 8px;
+    padding-top: 12px;
     padding-bottom: 8px;
+    clear: both; /* Ensure it's below any floated elements */
+  }
+  
+  /* Ensure active filters container doesn't overlap results header */
+  .active-filters-container {
+    margin-bottom: 12px !important;
+    margin-top: 8px !important;
+    max-width: 100%;
+    overflow: visible; /* Allow chips to wrap, don't clip */
+    clear: both; /* Ensure it's below search section */
+  }
+  
+  /* Prevent filter chips from overlapping results */
+  .active-filters-chips {
+    max-width: 100%;
+    overflow: visible;
+  }
+  
+  .active-filter-chip {
+    max-width: calc(100% - 16px); /* Prevent chips from being too wide */
+    word-break: break-word; /* Allow long filter names to wrap */
   }
   
   /* Fix gap between sections */

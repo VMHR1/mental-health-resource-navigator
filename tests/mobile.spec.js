@@ -107,15 +107,34 @@ test.describe('Mobile Verification', () => {
     await searchInput.fill('test search');
     await page.getByTestId('find-programs-btn').click();
 
-    // Wait for results to update
+    // Wait for results to update with a timeout
     await page.waitForTimeout(1000);
 
-    // Check for results OR empty state
+    // Check for results OR empty state with timeout handling
     const resultsGrid = page.getByTestId('results-grid');
     const emptyState = page.getByTestId('empty-state');
 
-    const hasResults = (await resultsGrid.locator('.program-card, .result-card').count()) > 0;
-    const isEmpty = await emptyState.isVisible().catch(() => false);
+    // Use a more efficient check with timeout
+    let hasResults = false;
+    let isEmpty = false;
+
+    try {
+      // Check if results grid has any content (with timeout)
+      const cardCount = await resultsGrid
+        .locator('.program-card, .result-card')
+        .count()
+        .catch(() => 0);
+      hasResults = cardCount > 0;
+    } catch (e) {
+      // If counting times out, assume no results
+      hasResults = false;
+    }
+
+    try {
+      isEmpty = await emptyState.isVisible({ timeout: 2000 }).catch(() => false);
+    } catch (e) {
+      isEmpty = false;
+    }
 
     // Either results are shown OR empty state is visible
     expect(hasResults || isEmpty).toBeTruthy();
