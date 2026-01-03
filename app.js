@@ -2721,6 +2721,11 @@ function applyFilterPreset(preset) {
       selectedServiceDomains = ['eating_disorders'];
       els.care.value = 'Intensive Outpatient (IOP)';
       break;
+    case 'eating-disorders-outpatient':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Outpatient';
+      break;
     case 'substance-use-all':
       if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
       selectedServiceDomains = ['substance_use'];
@@ -2734,6 +2739,11 @@ function applyFilterPreset(preset) {
       if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
       selectedServiceDomains = ['substance_use'];
       els.care.value = 'Intensive Outpatient (IOP)';
+      break;
+    case 'substance-use-outpatient':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Outpatient';
       break;
   }
   
