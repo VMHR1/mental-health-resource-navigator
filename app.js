@@ -2664,7 +2664,7 @@ function nativeShare(url, title) {
 }
 
 function applyFilterPreset(preset) {
-  // Clear current filters
+  // Clear ALL current filters comprehensively
   els.q.value = "";
   // Clear dataset attributes
   delete els.q.dataset.exactMatch;
@@ -2676,6 +2676,18 @@ function applyFilterPreset(preset) {
   if (els.insurance) els.insurance.value = "";
   els.onlyVirtual.checked = false;
   els.showCrisis.checked = false;
+  
+  // Clear statewide filters (serviceDomain, sudServices, county, verificationRecency)
+  if (els.serviceDomain) els.serviceDomain.value = "";
+  selectedServiceDomains = [];
+  if (els.sudServices) {
+    Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+  }
+  selectedSudServices = [];
+  if (els.county) els.county.value = "";
+  selectedCounty = null;
+  if (els.verificationRecency) els.verificationRecency.value = "";
+  verificationRecencyDays = null;
   
   switch(preset) {
     case 'teens-dallas':
@@ -2695,11 +2707,40 @@ function applyFilterPreset(preset) {
       els.loc.value = 'Plano';
       els.care.value = 'Intensive Outpatient (IOP)';
       break;
+    case 'eating-disorders-all':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      break;
+    case 'eating-disorders-php':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Partial Hospitalization (PHP)';
+      break;
+    case 'eating-disorders-iop':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Intensive Outpatient (IOP)';
+      break;
+    case 'substance-use-all':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      break;
+    case 'substance-use-php':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Partial Hospitalization (PHP)';
+      break;
+    case 'substance-use-iop':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Intensive Outpatient (IOP)';
+      break;
   }
   
   syncTopToggles();
   render();
   updateURLState();
+  updateActiveFilterChips();
   
   const t = document.getElementById("treatmentSection");
   if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
