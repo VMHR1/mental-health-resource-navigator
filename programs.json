@@ -4679,33 +4679,33 @@
       "website_domain": "eatingrecoverycenter.com"
     },
     {
-      "program_id": "eating-disorder-eating-disorder-solutions-dallas",
+      "program_id": "eating-disorder-eating-disorder-solutions-weatherford",
       "entry_type": "Treatment Program",
       "organization": "Eating Disorder Solutions",
-      "program_name": "Eating Disorder Treatment",
-      "level_of_care": "Intensive Outpatient (IOP)",
+      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford",
+      "level_of_care": "Residential",
       "service_setting": "In-person",
-      "ages_served": "14-17",
+      "ages_served": "18+",
       "locations": [
         {
-          "city": "Dallas",
+          "city": "Weatherford",
           "state": "TX",
-          "zip": "75219",
-          "address": "3300 Oak Lawn Ave., Suite 102"
+          "zip": "76085",
+          "address": "1664 Whippoorwill Trail"
         }
       ],
-      "phone": "855-245-0961",
-      "notes": "Dallas location no longer current / verify current service area. Services: Outpatient and 3 day per week Intensive Outpatient Program for adolescents ages 14-17 with anorexia, bulimia and binge eating disorders",
+      "phone": "855-808-4213",
+      "notes": "Dallas location no longer current. Current location: The Ranch at Weatherford. Services: Residential and Partial Hospitalization Program for adults (18+) with eating disorders and co-occurring mental health conditions. Residential treatment center with homelike setting.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Eating Disorder Solutions: https://www.eatingdisordersolutions.com",
+      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
       "last_verified": "2025-01-03",
       "service_domains": ["eating_disorders"],
       "accepted_insurance": {
         "status": "contact_for_info",
         "last_verified": "2025-01-03"
       },
-      "website_url": "https://www.eatingdisordersolutions.com",
+      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
       "website_domain": "eatingdisordersolutions.com"
     },
     {
@@ -4881,11 +4881,11 @@
           "address": "1820 N Lake Forest Drive"
         }
       ],
-      "phone": "469-634-1270",
+      "phone": "469-617-6429",
       "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 9-17. Mental health must be the primary issue.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Changes McKinney: https://www.carrolltonsprings.com",
+      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
       "last_verified": "2025-01-03",
       "service_domains": ["co_occurring", "substance_use"],
       "accepted_insurance": {
@@ -4915,7 +4915,7 @@
       "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 11-17. Mental health must be the primary issue.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Changes Frisco: https://www.carrolltonsprings.com",
+      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
       "last_verified": "2025-01-03",
       "service_domains": ["co_occurring", "substance_use"],
       "accepted_insurance": {
@@ -5005,7 +5005,7 @@
       "program_name": "Residential Substance Use Treatment",
       "level_of_care": "Residential",
       "service_setting": "In-person",
-      "ages_served": "13-17",
+      "ages_served": "11-17",
       "locations": [
         {
           "city": "Fort Worth",
@@ -5014,11 +5014,11 @@
           "address": "7140 Oakmont Boulevard"
         }
       ],
-      "phone": "855-922-1314",
-      "notes": "Phone number may need verification - check official Fort Behavioral / Evergreen Path pages for current admissions/contact number. Residential Treatment Program for females, ages 13-17, with co-occurring substance use and mental health diagnoses.",
+      "phone": "855-965-4280",
+      "notes": "Residential Treatment Program for adolescents ages 11-17, with co-occurring substance use and mental health diagnoses. Also treats primary mental health disorders.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Fort Behavioral: https://www.fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "verification_source": "Fort Behavioral Health official website: https://fortbehavioral.com/contact-fort-behavioral-health-texas/ and https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
       "last_verified": "2025-01-03",
       "service_domains": ["co_occurring", "substance_use"],
       "sud_services": ["residential_sud"],
@@ -5026,7 +5026,7 @@
         "status": "contact_for_info",
         "last_verified": "2025-01-03"
       },
-      "website_url": "https://www.fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "website_url": "https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
       "website_domain": "fortbehavioral.com"
     },
     {
@@ -5210,7 +5210,7 @@
       "notes": "Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties. 24/7 Hotline: 877-934-2131. OSAR services to assist with linkage to substance use services.",
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
-      "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
+      "verification_source": "Andrews Center official website and Texas resource directories: https://texassuicideprevention.org/texas-community-centers/ and https://www.uttua.org/families-students/mental-health-resources/index.php",
       "last_verified": "2025-01-03",
       "service_domains": ["substance_use"],
       "sud_services": ["osar_referral"],
