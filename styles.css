@@ -571,6 +571,35 @@ h1{
     /* DISABLE will-change and transform - causes stutter */
     will-change: auto !important;
     transform: none !important;
+    /* Fix mobile layout - ensure proper spacing */
+    padding: 14px !important;
+    margin: -20px 0 14px !important;
+  }
+  
+  /* Fix overlapping buttons on mobile */
+  .search-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  
+  .search-actions .btns {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .search-actions .btns button {
+    width: 100% !important;
+  }
+  
+  .search-actions .toggles {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .search-actions .toggles .toggle-chip {
+    width: 100% !important;
+    justify-content: center !important;
   }
 }
 
@@ -620,10 +649,9 @@ html.perf-no-sticky .search-section {
     display: none !important; /* Completely remove from paint/compositing */
   }
   
-  /* Simplify hero-visual container on mobile - remove gradient background */
+  /* Hide hero-visual container on mobile - floating cards are hidden, so container is empty */
   .hero-visual {
-    background: rgba(79,209,197,.05) !important; /* Simple solid color instead of gradient */
-    box-shadow: none !important; /* Remove shadow */
+    display: none !important; /* Remove empty space on mobile */
   }
   
   .btn-emergency {
