@@ -91,3 +91,113 @@ This will:
 - Attribution: © OpenStreetMap contributors
 
 After generating, commit and push `programs.geocoded.json` to make distance sorting available to all visitors.
+
+## Quality Checks
+
+This repository includes automated quality checks to ensure code quality, data integrity, and performance standards.
+
+### Quick Start
+
+Run all quality checks with a single command:
+
+```bash
+npm run verify
+```
+
+This command runs:
+1. **Build** - Compiles and bundles the application
+2. **Data Validation** - Validates `programs.json` schema and integrity
+3. **E2E Tests** - Runs Playwright smoke tests
+4. **Performance Audit** - Runs Lighthouse CI performance checks
+
+### Individual Commands
+
+#### E2E Testing (`npm run test:e2e`)
+
+Runs Playwright smoke tests that validate core UI behaviors:
+- Page loads without fatal console errors
+- Search input accepts typing and triggers results
+- Reset button clears filters
+- Advanced filters open/close and update results
+- Favorites and history modals open/close correctly
+
+**Run with UI:**
+```bash
+npm run test:e2e:ui
+```
+
+**What failures mean:**
+- If tests fail, check the Playwright HTML report in `playwright-report/`
+- Common issues:
+  - Build output (`dist/`) is missing or outdated → Run `npm run build` first
+  - Server port conflict → Ensure port 4173 is available
+  - Selector changes → Update `data-testid` attributes in `index.html`
+
+#### Performance Audit (`npm run audit`)
+
+Runs Lighthouse CI to check performance, accessibility, best practices, and SEO.
+
+**Thresholds:**
+- Performance: Warn ≥ 0.70, Error ≥ 0.55
+- Accessibility: Warn ≥ 0.90
+- Best Practices: Warn ≥ 0.85
+- SEO: Warn ≥ 0.85
+
+**What failures mean:**
+- Performance below threshold → Optimize bundle size, lazy loading, or reduce render blocking
+- Accessibility issues → Fix ARIA labels, keyboard navigation, or color contrast
+- Best practices → Address security headers, HTTPS, or console errors
+- SEO issues → Improve meta tags, semantic HTML, or structured data
+
+**Debug:**
+- Check `.lighthouseci/` directory for detailed reports
+- Run Lighthouse manually: `npx lighthouse http://localhost:4173 --view`
+
+#### Data Validation (`npm run validate-data`)
+
+Validates `programs.json` for:
+- Unique `program_id` values
+- Required fields: `program_id`, `organization`, `program_name`, `service_domains`
+- `service_domains` allowlist: `mental_health`, `substance_use`, `co_occurring`, `eating_disorders`
+- Valid `level_of_care` enum values where applicable
+
+**What failures mean:**
+- Missing required fields → Add missing fields to program entries
+- Duplicate `program_id` → Ensure each program has a unique ID
+- Invalid `service_domains` → Use only values from the allowlist
+- Schema errors → Fix JSON structure or field types
+
+**Debug:**
+- Check error messages for specific program IDs and fields
+- Validate JSON syntax: `cat programs.json | jq .`
+
+### CI/CD
+
+Quality checks run automatically on:
+- Pull requests to `main`
+- Pushes to `main`
+
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs `npm run verify` which includes all checks.
+
+**View results:**
+- GitHub Actions tab → Select workflow run → View logs
+- Artifacts: Playwright report and Lighthouse results are uploaded as artifacts
+
+### Troubleshooting
+
+**Tests fail locally:**
+1. Ensure `npm run build` completed successfully
+2. Check that `dist/` directory exists with built files
+3. Verify no other process is using port 4173
+4. Install Playwright browsers: `npx playwright install --with-deps`
+
+**Performance audit fails:**
+1. Ensure build is optimized (run `npm run build`)
+2. Check for large bundle sizes or unoptimized assets
+3. Review Lighthouse report in `.lighthouseci/` for specific issues
+
+**Data validation fails:**
+1. Check `programs.json` is valid JSON
+2. Verify all required fields are present
+3. Ensure `service_domains` values match allowlist exactly
+4. Check for duplicate `program_id` values

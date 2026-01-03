@@ -7,10 +7,18 @@
     "build": "node build.js",
     "dev": "node build.js --watch",
     "minify": "node build.js --minify",
-    "validate-filters": "node scripts/validate-filters.js"
+    "validate-filters": "node scripts/validate-filters.js",
+    "validate-data": "node scripts/validate-data.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "audit": "lhci autorun --config=lighthouserc.json",
+    "verify": "npm run build && npm run validate-data && npm run test:e2e && npm run audit"
   },
   "devDependencies": {
-    "esbuild": "^0.24.0"
+    "@lhci/cli": "^0.12.0",
+    "@playwright/test": "^1.40.0",
+    "esbuild": "^0.24.0",
+    "http-server": "^14.1.1"
   },
   "keywords": [
     "mental-health",

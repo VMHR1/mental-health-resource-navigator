@@ -145,40 +145,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Specialized Resources Section -->
-      <div class="specialized-resources-section">
-        <div class="specialized-resources-header">
-          <h2>Specialized resources</h2>
-          <p>Substance use and eating disorders often require specialized programs. These resources can be searched and filtered here.</p>
-        </div>
-        <div class="specialized-resources-grid">
-          <div class="specialized-resource-card">
-            <div class="specialized-resource-header">
-              <h3>Eating Disorders</h3>
-              <p class="specialized-resource-examples">anorexia, bulimia, binge eating</p>
-            </div>
-            <div class="specialized-resource-actions">
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="eating-disorders-all">View all</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="eating-disorders-php">PHP</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="eating-disorders-iop">IOP</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="eating-disorders-outpatient">Outpatient</button>
-            </div>
-          </div>
-          <div class="specialized-resource-card">
-            <div class="specialized-resource-header">
-              <h3>Substance Use</h3>
-              <p class="specialized-resource-examples">alcohol, drugs, vaping, co-occurring</p>
-            </div>
-            <div class="specialized-resource-actions">
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="substance-use-all">View all</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="substance-use-php">PHP</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="substance-use-iop">IOP</button>
-              <button type="button" class="filter-preset-btn specialized-btn" data-preset="substance-use-outpatient">Outpatient</button>
-            </div>
-          </div>
-        </div>
-      </div>
     </header>
 
     <section class="search-section" aria-label="Search and filters">
@@ -199,21 +165,21 @@
           <label for="q">What are you looking for?</label>
           <div class="input-wrapper" style="position: relative;">
             <span class="input-icon" aria-hidden="true">🔍</span>
-            <input id="q" type="search" placeholder="Try: 'IOP in Plano for 14-year-old' or 'crisis support'" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" />
+            <input id="q" type="search" data-testid="search-input" placeholder="Try: 'IOP in Plano for 14-year-old' or 'crisis support'" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" />
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="Search suggestions" style="display: none;"></div>
           </div>
         </div>
         
-        <button class="btn-smart-search" type="button" id="smartSearchBtn">
+        <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">
           Find Programs →
         </button>
         
-        <button class="btn-advanced" id="showAdvanced" type="button">
+        <button class="btn-advanced" id="showAdvanced" type="button" data-testid="advanced-filters-btn">
           <span class="icon">⚙️</span>
           <span>Advanced Filters</span>
         </button>
         
-        <button class="btn-advanced" id="resetTop" type="button" style="background: rgba(255,255,255,.85);">
+        <button class="btn-advanced" id="resetTop" type="button" data-testid="reset-btn" style="background: rgba(255,255,255,.85);">
           <span>Reset</span>
         </button>
       </div>
@@ -288,7 +254,6 @@
               <option value="">Any</option>
               <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
               <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
-              <option value="Outpatient">Outpatient</option>
               <option value="Navigation">Navigation</option>
             </select>
           </div>
@@ -406,12 +371,12 @@
             <option value="distance">Distance</option>
           </select>
         </div>
-        <button type="button" class="btn-icon" id="viewFavorites" title="View saved programs" aria-label="View saved programs">
+        <button type="button" class="btn-icon" id="viewFavorites" data-testid="favorites-btn" title="View saved programs" aria-label="View saved programs">
           <span class="icon">⭐</span>
           <span class="btn-text">Saved</span>
           <span class="badge-count" id="favoritesCount">0</span>
         </button>
-        <button type="button" class="btn-icon" id="viewHistory" title="View call history" aria-label="View call history">
+        <button type="button" class="btn-icon" id="viewHistory" data-testid="history-btn" title="View call history" aria-label="View call history">
           <span class="icon">📞</span>
           <span class="btn-text">History</span>
         </button>
@@ -430,7 +395,7 @@
     <!-- Active Filter Chips -->
     <div class="active-filters-container" id="activeFiltersContainer" style="display: none;" role="region" aria-label="Active filters">
       <div class="active-filters-label">Active filters:</div>
-      <div class="active-filters-chips" id="activeFiltersChips" role="list"></div>
+      <div class="active-filters-chips" id="activeFiltersChips" data-testid="active-filter-chips" role="list"></div>
     </div>
 
     <!-- Care levels explained accordion -->
@@ -496,8 +461,8 @@
         <h2 id="sectionTitle">Treatment Programs</h2>
         <div class="count" id="treatmentCount">0 results</div>
       </div>
-      <div class="grid" id="treatmentGrid" aria-live="polite"></div>
-      <div class="empty-state" id="treatmentEmpty" style="display:none;" role="status">
+      <div class="grid" id="treatmentGrid" data-testid="results-grid" aria-live="polite"></div>
+      <div class="empty-state" id="treatmentEmpty" data-testid="empty-state" style="display:none;" role="status">
         <div class="empty-icon">🔍</div>
         <h3>No programs match these filters</h3>
         <p>Try one of the options below.</p>
@@ -522,11 +487,11 @@
   </div>
 
   <!-- Favorites Modal -->
-  <div id="favoritesModal" class="modal" role="dialog" aria-labelledby="favoritesModalTitle" aria-hidden="true">
+  <div id="favoritesModal" class="modal" data-testid="favorites-modal" role="dialog" aria-labelledby="favoritesModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="favoritesModalTitle">Saved Programs</h2>
-        <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
+        <button type="button" class="modal-close" data-testid="favorites-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="favoritesList"></div>
       <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(15,23,42,.1); display: flex; justify-content: flex-end; gap: 12px;">
@@ -536,11 +501,11 @@
   </div>
 
   <!-- Call History Modal -->
-  <div id="historyModal" class="modal" role="dialog" aria-labelledby="historyModalTitle" aria-hidden="true">
+  <div id="historyModal" class="modal" data-testid="history-modal" role="dialog" aria-labelledby="historyModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="historyModalTitle">Call History</h2>
-        <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
+        <button type="button" class="modal-close" data-testid="history-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="historyList"></div>
     </div>
