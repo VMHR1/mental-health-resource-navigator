@@ -602,6 +602,19 @@ html.perf-no-sticky .search-section {
 /* ========== Mobile Performance Policy (Phase 1) ========== */
 /* On small screens and coarse pointers, make background static and simpler */
 @media (max-width: 900px), (pointer: coarse) {
+  /* CRITICAL: Disable ALL backdrop-filters on mobile - EXTREMELY expensive on iOS */
+  *:not(.modal-backdrop):not(.dd-menu):not(.search-suggestions) {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* CRITICAL FIX: Disable sticky positioning on mobile to eliminate stutter */
+  /* Sticky elements cause continuous repaints during text size changes */
+  .search-section {
+    position: static !important; /* Override sticky positioning */
+    margin-top: 0 !important;
+  }
+  
   /* CRITICAL: Hide fixed full-viewport background layer completely on mobile */
   /* Even without animation, a fixed full-viewport element with complex gradients is expensive to repaint during scroll */
   .bg-gradient {
@@ -682,6 +695,11 @@ html.perf-no-sticky .search-section {
   .card {
     box-shadow: 0 1px 3px rgba(15,23,42,.06) !important;
     border: 1px solid rgba(15,23,42,.12) !important; /* Slightly stronger border to compensate */
+    /* CRITICAL: Disable card entrance animation on mobile - causes stutter during text size changes */
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important; /* Disable all transitions */
   }
   
   .search-section,
@@ -716,6 +734,13 @@ html.perf-no-sticky .search-section {
   
   html.vv-changing .btn-emergency {
     animation: none !important;
+  }
+  
+  /* CRITICAL: Disable card entrance animation during viewport changes */
+  html.vv-changing .card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
   
   html.vv-changing .accuracyStrip {
@@ -869,6 +894,13 @@ html.perf-no-sticky .search-section {
     display: none !important;
   }
   
+  /* CRITICAL FIX: Disable card entrance animation completely - causes stutter during text size changes */
+  html.text-small .card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
   html.text-small .btn-emergency {
     animation: none !important;
   }
@@ -980,18 +1012,18 @@ html.perf-no-sticky .search-section {
   }
   
   .search-section {
-    position: sticky;
-    top: calc(var(--crisis-banner-h, 0px) + env(safe-area-inset-top, 0px));
-    z-index: 15;
-    margin-top: -34px;
+    position: static !important; /* CRITICAL: Disable sticky - causes massive stutter during text size changes */
+    top: auto !important;
+    z-index: 10;
+    margin-top: 0 !important;
     margin-bottom: 12px;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-radius: var(--radius-lg);
     width: 100%;
     max-width: 100%;
-    margin-left: -12px;
-    margin-right: -12px;
-    padding-left: 12px;
-    padding-right: 12px;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 18px;
+    padding-right: 18px;
   }
   
   /* Ensure crisis banner doesn't overlap */

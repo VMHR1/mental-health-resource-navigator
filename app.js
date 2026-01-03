@@ -116,6 +116,61 @@ initializeEncryptedStorage();
 // Detect pointer type early for mobile optimizations
 const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
+// ========== CRITICAL: Forcibly Hide Expensive Elements on Mobile ==========
+// CSS media queries might not apply fast enough during text size changes
+// Forcibly remove expensive elements from the DOM on mobile to eliminate ALL stutter
+if (isCoarsePointer) {
+  // Execute immediately, don't wait for DOMContentLoaded
+  const forceHideExpensiveElements = () => {
+    // Hide .bg-gradient completely
+    const bgGradient = document.querySelector('.bg-gradient');
+    if (bgGradient) {
+      bgGradient.style.display = 'none';
+      bgGradient.style.visibility = 'hidden';
+      bgGradient.remove(); // Remove from DOM entirely
+    }
+    
+    // Hide all .floating-card elements
+    document.querySelectorAll('.floating-card').forEach(card => {
+      card.style.display = 'none';
+      card.style.visibility = 'hidden';
+      card.remove(); // Remove from DOM entirely
+    });
+    
+    // Remove backdrop-filter from hero-copy
+    const heroCopy = document.querySelector('.hero-copy');
+    if (heroCopy) {
+      heroCopy.style.backdropFilter = 'none';
+      heroCopy.style.webkitBackdropFilter = 'none';
+      heroCopy.style.background = 'rgba(255,255,255,.92)';
+      heroCopy.style.boxShadow = '0 2px 6px rgba(15,23,42,.08)';
+    }
+    
+    // Simplify triage cards
+    document.querySelectorAll('.triage-card').forEach(card => {
+      card.style.boxShadow = '0 2px 6px rgba(15,23,42,.08)';
+      if (card.classList.contains('emergency')) {
+        card.style.background = 'rgba(239,68,68,.04)';
+      } else if (card.classList.contains('planning')) {
+        card.style.background = 'rgba(79,209,197,.04)';
+      }
+    });
+    
+    // Disable ALL animations globally on mobile
+    document.documentElement.style.setProperty('--should-animate', '0');
+  };
+  
+  // Run immediately
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', forceHideExpensiveElements);
+  } else {
+    forceHideExpensiveElements();
+  }
+  
+  // Also run after a short delay to catch any dynamically added elements
+  setTimeout(forceHideExpensiveElements, 100);
+}
+
 // ========== Dense Mode: Text Scale Detection (TASK A) ==========
 // Activates when iOS Safari text size is below 100% to reduce jank
 let baselineRootPx = null;
