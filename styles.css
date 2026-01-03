@@ -661,30 +661,51 @@ h1{
     margin-bottom: 12px !important;
   }
   
+  /* Improve card layout - less flat, better visual hierarchy */
+  .card-meta-header {
+    margin-bottom: 12px !important;
+  }
+  
+  .badgeRow {
+    max-width: 100% !important;
+    margin: 0 0 10px !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+  
   .cardTop {
     gap: 12px !important;
     align-items: flex-start !important;
     flex-wrap: nowrap !important;
+    margin-top: 4px !important; /* Add breathing room from badges */
+  }
+  
+  /* Text container with better spacing */
+  .cardTop > div {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding-right: 8px !important; /* Space before expand button */
   }
   
   .pname {
     font-size: 16px !important;
     line-height: 1.3 !important;
-    margin: 0 0 6px !important;
+    margin: 0 0 8px !important; /* Increased spacing */
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     hyphens: auto !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    max-width: calc(100% - 60px) !important; /* Leave space for expand button */
+    font-weight: 950 !important; /* Stronger visual weight */
+    color: var(--ink) !important;
   }
   
   .org {
     font-size: 13px !important;
-    line-height: 1.4 !important;
+    line-height: 1.5 !important; /* Better readability */
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     margin: 0 !important;
+    color: var(--muted) !important;
   }
   
   .meta {
@@ -707,14 +728,7 @@ h1{
     -webkit-tap-highlight-color: rgba(79, 209, 197, 0.2) !important;
     position: relative !important;
     z-index: 10 !important;
-  }
-  
-  /* Fix badge row to prevent overlap */
-  .badgeRow {
-    max-width: 100% !important;
-    margin: 0 0 10px !important;
-    gap: 6px !important;
-    flex-wrap: wrap !important;
+    flex-shrink: 0 !important; /* Prevent shrinking */
   }
   
   /* Fix panel expansion on mobile - ensure smooth opening */
@@ -2057,6 +2071,14 @@ a.btnlike:focus{
 .badge.loc{ background: rgba(122,167,255,.12); border-color: rgba(122,167,255,.22); }
 .badge.loc2{ background: rgba(79,209,197,.12); border-color: rgba(79,209,197,.22); }
 .badge.crisis{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.22); color:#7f1d1d; }
+.badge.recent{ 
+  background: rgba(34,197,94,.12); 
+  border-color: rgba(34,197,94,.25); 
+  color: #15803d; 
+  font-weight: 800;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
 
 .availability-badge{
   display: inline-flex;
@@ -2478,7 +2500,8 @@ footer{
 }
 /* Add these fixes to your styles.css file */
 
-/* FIX 1: Recently Updated Badge - Prevent Overflow */
+/* FIX 1: Recently Updated Badge - Now in badgeRow, disable ::after on mobile */
+/* Desktop: Keep absolute positioning for visual hierarchy */
 .card[data-recent="true"]::after{
   content: "Recently Updated";
   position: absolute;
@@ -2498,6 +2521,14 @@ footer{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Mobile: Hide ::after badge (now in badgeRow) */
+@media (max-width: 640px), (pointer: coarse) {
+  .card[data-recent="true"]::after {
+    content: none !important;
+    display: none !important;
+  }
 }
 
 /* Ensure card has proper overflow handling - properties already defined above at line 1118 */
@@ -2893,55 +2924,20 @@ footer{
   position: relative;
 }
 
-/* Responsive adjustment for smaller screens */
+/* Responsive adjustment for smaller screens - badge now in badgeRow, no absolute positioning needed */
 @media (max-width: 640px){
-  .cardTop{
-    gap: 8px;
-  }
-  
-  .card[data-recent="true"] .cardTop{
-    padding-right: 100px;
-  }
-  
-  .card[data-recent="true"]::after{
-    font-size: 8px;
-    padding: 3px 7px;
-    max-width: 80px;
-    top: 8px;
-    right: 8px;
-    position: absolute;
-    z-index: 10;
-  }
-  
-  /* Ensure card content doesn't overlap with badge */
+  /* Badge is now in badgeRow, so no special padding needed */
   .card[data-recent="true"] .cardTop {
-    padding-right: 100px;
+    padding-right: 0 !important; /* No longer needed */
   }
   
-  /* Ensure text container has proper spacing */
   .card[data-recent="true"] .cardTop > div {
-    padding-right: 8px;
-    max-width: calc(100% - 108px);
-    min-width: 0;
-  }
-  
-  .card[data-recent="true"] .pname,
-  .card[data-recent="true"] .org {
-    max-width: 100%;
-    padding-right: 0;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    max-width: 100% !important; /* Full width available */
+    padding-right: 8px !important; /* Just space for expand button */
   }
   
   .card[data-recent="true"] .badgeRow {
-    max-width: calc(100% - 100px);
-    padding-right: 0;
-  }
-  
-  /* Ensure expand button doesn't overlap */
-  .card[data-recent="true"] .expandBtn {
-    position: relative;
-    z-index: 5;
+    max-width: 100% !important; /* Full width for badges */
   }
 }
 
@@ -2951,7 +2947,7 @@ footer{
   gap: 8px;
   flex-wrap:wrap;
   margin: 0 0 10px;
-  max-width: calc(100% - 100px); /* Leave space for Recently Updated badge */
+  max-width: 100%; /* Full width - badge is now in badgeRow on mobile */
 }
 
 /* FIX 6: Triage Grid Responsive Improvements */

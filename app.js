@@ -2,27 +2,13 @@
 // Load security module (encryption, validation, etc.)
 // Security functions are available globally after security.js loads
 
-// ========== MOBILE PERFORMANCE DEBUGGING (ALWAYS ON) ==========
-// Create debug panel immediately - inline to ensure it runs
+// ========== MOBILE PERFORMANCE DEBUGGING (DISABLED - Only enable for troubleshooting) ==========
+// Create debug panel but keep it hidden by default
 (function() {
-  const style = document.createElement('style');
-  style.textContent = `#perf-debug{position:fixed!important;top:0!important;left:0!important;right:0!important;background:rgba(0,0,0,0.95)!important;color:#0f0!important;font:14px monospace!important;padding:10px!important;z-index:999999!important;max-height:40vh!important;overflow:auto!important;pointer-events:none!important;line-height:1.4!important;display:none!important;}#perf-debug div{color:#fff!important;margin-bottom:3px!important;font-size:14px!important}`;
-  document.head.appendChild(style);
-  
-  const div = document.createElement('div');
-  div.id = 'perf-debug';
-  div.innerHTML = '<div style="color:#0f0;font-weight:bold">🟢 DEBUG ACTIVE - Stutter monitoring</div>';
-  document.body.appendChild(div);
-  
+  // Create empty functions so code doesn't break if updateDebug is called
   window.logDebug = function(msg) {
-    const time = new Date().toLocaleTimeString();
-    const newLine = document.createElement('div');
-    newLine.innerHTML = `[${time}] ${msg}`;
-    div.insertBefore(newLine, div.firstChild);
-    while (div.children.length > 25) div.removeChild(div.lastChild);
+    // Debug disabled - no-op
   };
-  
-  // Make updateDebug available globally (alias for logDebug)
   window.updateDebug = window.logDebug;
 })();
 
@@ -439,7 +425,7 @@ window.addEventListener("resize", () => {
 // CRITICAL FIX: DO NOT use visualViewport on mobile - it fires continuously and causes stutter
 // Use standard window resize instead, even on mobile
 
-
+// Debug panel removed - no longer needed
 
 let __vvListenerAttached = false;
 if (false && isCoarsePointer && window.visualViewport && !__vvListenerAttached) {
@@ -469,6 +455,7 @@ if (false && isCoarsePointer && window.visualViewport && !__vvListenerAttached) 
   const MIN_EVENTS_FOR_TEXT_SIZE = 3; // Require multiple events to confirm text-size change
   const SCROLL_COOLDOWN_MS = 400; // Don't trigger vv-changing if scroll happened within this time
   
+  // Debug panel removed - this block is disabled anyway
   
   // CRITICAL FIX: Throttle visualViewport listener to reduce work during scroll
   // Don't process every single resize event - batch them
@@ -1974,12 +1961,14 @@ function createCard(p, idx){
   div.setAttribute("data-id", id);
 
   // Check if verified within 60 days
+  let isRecent = false;
   if(lastVerified) {
     const date = new Date(lastVerified);
     const now = new Date();
     const daysSince = (now - date) / (1000 * 60 * 60 * 24);
     if(daysSince < 60) {
       div.dataset.recent = "true";
+      isRecent = true;
     }
   }
 
@@ -1996,6 +1985,7 @@ function createCard(p, idx){
           }
           return '';
         })() : ''}
+        ${isRecent ? `<span class="badge recent">Recently Updated</span>` : ''}
       </div>
     </div>
 
