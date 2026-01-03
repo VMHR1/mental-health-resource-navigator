@@ -21,6 +21,9 @@
     div.insertBefore(newLine, div.firstChild);
     while (div.children.length > 25) div.removeChild(div.lastChild);
   };
+  
+  // Make updateDebug available globally (alias for logDebug)
+  window.updateDebug = window.logDebug;
 })();
 
 // ========== State Management ==========
@@ -124,8 +127,8 @@ async function initializeEncryptedStorage() {
   const prefs = await loadEncryptedData('userPreferences', {});
   userPreferences = { ...userPreferences, ...prefs };
   
-  // Apply preferences
-  if (userPreferences.defaultSort && els.sortSelect) {
+  // Apply preferences (els might not be initialized yet, so check)
+  if (userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
     currentSort = userPreferences.defaultSort;
     els.sortSelect.value = currentSort;
   }
@@ -152,17 +155,17 @@ const TEXT_SCALE_STABILIZE_DELAY = 300; // Wait for text size to stabilize befor
 function updateTextScaleClass() {
   // Circuit breaker: if already processing, skip to prevent feedback loop
   if (__textScaleProcessing) {
-    updateDebug('<span style="color:#f00">⚠ TEXT-SCALE: Circuit breaker triggered</span>');
+    if (typeof updateDebug === 'function') updateDebug('<span style="color:#f00">⚠ TEXT-SCALE: Circuit breaker triggered</span>');
     return;
   }
   
-  updateDebug('TEXT-SCALE: Check called');
+  if (typeof updateDebug === 'function') updateDebug('TEXT-SCALE: Check called');
   
   // CRITICAL: If vv-changing is active, DO NOT toggle text-small class
   // The vv-changing class already applies necessary optimizations
   // Adding text-small during viewport change causes massive style recalc (html.text-small * selectors)
   if (__vvChangingFlag) {
-    updateDebug('<span style="color:#ff0">TEXT-SCALE: Skipped (vvChanging active)</span>');
+    if (typeof updateDebug === 'function') updateDebug('<span style="color:#ff0">TEXT-SCALE: Skipped (vvChanging active)</span>');
     return; // Skip entirely during viewport changes
   }
   
@@ -201,14 +204,14 @@ function updateTextScaleClass() {
             baselineRootPx = currentRootPx;
             __lastTextScaleState = null;
             __textScaleProcessing = false; // Release circuit breaker
-            updateDebug(`<span style="color:#0ff">TEXT-SCALE: Baseline set to ${baselineRootPx.toFixed(1)}px</span>`);
+            if (typeof updateDebug === 'function') updateDebug(`<span style="color:#0ff">TEXT-SCALE: Baseline set to ${baselineRootPx.toFixed(1)}px</span>`);
             return; // Don't set class on first call, just store baseline
           }
           
           // Determine new state
           const shouldBeSmall = currentRootPx < baselineRootPx - 0.5;
           
-          updateDebug(`TEXT-SCALE: current=${currentRootPx.toFixed(1)}px baseline=${baselineRootPx.toFixed(1)}px shouldBeSmall=${shouldBeSmall} lastState=${__lastTextScaleState}`);
+          if (typeof updateDebug === 'function') updateDebug(`TEXT-SCALE: current=${currentRootPx.toFixed(1)}px baseline=${baselineRootPx.toFixed(1)}px shouldBeSmall=${shouldBeSmall} lastState=${__lastTextScaleState}`);
           
           // Only toggle class if state actually changed (avoid unnecessary repaints)
           // ONLY apply after viewport is completely stable
@@ -216,10 +219,10 @@ function updateTextScaleClass() {
             __lastTextScaleState = shouldBeSmall;
             if (shouldBeSmall) {
               document.documentElement.classList.add('text-small');
-              updateDebug('<span style="color:#f00;font-weight:bold">✓ TEXT-SMALL CLASS ADDED</span>');
+              if (typeof updateDebug === 'function') updateDebug('<span style="color:#f00;font-weight:bold">✓ TEXT-SMALL CLASS ADDED</span>');
             } else {
               document.documentElement.classList.remove('text-small');
-              updateDebug('<span style="color:#0f0;font-weight:bold">✓ TEXT-SMALL CLASS REMOVED</span>');
+              if (typeof updateDebug === 'function') updateDebug('<span style="color:#0f0;font-weight:bold">✓ TEXT-SMALL CLASS REMOVED</span>');
             }
           }
           
@@ -456,7 +459,7 @@ function initDebug() {
     }
   };
   
-  updateDebug('<span style="color:#0f0;font-weight:bold">✓ DEBUG ACTIVE - visualViewport listener DISABLED</span>');
+  if (typeof updateDebug === 'function') updateDebug('<span style="color:#0f0;font-weight:bold">✓ DEBUG ACTIVE - visualViewport listener DISABLED</span>');
 }
 
 // Initialize debug when DOM is ready
