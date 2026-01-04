@@ -3605,6 +3605,17 @@ function bind(){
       // Get selected options from multi-select
       const selected = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
       selectedSudServices = selected;
+      
+      // Auto-enable crisis toggle if OSAR referral is selected
+      // (OSAR programs are crisis services and won't show without crisis toggle)
+      if (selected.includes('osar_referral')) {
+        els.showCrisis.checked = true;
+        if (els.showCrisisTop) {
+          els.showCrisisTop.checked = true;
+        }
+        syncTopToggles();
+      }
+      
       scheduleRender();
     });
   }
