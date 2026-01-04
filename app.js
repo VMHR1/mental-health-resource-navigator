@@ -3670,6 +3670,34 @@ function bind(){
   if (els.serviceDomain) {
     on(els.serviceDomain, "change", () => {
       selectedServiceDomains = els.serviceDomain.value ? [els.serviceDomain.value] : [];
+      
+      // Show/hide Substance Use Services filter group based on service domain
+      const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
+      const isSubstanceUse = els.serviceDomain.value === 'substance_use';
+      
+      if (sudServicesGroup) {
+        if (isSubstanceUse) {
+          // Show the group if feature flag allows
+          const flags = window.FEATURE_FLAGS || {};
+          if (flags.SHOW_SUD_FILTERS) {
+            sudServicesGroup.style.display = 'block';
+          }
+        } else {
+          // Hide the group and clear selections
+          sudServicesGroup.style.display = 'none';
+          
+          // Clear all selected options
+          if (els.sudServices) {
+            Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+            selectedSudServices = [];
+            // Sync chips to reflect cleared state
+            syncChipsToSelect('sudServices');
+            // Dispatch change event to trigger filter update
+            els.sudServices.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      }
+      
       scheduleRender();
     });
   }
@@ -4303,6 +4331,8 @@ function applyFeatureFlagsToUI() {
       if (sudServicesSelect) {
         // Clear all selected options
         Array.from(sudServicesSelect.options).forEach(opt => opt.selected = false);
+        selectedSudServices = [];
+        syncChipsToSelect('sudServices');
       }
     }
   }
@@ -4350,9 +4380,26 @@ function updateFilterVisibility() {
     serviceDomainGroup.style.display = (flags.SHOW_SUD_FILTERS && (availableFilters.hasServiceDomains || availableFilters.hasSUD)) ? 'block' : 'none';
   }
   
+  // Substance Use Services filter - only visible when:
+  // 1. Feature flag allows it (SHOW_SUD_FILTERS)
+  // 2. Data has SUD services (availableFilters.hasSUD)
+  // 3. Service Type is set to "substance_use" (not co-occurring or mental_health)
   const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
   if (sudServicesGroup) {
-    sudServicesGroup.style.display = (flags.SHOW_SUD_FILTERS && availableFilters.hasSUD) ? 'block' : 'none';
+    const isSubstanceUseSelected = els.serviceDomain && els.serviceDomain.value === 'substance_use';
+    const shouldShow = flags.SHOW_SUD_FILTERS && availableFilters.hasSUD && isSubstanceUseSelected;
+    
+    if (shouldShow) {
+      sudServicesGroup.style.display = 'block';
+    } else {
+      sudServicesGroup.style.display = 'none';
+      // Clear selections when hiding
+      if (els.sudServices) {
+        Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+        selectedSudServices = [];
+        syncChipsToSelect('sudServices');
+      }
+    }
   }
   
   const verificationGroup = document.getElementById('verificationFilterGroup');
@@ -4419,19 +4466,20 @@ function updateActiveFilterChips() {
         'detox': 'Detox',
         'otp': 'OTP',
         'moud': 'MOUD',
-        'residential_sud': 'Residential SUD',
-        'outpatient_sud': 'Outpatient SUD',
-        'iop_sud': 'IOP SUD',
-        'php_sud': 'PHP SUD',
+        'residential_sud': 'Residential',
+        'outpatient_sud': 'Outpatient',
+        'iop_sud': 'IOP',
+        'php_sud': 'PHP',
         'osar_referral': 'OSAR Referral'
       };
       const labels = selectedOptions.map(opt => sudLabels[opt.value] || opt.value).join(', ');
       activeFilters.push({
         type: 'sudServices',
-        label: `SUD Services: ${labels}`,
+        label: `Substance Use Services: ${labels}`,
         removeFn: () => {
           Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
           selectedSudServices = [];
+          syncChipsToSelect('sudServices');
           scheduleRender();
         }
       });
@@ -5383,6 +5431,25 @@ function loadURLState() {
   // Sync chips after loading URL state
   if (els.sudServices) {
     syncChipsToSelect('sudServices');
+  }
+  
+  // Update Substance Use Services filter visibility based on service domain
+  const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
+  if (sudServicesGroup && els.serviceDomain) {
+    const isSubstanceUse = els.serviceDomain.value === 'substance_use';
+    const flags = window.FEATURE_FLAGS || {};
+    
+    if (isSubstanceUse && flags.SHOW_SUD_FILTERS) {
+      sudServicesGroup.style.display = 'block';
+    } else {
+      sudServicesGroup.style.display = 'none';
+      // Clear selections if not substance_use
+      if (els.sudServices && !isSubstanceUse) {
+        Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+        selectedSudServices = [];
+        syncChipsToSelect('sudServices');
+      }
+    }
   }
 }
 
