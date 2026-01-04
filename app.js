@@ -96,58 +96,6 @@ let userPreferences = {
   itemsPerPage: 20
 };
 
-// Legacy program ID mapping for renamed/moved programs
-// Maps old program_ids to new program_ids to preserve user favorites and saved data
-const LEGACY_ID_MAP = {
-  'osar-andrews-center-east-texas': 'osar-etcada-longview', // Split into ETCADA OSAR and Andrews crisis
-  'eating-disorder-eating-disorder-solutions-dallas': 'eating-disorder-eating-disorder-solutions-weatherford-iop', // Moved to Weatherford
-  'osar-mhmr-tarrant-county': 'crisis-mhmr-tarrant-county' // Converted from OSAR to crisis line
-};
-
-// Migrate legacy program IDs in user data
-function migrateLegacyIds(data, isSet = false) {
-  if (isSet) {
-    // For Sets (favorites, comparisonSet)
-    const migrated = new Set();
-    let hasChanges = false;
-    data.forEach(id => {
-      if (LEGACY_ID_MAP[id]) {
-        migrated.add(LEGACY_ID_MAP[id]);
-        hasChanges = true;
-      } else {
-        migrated.add(id);
-      }
-    });
-    return { data: migrated, hasChanges };
-  } else if (Array.isArray(data)) {
-    // For arrays (recentSearches, callHistory)
-    const migrated = data.map(item => {
-      if (typeof item === 'string' && LEGACY_ID_MAP[item]) {
-        return LEGACY_ID_MAP[item];
-      } else if (item && typeof item === 'object' && item.programId && LEGACY_ID_MAP[item.programId]) {
-        return { ...item, programId: LEGACY_ID_MAP[item.programId] };
-      }
-      return item;
-    });
-    const hasChanges = migrated.some((item, idx) => item !== data[idx]);
-    return { data: migrated, hasChanges };
-  } else if (typeof data === 'object' && data !== null) {
-    // For objects (customLists, programNotes, programTags)
-    const migrated = {};
-    let hasChanges = false;
-    for (const [key, value] of Object.entries(data)) {
-      if (LEGACY_ID_MAP[key]) {
-        migrated[LEGACY_ID_MAP[key]] = value;
-        hasChanges = true;
-      } else {
-        migrated[key] = value;
-      }
-    }
-    return { data: migrated, hasChanges };
-  }
-  return { data, hasChanges: false };
-}
-
 async function initializeEncryptedStorage() {
   favorites = new Set(await loadEncryptedData('favorites', []));
   recentSearches = await loadEncryptedData('recentSearches', []);
@@ -157,38 +105,6 @@ async function initializeEncryptedStorage() {
   programTags = await loadEncryptedData('programTags', {});
   const prefs = await loadEncryptedData('userPreferences', {});
   userPreferences = { ...userPreferences, ...prefs };
-  
-  // Migrate legacy program IDs
-  const favoritesMigration = migrateLegacyIds(favorites, true);
-  if (favoritesMigration.hasChanges) {
-    favorites = favoritesMigration.data;
-    await saveFavorites();
-  }
-  
-  const customListsMigration = migrateLegacyIds(customLists);
-  if (customListsMigration.hasChanges) {
-    customLists = customListsMigration.data;
-    await saveEncryptedData('customLists', customLists);
-  }
-  
-  const programNotesMigration = migrateLegacyIds(programNotes);
-  if (programNotesMigration.hasChanges) {
-    programNotes = programNotesMigration.data;
-    await saveEncryptedData('programNotes', programNotes);
-  }
-  
-  const programTagsMigration = migrateLegacyIds(programTags);
-  if (programTagsMigration.hasChanges) {
-    programTags = programTagsMigration.data;
-    await saveEncryptedData('programTags', programTags);
-  }
-  
-  // Migrate legacy IDs in comparison set
-  const comparisonMigration = migrateLegacyIds(comparisonSet, true);
-  if (comparisonMigration.hasChanges) {
-    comparisonSet = comparisonMigration.data;
-    localStorage.setItem('comparison', JSON.stringify(Array.from(comparisonSet)));
-  }
   
   // Apply preferences (els might not be initialized yet, so check)
   if (userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
@@ -1128,34 +1044,6 @@ function parseSmartSearch(query) {
   // Service domain detection - substance use
   if(q.includes('substance use') || q.includes('substance abuse') || q.includes('drug treatment') || q.includes('alcohol treatment') || q.includes('addiction')) {
     filters.serviceDomain = 'substance_use';
-  }
-  
-  // Specific program name recognition for better search matching
-  // Evergreen Path / Fort Behavioral
-  if(q.includes('evergreen path') || q.includes('evergreen') || q.includes('fort behavioral')) {
-    filters.organization = 'Fort Behavioral'; // Helps match Fort Behavioral programs
-  }
-  
-  // Eating Disorder Solutions / Weatherford
-  if(q.includes('eating disorder solutions') || q.includes('eds weatherford') || q.includes('ranch weatherford')) {
-    filters.serviceDomain = 'eating_disorders';
-  }
-  
-  // Andrews Center / Crisis
-  if(q.includes('andrews center') || q.includes('andrews crisis')) {
-    filters.showCrisis = true;
-    filters.organization = 'Andrews Center';
-  }
-  
-  // Changes locations
-  if(q.includes('changes frisco') || q.includes('changes mckinney') || q.includes('carrollton springs')) {
-    filters.organization = 'Changes'; // Helps match Changes programs
-  }
-  
-  // Weatherford location (for Eating Disorder Solutions)
-  if(q.includes('weatherford') && !filters.loc) {
-    // Weatherford will be picked up by city matching, but ensure it's recognized
-    filters.loc = 'Weatherford';
   }
   
   // Crisis detection
@@ -2467,12 +2355,29 @@ window.showToast = showToast;
 
 function showModal(modalEl) {
   modalEl.setAttribute('aria-hidden', 'false');
+  // Lock body scroll - use both class and inline style for maximum compatibility
+  document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
+  // Store scroll position for restoration
+  const scrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.width = '100%';
 }
 
 function hideModal(modalEl) {
   modalEl.setAttribute('aria-hidden', 'true');
+  // Restore body scroll
+  const scrollY = document.body.style.top;
+  document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  // Restore scroll position
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
 }
 
 function sortPrograms(list) {
@@ -2664,7 +2569,7 @@ function nativeShare(url, title) {
 }
 
 function applyFilterPreset(preset) {
-  // Clear ALL current filters comprehensively
+  // Clear current filters
   els.q.value = "";
   // Clear dataset attributes
   delete els.q.dataset.exactMatch;
@@ -2676,18 +2581,6 @@ function applyFilterPreset(preset) {
   if (els.insurance) els.insurance.value = "";
   els.onlyVirtual.checked = false;
   els.showCrisis.checked = false;
-  
-  // Clear statewide filters (serviceDomain, sudServices, county, verificationRecency)
-  if (els.serviceDomain) els.serviceDomain.value = "";
-  selectedServiceDomains = [];
-  if (els.sudServices) {
-    Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-  }
-  selectedSudServices = [];
-  if (els.county) els.county.value = "";
-  selectedCounty = null;
-  if (els.verificationRecency) els.verificationRecency.value = "";
-  verificationRecencyDays = null;
   
   switch(preset) {
     case 'teens-dallas':
@@ -2707,50 +2600,11 @@ function applyFilterPreset(preset) {
       els.loc.value = 'Plano';
       els.care.value = 'Intensive Outpatient (IOP)';
       break;
-    case 'eating-disorders-all':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      break;
-    case 'eating-disorders-php':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Partial Hospitalization (PHP)';
-      break;
-    case 'eating-disorders-iop':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Intensive Outpatient (IOP)';
-      break;
-    case 'eating-disorders-outpatient':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Outpatient';
-      break;
-    case 'substance-use-all':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      break;
-    case 'substance-use-php':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Partial Hospitalization (PHP)';
-      break;
-    case 'substance-use-iop':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Intensive Outpatient (IOP)';
-      break;
-    case 'substance-use-outpatient':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Outpatient';
-      break;
   }
   
   syncTopToggles();
   render();
   updateURLState();
-  updateActiveFilterChips();
   
   const t = document.getElementById("treatmentSection");
   if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
@@ -4896,87 +4750,6 @@ async function tryLoadRegionalData() {
   }
 }
 
-// Merge regional data into canonical data (augmentation only, never replacement)
-// Strategy: dedupe by program_id; prefer canonical for base fields; merge geo/location data from regional if richer
-function mergeRegionalDataIntoCanonical(canonicalData, regionalData) {
-  if (!regionalData || !regionalData.programs || !Array.isArray(regionalData.programs)) {
-    return canonicalData; // No regional data to merge
-  }
-  
-  if (!canonicalData || !canonicalData.programs || !Array.isArray(canonicalData.programs)) {
-    // Canonical is invalid, but we shouldn't reach here - return canonical anyway
-    return canonicalData;
-  }
-  
-  // Create a map of canonical programs by program_id for fast lookup
-  const canonicalMap = new Map();
-  canonicalData.programs.forEach(p => {
-    if (p.program_id) {
-      canonicalMap.set(p.program_id, p);
-    }
-  });
-  
-  // Merge regional programs: if program_id exists in canonical, merge geo/location data;
-  // if program_id doesn't exist in canonical, add it (regional may have additional programs)
-  const mergedPrograms = [...canonicalData.programs];
-  const canonicalIds = new Set(canonicalMap.keys());
-  
-  regionalData.programs.forEach(regionalProgram => {
-    if (!regionalProgram.program_id) return; // Skip invalid entries
-    
-    const canonicalProgram = canonicalMap.get(regionalProgram.program_id);
-    
-    if (canonicalProgram) {
-      // Program exists in canonical - merge geo/location data from regional if richer
-      // Prefer canonical for base fields (organization, program_name, phone, etc.)
-      // Merge geo data if regional has it and canonical doesn't
-      if (regionalProgram.locations && Array.isArray(regionalProgram.locations)) {
-        regionalProgram.locations.forEach(regionalLoc => {
-          // Check if this location exists in canonical (by address/city)
-          const existingLoc = canonicalProgram.locations?.find(canLoc => 
-            canLoc.address === regionalLoc.address && 
-            canLoc.city === regionalLoc.city
-          );
-          
-          if (existingLoc) {
-            // Merge geo data if regional has it
-            if (regionalLoc.geo && !existingLoc.geo) {
-              existingLoc.geo = regionalLoc.geo;
-            }
-            if (regionalLoc.lat && regionalLoc.lng && !existingLoc.lat && !existingLoc.lng) {
-              existingLoc.lat = regionalLoc.lat;
-              existingLoc.lng = regionalLoc.lng;
-            }
-          } else if (canonicalProgram.locations) {
-            // Add new location from regional if it doesn't exist in canonical
-            canonicalProgram.locations.push(regionalLoc);
-          }
-        });
-      }
-      
-      // Merge geo data at program level if regional has it
-      if (regionalProgram.geo && !canonicalProgram.geo) {
-        canonicalProgram.geo = regionalProgram.geo;
-      }
-    } else {
-      // Program doesn't exist in canonical - add it from regional
-      // This allows regional data to augment with additional programs
-      mergedPrograms.push(regionalProgram);
-    }
-  });
-  
-  return {
-    ...canonicalData,
-    programs: mergedPrograms,
-    // Preserve canonical metadata, but note that regional data was merged
-    metadata: {
-      ...canonicalData.metadata,
-      regional_data_merged: true,
-      regional_programs_count: regionalData.programs?.length || 0
-    }
-  };
-}
-
 async function loadPrograms(retryCount = 0){
   const maxRetries = 3;
   const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
@@ -4989,55 +4762,53 @@ async function loadPrograms(retryCount = 0){
     let jsonText;
     let data;
     
-    // PHASE 1 FIX: Always load programs.json as canonical dataset first
-    // Regional data is now optional augmentation, never a replacement
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    // Allow browser caching (with revalidation) for faster repeat visits.
-    // "no-cache" allows revalidation but uses cache if valid.
-    const res = await fetch("programs.json", {
-      cache: "no-cache",
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    
-    if(!res.ok) {
-      throw new Error(`Unable to load programs data (HTTP ${res.status}). Please try refreshing the page.`);
-    }
-    jsonText = await res.text();
-    
-    // Parse JSON - use validation if available, but always allow fallback
-    try {
-      // Try to parse directly first (most reliable)
-      data = JSON.parse(jsonText);
-      
-      // If validation is available, run it but don't block on failure
-      if (typeof window.validateJSON === 'function') {
-        const jsonValidation = window.validateJSON(jsonText);
-        if (!jsonValidation.valid) {
-          // Log warning but don't fail - validation might be too strict
-          console.warn('JSON validation warning (non-blocking):', jsonValidation.error);
-          if (typeof window.logSecurityEvent === 'function') {
-            window.logSecurityEvent('json_validation_warning', { error: jsonValidation.error });
-          }
-          // Continue with parsed data anyway
-        }
-      }
-    } catch (parseError) {
-      if (typeof window.logSecurityEvent === 'function') {
-        window.logSecurityEvent('json_parse_error', { error: parseError.message });
-      }
-      throw new Error(`Failed to parse programs.json: ${parseError.message}`);
-    }
-    
-    // PHASE 1 FIX: Try to load regional data as optional augmentation
-    // Regional data can provide richer geo/location data, but never replaces canonical
+    // Try to load regional data first (manifest-based)
     const regionalData = await tryLoadRegionalData();
+    
     if (regionalData) {
-      // Merge regional data into canonical (augmentation only)
-      data = mergeRegionalDataIntoCanonical(data, regionalData);
-      console.info(`Merged regional data: ${regionalData.programs?.length || 0} regional programs into ${data.programs?.length || 0} canonical programs`);
+      // Use regional data structure (same as programs.json format)
+      data = regionalData;
+    } else {
+      // Fall back to programs.json
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      // Allow browser caching (with revalidation) for faster repeat visits.
+      // "no-store" forces a full network fetch every time and defeats SW caching.
+      const res = await fetch("programs.json", {
+        cache: "no-cache",
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      if(!res.ok) {
+        throw new Error(`Unable to load programs data (HTTP ${res.status}). Please try refreshing the page.`);
+      }
+      jsonText = await res.text();
+      
+      // Parse JSON - use validation if available, but always allow fallback
+      try {
+        // Try to parse directly first (most reliable)
+        data = JSON.parse(jsonText);
+        
+        // If validation is available, run it but don't block on failure
+        if (typeof window.validateJSON === 'function') {
+          const jsonValidation = window.validateJSON(jsonText);
+          if (!jsonValidation.valid) {
+            // Log warning but don't fail - validation might be too strict
+            console.warn('JSON validation warning (non-blocking):', jsonValidation.error);
+            if (typeof window.logSecurityEvent === 'function') {
+              window.logSecurityEvent('json_validation_warning', { error: jsonValidation.error });
+            }
+            // Continue with parsed data anyway
+          }
+        }
+      } catch (parseError) {
+        if (typeof window.logSecurityEvent === 'function') {
+          window.logSecurityEvent('json_parse_error', { error: parseError.message });
+        }
+        throw new Error(`Failed to parse programs.json: ${parseError.message}`);
+      }
     }
     
     // Store metadata for display
