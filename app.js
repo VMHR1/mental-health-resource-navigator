@@ -4816,13 +4816,21 @@ async function loadPrograms(retryCount = 0){
       programsMetadata = data.metadata;
     }
     
-    if(!data || !Array.isArray(data.programs)) {
-      throw new Error("Programs data loaded but missing a top-level `programs` array.");
+    // Handle both array format (programs.json) and object format (regional data)
+    let programsArray;
+    if (Array.isArray(data)) {
+      programsArray = data;
+    } else if (data && Array.isArray(data.programs)) {
+      programsArray = data.programs;
+    } else {
+      throw new Error("Programs data loaded but missing a `programs` array.");
     }
     
     // Comprehensive data validation
     if (typeof window.validateProgramsData === 'function') {
-      const validationResults = window.validateProgramsData(data);
+      // Pass the full data object (with metadata) for validation - handle both array and object formats
+      const dataForValidation = Array.isArray(data) ? { programs: data, metadata: {} } : data;
+      const validationResults = window.validateProgramsData(dataForValidation);
       
       if (!validationResults.valid) {
         console.warn('Data validation issues:', {
@@ -4862,7 +4870,7 @@ async function loadPrograms(retryCount = 0){
     // Legacy validation (keep for backward compatibility)
     if (typeof window.validateProgramStructure === 'function') {
       const invalidPrograms = [];
-      data.programs.forEach((p, idx) => {
+      programsArray.forEach((p, idx) => {
         const validation = window.validateProgramStructure(p);
         if (!validation.valid) {
           invalidPrograms.push({ index: idx, programId: p.program_id, errors: validation.errors });
@@ -4881,7 +4889,7 @@ async function loadPrograms(retryCount = 0){
       ? window.normalizeCityName 
       : (city) => city;
     
-    let loadedPrograms = data.programs.map(p => normalizeProgramData(p, normalizeCity));
+    let loadedPrograms = programsArray.map(p => normalizeProgramData(p, normalizeCity));
     
     // Set programs first (before async geocoded data merge)
     programs = loadedPrograms;
