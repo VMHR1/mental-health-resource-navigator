@@ -19,7 +19,12 @@ test.describe('Mobile Verification', () => {
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
   });
 
-  test('critical controls are visible and clickable on mobile', async ({ page }) => {
+  test('critical controls are visible and clickable on mobile', async ({ page, browserName }) => {
+    // Skip on desktop project (mobile-specific layout checks)
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width > 640) {
+      test.skip();
+    }
     // Search input
     const searchInput = page.getByTestId('search-input');
     await expect(searchInput).toBeVisible();
@@ -243,6 +248,11 @@ test.describe('Mobile Verification', () => {
   });
   
   test('search section uses mobile-first layout', async ({ page }) => {
+    // Skip on desktop project (mobile-specific layout checks)
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width > 640) {
+      test.skip();
+    }
     // Wait for page load
     await page.waitForLoadState('networkidle');
     
