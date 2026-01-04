@@ -349,7 +349,10 @@
             <!-- SUD-specific options (conditional) -->
             <div class="input-group" id="sudServicesFilterGroup" style="display: none;">
               <label for="sudServices">SUD Services</label>
-              <select id="sudServices" multiple size="4">
+              <p class="filter-helper-text" style="font-size: 12px; color: var(--muted); margin: 0 0 10px 2px;">Select one or more</p>
+              
+              <!-- Hidden select for compatibility with existing filtering logic -->
+              <select id="sudServices" multiple size="4" class="visually-hidden" aria-hidden="true">
                 <option value="detox">Detox</option>
                 <option value="residential_sud">Residential SUD</option>
                 <option value="outpatient_sud">Outpatient SUD</option>
@@ -357,6 +360,36 @@
                 <option value="php_sud">PHP SUD</option>
                 <option value="osar_referral">OSAR Referral</option>
               </select>
+              
+              <!-- Chip-based UI -->
+              <div class="multi-chip" data-sync-select="sudServices" role="group" aria-label="SUD Services">
+                <label class="chip-check">
+                  <input type="checkbox" value="detox" aria-label="Detox">
+                  <span>Detox</span>
+                </label>
+                <label class="chip-check">
+                  <input type="checkbox" value="residential_sud" aria-label="Residential SUD">
+                  <span>Residential SUD</span>
+                </label>
+                <label class="chip-check">
+                  <input type="checkbox" value="outpatient_sud" aria-label="Outpatient SUD">
+                  <span>Outpatient SUD</span>
+                </label>
+                <label class="chip-check">
+                  <input type="checkbox" value="iop_sud" aria-label="IOP SUD">
+                  <span>IOP SUD</span>
+                </label>
+                <label class="chip-check">
+                  <input type="checkbox" value="php_sud" aria-label="PHP SUD">
+                  <span>PHP SUD</span>
+                </label>
+                <label class="chip-check">
+                  <input type="checkbox" value="osar_referral" aria-label="OSAR Referral">
+                  <span>OSAR Referral</span>
+                </label>
+              </div>
+              
+              <button type="button" class="chip-clear-btn" data-clear-select="sudServices" style="display: none; margin-top: 8px; font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; text-decoration: underline;">Clear</button>
             </div>
 
             <!-- Verified recency filter (conditional) -->

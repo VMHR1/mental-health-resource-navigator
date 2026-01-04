@@ -626,6 +626,113 @@ h1{
 }
 .chip input{ accent-color: #5b8cff; }
 
+/* Visually hidden but accessible for screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Multi-chip container for SUD Services */
+.multi-chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* Chip checkbox style - matches existing chip design */
+.chip-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.78);
+  font-size: 13px;
+  color: var(--muted);
+  box-shadow: 0 2px 8px rgba(15,23,42,.04);
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  position: relative;
+}
+
+.chip-check:hover {
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 4px 12px rgba(15,23,42,.08);
+  transform: translateY(-1px);
+}
+
+.chip-check:active {
+  transform: translateY(0);
+}
+
+.chip-check input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.chip-check input[type="checkbox"]:focus + span,
+.chip-check:focus-within {
+  outline: 2px solid #5b8cff;
+  outline-offset: 2px;
+}
+
+/* Selected state */
+.chip-check input[type="checkbox"]:checked + span {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chip-check input[type="checkbox"]:checked ~ span::before,
+.chip-check:has(input[type="checkbox"]:checked) {
+  background: rgba(91, 140, 255, 0.1);
+  border-color: #5b8cff;
+  box-shadow: 0 2px 8px rgba(91, 140, 255, 0.15);
+}
+
+.chip-check:has(input[type="checkbox"]:checked) span::after {
+  content: "✓";
+  margin-left: 6px;
+  color: #5b8cff;
+  font-weight: 700;
+}
+
+/* Clear button for chip groups */
+.chip-clear-btn {
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+}
+
+.chip-clear-btn:hover {
+  color: var(--ink);
+}
+
+.chip-clear-btn:focus {
+  outline: 2px solid #5b8cff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .hero-visual{
   border-radius: var(--radius-lg);
   border: 1px solid var(--stroke2);
@@ -1526,6 +1633,14 @@ html.perf-no-sticky .search-section {
   align-items:end;
   max-width: 100%;
 }
+
+/* Advanced filters use responsive auto-fit grid to avoid dead space */
+.search-advanced .search-grid,
+.advanced-filters-content .search-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+}
+
 @media (max-width: 980px){ 
   .search-grid{ 
     grid-template-columns: 1fr; 

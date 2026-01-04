@@ -2656,6 +2656,12 @@ function applyFilterPreset(preset) {
   }
   
   syncTopToggles();
+  
+  // Sync chips after preset is applied
+  if (els.sudServices) {
+    syncChipsToSelect('sudServices');
+  }
+  
   render();
   updateURLState();
   updateActiveFilterChips();
@@ -3478,6 +3484,74 @@ function initSwipeGestures() {
   } // End of disabled touch swipe block
 }
 
+// Sync chip checkboxes to match select state
+function syncChipsToSelect(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const chipContainer = document.querySelector(`[data-sync-select="${selectId}"]`);
+  if (!chipContainer) return;
+  
+  const selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
+  const checkboxes = chipContainer.querySelectorAll('input[type="checkbox"]');
+  
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = selectedValues.includes(checkbox.value);
+  });
+  
+  // Show/hide clear button
+  const clearBtn = document.querySelector(`[data-clear-select="${selectId}"]`);
+  if (clearBtn) {
+    clearBtn.style.display = selectedValues.length > 0 ? 'block' : 'none';
+  }
+}
+
+// Sync select to match chip checkbox state
+function syncSelectToChips(selectId, checkboxValue, isChecked) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const option = Array.from(select.options).find(opt => opt.value === checkboxValue);
+  if (option) {
+    option.selected = isChecked;
+    // Dispatch change event so existing handlers run
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+}
+
+// Initialize chip-based multi-selects
+function initChipMultiSelects() {
+  const chipContainers = document.querySelectorAll('[data-sync-select]');
+  
+  chipContainers.forEach(container => {
+    const selectId = container.dataset.syncSelect;
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    // Initial sync from select to chips
+    syncChipsToSelect(selectId);
+    
+    // Handle chip checkbox changes
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        syncSelectToChips(selectId, checkbox.value, e.target.checked);
+      });
+    });
+    
+    // Handle clear button
+    const clearBtn = document.querySelector(`[data-clear-select="${selectId}"]`);
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        // Clear all options
+        Array.from(select.options).forEach(opt => opt.selected = false);
+        // Dispatch change event
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
+  });
+}
+
 function bind(){
   const on = (el, ev, fn) => {
     if (!el) return;
@@ -3606,6 +3680,9 @@ function bind(){
       const selected = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
       selectedSudServices = selected;
       
+      // Sync chip checkboxes to match select state
+      syncChipsToSelect('sudServices');
+      
       // Auto-enable crisis toggle if OSAR referral is selected
       // (OSAR programs are crisis services and won't show without crisis toggle)
       if (selected.includes('osar_referral')) {
@@ -3619,6 +3696,9 @@ function bind(){
       scheduleRender();
     });
   }
+  
+  // Initialize chip-based multi-selects
+  initChipMultiSelects();
   
   if (els.verificationRecency) {
     on(els.verificationRecency, "change", () => {
@@ -3714,6 +3794,7 @@ function bind(){
     if (els.serviceDomain) els.serviceDomain.value = "";
     if (els.sudServices) {
       Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+      syncChipsToSelect('sudServices');
     }
     if (els.verificationRecency) els.verificationRecency.value = "";
     
@@ -3750,6 +3831,7 @@ function bind(){
     if (els.serviceDomain) els.serviceDomain.value = "";
     if (els.sudServices) {
       Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+      syncChipsToSelect('sudServices');
     }
     if (els.verificationRecency) els.verificationRecency.value = "";
     
@@ -5296,6 +5378,11 @@ function loadURLState() {
   if (params.has('sort') && els.sortSelect) {
     currentSort = params.get('sort');
     els.sortSelect.value = currentSort;
+  }
+  
+  // Sync chips after loading URL state
+  if (els.sudServices) {
+    syncChipsToSelect('sudServices');
   }
 }
 
