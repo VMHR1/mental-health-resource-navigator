@@ -39,6 +39,11 @@ Thumbs.db
 .wrangler/
 .wrangler.toml
 
+# Test artifacts
+.lighthouseci/
+playwright-report/
+test-results/
+
 # Documentation (local only)
 CLOUDFLARE_*.md
 IMPROVEMENT_AVENUES.md
