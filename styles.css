@@ -152,13 +152,7 @@ a{color:inherit}
 }
 
 /* Mobile container centering guarantee */
-@media (max-width: 640px) {
-  .container {
-    padding-left: 16px;
-    padding-right: 16px;
-    max-width: 100%;
-  }
-}
+/* Container mobile padding moved to consolidated @media (max-width: 640px) block */
 
 .crisis-banner{
   position: sticky;
@@ -637,47 +631,16 @@ h1{
 }
 
 /* Phase 3: Optimize sticky search section for mobile */
+/* NOTE: Mobile layout rules moved to consolidated @media (max-width: 640px) block */
+/* This block only handles performance optimizations for touch devices */
 @media (pointer: coarse) {
   .search-section {
-    /* CRITICAL FIX: Disable sticky positioning - causes scroll jank */
-    position: relative !important;
-    /* Remove shadow entirely - expensive on scroll */
+    /* Performance: disable expensive effects on touch devices */
     box-shadow: none !important;
-    /* Disable backdrop-filter on mobile */
     backdrop-filter: none !important;
     background: rgba(255,255,255,.95) !important;
-    /* DISABLE will-change and transform - causes stutter */
     will-change: auto !important;
     transform: none !important;
-    /* Fix mobile layout - ensure proper spacing */
-    padding: 14px !important;
-    margin: -20px 0 14px !important;
-  }
-  
-  /* Fix overlapping buttons on mobile */
-  .search-actions {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-  
-  .search-actions .btns {
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-  
-  .search-actions .btns button {
-    width: 100% !important;
-  }
-  
-  .search-actions .toggles {
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-  
-  .search-actions .toggles .toggle-chip {
-    width: 100% !important;
-    justify-content: center !important;
   }
   
   /* Hide hero-visual container on mobile - floating cards are hidden, so container is empty */
@@ -687,59 +650,6 @@ h1{
     height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-  
-  /* Fix search input field on mobile - ensure full width and no text cutoff */
-  .input-group-primary {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 1 1 100% !important;
-    min-width: 0 !important;
-  }
-  
-  .input-wrapper {
-    width: 100% !important;
-  }
-  
-  input[type="search"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-  
-  /* Ensure search-simple stacks properly on mobile */
-  .search-simple {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-  
-  .btn-smart-search,
-  .btn-advanced {
-    width: 100% !important;
-    margin-top: 0 !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Fix search section spacing on mobile */
-  .search-section {
-    margin-top: -20px !important;
-    margin-bottom: 24px !important; /* Increased from 16px to prevent overlap with results-actions */
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-  
-  /* Add spacing to search-simple to ensure Reset button doesn't overlap */
-  .search-simple {
-    margin-bottom: 4px !important; /* Extra space after buttons */
-  }
-  
-  /* Ensure results-header has proper spacing from search section */
-  .results-header {
-    margin-top: 20px !important; /* Add space above results-actions */
-    padding-top: 16px !important; /* Extra padding for visual separation */
   }
   
   /* ========== COMPREHENSIVE MOBILE UI/UX OPTIMIZATION ========== */
@@ -915,11 +825,7 @@ h1{
     touch-action: manipulation !important;
   }
   
-  /* Fix container padding on mobile */
-  .container {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
+  /* Container padding moved to consolidated @media (max-width: 640px) block */
   
   /* Fix section spacing */
   .section {
@@ -1444,25 +1350,8 @@ html.perf-no-sticky .search-section {
     backdrop-filter: none !important;
   }
   
-  .search-section {
-    position: sticky;
-    top: calc(var(--crisis-banner-h, 0px) + env(safe-area-inset-top, 0px));
-    z-index: 15;
-    margin-top: -34px;
-    margin-bottom: 12px;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    width: 100%;
-    max-width: 100%;
-    margin-left: -12px;
-    margin-right: -12px;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-  
-  /* Ensure crisis banner doesn't overlap */
-  .crisis-banner + .container .search-section {
-    top: calc(var(--crisis-banner-h, 0px) + env(safe-area-inset-top, 0px));
-  }
+  /* NOTE: search-section layout rules moved to consolidated @media (max-width: 640px) block */
+  /* This block only handles tablet-specific (768px) optimizations */
 }
 
 .search-header{
@@ -4160,20 +4049,24 @@ body.high-contrast textarea {
   }
 }
 
-/* ========== Mobile Improvements ========== */
+/* ========== MOBILE-FIRST LAYOUT (max-width: 640px) ========== */
+/* Consolidated mobile rules - single source of truth for mobile layout */
 
-/* Prevent horizontal scrolling globally */
 @media (max-width: 640px){
+  /* Global overflow prevention */
   html, body {
-    overflow-x: hidden;
+    overflow-x: clip; /* Modern */
+    overflow-x: hidden; /* Fallback */
     width: 100%;
-    max-width: 100%; /* Changed from 100vw */
+    max-width: 100%;
   }
   
-  /* Ensure all containers respect viewport */
+  /* Container: consistent 16px padding (mobile-first) */
   .container {
-    padding: 0 12px;
+    padding-left: 16px;
+    padding-right: 16px;
     max-width: 100%;
+    overflow-x: clip;
     overflow-x: hidden;
   }
   
@@ -4191,26 +4084,34 @@ body.high-contrast textarea {
     overflow: visible; /* Allow content to wrap */
   }
   
-  .results-actions{
-    justify-content: flex-start;
+  /* Results actions: clean wrapped 2-row layout */
+  .results-actions {
+    display: flex;
     flex-wrap: wrap;
     gap: 8px;
     max-width: 100%;
     overflow: visible;
-    /* Ensure buttons wrap to multiple rows if needed */
     align-items: flex-start;
+    justify-content: flex-start;
   }
   
-  /* Alternative: horizontal scroll for results-actions if wrapping doesn't work */
-  /* Uncomment if wrapping causes issues */
+  /* Ensure all buttons in results-actions are mobile-friendly */
+  .results-actions > * {
+    min-height: 44px; /* Tap target */
+    min-width: 0; /* Allow shrinking */
+    flex-shrink: 1;
+  }
+  
+  /* Alternative: horizontal scroll toolbar (uncomment if wrapping causes issues) */
   /*
   .results-actions {
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    gap: 8px;
   }
   .results-actions::-webkit-scrollbar {
     display: none;
@@ -4271,51 +4172,108 @@ body.high-contrast textarea {
     margin-top: 12px;
   }
   
-  /* Fix search section - stay within container bounds */
+  /* Search section: mobile-first, no negative margins, natural flow */
   .search-section {
-    padding: 12px;
-    margin-left: 0 !important; /* Remove negative margins that break centering */
-    margin-right: 0 !important;
-    margin-top: -20px;
-    margin-bottom: 24px !important;
-    width: 100% !important; /* Changed from calc(100% + 24px) */
-    max-width: 100% !important; /* Changed from calc(100vw - 0px) */
+    padding: 16px;
+    margin: 0 0 20px 0; /* No negative margins - natural flow below header */
+    width: 100%;
+    max-width: 100%;
+    position: relative; /* Not sticky on mobile */
+    box-shadow: none; /* Performance: remove expensive shadow */
+    backdrop-filter: none; /* Performance: remove backdrop blur */
+    background: rgba(255,255,255,.95);
   }
   
-  /* Add spacing to search-simple to ensure Reset button doesn't overlap */
+  /* Search simple: mobile-first grid layout - MUST override any flex */
   .search-simple {
-    margin-bottom: 8px !important; /* Extra space after buttons */
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    margin-bottom: 0;
+    width: 100%;
+    max-width: 100%;
   }
   
-  /* Ensure results-header has proper spacing from search section */
-  .results-header {
-    margin-top: 20px !important; /* Add space above results-actions */
-    padding-top: 16px !important; /* Extra padding for visual separation */
+  /* Input group: full width in mobile grid */
+  .input-group-primary {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important; /* Override flex-basis */
   }
   
-  /* Optimize search header spacing on mobile */
+  /* Input wrapper: ensure full width */
+  .input-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Search input: full width, 16px font to prevent iOS zoom */
+  .input-group-primary input[type="search"],
+  .input-group-primary input[type="text"],
+  #q {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 16px !important; /* Critical: prevents iOS zoom on focus */
+    box-sizing: border-box !important;
+    min-height: 44px !important; /* Tap target */
+  }
+  
+  /* Buttons: full width in mobile grid */
+  .btn-smart-search,
+  .btn-advanced,
+  #findBtn {
+    width: 100% !important;
+    min-height: 44px !important; /* Tap target */
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* Consistent with input */
+  }
+  
+  /* Advanced + Reset buttons: 2-column grid if both present, else full width */
+  .search-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    margin-top: 0;
+  }
+  
+  .search-actions .btn-advanced,
+  .search-actions button[data-preset="reset"] {
+    width: 100%;
+    min-height: 44px;
+  }
+  
+  /* Search header: compact spacing on mobile */
   .search-header {
-    margin: 4px 0 6px;
+    margin: 8px 0 12px;
   }
   
   .search-header h3 {
-    margin-bottom: 4px;
-    font-size: 16px;
+    margin-bottom: 6px;
+    font-size: 18px;
+    line-height: 1.3;
   }
   
   .search-header p {
     margin-top: 4px;
-    margin-bottom: 4px;
-    font-size: 13px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.5;
   }
   
-  /* Fix gap between search and results - ensure active filters don't overlap */
+  /* Results header: proper spacing from search section */
   .results-header {
-    margin-top: 12px !important; /* Space for active filters container */
-    margin-bottom: 8px;
+    margin-top: 20px; /* Increased to prevent overlap */
+    margin-bottom: 12px;
     padding-top: 12px;
     padding-bottom: 8px;
-    clear: both; /* Ensure it's below any floated elements */
+    clear: both;
+  }
+  
+  /* Ensure results-actions has proper spacing from header */
+  .results-actions {
+    margin-top: 8px; /* Space from results-info */
   }
   
   /* Ensure active filters container doesn't overlap results header */
