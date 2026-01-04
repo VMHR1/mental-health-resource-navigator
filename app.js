@@ -2569,9 +2569,8 @@ function nativeShare(url, title) {
 }
 
 function applyFilterPreset(preset) {
-  // Clear current filters
+  // Clear ALL current filters comprehensively
   els.q.value = "";
-  // Clear dataset attributes
   delete els.q.dataset.exactMatch;
   delete els.q.dataset.matchType;
   els.loc.value = "";
@@ -2581,6 +2580,18 @@ function applyFilterPreset(preset) {
   if (els.insurance) els.insurance.value = "";
   els.onlyVirtual.checked = false;
   els.showCrisis.checked = false;
+
+  // Clear statewide filters
+  if (els.serviceDomain) els.serviceDomain.value = "";
+  selectedServiceDomains = [];
+  if (els.sudServices) {
+    Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+  }
+  selectedSudServices = [];
+  if (els.county) els.county.value = "";
+  selectedCounty = null;
+  if (els.verificationRecency) els.verificationRecency.value = "";
+  verificationRecencyDays = null;
   
   switch(preset) {
     case 'teens-dallas':
@@ -2600,11 +2611,54 @@ function applyFilterPreset(preset) {
       els.loc.value = 'Plano';
       els.care.value = 'Intensive Outpatient (IOP)';
       break;
+    
+    // Eating Disorders presets
+    case 'eating-disorders-all':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      break;
+    case 'eating-disorders-php':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Partial Hospitalization (PHP)';
+      break;
+    case 'eating-disorders-iop':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Intensive Outpatient (IOP)';
+      break;
+    case 'eating-disorders-outpatient':
+      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
+      selectedServiceDomains = ['eating_disorders'];
+      els.care.value = 'Outpatient';
+      break;
+    
+    // Substance Use presets
+    case 'substance-use-all':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      break;
+    case 'substance-use-php':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Partial Hospitalization (PHP)';
+      break;
+    case 'substance-use-iop':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Intensive Outpatient (IOP)';
+      break;
+    case 'substance-use-outpatient':
+      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
+      selectedServiceDomains = ['substance_use'];
+      els.care.value = 'Outpatient';
+      break;
   }
   
   syncTopToggles();
   render();
   updateURLState();
+  updateActiveFilterChips();
   
   const t = document.getElementById("treatmentSection");
   if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
@@ -4762,53 +4816,81 @@ async function loadPrograms(retryCount = 0){
     let jsonText;
     let data;
     
-    // Try to load regional data first (manifest-based)
+    // CRITICAL FIX: Regional data (dfw.details.json) may be outdated and missing
+    // specialized programs with eating_disorders/substance_use service_domains.
+    // Always load programs.json as canonical source and merge regional data as augmentation.
     const regionalData = await tryLoadRegionalData();
+    let canonicalData = null;
     
-    if (regionalData) {
-      // Use regional data structure (same as programs.json format)
-      data = regionalData;
-    } else {
-      // Fall back to programs.json
+    // Always load programs.json as canonical source
+    try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      // Allow browser caching (with revalidation) for faster repeat visits.
-      // "no-store" forces a full network fetch every time and defeats SW caching.
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       const res = await fetch("programs.json", {
         cache: "no-cache",
         signal: controller.signal
       });
       clearTimeout(timeoutId);
       
-      if(!res.ok) {
-        throw new Error(`Unable to load programs data (HTTP ${res.status}). Please try refreshing the page.`);
-      }
-      jsonText = await res.text();
-      
-      // Parse JSON - use validation if available, but always allow fallback
-      try {
-        // Try to parse directly first (most reliable)
-        data = JSON.parse(jsonText);
+      if(res.ok) {
+        jsonText = await res.text();
+        canonicalData = JSON.parse(jsonText);
         
         // If validation is available, run it but don't block on failure
         if (typeof window.validateJSON === 'function') {
           const jsonValidation = window.validateJSON(jsonText);
           if (!jsonValidation.valid) {
-            // Log warning but don't fail - validation might be too strict
             console.warn('JSON validation warning (non-blocking):', jsonValidation.error);
             if (typeof window.logSecurityEvent === 'function') {
               window.logSecurityEvent('json_validation_warning', { error: jsonValidation.error });
             }
-            // Continue with parsed data anyway
           }
         }
-      } catch (parseError) {
-        if (typeof window.logSecurityEvent === 'function') {
-          window.logSecurityEvent('json_parse_error', { error: parseError.message });
-        }
-        throw new Error(`Failed to parse programs.json: ${parseError.message}`);
       }
+    } catch (parseError) {
+      if (typeof window.logSecurityEvent === 'function') {
+        window.logSecurityEvent('json_parse_error', { error: parseError.message });
+      }
+      console.warn('Could not load canonical programs.json:', parseError.message);
+    }
+    
+    if (regionalData && canonicalData) {
+      // MERGE: Use canonical as base, augment with regional data
+      // Extract programs arrays from both
+      let canonicalPrograms = Array.isArray(canonicalData) ? canonicalData : (canonicalData.programs || []);
+      let regionalPrograms = Array.isArray(regionalData) ? regionalData : (regionalData.programs || []);
+      
+      // Create a map of canonical programs by program_id for deduplication
+      const canonicalMap = new Map();
+      canonicalPrograms.forEach(p => {
+        if (p.program_id) {
+          canonicalMap.set(p.program_id, p);
+        }
+      });
+      
+      // Add regional programs that don't exist in canonical (augmentation only)
+      regionalPrograms.forEach(p => {
+        if (p.program_id && !canonicalMap.has(p.program_id)) {
+          canonicalPrograms.push(p);
+        }
+      });
+      
+      // Use merged programs with canonical metadata
+      data = {
+        programs: canonicalPrograms,
+        metadata: canonicalData.metadata || regionalData.metadata || {}
+      };
+      
+      console.info(`Merged regional data: ${regionalPrograms.length} regional programs into ${canonicalPrograms.length} canonical programs`);
+    } else if (canonicalData) {
+      // Use canonical data only
+      data = canonicalData;
+    } else if (regionalData) {
+      // Fallback to regional data only
+      data = regionalData;
+    } else {
+      // No data available - throw error
+      throw new Error('Unable to load programs data. Please try refreshing the page.');
     }
     
     // Store metadata for display
