@@ -6,7 +6,9 @@ test.describe('Mobile Verification', () => {
     // This will be overridden by project config, but ensures mobile viewport
   });
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    // Skip mobile tests when running under desktop project
+    test.skip(testInfo.project.name === 'desktop', 'Mobile-only test suite');
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });

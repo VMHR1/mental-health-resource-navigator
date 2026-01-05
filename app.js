@@ -1540,7 +1540,7 @@ function matchesFilters(p){
             p.program_name, p.organization, p.level_of_care,
             p.entry_type, p.service_setting, p.ages_served,
             locLabel(p),
-            (p.notes || "")
+            (p.notes || ""),
           ].map(safeStr).join(" ").toLowerCase();
           
           // Check if all remaining search terms appear (with fuzzy matching for typos)
@@ -2048,6 +2048,7 @@ function createCard(p, idx){
         <div class="k">Notes</div>
         <div class="v">${escapeHtml(safeStr(p.notes) || "—")}</div>
       </div>
+
 
       <div class="actions">
         <a class="linkBtn" href="program.html?id=${escapeHtml(safeStr(p.program_id))}" style="margin-right: 8px;">View Details</a>
@@ -3872,6 +3873,7 @@ function bind(){
 
   // Smart search
   on(els.smartSearchBtn, "click", () => {
+    hideAutocomplete(); // Close suggestions before search to prevent tap interception
     const query = els.q.value;
     const parsed = parseSmartSearch(query);
     

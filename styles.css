@@ -4411,11 +4411,6 @@ body.high-contrast textarea {
     max-width: 100% !important;
   }
   
-  /* Reserve space when suggestions dropdown is visible to prevent button click interception */
-  .input-wrapper:has(.search-suggestions) {
-    margin-bottom: 420px;
-  }
-  
   /* Search input: full width, 16px font to prevent iOS zoom */
   .input-group-primary input[type="search"],
   .input-group-primary input[type="text"],
@@ -4650,11 +4645,13 @@ body.high-contrast textarea {
     right: 0;
   }
   
-  /* Fix search suggestions */
+  /* Fix search suggestions - constrain height and enable scrolling to prevent covering buttons */
   .search-suggestions {
     max-width: calc(100% - 24px); /* Changed from 100vw */
     left: 0;
     right: 0;
+    max-height: min(240px, 40vh);
+    overflow-y: auto;
   }
   
   /* Fix hero bullets */
