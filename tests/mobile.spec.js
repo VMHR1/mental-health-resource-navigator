@@ -181,9 +181,21 @@ test.describe('Mobile Verification', () => {
   });
 
   test('homepage snapshot on mobile', async ({ page }) => {
-    // Wait for page to fully load
+    // Ensure deterministic viewport (projects set this, but ensure it's stable)
+    const viewport = page.viewportSize();
+    if (!viewport) {
+      throw new Error('Viewport size not set');
+    }
+
+    // Wait for page to fully load and fonts to be ready
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
+    // Wait for fonts to load (check for a text element that uses the font)
+    await page.waitForSelector('h1, .search-section', { state: 'visible' });
+    await page.waitForTimeout(500); // Brief pause for any final layout
+
+    // Ensure scroll position is at top (deterministic)
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(100); // Allow scroll to complete
 
     // Take viewport screenshot
     await expect(page).toHaveScreenshot('mobile-homepage.png', {
@@ -193,24 +205,28 @@ test.describe('Mobile Verification', () => {
   });
 
   test('results view snapshot after search on mobile', async ({ page }) => {
+    // Ensure deterministic viewport
+    const viewport = page.viewportSize();
+    if (!viewport) {
+      throw new Error('Viewport size not set');
+    }
+
     // Perform a search
     const searchInput = page.getByTestId('search-input');
     await searchInput.fill('dallas');
+    // Blur to close any suggestions dropdown and stabilize layout
+    await searchInput.blur();
+    await page.waitForTimeout(200); // Allow dropdown to close
     await page.getByTestId('find-programs-btn').click();
 
-    // Wait for results to render
-    await page.waitForTimeout(1500);
+    // Wait for results to render (use selector-based wait instead of timeout)
+    await page.waitForSelector('#treatmentSection, [data-testid="results-grid"], [data-testid="empty-state"]', { 
+      state: 'visible',
+      timeout: 10000 
+    });
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500); // Brief pause for final layout
 
-    // Scroll to results section (with timeout handling)
-    const treatmentSection = page.locator('#treatmentSection');
-    try {
-      await treatmentSection.scrollIntoViewIfNeeded({ timeout: 5000 });
-    } catch (e) {
-      // If section not found, just scroll to bottom
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    }
-    await page.waitForTimeout(500);
-    
     // Layout assertion: verify search section uses mobile-first layout
     const searchSection = page.locator('.search-section');
     const searchSectionBox = await searchSection.boundingBox();
@@ -239,6 +255,10 @@ test.describe('Mobile Verification', () => {
         expect(actionsBox.width).toBeLessThanOrEqual(resultsHeaderBox.width + 10); // Allow 10px tolerance
       }
     }
+
+    // Ensure scroll position is at top for deterministic viewport screenshot
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(100); // Allow scroll to complete
 
     // Take viewport screenshot
     await expect(page).toHaveScreenshot('mobile-results-view.png', {
@@ -303,6 +323,16 @@ test.describe('Mobile Verification', () => {
     const searchSection = page.locator('.search-section');
     await expect(searchSection).toBeVisible();
     
+    // Ensure stable layout: close any open dropdowns/suggestions
+    const searchInput = page.getByTestId('search-input');
+    // Blur input to close suggestions dropdown if open
+    await searchInput.blur();
+    await page.waitForTimeout(200); // Allow dropdown to close
+    
+    // Scroll search section into view for consistent screenshot
+    await searchSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(100); // Allow scroll to complete
+    
     // Verify search-simple uses grid layout
     const searchSimple = page.locator('.search-simple');
     const computedDisplay = await searchSimple.evaluate((el) => {
@@ -330,7 +360,6 @@ test.describe('Mobile Verification', () => {
     }
     
     // Verify search input is full width relative to search-section
-    const searchInput = page.getByTestId('search-input');
     const inputBox = await searchInput.boundingBox();
     const searchSectionBox = await searchSection.boundingBox();
     

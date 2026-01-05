@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:update-snapshots": "playwright test --update-snapshots",
+    "test:e2e:update:linux": "docker run --rm -v $(pwd):/workspace -w /workspace mcr.microsoft.com/playwright:v1.40.0-focal /bin/bash -c \"npm install && npx playwright install --with-deps && npm run build && npx playwright test --update-snapshots\"",
     "test:mobile": "playwright test --project=mobile --project=mobile-webkit",
     "audit": "lhci autorun --config=lighthouserc.json",
     "verify": "npm run build && npm run validate-data && npm run test:e2e && npm run audit"

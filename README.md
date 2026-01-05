@@ -151,22 +151,19 @@ Screenshot snapshots are platform-specific. CI runs on Linux (Ubuntu), so Linux 
 
 **Generate Linux snapshots (required for CI):**
 
-Use Docker with the official Playwright image to generate Linux-compatible snapshots:
-
+To update snapshots for CI, run:
 ```bash
-docker run --rm \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  mcr.microsoft.com/playwright:v1.40.0-focal \
-  /bin/bash -c "npm install && npx playwright install --with-deps && npm run build && npx playwright test --update-snapshots"
+npm run test:e2e:update:linux
 ```
 
-This generates `tests/mobile.spec.js-snapshots/*-linux.png` files. **Commit these files** to fix CI failures.
+This uses Docker with the official Playwright image to generate Linux-compatible snapshots. It generates `tests/mobile.spec.js-snapshots/*-linux.png` files. **Commit these files** to fix CI failures.
 
 **Local snapshot updates (macOS/darwin):**
 ```bash
 npm run test:e2e:update-snapshots
 ```
+
+**Note:** Tests use viewport screenshots (not full-page) for stability. Ensure viewport sizes are deterministic per project (desktop/mobile/mobile-webkit) as configured in `playwright.config.js`.
 
 **What failures mean:**
 - If tests fail, check the Playwright HTML report in `playwright-report/`
