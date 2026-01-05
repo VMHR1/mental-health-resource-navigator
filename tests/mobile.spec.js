@@ -218,7 +218,9 @@ test.describe('Mobile Verification', () => {
     await searchInput.fill('dallas');
     // Blur to close any suggestions dropdown and stabilize layout
     await searchInput.blur();
-    await page.waitForTimeout(200); // Allow dropdown to close
+    // Wait for suggestions dropdown to actually disappear
+    await page.waitForSelector('#search-suggestions', { state: 'hidden' }).catch(() => {});
+    await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await page.getByTestId('find-programs-btn').click();
 
     // Wait for results to render (use selector-based wait instead of timeout)
@@ -282,6 +284,9 @@ test.describe('Mobile Verification', () => {
     const searchInput = page.locator('#q');
     await searchInput.fill('Children');
     await searchInput.blur(); // Prevent suggestions dropdown from intercepting click
+    // Wait for suggestions dropdown to actually disappear
+    await page.waitForSelector('#search-suggestions', { state: 'hidden' }).catch(() => {});
+    await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await page.locator('button:has-text("Find Programs")').click();
     
     // Wait for results
