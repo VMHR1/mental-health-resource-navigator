@@ -218,8 +218,11 @@ test.describe('Mobile Verification', () => {
     await searchInput.fill('dallas');
     // Blur to close any suggestions dropdown and stabilize layout
     await searchInput.blur();
-    // Wait for suggestions dropdown to actually disappear
-    await page.waitForSelector('#search-suggestions', { state: 'hidden' }).catch(() => {});
+    // Wait for suggestions dropdown to actually disappear (check display style)
+    await page.waitForFunction(() => {
+      const el = document.getElementById('search-suggestions');
+      return !el || el.style.display === 'none' || window.getComputedStyle(el).display === 'none';
+    }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await page.getByTestId('find-programs-btn').click();
 
@@ -284,8 +287,11 @@ test.describe('Mobile Verification', () => {
     const searchInput = page.locator('#q');
     await searchInput.fill('Children');
     await searchInput.blur(); // Prevent suggestions dropdown from intercepting click
-    // Wait for suggestions dropdown to actually disappear
-    await page.waitForSelector('#search-suggestions', { state: 'hidden' }).catch(() => {});
+    // Wait for suggestions dropdown to actually disappear (check display style)
+    await page.waitForFunction(() => {
+      const el = document.getElementById('search-suggestions');
+      return !el || el.style.display === 'none' || window.getComputedStyle(el).display === 'none';
+    }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await page.locator('button:has-text("Find Programs")').click();
     
