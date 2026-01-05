@@ -157,8 +157,8 @@ Use Docker with the official Playwright image to generate Linux-compatible snaps
 docker run --rm \
   -v $(pwd):/workspace \
   -w /workspace \
-  mcr.microsoft.com/playwright:v1.57.0-focal \
-  /bin/bash -c "npm install && npm run build && npx playwright test --update-snapshots"
+  mcr.microsoft.com/playwright:v1.40.0-focal \
+  /bin/bash -c "npm install && npx playwright install --with-deps && npm run build && npx playwright test --update-snapshots"
 ```
 
 This generates `tests/mobile.spec.js-snapshots/*-linux.png` files. **Commit these files** to fix CI failures.
