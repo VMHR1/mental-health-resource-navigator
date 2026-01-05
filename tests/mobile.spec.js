@@ -247,6 +247,49 @@ test.describe('Mobile Verification', () => {
     });
   });
   
+  test('expanded card with helpful details has no overflow', async ({ page }) => {
+    // Skip on desktop
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width > 640) {
+      test.skip();
+    }
+
+    await page.goto('/');
+    
+    // Perform a search to get results
+    const searchInput = page.locator('#q');
+    await searchInput.fill('Children');
+    await page.locator('button:has-text("Find Programs")').click();
+    
+    // Wait for results
+    await page.waitForSelector('.card', { timeout: 10000 });
+    
+    // Expand first card
+    const firstCard = page.locator('.card').first();
+    if (await firstCard.count() > 0) {
+      const expandBtn = firstCard.locator('.expandBtn');
+      if (await expandBtn.count() > 0) {
+        await expandBtn.click();
+        await page.waitForTimeout(500);
+        
+        // Check for horizontal overflow
+        const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+        const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+        expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+        
+        // Check if helpful details section exists and is properly contained
+        const helpfulDetails = firstCard.locator('.helpful-details');
+        if (await helpfulDetails.count() > 0) {
+          const detailsBox = await helpfulDetails.boundingBox();
+          if (detailsBox) {
+            // Ensure helpful details don't exceed viewport
+            expect(detailsBox.width).toBeLessThanOrEqual(clientWidth);
+          }
+        }
+      }
+    }
+  });
+
   test('search section uses mobile-first layout', async ({ page }) => {
     // Skip on desktop project (mobile-specific layout checks)
     const viewport = page.viewportSize();

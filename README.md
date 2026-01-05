@@ -154,11 +154,11 @@ Screenshot snapshots are platform-specific. CI runs on Linux (Ubuntu), so Linux 
 Use Docker with the official Playwright image to generate Linux-compatible snapshots:
 
 ```bash
-docker run --rm -it \
+docker run --rm \
   -v $(pwd):/workspace \
   -w /workspace \
-  mcr.microsoft.com/playwright:v1.40.0-focal \
-  /bin/bash -c "npm ci && npm run build && npx playwright test --update-snapshots"
+  mcr.microsoft.com/playwright:v1.57.0-focal \
+  /bin/bash -c "npm install && npm run build && npx playwright test --update-snapshots"
 ```
 
 This generates `tests/mobile.spec.js-snapshots/*-linux.png` files. **Commit these files** to fix CI failures.
