@@ -1,6 +1,16 @@
 # mental-health-resource-navigator
 Neutral post-discharge mental health resource navigator for Dallas-FortWorth area youth
 
+## Quick Links
+- Documentation hub: `docs/README.md`
+- Architecture overview: `docs/architecture/OVERVIEW.md`
+- Data flow: `docs/architecture/DATA_FLOW.md`
+- API: `docs/architecture/API.md`
+- Performance docs: `docs/performance/`
+- Security docs: `docs/security/`
+- Operations docs: `docs/operations/`
+
+
 ## Mobile Performance
 
 This application is optimized for mobile performance with comprehensive monitoring and optimization tools.
