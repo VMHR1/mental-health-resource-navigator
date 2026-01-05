@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   verify:
@@ -44,4 +45,37 @@ jobs:
           name: lighthouse-results
           path: .lighthouseci/
           retention-days: 30
+
+  update-snapshots:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build
+        run: npm run build
+
+      - name: Update snapshots
+        run: npx playwright test --update-snapshots
+
+      - name: Upload updated snapshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-snapshots
+          path: tests/**/*-snapshots/*.png
+          retention-days: 7
+
 

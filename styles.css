@@ -4411,6 +4411,11 @@ body.high-contrast textarea {
     max-width: 100% !important;
   }
   
+  /* Reserve space when suggestions dropdown is visible to prevent button click interception */
+  .input-wrapper:has(.search-suggestions) {
+    margin-bottom: 420px;
+  }
+  
   /* Search input: full width, 16px font to prevent iOS zoom */
   .input-group-primary input[type="search"],
   .input-group-primary input[type="text"],

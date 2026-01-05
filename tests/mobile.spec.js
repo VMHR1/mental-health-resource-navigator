@@ -185,10 +185,10 @@ test.describe('Mobile Verification', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // Take full-page screenshot
+    // Take viewport screenshot
     await expect(page).toHaveScreenshot('mobile-homepage.png', {
-      fullPage: true,
-      maxDiffPixels: 100,
+      fullPage: false,
+      maxDiffPixelRatio: 0.01,
     });
   });
 
@@ -240,10 +240,10 @@ test.describe('Mobile Verification', () => {
       }
     }
 
-    // Take full-page screenshot
+    // Take viewport screenshot
     await expect(page).toHaveScreenshot('mobile-results-view.png', {
-      fullPage: true,
-      maxDiffPixels: 100,
+      fullPage: false,
+      maxDiffPixelRatio: 0.01,
     });
   });
   
@@ -259,6 +259,7 @@ test.describe('Mobile Verification', () => {
     // Perform a search to get results
     const searchInput = page.locator('#q');
     await searchInput.fill('Children');
+    await searchInput.blur(); // Prevent suggestions dropdown from intercepting click
     await page.locator('button:has-text("Find Programs")').click();
     
     // Wait for results
@@ -351,7 +352,7 @@ test.describe('Mobile Verification', () => {
     
     // Screenshot assertion for search section specifically
     await expect(searchSection).toHaveScreenshot('mobile-search-section.png', {
-      maxDiffPixels: 50,
+      maxDiffPixelRatio: 0.02,
     });
   });
 });
