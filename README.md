@@ -140,6 +140,34 @@ Runs mobile-specific verification tests on emulated iPhone viewport:
 npm run test:mobile
 ```
 
+**Updating Screenshot Snapshots:**
+
+Screenshot snapshots are platform-specific. CI runs on Linux (Ubuntu), so Linux snapshots (`*-linux.png`) are required.
+
+**When to update snapshots:**
+- After UI changes that affect visual layout
+- When adding new snapshot tests
+- When CI fails with "Screenshot comparison failed"
+
+**Generate Linux snapshots (required for CI):**
+
+Use Docker with the official Playwright image to generate Linux-compatible snapshots:
+
+```bash
+docker run --rm -it \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  mcr.microsoft.com/playwright:v1.40.0-focal \
+  /bin/bash -c "npm ci && npm run build && npx playwright test --update-snapshots"
+```
+
+This generates `tests/mobile.spec.js-snapshots/*-linux.png` files. **Commit these files** to fix CI failures.
+
+**Local snapshot updates (macOS/darwin):**
+```bash
+npm run test:e2e:update-snapshots
+```
+
 **What failures mean:**
 - If tests fail, check the Playwright HTML report in `playwright-report/`
 - Screenshots are captured automatically on failure (full-page)
