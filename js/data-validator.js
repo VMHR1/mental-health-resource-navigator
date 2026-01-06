@@ -1,15 +1,17 @@
 // ========== Data Validator ==========
 // Comprehensive data validation for programs.json
+// Uses shared schema from js/config/validation-schema.js if available
 
-const PROGRAM_SCHEMA = {
-  required: ['program_id', 'organization', 'program_name', 'level_of_care'],
+// Use shared schema if available, otherwise define inline (for backward compatibility)
+const PROGRAM_SCHEMA = window.PROGRAM_SCHEMA || {
+  required: ['program_id', 'organization', 'program_name', 'level_of_care', 'service_domains'],
   optional: [
     'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
     'website_url', 'website', 'website_domain', 'notes', 'transportation_available',
     'insurance_notes', 'verification_source', 'last_verified', 'accepting_new_patients',
     'waitlist_status', 'accepted_insurance',
     // New statewide-ready fields (all optional for backward compatibility)
-    'primary_county', 'service_area', 'geo', 'verification', 'service_domains', 'sud_services'
+    'primary_county', 'service_area', 'geo', 'verification', 'sud_services'
   ],
   types: {
     program_id: 'string',
@@ -40,6 +42,23 @@ const PROGRAM_SCHEMA = {
     service_domains: 'array',
     sud_services: 'array'
   }
+};
+
+const VALID_SERVICE_DOMAINS = window.VALID_SERVICE_DOMAINS || [
+  'mental_health',
+  'substance_use',
+  'co_occurring',
+  'eating_disorders',
+];
+
+const REVERIFICATION_THRESHOLD_DAYS = window.REVERIFICATION_THRESHOLD_DAYS || 90;
+
+const validateISODate = window.validateISODate || function(dateString) {
+  if (!dateString || typeof dateString !== 'string') return false;
+  const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+  if (!ISO_DATE_REGEX.test(dateString)) return false;
+  const date = new Date(dateString);
+  return !isNaN(date.getTime()) && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
 };
 
 function validateProgramSchema(program, index) {
@@ -129,8 +148,12 @@ function validateProgramSchema(program, index) {
   
   if (program.verification && typeof program.verification === 'object') {
     const ver = program.verification;
-    if (ver.last_verified_at && typeof ver.last_verified_at !== 'string') {
-      errors.push('verification.last_verified_at should be a string (ISO date)');
+    if (ver.last_verified_at) {
+      if (typeof ver.last_verified_at !== 'string') {
+        errors.push('verification.last_verified_at should be a string (ISO date)');
+      } else if (!validateISODate(ver.last_verified_at)) {
+        errors.push(`verification.last_verified_at should be a valid ISO 8601 date, got: ${ver.last_verified_at}`);
+      }
     }
     if (ver.sources && !Array.isArray(ver.sources)) {
       errors.push('verification.sources should be an array');
@@ -143,11 +166,18 @@ function validateProgramSchema(program, index) {
     }
   }
   
-  if (program.service_domains && Array.isArray(program.service_domains)) {
-    const validDomains = ['mental_health', 'substance_use', 'co_occurring', 'eating_disorders'];
+  // Validate service_domains (required field)
+  if (!program.service_domains) {
+    errors.push('Missing required field: service_domains');
+  } else if (!Array.isArray(program.service_domains)) {
+    errors.push('service_domains must be an array');
+  } else {
+    if (program.service_domains.length === 0) {
+      errors.push('service_domains is empty array (must contain at least one domain)');
+    }
     program.service_domains.forEach((domain, idx) => {
-      if (!validDomains.includes(domain)) {
-        errors.push(`service_domains[${idx}] should be one of: ${validDomains.join(', ')}`);
+      if (!VALID_SERVICE_DOMAINS.includes(domain)) {
+        errors.push(`service_domains[${idx}]="${domain}" is not in allowlist. Valid values: ${VALID_SERVICE_DOMAINS.join(', ')}`);
       }
     });
   }
@@ -163,17 +193,36 @@ function validateProgramSchema(program, index) {
     }
   }
   
-  // Check data freshness (warnings)
+  // Check data freshness (warnings) - validate ISO date format
   if (program.last_verified) {
-    const verifiedDate = new Date(program.last_verified);
-    const now = new Date();
-    const daysSince = (now - verifiedDate) / (1000 * 60 * 60 * 24);
-    
-    if (daysSince > 90) {
-      warnings.push(`Program verified ${Math.floor(daysSince)} days ago (over 90 days)`);
+    if (!validateISODate(program.last_verified)) {
+      warnings.push(`last_verified date format may be invalid (expected ISO 8601): ${program.last_verified}`);
+    } else {
+      const verifiedDate = new Date(program.last_verified);
+      const now = new Date();
+      const daysSince = (now - verifiedDate) / (1000 * 60 * 60 * 24);
+      
+      if (daysSince > REVERIFICATION_THRESHOLD_DAYS) {
+        warnings.push(`Program verified ${Math.floor(daysSince)} days ago (over ${REVERIFICATION_THRESHOLD_DAYS} days)`);
+      }
     }
   } else {
     warnings.push('Missing last_verified date');
+  }
+  
+  // Also check verification.last_verified_at if present
+  if (program.verification && program.verification.last_verified_at) {
+    if (!validateISODate(program.verification.last_verified_at)) {
+      warnings.push(`verification.last_verified_at date format may be invalid (expected ISO 8601): ${program.verification.last_verified_at}`);
+    } else {
+      const verifiedDate = new Date(program.verification.last_verified_at);
+      const now = new Date();
+      const daysSince = (now - verifiedDate) / (1000 * 60 * 60 * 24);
+      
+      if (daysSince > REVERIFICATION_THRESHOLD_DAYS) {
+        warnings.push(`Program verified ${Math.floor(daysSince)} days ago (over ${REVERIFICATION_THRESHOLD_DAYS} days) in verification.last_verified_at`);
+      }
+    }
   }
   
   // Check for common data quality issues
