@@ -107,7 +107,7 @@ async function encryptData(data) {
   }
 }
 
-async function decryptData(encryptedData, keyToUse = null) {
+async function decryptDataCore(encryptedData, keyToUse = null) {
   try {
     if (!encryptedData) return null;
     
@@ -158,7 +158,7 @@ async function decryptDataWithMigration(encryptedData) {
   if (!encryptedData) return null;
   
   // Try new key first
-  const result = await decryptData(encryptedData);
+  const result = await decryptDataCore(encryptedData);
   if (result !== null) {
     return result;
   }
@@ -167,7 +167,7 @@ async function decryptDataWithMigration(encryptedData) {
   if (!localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
     const oldKey = await getOldEncryptionKey();
     if (oldKey) {
-      const oldResult = await decryptData(encryptedData, oldKey);
+      const oldResult = await decryptDataCore(encryptedData, oldKey);
       if (oldResult !== null) {
         // Successfully decrypted with old key - return with migration marker
         // Use a Symbol-like approach: add a non-enumerable property
