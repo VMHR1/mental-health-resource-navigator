@@ -15,14 +15,13 @@ const rootDir = join(__dirname, '..');
 
 // Import shared validation schema
 // Note: validation-schema.js uses CommonJS exports, so we'll use createRequire for compatibility
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+import { pathToFileURL } from 'url';
 
 let VALID_SERVICE_DOMAINS, REQUIRED_FIELDS, validateISODate, REVERIFICATION_THRESHOLD_DAYS;
 try {
   const schemaPath = join(rootDir, 'js', 'config', 'validation-schema.js');
   if (existsSync(schemaPath)) {
-    const schemaModule = require(schemaPath);
+    const schemaModule = await import(pathToFileURL(schemaPath).href);
     VALID_SERVICE_DOMAINS = schemaModule.VALID_SERVICE_DOMAINS;
     REQUIRED_FIELDS = schemaModule.PROGRAM_SCHEMA.required;
     validateISODate = schemaModule.validateISODate;
@@ -203,4 +202,3 @@ if (errorCount > 0) {
   console.log('\n✅ Validation passed');
   process.exit(0);
 }
-

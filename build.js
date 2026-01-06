@@ -20,6 +20,7 @@ const buildOptions = {
     'js/modules/storage.js',
     'js/utils/helpers.js',
     'js/config/constants.js',
+    'js/config/validation-schema.js',
     'js/state-manager.js',
     'js/data-validator.js'
   ],
@@ -73,7 +74,8 @@ function copyStaticAssets() {
     // Copy js directory files
     const jsFiles = [
       'js/program-detail.js',
-      'js/modules/distance.js'
+      'js/modules/distance.js',
+      'js/config/validation-schema.js'
     ];
     
     jsFiles.forEach(file => {
@@ -85,12 +87,12 @@ function copyStaticAssets() {
         
         if (!existsSync(distDir)) {
           mkdirSync(distDir, { recursive: true });
-      }
+        }
         
-      try {
+        try {
           writeFileSync(distPath, readFileSync(file, 'utf8'));
-        copiedCount++;
-      } catch (error) {
+          copiedCount++;
+        } catch (error) {
           console.error(`Error copying ${file}:`, error.message);
         }
       }
@@ -242,6 +244,3 @@ build()
     console.error('Build process failed:', error);
     process.exit(1);
   });
-
-
-

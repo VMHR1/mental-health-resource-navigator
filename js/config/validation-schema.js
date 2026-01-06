@@ -1,7 +1,7 @@
 // ========== Shared Validation Schema ==========
 // Source of truth for program validation rules used by both browser and build validators
 
-export const PROGRAM_SCHEMA = {
+const PROGRAM_SCHEMA = {
   required: ['program_id', 'organization', 'program_name', 'level_of_care', 'service_domains'],
   optional: [
     'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
@@ -42,14 +42,14 @@ export const PROGRAM_SCHEMA = {
   }
 };
 
-export const VALID_SERVICE_DOMAINS = [
+const VALID_SERVICE_DOMAINS = [
   'mental_health',
   'substance_use',
   'co_occurring',
   'eating_disorders',
 ];
 
-export const VALID_LEVELS_OF_CARE = [
+const VALID_LEVELS_OF_CARE = [
   'Partial Hospitalization (PHP)',
   'Intensive Outpatient (IOP)',
   'Outpatient',
@@ -62,12 +62,12 @@ export const VALID_LEVELS_OF_CARE = [
   'Walk-In Outpatient',
 ];
 
-export const REVERIFICATION_THRESHOLD_DAYS = 90;
+const REVERIFICATION_THRESHOLD_DAYS = 90;
 
 // ISO 8601 date validation regex (YYYY-MM-DD or full ISO format)
-export const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
 
-export function validateISODate(dateString) {
+function validateISODate(dateString) {
   if (!dateString || typeof dateString !== 'string') return false;
   if (!ISO_DATE_REGEX.test(dateString)) return false;
   
@@ -82,16 +82,14 @@ if (typeof window !== 'undefined') {
   window.VALID_LEVELS_OF_CARE = VALID_LEVELS_OF_CARE;
   window.REVERIFICATION_THRESHOLD_DAYS = REVERIFICATION_THRESHOLD_DAYS;
   window.validateISODate = validateISODate;
+  window.ISO_DATE_REGEX = ISO_DATE_REGEX;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    PROGRAM_SCHEMA,
-    VALID_SERVICE_DOMAINS,
-    VALID_LEVELS_OF_CARE,
-    REVERIFICATION_THRESHOLD_DAYS,
-    validateISODate,
-    ISO_DATE_REGEX
-  };
-}
-
+export {
+  PROGRAM_SCHEMA,
+  VALID_SERVICE_DOMAINS,
+  VALID_LEVELS_OF_CARE,
+  REVERIFICATION_THRESHOLD_DAYS,
+  validateISODate,
+  ISO_DATE_REGEX
+};

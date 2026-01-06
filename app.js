@@ -27,16 +27,21 @@ let selectedSudServices = [];
 let verificationRecencyDays = null;
 
 // Use unified storage functions from js/modules/storage.js
-// These are loaded before app.js and available on window object
-const loadEncryptedData = window.loadEncryptedData || async function(key, defaultValue = []) {
-  // Fallback if storage.js not loaded
-  return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
-};
+// Ensure fallbacks exist if storage.js fails to load
+if (typeof window.loadEncryptedData !== 'function') {
+  window.loadEncryptedData = async function(key, defaultValue = []) {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
+  };
+}
 
-const saveEncryptedData = window.saveEncryptedData || async function(key, data) {
-  // Fallback if storage.js not loaded
-  localStorage.setItem(key, JSON.stringify(data));
-};
+if (typeof window.saveEncryptedData !== 'function') {
+  window.saveEncryptedData = async function(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+}
+
+const loadEncryptedDataSafe = window.loadEncryptedData;
+const saveEncryptedDataSafe = window.saveEncryptedData;
 
 // Initialize encrypted storage
 let favorites = new Set();
@@ -53,13 +58,13 @@ let userPreferences = {
 };
 
 async function initializeEncryptedStorage() {
-  favorites = new Set(await loadEncryptedData('favorites', []));
-  recentSearches = await loadEncryptedData('recentSearches', []);
-  callHistory = await loadEncryptedData('callHistory', []);
-  customLists = await loadEncryptedData('customLists', {});
-  programNotes = await loadEncryptedData('programNotes', {});
-  programTags = await loadEncryptedData('programTags', {});
-  const prefs = await loadEncryptedData('userPreferences', {});
+  favorites = new Set(await loadEncryptedDataSafe('favorites', []));
+  recentSearches = await loadEncryptedDataSafe('recentSearches', []);
+  callHistory = await loadEncryptedDataSafe('callHistory', []);
+  customLists = await loadEncryptedDataSafe('customLists', {});
+  programNotes = await loadEncryptedDataSafe('programNotes', {});
+  programTags = await loadEncryptedDataSafe('programTags', {});
+  const prefs = await loadEncryptedDataSafe('userPreferences', {});
   userPreferences = { ...userPreferences, ...prefs };
   
   // Apply preferences (els might not be initialized yet, so check)
@@ -1752,7 +1757,7 @@ async function trackCallAttempt(program) {
     timestamp: new Date().toISOString()
   });
   callHistory = callHistory.slice(0, 20);
-  await saveEncryptedData('callHistory', callHistory);
+  await saveEncryptedDataSafe('callHistory', callHistory);
   
   showCallConfirmation(program);
 }
@@ -2194,7 +2199,7 @@ function renderComparison() {
 }
 
 async function saveFavorites() {
-  await saveEncryptedData('favorites', Array.from(favorites));
+  await saveEncryptedDataSafe('favorites', Array.from(favorites));
   updateFavoritesCount();
 }
 
@@ -2234,7 +2239,7 @@ async function saveProgramNote(programId, note) {
       ? window.sanitizeText(note, 500)
       : note.substring(0, 500);
   }
-  await saveEncryptedData('programNotes', programNotes);
+  await saveEncryptedDataSafe('programNotes', programNotes);
 }
 
 function getProgramNote(programId) {
@@ -2250,7 +2255,7 @@ async function addProgramTag(programId, tag) {
     : tag.substring(0, 50);
   if (!programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
     programTags[programId].push(sanitizedTag);
-    await saveEncryptedData('programTags', programTags);
+    await saveEncryptedDataSafe('programTags', programTags);
   }
 }
 
@@ -2260,7 +2265,7 @@ async function removeProgramTag(programId, tag) {
     if (programTags[programId].length === 0) {
       delete programTags[programId];
     }
-    await saveEncryptedData('programTags', programTags);
+    await saveEncryptedDataSafe('programTags', programTags);
   }
 }
 
@@ -2274,7 +2279,7 @@ async function createCustomList(listName) {
     : listName.substring(0, 50);
   if (sanitizedName.trim() && !customLists[sanitizedName]) {
     customLists[sanitizedName] = [];
-    await saveEncryptedData('customLists', customLists);
+    await saveEncryptedDataSafe('customLists', customLists);
     return sanitizedName;
   }
   return null;
@@ -2283,14 +2288,14 @@ async function createCustomList(listName) {
 async function addToCustomList(listName, programId) {
   if (customLists[listName] && !customLists[listName].includes(programId)) {
     customLists[listName].push(programId);
-    await saveEncryptedData('customLists', customLists);
+    await saveEncryptedDataSafe('customLists', customLists);
   }
 }
 
 async function removeFromCustomList(listName, programId) {
   if (customLists[listName]) {
     customLists[listName] = customLists[listName].filter(id => id !== programId);
-    await saveEncryptedData('customLists', customLists);
+    await saveEncryptedDataSafe('customLists', customLists);
   }
 }
 
@@ -2704,7 +2709,7 @@ async function addRecentSearch(query) {
   recentSearches = recentSearches.filter(s => s !== trimmed);
   recentSearches.unshift(trimmed);
   recentSearches = recentSearches.slice(0, 5); // Reduced from 10 to 5
-  await saveEncryptedData('recentSearches', recentSearches);
+  await saveEncryptedDataSafe('recentSearches', recentSearches);
   renderRecentSearches();
 }
 
