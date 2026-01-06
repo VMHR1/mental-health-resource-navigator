@@ -13,13 +13,41 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
-const VALID_SERVICE_DOMAINS = [
-  'mental_health',
-  'substance_use',
-  'co_occurring',
-  'eating_disorders',
-];
-const REQUIRED_FIELDS = ['program_id', 'organization', 'program_name'];
+// Import shared validation schema
+// Note: validation-schema.js uses CommonJS exports, so we'll use createRequire for compatibility
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+let VALID_SERVICE_DOMAINS, REQUIRED_FIELDS, validateISODate, REVERIFICATION_THRESHOLD_DAYS;
+try {
+  const schemaPath = join(rootDir, 'js', 'config', 'validation-schema.js');
+  if (existsSync(schemaPath)) {
+    const schemaModule = require(schemaPath);
+    VALID_SERVICE_DOMAINS = schemaModule.VALID_SERVICE_DOMAINS;
+    REQUIRED_FIELDS = schemaModule.PROGRAM_SCHEMA.required;
+    validateISODate = schemaModule.validateISODate;
+    REVERIFICATION_THRESHOLD_DAYS = schemaModule.REVERIFICATION_THRESHOLD_DAYS;
+  } else {
+    throw new Error('Schema file not found');
+  }
+} catch (e) {
+  // Fallback to inline definitions if schema file not available
+  VALID_SERVICE_DOMAINS = [
+    'mental_health',
+    'substance_use',
+    'co_occurring',
+    'eating_disorders',
+  ];
+  REQUIRED_FIELDS = ['program_id', 'organization', 'program_name', 'level_of_care', 'service_domains'];
+  validateISODate = function(dateString) {
+    if (!dateString || typeof dateString !== 'string') return false;
+    const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+    if (!ISO_DATE_REGEX.test(dateString)) return false;
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
+  };
+  REVERIFICATION_THRESHOLD_DAYS = 90;
+}
 
 let errorCount = 0;
 const errors = [];
@@ -57,6 +85,9 @@ function validateProgram(program, index) {
   } else if (!Array.isArray(program.service_domains)) {
     error(`service_domains must be an array`, programId);
   } else {
+    if (program.service_domains.length === 0) {
+      error(`service_domains is empty array (must contain at least one domain)`, programId);
+    }
     program.service_domains.forEach((domain, idx) => {
       if (!VALID_SERVICE_DOMAINS.includes(domain)) {
         error(
@@ -65,9 +96,19 @@ function validateProgram(program, index) {
         );
       }
     });
-
-    if (program.service_domains.length === 0) {
-      error(`service_domains is empty array (must contain at least one domain)`, programId);
+  }
+  
+  // Validate ISO date format for last_verified
+  if (program.last_verified) {
+    if (!validateISODate(program.last_verified)) {
+      error(`last_verified date format is invalid (expected ISO 8601): ${program.last_verified}`, programId);
+    }
+  }
+  
+  // Validate ISO date format for verification.last_verified_at
+  if (program.verification && program.verification.last_verified_at) {
+    if (!validateISODate(program.verification.last_verified_at)) {
+      error(`verification.last_verified_at date format is invalid (expected ISO 8601): ${program.verification.last_verified_at}`, programId);
     }
   }
 

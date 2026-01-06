@@ -3,14 +3,37 @@
 
 // ========== Encryption ==========
 let encryptionKey = null;
+let oldEncryptionKey = null; // For migration from old key system
+
+const DEVICE_KEY_STORAGE = 'device_encryption_key';
+const OLD_KEY_MIGRATION_FLAG = 'encryption_key_migrated';
 
 async function getEncryptionKey() {
   if (encryptionKey) return encryptionKey;
   
-  // Generate deterministic key from domain + user agent (for same origin)
-  const keyMaterial = `${window.location.origin}${navigator.userAgent}`;
+  // Try to load or generate per-device key
+  let deviceKeyId = localStorage.getItem(DEVICE_KEY_STORAGE);
+  
+  if (!deviceKeyId) {
+    // Generate new random device key ID
+    deviceKeyId = crypto.getRandomValues(new Uint8Array(32));
+    const keyIdBase64 = btoa(String.fromCharCode(...deviceKeyId));
+    localStorage.setItem(DEVICE_KEY_STORAGE, keyIdBase64);
+  } else {
+    // Decode existing key ID
+    try {
+      deviceKeyId = Uint8Array.from(atob(deviceKeyId), c => c.charCodeAt(0));
+    } catch (e) {
+      // Invalid key ID, generate new one
+      deviceKeyId = crypto.getRandomValues(new Uint8Array(32));
+      const keyIdBase64 = btoa(String.fromCharCode(...deviceKeyId));
+      localStorage.setItem(DEVICE_KEY_STORAGE, keyIdBase64);
+    }
+  }
+  
+  // Derive encryption key from device key ID
   const encoder = new TextEncoder();
-  const data = encoder.encode(keyMaterial);
+  const data = encoder.encode(String.fromCharCode(...deviceKeyId));
   
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   encryptionKey = await crypto.subtle.importKey(
@@ -21,7 +44,41 @@ async function getEncryptionKey() {
     ['encrypt', 'decrypt']
   );
   
+  // Generate old key for migration (only if not already migrated)
+  if (!localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
+    const oldKeyMaterial = `${window.location.origin}${navigator.userAgent}`;
+    const oldData = encoder.encode(oldKeyMaterial);
+    const oldHashBuffer = await crypto.subtle.digest('SHA-256', oldData);
+    oldEncryptionKey = await crypto.subtle.importKey(
+      'raw',
+      oldHashBuffer,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+  
   return encryptionKey;
+}
+
+async function getOldEncryptionKey() {
+  if (oldEncryptionKey) return oldEncryptionKey;
+  if (localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) return null; // Already migrated
+  
+  // Generate old key for migration
+  const oldKeyMaterial = `${window.location.origin}${navigator.userAgent}`;
+  const encoder = new TextEncoder();
+  const oldData = encoder.encode(oldKeyMaterial);
+  const oldHashBuffer = await crypto.subtle.digest('SHA-256', oldData);
+  oldEncryptionKey = await crypto.subtle.importKey(
+    'raw',
+    oldHashBuffer,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+  
+  return oldEncryptionKey;
 }
 
 async function encryptData(data) {
@@ -50,14 +107,27 @@ async function encryptData(data) {
   }
 }
 
-async function decryptData(encryptedData) {
+async function decryptData(encryptedData, keyToUse = null) {
   try {
     if (!encryptedData) return null;
     
-    const key = await getEncryptionKey();
+    // Validate base64 format before attempting decryption
+    try {
+      atob(encryptedData);
+    } catch (e) {
+      // Invalid base64 format
+      return null;
+    }
+    
+    const key = keyToUse || await getEncryptionKey();
     
     // Convert from base64
     const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
+    
+    // Validate minimum length (IV + at least some encrypted data)
+    if (combined.length < 13) {
+      return null;
+    }
     
     // Extract IV and encrypted data
     const iv = combined.slice(0, 12);
@@ -70,18 +140,51 @@ async function decryptData(encryptedData) {
     );
     
     const decoder = new TextDecoder();
-    return JSON.parse(decoder.decode(decrypted));
-  } catch (error) {
-    // Decryption can fail if:
-    // 1. Data was encrypted with a different key (user agent changed, different device)
-    // 2. Data is corrupted
-    // 3. Invalid format
-    // This is expected and handled gracefully - only log in debug mode
-    if (window.location.search.includes('debug=1')) {
-      console.warn('Decryption failed (expected if key changed or data corrupted):', error.name);
+    const parsed = JSON.parse(decoder.decode(decrypted));
+    
+    // Validate decrypted data structure (basic integrity check)
+    if (parsed === null || (typeof parsed !== 'object' && typeof parsed !== 'string' && !Array.isArray(parsed))) {
+      return null;
     }
+    
+    return parsed;
+  } catch (error) {
+    // Decryption failed - return null to allow migration attempt
     return null;
   }
+}
+
+async function decryptDataWithMigration(encryptedData) {
+  if (!encryptedData) return null;
+  
+  // Try new key first
+  const result = await decryptData(encryptedData);
+  if (result !== null) {
+    return result;
+  }
+  
+  // If new key failed and not yet migrated, try old key
+  if (!localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
+    const oldKey = await getOldEncryptionKey();
+    if (oldKey) {
+      const oldResult = await decryptData(encryptedData, oldKey);
+      if (oldResult !== null) {
+        // Successfully decrypted with old key - return with migration marker
+        // Use a Symbol-like approach: add a non-enumerable property
+        const migratedData = oldResult;
+        Object.defineProperty(migratedData, '__migrated_from_old_key__', {
+          value: true,
+          enumerable: false,
+          writable: false,
+          configurable: true
+        });
+        return migratedData;
+      }
+    }
+  }
+  
+  // Both keys failed - data is corrupted or invalid
+  return null;
 }
 
 // ========== Input Validation ==========
@@ -141,16 +244,43 @@ function escapeHtml(s) {
 }
 
 // ========== JSON Validation ==========
+function checkPrototypePollution(obj, path = '') {
+  if (obj === null || typeof obj !== 'object') {
+    return null;
+  }
+  
+  // Check for dangerous properties in current object
+  if (Array.isArray(obj)) {
+    // Check array elements
+    for (let i = 0; i < obj.length; i++) {
+      const result = checkPrototypePollution(obj[i], `${path}[${i}]`);
+      if (result) return result;
+    }
+  } else {
+    // Check object properties
+    const ownProps = Object.keys(obj);
+    for (const prop of ownProps) {
+      // Check for dangerous property names
+      if (prop === '__proto__' || prop === 'constructor' || prop === 'prototype') {
+        return { valid: false, error: `Invalid JSON structure: dangerous property "${prop}" detected at ${path || 'root'}` };
+      }
+      
+      // Recursively check nested objects/arrays
+      const result = checkPrototypePollution(obj[prop], path ? `${path}.${prop}` : prop);
+      if (result) return result;
+    }
+  }
+  
+  return null;
+}
+
 function validateJSON(jsonString) {
   try {
     const parsed = JSON.parse(jsonString);
-    // Check for prototype pollution (only check own properties, not inherited)
-    if (typeof parsed === 'object' && parsed !== null) {
-      // Only check direct properties, not inherited ones
-      const ownProps = Object.keys(parsed);
-      if (ownProps.includes('__proto__') || ownProps.includes('constructor')) {
-        return { valid: false, error: 'Invalid JSON structure: dangerous properties detected' };
-      }
+    // Check for prototype pollution in nested structures
+    const pollutionCheck = checkPrototypePollution(parsed);
+    if (pollutionCheck) {
+      return pollutionCheck;
     }
     return { valid: true, data: parsed };
   } catch (error) {
@@ -289,7 +419,7 @@ function validateProgramStructure(program) {
 // Make functions available globally for use in app.js
 if (typeof window !== 'undefined') {
   window.encryptData = encryptData;
-  window.decryptData = decryptData;
+  window.decryptData = decryptDataWithMigration;
   window.validateUrl = validateUrl;
   window.validatePhone = validatePhone;
   window.validateEmail = validateEmail;
@@ -307,7 +437,7 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     encryptData,
-    decryptData,
+    decryptData: decryptDataWithMigration,
     validateUrl,
     validatePhone,
     validateEmail,

@@ -26,61 +26,17 @@ let selectedServiceDomains = [];
 let selectedSudServices = [];
 let verificationRecencyDays = null;
 
-// Load encrypted data
-async function loadEncryptedData(key, defaultValue = []) {
-  try {
-    const encrypted = localStorage.getItem(`encrypted_${key}`);
-    if (!encrypted) return defaultValue;
-    if (typeof window.decryptData === 'function') {
-      const decrypted = await window.decryptData(encrypted);
-      // If decryption failed (returns null), data may be corrupted or encrypted with different key
-      // Clear the corrupted data to prevent repeated failures
-      if (decrypted === null && encrypted) {
-        // Only clear if we're sure it's corrupted (not just missing)
-        // Check if it looks like valid base64
-        try {
-          atob(encrypted);
-          // Valid base64 but decryption failed - likely key mismatch, clear it
-          localStorage.removeItem(`encrypted_${key}`);
-        } catch {
-          // Invalid base64 - already corrupted, clear it
-          localStorage.removeItem(`encrypted_${key}`);
-        }
-      }
-      return decrypted || defaultValue;
-    }
-    // Fallback if security.js not loaded
-    return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
-  } catch (error) {
-    // Only log unexpected errors, not expected decryption failures
-    if (!error.message || !error.message.includes('OperationError')) {
-    console.error(`Error loading ${key}:`, error);
-    }
-    return defaultValue;
-  }
-}
+// Use unified storage functions from js/modules/storage.js
+// These are loaded before app.js and available on window object
+const loadEncryptedData = window.loadEncryptedData || async function(key, defaultValue = []) {
+  // Fallback if storage.js not loaded
+  return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
+};
 
-async function saveEncryptedData(key, data) {
-  try {
-    if (typeof window.encryptData === 'function') {
-      const encrypted = await window.encryptData(data);
-      if (encrypted) {
-        localStorage.setItem(`encrypted_${key}`, encrypted);
-        return;
-      }
-    }
-    // Fallback if security.js not loaded
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error(`Error saving ${key}:`, error);
-    // Fallback to unencrypted storage
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {
-      console.error('Failed to save data:', e);
-    }
-  }
-}
+const saveEncryptedData = window.saveEncryptedData || async function(key, data) {
+  // Fallback if storage.js not loaded
+  localStorage.setItem(key, JSON.stringify(data));
+};
 
 // Initialize encrypted storage
 let favorites = new Set();
@@ -967,7 +923,7 @@ function parseSmartSearch(query) {
   if (!foundMultiLocation) {
     // Check for city matches (prioritize longer matches first)
     // Only match if city appears as a standalone word or at the end
-    const sortedCities = cities.sort((a, b) => b.length - a.length);
+    const sortedCities = [...cities].sort((a, b) => b.length - a.length);
     for (const city of sortedCities) {
       // Match city only if it's a complete word (word boundary) or at start/end
       const cityPattern = new RegExp(`(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');

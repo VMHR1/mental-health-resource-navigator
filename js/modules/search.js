@@ -152,7 +152,7 @@ function parseSmartSearch(query, cities) {
   }
   
   if (!foundMultiLocation) {
-    const sortedCities = cities.sort((a, b) => b.length - a.length);
+    const sortedCities = [...cities].sort((a, b) => b.length - a.length);
     for (const city of sortedCities) {
       if(q.includes(city)) {
         if (city === 'desoto' || city === 'de soto') {

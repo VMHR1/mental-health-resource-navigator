@@ -1,19 +1,59 @@
 // ========== Storage Module ==========
-// Handles encrypted storage and user data persistence
+// Handles encrypted storage and user data persistence with migration support
 
-// Load encrypted data
+// Load encrypted data with migration and corruption handling
 async function loadEncryptedData(key, defaultValue = []) {
   try {
     const encrypted = localStorage.getItem(`encrypted_${key}`);
     if (!encrypted) return defaultValue;
+    
     if (typeof window.decryptData === 'function') {
-      const decrypted = await window.decryptData(encrypted);
-      return decrypted || defaultValue;
+      const result = await window.decryptData(encrypted);
+      
+      // Handle migration case (decrypted with old key)
+      // Check for migration marker (non-enumerable property)
+      if (result && typeof result === 'object' && result.__migrated_from_old_key__ === true) {
+        // Remove the migration marker
+        delete result.__migrated_from_old_key__;
+        // Re-encrypt with new key and save
+        if (typeof window.encryptData === 'function') {
+          const reEncrypted = await window.encryptData(result);
+          if (reEncrypted) {
+            localStorage.setItem(`encrypted_${key}`, reEncrypted);
+          }
+        }
+        return result || defaultValue;
+      }
+      
+      // Normal decryption result
+      if (result !== null) {
+        return result;
+      }
+      
+      // Decryption failed - check if corrupted
+      // If decryption failed (returns null), data may be corrupted or encrypted with different key
+      // Clear the corrupted data to prevent repeated failures
+      if (encrypted) {
+        // Only clear if we're sure it's corrupted (not just missing)
+        // Check if it looks like valid base64
+        try {
+          atob(encrypted);
+          // Valid base64 but decryption failed - likely key mismatch or corrupted, clear it
+          localStorage.removeItem(`encrypted_${key}`);
+        } catch {
+          // Invalid base64 - already corrupted, clear it
+          localStorage.removeItem(`encrypted_${key}`);
+        }
+      }
     }
+    
     // Fallback if security.js not loaded
     return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
   } catch (error) {
-    console.error(`Error loading ${key}:`, error);
+    // Only log unexpected errors, not expected decryption failures
+    if (!error.message || !error.message.includes('OperationError')) {
+      console.error(`Error loading ${key}:`, error);
+    }
     return defaultValue;
   }
 }
