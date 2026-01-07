@@ -78,6 +78,7 @@ function copyStaticAssets() {
     'js/program-detail.js',
     'js/modules/distance.js',
     'js/modules/filters.js',
+    'js/modules/sort.js',
     'js/modules/performance.js',
     'js/modules/render.js',
     'js/modules/events.js'

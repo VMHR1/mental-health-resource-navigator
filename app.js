@@ -2202,11 +2202,49 @@ function render(){
       activeList = scoredPrograms.map(sp => sp.program);
     } else {
       // For other sorts, apply the selected sort but relevance is still calculated
-      activeList = sortPrograms(activeList);
+      // Use sort module if available, fallback to local function
+      const sortFn = typeof window.sortPrograms === 'function'
+        ? (list) => {
+            const options = {
+              safeStr: window.safeStr,
+              locLabel: window.locLabel,
+              calculateProgramDistance: window.calculateProgramDistance,
+              userLocation: userLocation,
+              SORT_OPTIONS: window.SORT_OPTIONS || {
+                RELEVANCE: 'relevance',
+                NAME: 'name',
+                VERIFIED: 'verified',
+                LOCATION: 'location',
+                DISTANCE: 'distance'
+              }
+            };
+            return window.sortPrograms(list, currentSort, options);
+          }
+        : sortPrograms; // Fallback to local function
+      activeList = sortFn(activeList);
     }
   } else {
     // No query - just apply normal sorting
-    activeList = sortPrograms(activeList);
+    // Use sort module if available, fallback to local function
+    const sortFn = typeof window.sortPrograms === 'function'
+      ? (list) => {
+          const options = {
+            safeStr: window.safeStr,
+            locLabel: window.locLabel,
+            calculateProgramDistance: window.calculateProgramDistance,
+            userLocation: userLocation,
+            SORT_OPTIONS: window.SORT_OPTIONS || {
+              RELEVANCE: 'relevance',
+              NAME: 'name',
+              VERIFIED: 'verified',
+              LOCATION: 'location',
+              DISTANCE: 'distance'
+            }
+          };
+          return window.sortPrograms(list, currentSort, options);
+        }
+      : sortPrograms; // Fallback to local function
+    activeList = sortFn(activeList);
   }
   
   // Store for progressive loading
