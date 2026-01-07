@@ -650,9 +650,29 @@ const els = {
 document.addEventListener('click', (e) => {
   // Allow navigation links (footer links, etc.) to work normally
   const link = e.target.closest('a');
-  if (link && link.href && (link.href.endsWith('privacy.html') || link.href.endsWith('terms.html') || link.href.includes('/privacy.html') || link.href.includes('/terms.html'))) {
-    // Allow normal navigation for privacy/terms links
-    return;
+  if (link) {
+    // Check if link is in footer (most reliable indicator)
+    const isInFooter = link.closest('footer');
+    if (isInFooter) {
+      // Allow all footer links to work normally
+      return;
+    }
+    // Also check the href attribute directly
+    const hrefAttr = link.getAttribute('href');
+    if (hrefAttr && (hrefAttr === 'privacy.html' || hrefAttr === 'terms.html' || 
+        hrefAttr.includes('privacy.html') || hrefAttr.includes('terms.html'))) {
+      // Allow normal navigation for privacy/terms links - don't prevent default
+      return;
+    }
+    // Also check the resolved href pathname as fallback
+    try {
+      const linkUrl = new URL(link.href);
+      if (linkUrl.pathname.endsWith('privacy.html') || linkUrl.pathname.endsWith('terms.html')) {
+        return;
+      }
+    } catch (e) {
+      // If URL parsing fails, continue with normal handler
+    }
   }
   
   // Handle expand button clicks - check if click is on the button or its child (chev icon)
