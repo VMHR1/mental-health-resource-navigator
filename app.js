@@ -786,261 +786,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ========== Fuzzy Search Utilities ==========
-function levenshteinDistance(str1, str2) {
-  const m = str1.length;
-  const n = str2.length;
-  const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
-  
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-  
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = Math.min(
-          dp[i - 1][j] + 1,     // deletion
-          dp[i][j - 1] + 1,     // insertion
-          dp[i - 1][j - 1] + 1  // substitution
-        );
-      }
-    }
-  }
-  return dp[m][n];
-}
-
-function fuzzyMatch(query, text, threshold = 0.7) {
-  if (!query || !text) return false;
-  const q = query.toLowerCase();
-  const t = text.toLowerCase();
-  
-  // Exact match
-  if (t.includes(q)) return true;
-  
-  // Word-boundary aware matching for multi-word queries
-  const qWords = q.split(/\s+/).filter(w => w.length > 0);
-  if (qWords.length > 1) {
-    // Check if all query words appear in text (with word boundaries)
-    const allWordsMatch = qWords.every(qw => {
-      // Try exact word match first
-      const wordBoundaryRegex = new RegExp(`\\b${qw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-      if (wordBoundaryRegex.test(t)) return true;
-      // Then try substring match
-      if (t.includes(qw)) return true;
-      // Finally try fuzzy match for longer words
-      if (qw.length > 3) {
-        return fuzzyMatchSingleWord(qw, t, threshold);
-      }
-      return false;
-    });
-    if (allWordsMatch) return true;
-  }
-  
-  // Fuzzy match for shorter queries
-  if (q.length <= 3) {
-    const distance = levenshteinDistance(q, t.substring(0, q.length + 2));
-    return distance <= 1;
-  }
-  
-  // For longer queries, check if query is similar to any substring
-  const maxDistance = Math.floor(q.length * (1 - threshold));
-  for (let i = 0; i <= t.length - q.length; i++) {
-    const substring = t.substring(i, i + q.length + maxDistance);
-    const distance = levenshteinDistance(q, substring.substring(0, q.length));
-    if (distance <= maxDistance) return true;
-  }
-  
-  return false;
-}
-
-// Helper function for single word fuzzy matching
-function fuzzyMatchSingleWord(query, text, threshold = 0.7) {
-  if (!query || !text) return false;
-  const q = query.toLowerCase();
-  const t = text.toLowerCase();
-  
-  if (t.includes(q)) return true;
-  
-  if (q.length <= 3) {
-    const distance = levenshteinDistance(q, t.substring(0, q.length + 2));
-    return distance <= 1;
-  }
-  
-  const maxDistance = Math.floor(q.length * (1 - threshold));
-  for (let i = 0; i <= t.length - q.length; i++) {
-    const substring = t.substring(i, i + q.length + maxDistance);
-    const distance = levenshteinDistance(q, substring.substring(0, q.length));
-    if (distance <= maxDistance) return true;
-  }
-  
-  return false;
-}
-
-function findBestCityMatch(query, cities) {
-  const q = query.toLowerCase().trim();
-  if (!q) return null;
-  
-  // Exact match first
-  for (const city of cities) {
-    const cityLower = city.toLowerCase();
-    if (cityLower === q || cityLower.includes(q) || q.includes(cityLower)) {
-      return city;
-    }
-  }
-  
-  // Fuzzy match
-  let bestMatch = null;
-  let bestScore = Infinity;
-  
-  for (const city of cities) {
-    const cityLower = city.toLowerCase();
-    const distance = levenshteinDistance(q, cityLower);
-    const maxLen = Math.max(q.length, cityLower.length);
-    const similarity = 1 - (distance / maxLen);
-    
-    if (similarity >= 0.6 && distance < bestScore) {
-      bestScore = distance;
-      bestMatch = city;
-    }
-  }
-  
-  return bestMatch;
-}
-
 // ========== Smart Search Parser ==========
-function parseSmartSearch(query) {
-  const q = query.toLowerCase();
-  const filters = {
-    loc: '',
-    locs: [], // Multi-location support
-    age: '',
-    minAge: null, // For "13 and up" type searches
-    care: '',
-    showCrisis: false,
-    organization: '' // Store detected organization name
-  };
-  
-  // Location detection - handle both "desoto" and "de soto" and multi-location
-  const cities = [
-    'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton', 
-    'arlington', 'fort worth', 'mansfield', 'keller', 'desoto', 'de soto',
-    'rockwall', 'sherman', 'forney', 'burleson', 'flower mound', 
-    'the colony', 'bedford', 'lewisville', 'carrollton', 'garland', 
-    'mesquite', 'irving', 'grand prairie', 'corsicana'
-  ];
-  
-  // Check for multi-location patterns: "Dallas or Plano", "Dallas, Plano", "Dallas/Plano"
-  const multiLocationPatterns = [
-    /\b([a-z\s]+)\s+(?:or|,|and|\/)\s+([a-z\s]+)\b/i,
-    /\b([a-z\s]+)\s*,\s*([a-z\s]+)\b/i
-  ];
-  
-  let foundMultiLocation = false;
-  for (const pattern of multiLocationPatterns) {
-    const match = q.match(pattern);
-    if (match) {
-      const city1 = findBestCityMatch(match[1].trim(), cities);
-      const city2 = findBestCityMatch(match[2].trim(), cities);
-      if (city1 && city2) {
-        filters.locs = [city1, city2];
-        foundMultiLocation = true;
-        break;
-      }
-    }
-  }
-  
-  // Single location detection if no multi-location found
-  // Use word boundaries to avoid matching city names embedded in organization names
-  if (!foundMultiLocation) {
-    // Check for city matches (prioritize longer matches first)
-    // Only match if city appears as a standalone word or at the end
-    const sortedCities = [...cities].sort((a, b) => b.length - a.length);
-    for (const city of sortedCities) {
-      // Match city only if it's a complete word (word boundary) or at start/end
-      const cityPattern = new RegExp(`(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
-      if (cityPattern.test(q)) {
-        // Double-check it's not part of a known organization name pattern
-        // (e.g., "Dallas" in "Dallas Children's Health" should still match, but be careful)
-        // Normalize city name - handle "de soto" -> "De Soto", "desoto" -> "De Soto"
-        if (city === 'desoto' || city === 'de soto') {
-          filters.loc = 'De Soto';
-        } else {
-          filters.loc = city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        }
-        break; // Use first (longest) match
-      }
-    }
-    
-    // Try fuzzy matching if no exact match
-    if (!filters.loc) {
-      const fuzzyMatch = findBestCityMatch(q, cities);
-      if (fuzzyMatch) {
-        if (fuzzyMatch === 'desoto' || fuzzyMatch === 'de soto') {
-          filters.loc = 'De Soto';
-        } else {
-          filters.loc = fuzzyMatch.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        }
-      }
-    }
-  }
-  
-  // Try to detect organization name from query
-  // Look for common organization patterns (but don't be too aggressive)
-  // This is mainly for exact matching when user types an organization name
-  if (ready && programs.length > 0 && !filters.loc) {
-    // Check if query exactly matches an organization name
-    const exactOrg = programs.find(p => 
-      safeStr(p.organization).toLowerCase() === q
-    );
-    if (exactOrg) {
-      filters.organization = exactOrg.organization;
-    }
-  }
-  
-  // Age detection - handle multiple patterns
-  // Pattern 1: "13 and up" or "13+" or "13 years and up"
-  const andUpMatch = q.match(/\b(\d{1,2})\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older)\b/i);
-  if (andUpMatch) {
-    filters.minAge = Number(andUpMatch[1]);
-    // Set age to the minimum for filtering purposes
-    filters.age = andUpMatch[1];
-  } else {
-    // Pattern 2: Exact age like "13 year old" or "13"
-    const ageMatch = q.match(/\b(\d{1,2})\s*(?:year|yr|y\.o\.|yo)?\s*(?:old)?\b/);
-    if(ageMatch) {
-      filters.age = ageMatch[1];
-    }
-  }
-  
-  // Level of care detection
-  if(q.includes('php') || q.includes('partial hospitalization')) {
-    filters.care = 'Partial Hospitalization (PHP)';
-  } else if(q.includes('iop') || q.includes('intensive outpatient')) {
-    filters.care = 'Intensive Outpatient (IOP)';
-  } else if(q.includes('outpatient') && !q.includes('intensive')) {
-    filters.care = 'Outpatient';
-  } else if(q.includes('navigation')) {
-    filters.care = 'Navigation';
-  }
-  
-  // Service domain detection - eating disorders
-  if(q.includes('eating disorder') || q.includes('anorexia') || q.includes('bulimia') || q.includes('binge eating')) {
-    filters.serviceDomain = 'eating_disorders';
-  }
-  
-  // Service domain detection - substance use
-  if(q.includes('substance use') || q.includes('substance abuse') || q.includes('drug treatment') || q.includes('alcohol treatment') || q.includes('addiction')) {
-    filters.serviceDomain = 'substance_use';
-  }
-  
-  // Crisis detection
-  if(q.includes('crisis') || q.includes('emergency') || q.includes('urgent')) {
-    filters.showCrisis = true;
-  }
-  
-  return filters;
-}
+// Uses js/modules/search.js parseSmartSearch (via window.parseSmartSearch)
+// Note: We use the module function directly and add organization detection inline where needed
+// to avoid naming conflicts and recursion issues
 
 // ========== Age Dropdown Custom Component ==========
 function initAgeDropdown(){
@@ -1453,7 +1202,7 @@ function calculateRelevanceScore(program, query) {
       score += 80;
     } else if (qLower.includes(orgLower)) {
       score += 75;
-    } else if (fuzzyMatch(qLower, orgLower, 0.85)) {
+    } else if (window.fuzzyMatch && window.fuzzyMatch(qLower, orgLower, 0.85)) {
       score += 60;
     }
     
@@ -1462,7 +1211,7 @@ function calculateRelevanceScore(program, query) {
       score += 70;
     } else if (qLower.includes(progLower)) {
       score += 65;
-    } else if (fuzzyMatch(qLower, progLower, 0.85)) {
+    } else if (window.fuzzyMatch && window.fuzzyMatch(qLower, progLower, 0.85)) {
       score += 50;
     }
   }
@@ -1509,7 +1258,20 @@ function matchesFilters(p){
   const onlyVirtual = els.onlyVirtual?.checked || false;
 
   // Parse smart search to get additional filters
-  const parsed = parseSmartSearch(els.q?.value || '');
+  // Use module function directly, then add organization detection if needed
+  const query = els.q?.value || '';
+  const parsed = typeof window.parseSmartSearch === 'function' 
+    ? window.parseSmartSearch(query)
+    : { loc: '', locs: [], age: '', minAge: null, care: '', showCrisis: false, organization: '' };
+  
+  // App-specific: Try to detect organization name from query
+  if (ready && programs.length > 0 && !parsed.loc && typeof window.parseSmartSearch === 'function') {
+    const q = query.toLowerCase();
+    const exactOrg = programs.find(p => safeStr(p.organization).toLowerCase() === q);
+    if (exactOrg) {
+      parsed.organization = exactOrg.organization;
+    }
+  }
   const searchMinAge = parsed.minAge;
 
   // Text search - check if query terms appear in program fields
@@ -1568,13 +1330,13 @@ function matchesFilters(p){
             // Prioritize organization and program name matches
             const orgMatch = terms.every(term => {
               if (orgLower.includes(term)) return true;
-              if (term.length > 3) return fuzzyMatch(term, orgLower, 0.85);
+              if (term.length > 3) return window.fuzzyMatch && window.fuzzyMatch(term, orgLower, 0.85);
               return false;
             });
             
             const progMatch = terms.every(term => {
               if (progLower.includes(term)) return true;
-              if (term.length > 3) return fuzzyMatch(term, progLower, 0.85);
+              if (term.length > 3) return window.fuzzyMatch && window.fuzzyMatch(term, progLower, 0.85);
               return false;
             });
             
@@ -1587,7 +1349,7 @@ function matchesFilters(p){
                 if (hay.includes(term)) return true;
                 // Fuzzy match for terms longer than 3 characters
                 if (term.length > 3) {
-                  return fuzzyMatch(term, hay, 0.7);
+                  return window.fuzzyMatch && window.fuzzyMatch(term, hay, 0.7);
                 }
                 return false;
               });
@@ -1608,7 +1370,7 @@ function matchesFilters(p){
       if (searchCity === 'de soto') {
         return programCities.some(c => c === 'de soto' || c === 'desoto');
       }
-      return programCities.some(c => c === searchCity || fuzzyMatch(searchCity, c, 0.8));
+      return programCities.some(c => c === searchCity || (window.fuzzyMatch && window.fuzzyMatch(searchCity, c, 0.8)));
     });
     if (!matches) return false;
   } else {
@@ -1621,7 +1383,7 @@ function matchesFilters(p){
         if (!cities.some(c => c === 'de soto' || c === 'desoto')) return false;
       } else {
         // Use fuzzy matching for location
-        const matches = cities.some(c => c === normalizedLocation || fuzzyMatch(normalizedLocation, c, 0.8));
+        const matches = cities.some(c => c === normalizedLocation || (window.fuzzyMatch && window.fuzzyMatch(normalizedLocation, c, 0.8)));
         if (!matches) return false;
       }
     }
@@ -3291,7 +3053,7 @@ function generateAutocompleteSuggestions(query) {
           exactMatches.push({ type: 'program', text: programName, program: p, isExact: true });
         } else if (progLower.includes(q) || q.includes(progLower)) {
           exactMatches.push({ type: 'program', text: programName, program: p, isExact: false });
-        } else if (fuzzyMatch(q, programName, 0.6) && !seen.has(programName)) {
+        } else if (window.fuzzyMatch && window.fuzzyMatch(q, programName, 0.6) && !seen.has(programName)) {
           fuzzyMatches.push({ type: 'program', text: programName, program: p, isExact: false });
           seen.add(programName);
         }
@@ -3306,7 +3068,7 @@ function generateAutocompleteSuggestions(query) {
           exactMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: true });
         } else if (orgLower.includes(q) || q.includes(orgLower)) {
           exactMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: false });
-        } else if (fuzzyMatch(q, orgName, 0.6) && !seen.has(orgName)) {
+        } else if (window.fuzzyMatch && window.fuzzyMatch(q, orgName, 0.6) && !seen.has(orgName)) {
           fuzzyMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: false });
           seen.add(orgName);
         }
@@ -3333,7 +3095,7 @@ function generateAutocompleteSuggestions(query) {
     'Arlington', 'Fort Worth', 'Mansfield', 'Keller', 'De Soto', 'Rockwall'];
   
   cities.forEach(city => {
-    if (fuzzyMatch(q, city.toLowerCase(), 0.7) && !seen.has(city)) {
+    if (window.fuzzyMatch && window.fuzzyMatch(q, city.toLowerCase(), 0.7) && !seen.has(city)) {
       suggestions.push({ type: 'location', text: `${city} programs` });
       seen.add(city);
     }
@@ -3934,7 +3696,19 @@ function bind(){
   on(els.smartSearchBtn, "click", () => {
     hideAutocomplete(); // Close suggestions before search to prevent tap interception
     const query = els.q.value;
-    const parsed = parseSmartSearch(query);
+    // Use module function directly
+    const parsed = typeof window.parseSmartSearch === 'function' 
+      ? window.parseSmartSearch(query)
+      : { loc: '', locs: [], age: '', minAge: null, care: '', showCrisis: false, organization: '' };
+    
+    // App-specific: Try to detect organization name from query
+    if (ready && programs.length > 0 && !parsed.loc && typeof window.parseSmartSearch === 'function') {
+      const q = query.toLowerCase();
+      const exactOrg = programs.find(p => safeStr(p.organization).toLowerCase() === q);
+      if (exactOrg) {
+        parsed.organization = exactOrg.organization;
+      }
+    }
     
     if(parsed.loc) els.loc.value = parsed.loc;
     if(parsed.age) {

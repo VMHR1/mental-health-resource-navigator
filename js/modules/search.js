@@ -151,19 +151,27 @@ function parseSmartSearch(query, cities) {
     }
   }
   
+  // Single location detection if no multi-location found
+  // Use word boundaries to avoid matching city names embedded in organization names
   if (!foundMultiLocation) {
+    // Check for city matches (prioritize longer matches first)
+    // Only match if city appears as a standalone word or at the end
     const sortedCities = [...cities].sort((a, b) => b.length - a.length);
     for (const city of sortedCities) {
-      if(q.includes(city)) {
+      // Match city only if it's a complete word (word boundary) or at start/end
+      const cityPattern = new RegExp(`(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
+      if (cityPattern.test(q)) {
+        // Normalize city name - handle "de soto" -> "De Soto", "desoto" -> "De Soto"
         if (city === 'desoto' || city === 'de soto') {
           filters.loc = 'De Soto';
         } else {
           filters.loc = city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
-        break;
+        break; // Use first (longest) match
       }
     }
     
+    // Try fuzzy matching if no exact match
     if (!filters.loc) {
       const fuzzyMatch = findBestCityMatch(q, cities);
       if (fuzzyMatch) {
@@ -176,12 +184,15 @@ function parseSmartSearch(query, cities) {
     }
   }
   
-  // Age detection
+  // Age detection - handle multiple patterns
+  // Pattern 1: "13 and up" or "13+" or "13 years and up"
   const andUpMatch = q.match(/\b(\d{1,2})\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older)\b/i);
   if (andUpMatch) {
     filters.minAge = Number(andUpMatch[1]);
+    // Set age to the minimum for filtering purposes
     filters.age = andUpMatch[1];
   } else {
+    // Pattern 2: Exact age like "13 year old" or "13"
     const ageMatch = q.match(/\b(\d{1,2})\s*(?:year|yr|y\.o\.|yo)?\s*(?:old)?\b/);
     if(ageMatch) {
       filters.age = ageMatch[1];
