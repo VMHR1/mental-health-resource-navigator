@@ -1,12 +1,10 @@
 ---
-description: Defines and validates data models for mental health program records and related service mappings
+description: Data models and program validation rules for mental health service directory management.
 ---
 
-
-# data-models-programs
-
+# === USER INSTRUCTIONS ===
+description: Defines and validates data models for mental health program records and related service mappings
 Core data models govern the structure and validation of mental health program records:
-
 ## Program Schema
 - Required fields:
   - program_id: Unique identifier 
@@ -16,14 +14,12 @@ Core data models govern the structure and validation of mental health program re
   - service_domains: Mental health/substance use/co-occurring
   - age_ranges: Supported age groups with "and up" handling
   - service_areas: Geographic coverage regions
-
 ## Service Area Models
 - Point location (single facility)
 - County coverage (multiple jurisdictions)
 - Statewide provider designation
 - Multi-region service areas
 - Virtual/telehealth delivery flags
-
 ## Validation Rules
 - Age range consistency checks
 - Service area overlap detection
@@ -31,7 +27,6 @@ Core data models govern the structure and validation of mental health program re
   - Physical location for in-person services
   - Contact methods for virtual offerings
   - Hybrid service documentation requirements
-
 ## Verification Tracking
 - 90-day reverification requirement
 - Multiple verification source types:
@@ -43,14 +38,75 @@ Core data models govern the structure and validation of mental health program re
   - Street level
   - ZIP code
   - City approximation
-
 ## Service Domain Mappings
 - Care level hierarchies
 - Service type categorization
 - Age group overlap handling
 - Geographic coverage resolution
-
 The data models ensure consistent representation of mental health programs while enforcing domain-specific business rules around verification, service areas, and program accessibility.
+# === END USER INSTRUCTIONS ===
+
+# data-models-programs
+
+## Core Data Models
+
+### Program Model Validation
+- Required fields enforcement:
+  - program_id: Unique identifier
+  - organization: Service provider details
+  - program_name: Official program name
+  - level_of_care: Treatment intensity classification
+- Service domain validations for specialized categories:
+  - Mental health services
+  - Substance use treatment 
+  - Co-occurring disorders
+  - Eating disorder programs
+- 90-day freshness validation for program verification status
+
+### Service Area Models
+- Point-based service locations
+- County-level coverage areas
+- Statewide service boundaries
+- Multi-region service networks
+- Virtual/telehealth designation handling
+
+### Program Relationships
+Importance Score: 85
+- Service domain mappings
+- Care level hierarchies (PHP, IOP, Outpatient)
+- Crisis service flagging
+- Program relationship scoring based on:
+  - Geographic proximity
+  - Care level compatibility
+  - Organizational alignment
+
+### Search Domain Models
+- Age range eligibility parsing
+- Service area boundary calculations
+- Multi-location pattern recognition
+- Crisis service identification rules
+- Virtual service option detection
+- Care level classification matching
+
+## Data Validation Rules
+
+### Program Verification
+- 90-day maximum age for verified status
+- Required verification source documentation
+- Multi-step verification workflow
+- Crisis service special handling rules
+
+### Service Coverage
+- Geographic boundary validation
+- Virtual service designation rules
+- Multiple service location handling
+- Crisis service accessibility requirements
+
+File Paths:
+/js/data-validator.js
+/js/modules/distance.js
+/js/modules/search.js
+/js/program-detail.js
 
 $END$
 

@@ -1,58 +1,103 @@
 ---
-description: Specification for mental health program search, matching and prioritization algorithms
+description: Specification for program search, matching algorithms, and crisis resource prioritization in mental health services context
 ---
 
-
-# algorithm-program-matching
-
+# === USER INSTRUCTIONS ===
+description: Specification for mental health program search, matching and prioritization algorithms
 Program matching logic score: 85/100
-
 ## Core Matching Components
-
 ### Location-Based Program Matching (/js/modules/distance.js)
 - Geographic service area calculations with multi-region support
 - Virtual/telehealth service delivery detection
 - Distance calculations incorporating service boundaries
 - Special handling for statewide and multi-region providers
-
 ### Mental Health Search Algorithm (/js/modules/search.js)
 - Domain-specific search for mental health programs
 - Smart parsing of mental health terminology and care levels
 - Program name and services fuzzy matching
 - Multi-city location awareness
-
 ### Program Matching Rules
 1. Service Area Logic:
 - Programs can serve multiple counties
 - Statewide provider special handling
 - Virtual delivery considerations
 - Multi-region coverage support
-
 2. Filtering Criteria:
 - Care level matching (PHP, IOP, Outpatient, Navigation, Crisis)
 - Service domain alignment (mental health, substance use, co-occurring)
 - Age range compatibility with "and up" edge cases
 - Geographic service area validation
-
 3. Crisis Resource Prioritization:
 - Emergency resource identification
 - Crisis program elevation in results
 - Immediate access service flagging
 - Geographic proximity weighting for crisis services
-
 ## Search Implementation Details
-
 ### Program Detail Processing
 - Care level based related program discovery
 - Virtual/hybrid delivery model detection
 - Insurance coverage validation
 - Accessibility requirement matching
-
 ### Validation Requirements
 - 90-day program reverification
 - Multiple verification source support
 - Location precision levels
 - Service area boundary verification
+# === END USER INSTRUCTIONS ===
+
+# algorithm-program-matching
+
+IMPORTANCE SCORE: 90/100
+
+Core Matching Components:
+
+1. Distance-Based Program Search
+- Mental health program distance calculations with specialized handling
+- Service area boundary determinations:
+  - Point-based locations
+  - County-based coverage
+  - Statewide service areas
+  - Multi-region boundaries
+- Virtual/telehealth service location exemptions
+
+2. Smart Search Implementation
+- Domain-specific program matching:
+  - Care level matching (PHP, IOP, Outpatient, Navigation)
+  - Age range eligibility interpretation
+  - Service domain detection (eating disorders, substance use, crisis)
+- Multi-location pattern recognition
+- Intelligent city-to-service-area mapping
+- Crisis resource prioritization rules
+
+3. Program Relationship Scoring
+- Location-based relationship scoring
+- Care level compatibility matching
+- Organization relationship weighting
+- Virtual service option detection
+- Crisis service priority handling
+
+Key Business Rules:
+1. Service Area Classifications:
+- Programs can define service areas through multiple methods
+- Virtual services bypass standard location restrictions
+- Crisis services receive special handling in location matching
+
+2. Program Matching Priority:
+- Crisis resources receive highest matching priority
+- Service domain matching (mental health, substance use, etc.)
+- Age range compatibility checks
+- Care level appropriateness verification
+
+3. Location Handling:
+- Multi-location support for single programs
+- Service area boundary calculations
+- Virtual service designation impacts
+- Crisis service visibility rules
+
+Relevant Files:
+- js/modules/search.js
+- js/modules/distance.js
+- js/program-detail.js
 
 $END$
 
