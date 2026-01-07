@@ -1,84 +1,170 @@
 // ========== Security Module ==========
 // Core security utilities for data encryption, validation, and protection
+//
+// IMPORTANT SECURITY NOTICE:
+// Client-side encryption in this module provides protection against offline storage theft
+// (e.g., someone copying localStorage/IndexedDB files). However, it does NOT protect against:
+// - XSS (Cross-Site Scripting) attacks
+// - Malware or malicious browser extensions
+// - Any JavaScript code executing in this origin
+// If an attacker can run JavaScript in this origin, they can access all encrypted data.
+// This encryption is for privacy, not security against active attackers.
 
 // ========== Encryption ==========
+// Client-side encryption provides protection against offline storage theft,
+// but does NOT protect against XSS or malware executing in the origin.
+// If an attacker can run JavaScript in this origin, they can access all data.
+
 let encryptionKey = null;
 let oldEncryptionKey = null; // For migration from old key system
 
+// Legacy constants (for migration only)
 const DEVICE_KEY_STORAGE = 'device_encryption_key';
 const OLD_KEY_MIGRATION_FLAG = 'encryption_key_migrated';
 
+// IndexedDB configuration
+const IDB_DB_NAME = 'app_security';
+const IDB_DB_VERSION = 1;
+const IDB_STORE_NAME = 'keys';
+const IDB_KEY_NAME = 'device_key_v1';
+
+// ========== IndexedDB Helper Functions ==========
+function openIndexedDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(IDB_DB_NAME, IDB_DB_VERSION);
+    
+    request.onerror = () => reject(new Error('Failed to open IndexedDB'));
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+        db.createObjectStore(IDB_STORE_NAME);
+      }
+    };
+  });
+}
+
+async function getKeyFromIndexedDB() {
+  try {
+    const db = await openIndexedDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([IDB_STORE_NAME], 'readonly');
+      const store = transaction.objectStore(IDB_STORE_NAME);
+      const request = store.get(IDB_KEY_NAME);
+      
+      request.onerror = () => reject(new Error('Failed to read key from IndexedDB'));
+      request.onsuccess = () => resolve(request.result);
+    });
+  } catch (error) {
+    console.error('IndexedDB error:', error);
+    return null;
+  }
+}
+
+async function saveKeyToIndexedDB(key) {
+  try {
+    const db = await openIndexedDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([IDB_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(IDB_STORE_NAME);
+      const request = store.put(key, IDB_KEY_NAME);
+      
+      request.onerror = () => reject(new Error('Failed to save key to IndexedDB'));
+      request.onsuccess = () => resolve();
+    });
+  } catch (error) {
+    console.error('IndexedDB error:', error);
+    throw error;
+  }
+}
+
+// ========== Encryption Key Management ==========
 async function getEncryptionKey() {
+  // Return cached key if available
   if (encryptionKey) return encryptionKey;
   
-  // Try to load or generate per-device key
-  let deviceKeyId = localStorage.getItem(DEVICE_KEY_STORAGE);
+  // Try to load from IndexedDB
+  let key = await getKeyFromIndexedDB();
   
-  if (!deviceKeyId) {
-    // Generate new random device key ID
-    deviceKeyId = crypto.getRandomValues(new Uint8Array(32));
-    const keyIdBase64 = btoa(String.fromCharCode(...deviceKeyId));
-    localStorage.setItem(DEVICE_KEY_STORAGE, keyIdBase64);
-  } else {
-    // Decode existing key ID
+  if (!key) {
+    // Generate new non-extractable key
+    key = await crypto.subtle.generateKey(
+      { name: 'AES-GCM', length: 256 },
+      false, // non-extractable
+      ['encrypt', 'decrypt']
+    );
+    
+    // Persist to IndexedDB
     try {
-      deviceKeyId = Uint8Array.from(atob(deviceKeyId), c => c.charCodeAt(0));
-    } catch (e) {
-      // Invalid key ID, generate new one
-      deviceKeyId = crypto.getRandomValues(new Uint8Array(32));
-      const keyIdBase64 = btoa(String.fromCharCode(...deviceKeyId));
-      localStorage.setItem(DEVICE_KEY_STORAGE, keyIdBase64);
+      await saveKeyToIndexedDB(key);
+    } catch (error) {
+      console.error('Failed to persist encryption key to IndexedDB:', error);
+      // Continue with in-memory key (will be lost on page reload)
+      // This is acceptable degradation - user can still use the app
     }
   }
   
-  // Derive encryption key from device key ID
-  const encoder = new TextEncoder();
-  const data = encoder.encode(String.fromCharCode(...deviceKeyId));
+  encryptionKey = key;
+  return encryptionKey;
+}
+
+// ========== Legacy Key Derivation (for migration only) ==========
+async function deriveLegacyKeyFromLocalStorage() {
+  const deviceKeyId = localStorage.getItem(DEVICE_KEY_STORAGE);
+  if (!deviceKeyId) return null;
   
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  encryptionKey = await crypto.subtle.importKey(
-    'raw',
-    hashBuffer,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
-  );
-  
-  // Generate old key for migration (only if not already migrated)
-  if (!localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
-    const oldKeyMaterial = `${window.location.origin}${navigator.userAgent}`;
-    const oldData = encoder.encode(oldKeyMaterial);
-    const oldHashBuffer = await crypto.subtle.digest('SHA-256', oldData);
-    oldEncryptionKey = await crypto.subtle.importKey(
+  try {
+    const deviceKeyIdBytes = Uint8Array.from(atob(deviceKeyId), c => c.charCodeAt(0));
+    const encoder = new TextEncoder();
+    const data = encoder.encode(String.fromCharCode(...deviceKeyIdBytes));
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return await crypto.subtle.importKey(
       'raw',
-      oldHashBuffer,
+      hashBuffer,
       { name: 'AES-GCM', length: 256 },
       false,
       ['encrypt', 'decrypt']
     );
+  } catch (error) {
+    console.warn('Failed to derive legacy key from localStorage:', error);
+    return null;
   }
-  
-  return encryptionKey;
 }
 
-async function getOldEncryptionKey() {
-  if (oldEncryptionKey) return oldEncryptionKey;
-  if (localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) return null; // Already migrated
-  
-  // Generate old key for migration
+async function deriveLegacyKeyFromOriginUA() {
   const oldKeyMaterial = `${window.location.origin}${navigator.userAgent}`;
   const encoder = new TextEncoder();
   const oldData = encoder.encode(oldKeyMaterial);
   const oldHashBuffer = await crypto.subtle.digest('SHA-256', oldData);
-  oldEncryptionKey = await crypto.subtle.importKey(
+  return await crypto.subtle.importKey(
     'raw',
     oldHashBuffer,
     { name: 'AES-GCM', length: 256 },
     false,
     ['encrypt', 'decrypt']
   );
+}
+
+async function getOldEncryptionKey() {
+  if (oldEncryptionKey) return oldEncryptionKey;
+  if (localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) return null; // Already migrated
   
-  return oldEncryptionKey;
+  // Try localStorage-based key first (newer legacy)
+  const legacyKey = await deriveLegacyKeyFromLocalStorage();
+  if (legacyKey) {
+    oldEncryptionKey = legacyKey;
+    return legacyKey;
+  }
+  
+  // Fall back to origin+UA key (oldest legacy)
+  const originUAKey = await deriveLegacyKeyFromOriginUA();
+  if (originUAKey) {
+    oldEncryptionKey = originUAKey;
+    return originUAKey;
+  }
+  
+  return null;
 }
 
 async function encryptData(data) {
@@ -100,6 +186,7 @@ async function encryptData(data) {
     combined.set(new Uint8Array(encrypted), iv.length);
     
     // Convert to base64 for storage
+    // Format: base64(IV || ciphertext) - version 2 (implicit, new format)
     return btoa(String.fromCharCode(...combined));
   } catch (error) {
     console.error('Encryption error:', error);
@@ -154,8 +241,111 @@ async function decryptDataCore(encryptedData, keyToUse = null) {
   }
 }
 
+// ========== Migration Logic ==========
+async function migrateEncryptedData(key, oldKey) {
+  // Find all encrypted keys in localStorage
+  const encryptedKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const storageKey = localStorage.key(i);
+    if (storageKey && storageKey.startsWith('encrypted_')) {
+      encryptedKeys.push(storageKey);
+    }
+  }
+  
+  let migratedCount = 0;
+  let failedCount = 0;
+  
+  for (const storageKey of encryptedKeys) {
+    try {
+      const oldCiphertext = localStorage.getItem(storageKey);
+      if (!oldCiphertext) continue;
+      
+      // Try to decrypt with old key
+      const decrypted = await decryptDataCore(oldCiphertext, oldKey);
+      if (decrypted === null) {
+        // Failed to decrypt - might already be new format or corrupted
+        continue;
+      }
+      
+      // Re-encrypt with new key
+      const newCiphertext = await encryptData(decrypted);
+      if (newCiphertext) {
+        localStorage.setItem(storageKey, newCiphertext);
+        migratedCount++;
+      } else {
+        failedCount++;
+        console.warn(`Failed to re-encrypt ${storageKey}`);
+      }
+    } catch (error) {
+      failedCount++;
+      console.warn(`Migration error for ${storageKey}:`, error);
+    }
+  }
+  
+  if (migratedCount > 0) {
+    console.log(`Migration complete: ${migratedCount} items migrated, ${failedCount} failed`);
+  }
+  
+  return { migratedCount, failedCount };
+}
+
+async function performMigrationIfNeeded() {
+  // Check if already migrated
+  if (localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
+    return; // Already migrated
+  }
+  
+  // Check if legacy key exists or encrypted data exists
+  const hasLegacyKey = localStorage.getItem(DEVICE_KEY_STORAGE) !== null;
+  const hasEncryptedData = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+    .some(key => key && key.startsWith('encrypted_'));
+  
+  if (!hasLegacyKey && !hasEncryptedData) {
+    // No legacy data to migrate
+    localStorage.setItem(OLD_KEY_MIGRATION_FLAG, 'true');
+    return;
+  }
+  
+  // Get new key (will generate if needed)
+  const newKey = await getEncryptionKey();
+  
+  // Try to get old key
+  const oldKey = await getOldEncryptionKey();
+  if (!oldKey) {
+    // No old key available - mark as migrated to avoid repeated attempts
+    localStorage.setItem(OLD_KEY_MIGRATION_FLAG, 'true');
+    return;
+  }
+  
+  // Perform migration
+  try {
+    const result = await migrateEncryptedData(newKey, oldKey);
+    
+    if (result.failedCount === 0 || result.migratedCount > 0) {
+      // Migration successful (at least some items migrated)
+      // Only delete legacy key if migration was successful
+      localStorage.removeItem(DEVICE_KEY_STORAGE);
+      localStorage.setItem(OLD_KEY_MIGRATION_FLAG, 'true');
+    } else {
+      // All migrations failed - keep legacy key for retry
+      console.warn('Migration failed for all items - legacy key preserved for retry');
+    }
+  } catch (error) {
+    console.error('Migration error:', error);
+    // Don't delete legacy key on error - allow retry
+  }
+}
+
 async function decryptDataWithMigration(encryptedData) {
   if (!encryptedData) return null;
+  
+  // Ensure migration has been attempted (idempotent)
+  if (!localStorage.getItem(OLD_KEY_MIGRATION_FLAG)) {
+    // Perform migration in background (don't block decryption)
+    performMigrationIfNeeded().catch(err => {
+      console.error('Background migration error:', err);
+    });
+  }
   
   // Try new key first
   const result = await decryptDataCore(encryptedData);
@@ -431,6 +621,14 @@ if (typeof window !== 'undefined') {
   window.logSecurityEvent = logSecurityEvent;
   window.getSecurityLog = getSecurityLog;
   window.validateProgramStructure = validateProgramStructure;
+  
+  // Initialize migration on module load (idempotent, safe to call multiple times)
+  // This runs in the background and doesn't block other operations
+  if (typeof indexedDB !== 'undefined') {
+    performMigrationIfNeeded().catch(err => {
+      console.error('Initial migration error:', err);
+    });
+  }
 }
 
 // ========== Node.js Export ==========
@@ -451,4 +649,5 @@ if (typeof module !== 'undefined' && module.exports) {
     validateProgramStructure
   };
 }
+
 
