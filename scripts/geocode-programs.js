@@ -23,7 +23,7 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
 // Read programs.json
-const programsPath = join(rootDir, 'programs.json');
+const programsPath = join(rootDir, 'public', 'data', 'programs.json');
 const programsData = JSON.parse(readFileSync(programsPath, 'utf-8'));
 
 // Check for command-line flags
@@ -33,7 +33,7 @@ if (retryFullAddress) {
 }
 
 // Try to load existing geocoded data
-const geocodedPath = join(rootDir, 'programs.geocoded.json');
+const geocodedPath = join(rootDir, 'public', 'data', 'programs.geocoded.json');
 let existingGeocodedData = null;
 if (existsSync(geocodedPath)) {
   try {
@@ -238,7 +238,7 @@ async function geocodePrograms() {
   }
 
   // Write geocoded file
-  const outputPath = join(rootDir, 'programs.geocoded.json');
+  const outputPath = join(rootDir, 'public', 'data', 'programs.geocoded.json');
   writeFileSync(outputPath, JSON.stringify(geocoded, null, 2), 'utf-8');
 
   console.log('\n=== Geocoding Complete ===');

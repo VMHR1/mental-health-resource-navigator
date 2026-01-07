@@ -15,13 +15,13 @@ const shouldMinify = process.argv.includes('--minify') || process.env.NODE_ENV =
 
 const buildOptions = {
   entryPoints: [
-    'app.js',
-    'js/modules/search.js',
-    'js/modules/storage.js',
-    'js/utils/helpers.js',
-    'js/config/constants.js',
-    'js/state-manager.js',
-    'js/data-validator.js'
+    'src/app.js',
+    'src/js/modules/search.js',
+    'src/js/modules/storage.js',
+    'src/js/utils/helpers.js',
+    'src/js/config/constants.js',
+    'src/js/state-manager.js',
+    'src/js/data-validator.js'
   ],
   bundle: false,
   minify: shouldMinify,
@@ -36,21 +36,31 @@ const buildOptions = {
 // Copy static assets to dist directory
 function copyStaticAssets() {
   try {
+    // HTML files from src/html
+    const htmlFiles = [
+      { src: 'src/html/index.html', dest: 'index.html' },
+      { src: 'src/html/admin.html', dest: 'admin.html' },
+      { src: 'src/html/program.html', dest: 'program.html' },
+      { src: 'src/html/submit.html', dest: 'submit.html' },
+      { src: 'src/html/privacy.html', dest: 'privacy.html' },
+      { src: 'src/html/terms.html', dest: 'terms.html' },
+      { src: 'src/html/404.html', dest: '404.html' }
+    ];
+    
+    // Static assets from public
     const staticFiles = [
-      'index.html',
-      'admin.html', // Protected by Cloudflare Access - safe to include in build
-      'program.html',
-      'submit.html',
-      'privacy.html',
-      'terms.html',
-      '404.html',
-      'styles.css',
-      'security.js',
-      'sw.js',
-      'programs.json',
-      'programs.geocoded.json',
-      '_redirects',
-      '_headers'
+      { src: 'public/styles.css', dest: 'styles.css' },
+      { src: 'public/security.js', dest: 'security.js' },
+      { src: 'public/sw.js', dest: 'sw.js' },
+      { src: 'public/site.webmanifest', dest: 'site.webmanifest' },
+      { src: 'public/favicon.ico', dest: 'favicon.ico' },
+      { src: 'public/icon.png', dest: 'icon.png' },
+      { src: 'public/icon.svg', dest: 'icon.svg' },
+      { src: 'public/robots.txt', dest: 'robots.txt' },
+      { src: 'public/data/programs.json', dest: 'programs.json' },
+      { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
+      { src: '_redirects', dest: '_redirects' },
+      { src: '_headers', dest: '_headers' }
     ];
     
     // Ensure dist directory exists
@@ -58,56 +68,70 @@ function copyStaticAssets() {
       mkdirSync('dist', { recursive: true });
     }
     
-    // Copy static files
+    // Copy HTML files
     let copiedCount = 0;
-    staticFiles.forEach(file => {
-      if (existsSync(file)) {
+    htmlFiles.forEach(({ src, dest }) => {
+      if (existsSync(src)) {
         try {
-          writeFileSync(join('dist', file), readFileSync(file, 'utf8'));
+          writeFileSync(join('dist', dest), readFileSync(src, 'utf8'));
           copiedCount++;
         } catch (error) {
-          console.error(`Error copying ${file}:`, error.message);
+          console.error(`Error copying ${src}:`, error.message);
         }
       } else {
-        console.warn(`Warning: ${file} not found, skipping`);
+        console.warn(`Warning: ${src} not found, skipping`);
+      }
+    });
+    
+    // Copy static files
+    staticFiles.forEach(({ src, dest }) => {
+      if (existsSync(src)) {
+        try {
+          writeFileSync(join('dist', dest), readFileSync(src, 'utf8'));
+          copiedCount++;
+        } catch (error) {
+          console.error(`Error copying ${src}:`, error.message);
+        }
+      } else {
+        console.warn(`Warning: ${src} not found, skipping`);
       }
     });
     
     // Copy js directory files
-  const jsFiles = [
-    'js/program-detail.js',
-    'js/modules/distance.js',
-    'js/modules/filters.js',
-    'js/modules/sort.js',
-    'js/modules/performance.js',
-    'js/modules/render.js',
-    'js/modules/events.js'
-  ];
+    const jsFiles = [
+      'src/js/program-detail.js',
+      'src/js/modules/distance.js',
+      'src/js/modules/filters.js',
+      'src/js/modules/sort.js',
+      'src/js/modules/performance.js',
+      'src/js/modules/render.js',
+      'src/js/modules/events.js'
+    ];
     
     jsFiles.forEach(file => {
       if (existsSync(file)) {
-        // Create dist/js structure matching source
-        const relativePath = file.replace(/^js\//, '');
+        // Create dist/js structure matching source (remove src/js/ prefix)
+        const relativePath = file.replace(/^src\/js\//, '');
         const distPath = join('dist', 'js', relativePath);
         const distDir = dirname(distPath);
         
         if (!existsSync(distDir)) {
           mkdirSync(distDir, { recursive: true });
-      }
+        }
         
-      try {
+        try {
           writeFileSync(distPath, readFileSync(file, 'utf8'));
-        copiedCount++;
-      } catch (error) {
+          copiedCount++;
+        } catch (error) {
           console.error(`Error copying ${file}:`, error.message);
         }
       }
     });
     
     // Copy data/regions directory if it exists
-    const regionsDir = 'data/regions';
+    const regionsDir = 'public/data/regions';
     if (existsSync(regionsDir)) {
-      const distRegionsDir = join('dist', regionsDir);
+      const distRegionsDir = join('dist', 'data', 'regions');
       if (!existsSync(distRegionsDir)) {
         mkdirSync(distRegionsDir, { recursive: true });
       }
@@ -147,7 +171,7 @@ async function build() {
       try {
         const { spawn } = await import('child_process');
         
-        const validationProcess = spawn('node', ['scripts/validate-filters.js'], {
+        const validationProcess = spawn('node', ['validate-filters.js'], {
           cwd: __dirname,
           stdio: 'inherit',
           shell: false
@@ -194,12 +218,12 @@ async function build() {
 async function createLegacyBundle() {
   try {
     const files = [
-      'js/config/constants.js',
-      'js/utils/helpers.js',
-      'js/modules/storage.js',
-      'js/modules/search.js',
-      'js/state-manager.js',
-      'js/data-validator.js'
+      'src/js/config/constants.js',
+      'src/js/utils/helpers.js',
+      'src/js/modules/storage.js',
+      'src/js/modules/search.js',
+      'src/js/state-manager.js',
+      'src/js/data-validator.js'
     ];
     
     let bundle = '';

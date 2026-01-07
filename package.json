@@ -4,9 +4,9 @@
   "description": "Neutral post-discharge mental health resource navigator for Dallas-Fort Worth area youth",
   "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "dev": "node build.js --watch",
-    "minify": "node build.js --minify",
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js --watch",
+    "minify": "node scripts/build.js --minify",
     "validate-filters": "node scripts/validate-filters.js",
     "validate-data": "node scripts/validate-data.js",
     "test:e2e": "playwright test",

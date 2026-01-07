@@ -20,7 +20,7 @@ const require = createRequire(import.meta.url);
 
 let VALID_SERVICE_DOMAINS, REQUIRED_FIELDS, validateISODate, REVERIFICATION_THRESHOLD_DAYS;
 try {
-  const schemaPath = join(rootDir, 'js', 'config', 'validation-schema.js');
+  const schemaPath = join(rootDir, 'src', 'js', 'config', 'validation-schema.js');
   if (existsSync(schemaPath)) {
     const schemaModule = require(schemaPath);
     VALID_SERVICE_DOMAINS = schemaModule.VALID_SERVICE_DOMAINS;
@@ -143,7 +143,7 @@ function validateProgram(program, index) {
 function validateProgramsJson() {
   console.log('Validating programs.json...\n');
 
-  const programsPath = join(rootDir, 'programs.json');
+  const programsPath = join(rootDir, 'public', 'data', 'programs.json');
   if (!existsSync(programsPath)) {
     error(`programs.json not found at ${programsPath}`);
     return false;
