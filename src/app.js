@@ -2698,7 +2698,7 @@ function bind(){
     setOpenId: (id) => {
       if (stateManager) {
         stateManager.setState({ openId: id });
-        syncStateFromManager();
+        openId = id; // Update local variable directly
       } else {
         openId = id;
       }
@@ -2707,7 +2707,7 @@ function bind(){
     setCurrentSort: (sort) => {
       if (stateManager) {
         stateManager.setState({ currentSort: sort });
-        syncStateFromManager();
+        currentSort = sort; // Update local variable directly
       } else {
         currentSort = sort;
       }
@@ -2716,7 +2716,7 @@ function bind(){
     setUserLocation: (loc) => {
       if (stateManager) {
         stateManager.setState({ userLocation: loc });
-        syncStateFromManager();
+        userLocation = loc; // Update local variable directly
       } else {
         userLocation = loc;
       }
@@ -2726,7 +2726,7 @@ function bind(){
     setSelectedCounty: (county) => {
       if (stateManager) {
         stateManager.setState({ selectedCounty: county });
-        syncStateFromManager();
+        selectedCounty = county; // Update local variable directly
       } else {
         selectedCounty = county;
       }
@@ -2735,7 +2735,7 @@ function bind(){
     setSelectedServiceDomains: (domains) => {
       if (stateManager) {
         stateManager.setState({ selectedServiceDomains: domains });
-        syncStateFromManager();
+        selectedServiceDomains = domains; // Update local variable directly
       } else {
         selectedServiceDomains = domains;
       }
@@ -2744,7 +2744,7 @@ function bind(){
     setSelectedSudServices: (services) => {
       if (stateManager) {
         stateManager.setState({ selectedSudServices: services });
-        syncStateFromManager();
+        selectedSudServices = services; // Update local variable directly
       } else {
         selectedSudServices = services;
       }
@@ -2753,8 +2753,8 @@ function bind(){
     setVerificationRecencyDays: (days) => {
       if (stateManager) {
         stateManager.setState({ verificationRecencyDays: days });
-        syncStateFromManager();
-        } else {
+        verificationRecencyDays = days; // Update local variable directly
+      } else {
         verificationRecencyDays = days;
       }
     }
@@ -3712,6 +3712,7 @@ async function loadPrograms(retryCount = 0){
       if(res.ok) {
         jsonText = await res.text();
         canonicalData = JSON.parse(jsonText);
+        console.log('Loaded programs.json:', canonicalData ? (canonicalData.programs ? canonicalData.programs.length : 'no programs array') : 'null');
         
         // If validation is available, run it but don't block on failure
         if (typeof window.validateJSON === 'function') {
@@ -3723,6 +3724,8 @@ async function loadPrograms(retryCount = 0){
             }
           }
         }
+      } else {
+        console.error('Failed to load programs.json:', res.status, res.statusText);
       }
     } catch (parseError) {
       if (typeof window.logSecurityEvent === 'function') {
@@ -3762,11 +3765,14 @@ async function loadPrograms(retryCount = 0){
     } else if (canonicalData) {
       // Use canonical data only
       data = canonicalData;
+      console.log('Using canonical data only:', data.programs ? data.programs.length : 'no programs array');
     } else if (regionalData) {
       // Fallback to regional data only
       data = regionalData;
+      console.log('Using regional data only (fallback):', data.programs ? data.programs.length : 'no programs array');
     } else {
       // No data available - throw error
+      console.error('No data available - canonicalData:', !!canonicalData, 'regionalData:', !!regionalData);
       throw new Error('Unable to load programs data. Please try refreshing the page.');
     }
     
@@ -3862,7 +3868,8 @@ async function loadPrograms(retryCount = 0){
     programs = loadedPrograms;
     programDataMap.clear();
     programs.forEach(p => programDataMap.set(p.program_id, p));
-    syncStateToManager(); // Sync with StateManager
+    syncStateToManager(); // Sync with StateManager (programs -> StateManager)
+    console.log('Programs loaded:', programs.length, 'Ready:', ready);
     
     // Update available filters after programs are loaded
     availableFilters = computeAvailableFilters(programs);
