@@ -648,6 +648,13 @@ const els = {
 // ========== Document-Level Event Delegation ==========
 // Set up early to handle dynamically added cards (including on first page load)
 document.addEventListener('click', (e) => {
+  // Allow navigation links (footer links, etc.) to work normally
+  const link = e.target.closest('a');
+  if (link && link.href && (link.href.endsWith('privacy.html') || link.href.endsWith('terms.html') || link.href.includes('/privacy.html') || link.href.includes('/terms.html'))) {
+    // Allow normal navigation for privacy/terms links
+    return;
+  }
+  
   // Handle expand button clicks - check if click is on the button or its child (chev icon)
   // Check both the target and if it's inside an expandBtn
   let expandBtn = e.target.closest('.expandBtn');
