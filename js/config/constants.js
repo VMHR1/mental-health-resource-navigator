@@ -42,6 +42,37 @@ const MAX_RECENT_SEARCHES = 5;
 const MAX_CALL_HISTORY = 20;
 const MAX_COMPARISON_ITEMS = 3;
 
+// ========== Sort Options ==========
+const SORT_OPTIONS = {
+  RELEVANCE: 'relevance',
+  NAME: 'name',
+  VERIFIED: 'verified',
+  LOCATION: 'location',
+  DISTANCE: 'distance'
+};
+
+const DEFAULT_SORT = SORT_OPTIONS.RELEVANCE;
+
+// ========== Storage Keys ==========
+const STORAGE_KEYS = {
+  FAVORITES: 'favorites',
+  RECENT_SEARCHES: 'recentSearches',
+  CALL_HISTORY: 'callHistory',
+  COMPARISON: 'comparison',
+  PROGRAM_NOTES: 'programNotes',
+  PROGRAM_TAGS: 'programTags',
+  CUSTOM_LISTS: 'customLists'
+};
+
+// ========== CSS Class Names ==========
+const CSS_CLASSES = {
+  TEXT_SMALL: 'text-small',
+  IS_SCROLLING: 'is-scrolling',
+  VV_CHANGING: 'vv-changing',
+  IS_RESIZING: 'is-resizing',
+  MODAL_OPEN: 'modal-open'
+};
+
 // ========== Feature Flags ==========
 // Feature flags control statewide-ready functionality without UI clutter
 // Set to true to enable features; false to keep UI minimal
@@ -57,6 +88,10 @@ if (typeof window !== 'undefined') {
   window.LEVELS_OF_CARE = LEVELS_OF_CARE;
   window.FILTER_PRESETS = FILTER_PRESETS;
   window.FEATURE_FLAGS = FEATURE_FLAGS;
+  window.SORT_OPTIONS = SORT_OPTIONS;
+  window.DEFAULT_SORT = DEFAULT_SORT;
+  window.STORAGE_KEYS = STORAGE_KEYS;
+  window.CSS_CLASSES = CSS_CLASSES;
 }
 
 

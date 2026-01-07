@@ -9,7 +9,7 @@
 let programs = [];
 let ready = false;
 let openId = null;
-let currentSort = 'relevance';
+let currentSort = window.DEFAULT_SORT || 'relevance';
 let userLocation = null; // { lat, lng } - kept in memory only, never stored
 let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
 let availableFilters = {
@@ -51,19 +51,28 @@ let customLists = {}; // { listName: Set<programIds> }
 let programNotes = {}; // { programId: note }
 let programTags = {}; // { programId: [tags] }
 let userPreferences = {
-  defaultSort: 'relevance',
+  defaultSort: window.DEFAULT_SORT || 'relevance',
   defaultView: 'grid',
   showCrisisByDefault: false,
   itemsPerPage: 20
 };
 
 async function initializeEncryptedStorage() {
-  favorites = new Set(await loadEncryptedDataFn('favorites', []));
-  recentSearches = await loadEncryptedDataFn('recentSearches', []);
-  callHistory = await loadEncryptedDataFn('callHistory', []);
-  customLists = await loadEncryptedDataFn('customLists', {});
-  programNotes = await loadEncryptedDataFn('programNotes', {});
-  programTags = await loadEncryptedDataFn('programTags', {});
+  const STORAGE_KEYS = window.STORAGE_KEYS || {
+    FAVORITES: 'favorites',
+    RECENT_SEARCHES: 'recentSearches',
+    CALL_HISTORY: 'callHistory',
+    CUSTOM_LISTS: 'customLists',
+    PROGRAM_NOTES: 'programNotes',
+    PROGRAM_TAGS: 'programTags'
+  };
+  
+  favorites = new Set(await loadEncryptedDataFn(STORAGE_KEYS.FAVORITES, []));
+  recentSearches = await loadEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, []);
+  callHistory = await loadEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, []);
+  customLists = await loadEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, {});
+  programNotes = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, {});
+  programTags = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, {});
   const prefs = await loadEncryptedDataFn('userPreferences', {});
   userPreferences = { ...userPreferences, ...prefs };
   
@@ -99,7 +108,8 @@ if (typeof window.initPerformanceOptimizations === 'function') {
   };
 }
 
-let comparisonSet = new Set(JSON.parse(localStorage.getItem('comparison') || '[]'));
+const STORAGE_KEYS_COMPARISON = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
+let comparisonSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS_COMPARISON.COMPARISON) || '[]'));
 
 const programDataMap = new Map();
 
@@ -971,7 +981,8 @@ async function trackCallAttempt(program) {
     timestamp: new Date().toISOString()
   });
   callHistory = callHistory.slice(0, 20);
-  await saveEncryptedDataFn('callHistory', callHistory);
+  const STORAGE_KEYS = window.STORAGE_KEYS || { CALL_HISTORY: 'callHistory' };
+  await saveEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, callHistory);
   
   showCallConfirmation(program);
 }
@@ -1144,7 +1155,8 @@ function updateComparisonCount() {
 }
 
 function saveComparison() {
-  localStorage.setItem('comparison', JSON.stringify(Array.from(comparisonSet)));
+  const STORAGE_KEYS = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
+  localStorage.setItem(STORAGE_KEYS.COMPARISON, JSON.stringify(Array.from(comparisonSet)));
   updateComparisonCount();
 }
 
@@ -1186,7 +1198,8 @@ function renderComparison() {
 }
 
 async function saveFavorites() {
-  await saveEncryptedDataFn('favorites', Array.from(favorites));
+  const STORAGE_KEYS = window.STORAGE_KEYS || { FAVORITES: 'favorites' };
+  await saveEncryptedDataFn(STORAGE_KEYS.FAVORITES, Array.from(favorites));
   updateFavoritesCount();
 }
 
@@ -1226,7 +1239,8 @@ async function saveProgramNote(programId, note) {
       ? window.sanitizeText(note, 500)
       : note.substring(0, 500);
   }
-  await saveEncryptedDataFn('programNotes', programNotes);
+  const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_NOTES: 'programNotes' };
+  await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, programNotes);
 }
 
 function getProgramNote(programId) {
@@ -1242,7 +1256,8 @@ async function addProgramTag(programId, tag) {
     : tag.substring(0, 50);
   if (!programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
     programTags[programId].push(sanitizedTag);
-    await saveEncryptedDataFn('programTags', programTags);
+    const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
   }
 }
 
@@ -1252,7 +1267,8 @@ async function removeProgramTag(programId, tag) {
     if (programTags[programId].length === 0) {
       delete programTags[programId];
     }
-    await saveEncryptedDataFn('programTags', programTags);
+    const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
   }
 }
 
@@ -1266,7 +1282,8 @@ async function createCustomList(listName) {
     : listName.substring(0, 50);
   if (sanitizedName.trim() && !customLists[sanitizedName]) {
     customLists[sanitizedName] = [];
-    await saveEncryptedDataFn('customLists', customLists);
+    const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
     return sanitizedName;
   }
   return null;
@@ -1275,14 +1292,16 @@ async function createCustomList(listName) {
 async function addToCustomList(listName, programId) {
   if (customLists[listName] && !customLists[listName].includes(programId)) {
     customLists[listName].push(programId);
-    await saveEncryptedDataFn('customLists', customLists);
+    const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
   }
 }
 
 async function removeFromCustomList(listName, programId) {
   if (customLists[listName]) {
     customLists[listName] = customLists[listName].filter(id => id !== programId);
-    await saveEncryptedDataFn('customLists', customLists);
+    const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
   }
 }
 
@@ -1326,29 +1345,37 @@ function hideModal(modalEl) {
 function sortPrograms(list) {
   const sorted = [...list];
   
+  const SORT_OPTIONS = window.SORT_OPTIONS || {
+    RELEVANCE: 'relevance',
+    NAME: 'name',
+    VERIFIED: 'verified',
+    LOCATION: 'location',
+    DISTANCE: 'distance'
+  };
+  
   switch(currentSort) {
-    case 'name':
+    case SORT_OPTIONS.NAME:
       sorted.sort((a, b) => {
         const nameA = safeStr(a.program_name || a.organization).toLowerCase();
         const nameB = safeStr(b.program_name || b.organization).toLowerCase();
         return nameA.localeCompare(nameB);
       });
       break;
-    case 'verified':
+    case SORT_OPTIONS.VERIFIED:
       sorted.sort((a, b) => {
         const dateA = a.last_verified ? new Date(a.last_verified) : new Date(0);
         const dateB = b.last_verified ? new Date(b.last_verified) : new Date(0);
         return dateB - dateA;
       });
       break;
-    case 'location':
+    case SORT_OPTIONS.LOCATION:
       sorted.sort((a, b) => {
         const locA = locLabel(a);
         const locB = locLabel(b);
         return locA.localeCompare(locB);
       });
       break;
-    case 'distance':
+    case SORT_OPTIONS.DISTANCE:
       if (userLocation && typeof window.calculateProgramDistance === 'function') {
         // Separate virtual and in-person programs
         const inPerson = [];
@@ -1707,7 +1734,8 @@ async function addRecentSearch(query) {
   recentSearches = recentSearches.filter(s => s !== trimmed);
   recentSearches.unshift(trimmed);
   recentSearches = recentSearches.slice(0, 5); // Reduced from 10 to 5
-  await saveEncryptedDataFn('recentSearches', recentSearches);
+  const STORAGE_KEYS = window.STORAGE_KEYS || { RECENT_SEARCHES: 'recentSearches' };
+  await saveEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, recentSearches);
   renderRecentSearches();
 }
 
@@ -2063,7 +2091,8 @@ function render(){
     }));
     
     // Sort by relevance score (highest first) when sort is "relevance"
-    if (currentSort === 'relevance') {
+    const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
+    if (currentSort === SORT_OPTIONS.RELEVANCE) {
       scoredPrograms.sort((a, b) => b.score - a.score);
       activeList = scoredPrograms.map(sp => sp.program);
     } else {
@@ -3143,9 +3172,10 @@ async function handleLocationConsentAllow() {
     }
     
     // Set sort to distance
-    currentSort = 'distance';
+    const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance' };
+    currentSort = SORT_OPTIONS.DISTANCE;
     if (els.sortSelect) {
-      els.sortSelect.value = 'distance';
+      els.sortSelect.value = SORT_OPTIONS.DISTANCE;
     }
     
     // Re-render with distance sorting
@@ -3175,10 +3205,11 @@ function handleStopLocationSharing() {
   userLocation = null;
   
   // Reset sort if it was set to distance
-  if (currentSort === 'distance') {
-    currentSort = 'relevance';
+  const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
+  if (currentSort === SORT_OPTIONS.DISTANCE) {
+    currentSort = SORT_OPTIONS.RELEVANCE;
     if (els.sortSelect) {
-      els.sortSelect.value = 'relevance';
+      els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
     }
   }
   
@@ -3883,7 +3914,8 @@ function updateURLState() {
   }
   
   // Add sort
-  if (currentSort && currentSort !== 'relevance') {
+  const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
+  if (currentSort && currentSort !== SORT_OPTIONS.RELEVANCE) {
     params.set('sort', currentSort);
   }
   
