@@ -76,7 +76,8 @@ function copyStaticAssets() {
     // Copy js directory files
     const jsFiles = [
       'js/program-detail.js',
-      'js/modules/distance.js'
+      'js/modules/distance.js',
+      'js/modules/events.js'
     ];
     
     jsFiles.forEach(file => {

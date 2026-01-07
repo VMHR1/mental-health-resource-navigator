@@ -3242,534 +3242,74 @@ function initChipMultiSelects() {
 }
 
 function bind(){
-  const on = (el, ev, fn) => {
-    if (!el) return;
-    el.addEventListener(ev, fn);
+  // Use events module for event handler setup
+  if (typeof window.setupEventHandlers !== 'function') {
+    console.error('setupEventHandlers not available. Make sure js/modules/events.js is loaded.');
+    return;
+  }
+  
+  // Setup state accessors
+  const state = {
+    getReady: () => ready,
+    getOpenId: () => openId,
+    setOpenId: (id) => { openId = id; },
+    getCurrentSort: () => currentSort,
+    setCurrentSort: (sort) => { currentSort = sort; },
+    getUserLocation: () => userLocation,
+    setUserLocation: (loc) => { userLocation = loc; },
+    getPrograms: () => programs,
+    getSelectedCounty: () => selectedCounty,
+    setSelectedCounty: (county) => { selectedCounty = county; },
+    getSelectedServiceDomains: () => selectedServiceDomains,
+    setSelectedServiceDomains: (domains) => { selectedServiceDomains = domains; },
+    getSelectedSudServices: () => selectedSudServices,
+    setSelectedSudServices: (services) => { selectedSudServices = services; },
+    getVerificationRecencyDays: () => verificationRecencyDays,
+    setVerificationRecencyDays: (days) => { verificationRecencyDays = days; }
   };
-
-  let raf = null;
-  function scheduleRender(){
-    if (raf) cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => {
-      raf = null;
-      openId = null;
-      render();
-      updateURLState(); // Update URL after rendering
-    });
-  }
   
-  // Make scheduleRender accessible globally
-  scheduleRenderFn = scheduleRender;
-
-  // Debounced search with autocomplete
-  let searchDebounce = null;
-  let autocompleteDebounce = null;
-  
-  on(els.q, "input", (e) => {
-    const query = els.q.value;
-    
-    // Clear dataset attributes if input is empty
-    if (!query || !query.trim()) {
-      delete els.q.dataset.exactMatch;
-      delete els.q.dataset.matchType;
-    }
-    
-    // Show autocomplete
-    if (autocompleteDebounce) clearTimeout(autocompleteDebounce);
-    autocompleteDebounce = setTimeout(() => {
-      if (ready) {
-        const suggestions = generateAutocompleteSuggestions(query);
-        renderAutocomplete(suggestions);
-      }
-    }, 150);
-    
-    // Debounced search
-    if (searchDebounce) clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(() => {
-      addRecentSearch(query);
-      scheduleRender();
-    }, 300);
-  });
-  
-  on(els.q, "change", () => {
-    hideAutocomplete();
-    addRecentSearch(els.q.value);
-    scheduleRender();
-  });
-  
-  // Keyboard navigation for autocomplete
-  on(els.q, "keydown", (e) => {
-    if (!autocompleteVisible || autocompleteSuggestions.length === 0) {
-      // Allow '/' to focus search
-      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        els.q.focus();
-      }
-      return;
-    }
-    
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      const nextIndex = autocompleteSelectedIndex < autocompleteSuggestions.length - 1 
-        ? autocompleteSelectedIndex + 1 
-        : 0;
-      setSelectedSuggestion(nextIndex);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      const prevIndex = autocompleteSelectedIndex > 0 
-        ? autocompleteSelectedIndex - 1 
-        : autocompleteSuggestions.length - 1;
-      setSelectedSuggestion(prevIndex);
-    } else if (e.key === "Enter" && autocompleteSelectedIndex >= 0) {
-      e.preventDefault();
-      selectSuggestion(autocompleteSelectedIndex);
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      hideAutocomplete();
-    }
-  });
-  
-  // Hide autocomplete when clicking outside
-  document.addEventListener("click", (e) => {
-    const container = document.getElementById('search-suggestions');
-    // Don't hide if clicking on suggestion items (they handle their own clicks)
-    if (container && e.target.closest('.suggestion-item')) {
-      return;
-    }
-    if (container && !container.contains(e.target) && e.target !== els.q) {
-      hideAutocomplete();
-    }
-  });
-  
-  on(els.loc, "change", scheduleRender);
-  on(els.age, "change", scheduleRender);
-  on(els.care, "change", scheduleRender);
-  if (els.insurance) {
-    on(els.insurance, "change", scheduleRender);
-  }
-  
-  // Statewide filter handlers
-  if (els.county) {
-    on(els.county, "change", () => {
-      selectedCounty = els.county.value || null;
-      scheduleRender();
-    });
-  }
-  
-  if (els.serviceDomain) {
-    on(els.serviceDomain, "change", () => {
-      selectedServiceDomains = els.serviceDomain.value ? [els.serviceDomain.value] : [];
-      
-      // Show/hide Substance Use Services filter group based on service domain
-      const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
-      const isSubstanceUse = els.serviceDomain.value === 'substance_use';
-      
-      if (sudServicesGroup) {
-        if (isSubstanceUse) {
-          // Show the group if feature flag allows
-          const flags = window.FEATURE_FLAGS || {};
-          if (flags.SHOW_SUD_FILTERS) {
-            sudServicesGroup.style.display = 'block';
-          }
-        } else {
-          // Hide the group and clear selections
-          sudServicesGroup.style.display = 'none';
-          
-          // Clear all selected options
-          if (els.sudServices) {
-            Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-            selectedSudServices = [];
-            // Sync chips to reflect cleared state
-            syncChipsToSelect('sudServices');
-            // Dispatch change event to trigger filter update
-            els.sudServices.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-      }
-      
-      scheduleRender();
-    });
-  }
-  
-  if (els.sudServices) {
-    on(els.sudServices, "change", () => {
-      // Get selected options from multi-select
-      const selected = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
-      selectedSudServices = selected;
-      
-      // Sync chip checkboxes to match select state
-      syncChipsToSelect('sudServices');
-      
-      // Auto-enable crisis toggle if OSAR referral is selected
-      // (OSAR programs are crisis services and won't show without crisis toggle)
-      if (selected.includes('osar_referral')) {
-        els.showCrisis.checked = true;
-        if (els.showCrisisTop) {
-          els.showCrisisTop.checked = true;
-        }
-        syncTopToggles();
-      }
-      
-      scheduleRender();
-    });
-  }
-  
-  // Initialize chip-based multi-selects
-  initChipMultiSelects();
-  
-  if (els.verificationRecency) {
-    on(els.verificationRecency, "change", () => {
-      verificationRecencyDays = els.verificationRecency.value 
-        ? parseInt(els.verificationRecency.value, 10) 
-        : null;
-      scheduleRender();
-    });
-  }
-  
-  // Sort functionality
-  on(els.sortSelect, "change", (e) => {
-    currentSort = e.target.value;
-    // If switching to distance, always prompt for location (privacy-first: ask every time)
-    if (currentSort === 'distance') {
-      // Clear any previous location to ensure fresh consent
-      userLocation = null;
-      handleNearMeClick();
-      // Reset sort if user cancels
-      setTimeout(() => {
-        if (!userLocation && els.sortSelect) {
-          els.sortSelect.value = 'relevance';
-          currentSort = 'relevance';
-        }
-      }, 100);
-    }
-    scheduleRender();
-    updateURLState();
-  });
-  
-  // Near Me button
-  if (els.nearMeBtn) {
-    on(els.nearMeBtn, "click", handleNearMeClick);
-  }
-  
-  // Stop sharing location button (TDPSA compliance: right to opt-out)
-  if (els.stopLocationBtn) {
-    on(els.stopLocationBtn, "click", handleStopLocationSharing);
-  }
-  
-  // Location consent modal handlers
-  if (els.locationConsentAllow) {
-    on(els.locationConsentAllow, "click", handleLocationConsentAllow);
-  }
-  if (els.locationConsentCancel) {
-    on(els.locationConsentCancel, "click", handleLocationConsentCancel);
-  }
-  
-  // Close location consent modal with close button
-  if (els.locationConsentModal) {
-    const closeBtn = els.locationConsentModal.querySelector('.modal-close');
-    if (closeBtn) {
-      on(closeBtn, "click", handleLocationConsentCancel);
-    }
-  }
-  
-  // Handle browser back/forward buttons
-  window.addEventListener('popstate', (e) => {
-    if (ready) {
-      loadURLState();
-      render();
-    }
-  });
-
-  on(els.showCrisisTop, "change", () => {
-    els.showCrisis.checked = els.showCrisisTop.checked;
-    scheduleRender();
-    syncTopToggles();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-  });
-  on(els.onlyVirtualTop, "change", () => { els.onlyVirtual.checked = els.onlyVirtualTop.checked; scheduleRender(); syncTopToggles(); });
-
-  function resetFilters() {
-    els.q.value = "";
-    // Clear dataset attributes
-    delete els.q.dataset.exactMatch;
-    delete els.q.dataset.matchType;
-    els.loc.value = "";
-    els.age.value = "";
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
-    els.care.value = "";
-    if (els.insurance) els.insurance.value = "";
-    els.onlyVirtual.checked = false;
-    els.showCrisis.checked = false;
-    
-    // Reset statewide filters
-    selectedCounty = null;
-    selectedServiceDomains = [];
-    selectedSudServices = [];
-    verificationRecencyDays = null;
-    if (els.county) els.county.value = "";
-    if (els.serviceDomain) els.serviceDomain.value = "";
-    if (els.sudServices) {
-      Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-      syncChipsToSelect('sudServices');
-    }
-    if (els.verificationRecency) els.verificationRecency.value = "";
-    
-    openId = null;
-    syncTopToggles();
-    updateURLState();
-    render();
-  }
-  
-  on(els.reset, "click", resetFilters);
-  if (els.resetTop) {
-    on(els.resetTop, "click", resetFilters);
-  }
-
-  on(els.viewAll, "click", () => {
-    els.q.value = "";
-    // Clear dataset attributes
-    delete els.q.dataset.exactMatch;
-    delete els.q.dataset.matchType;
-    els.loc.value = "";
-    els.age.value = "";
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
-    els.care.value = "";
-    if (els.insurance) els.insurance.value = "";
-    els.onlyVirtual.checked = false;
-    els.showCrisis.checked = false;
-    
-    // Reset statewide filters
-    selectedCounty = null;
-    selectedServiceDomains = [];
-    selectedSudServices = [];
-    verificationRecencyDays = null;
-    if (els.county) els.county.value = "";
-    if (els.serviceDomain) els.serviceDomain.value = "";
-    if (els.sudServices) {
-      Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-      syncChipsToSelect('sudServices');
-    }
-    if (els.verificationRecency) els.verificationRecency.value = "";
-    
-    openId = null;
-    syncTopToggles();
-    render();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-  });
-
-  // Smart search
-  on(els.smartSearchBtn, "click", () => {
-    hideAutocomplete(); // Close suggestions before search to prevent tap interception
-    const query = els.q.value;
-    // Use module function directly
-    const parsed = typeof window.parseSmartSearch === 'function' 
-      ? window.parseSmartSearch(query)
-      : { loc: '', locs: [], age: '', minAge: null, care: '', showCrisis: false, organization: '' };
-    
-    // App-specific: Try to detect organization name from query
-    if (ready && programs.length > 0 && !parsed.loc && typeof window.parseSmartSearch === 'function') {
-      const q = query.toLowerCase();
-      const exactOrg = programs.find(p => safeStr(p.organization).toLowerCase() === q);
-      if (exactOrg) {
-        parsed.organization = exactOrg.organization;
-      }
-    }
-    
-    if(parsed.loc) els.loc.value = parsed.loc;
-    if(parsed.age) {
-      els.age.value = parsed.age;
-      if(window.__ageDropdownSync) window.__ageDropdownSync();
-    }
-    if(parsed.care) els.care.value = parsed.care;
-    els.showCrisis.checked = parsed.showCrisis;
-    
-    // Apply service domain filter if detected
-    if(parsed.serviceDomain && els.serviceDomain) {
-      els.serviceDomain.value = parsed.serviceDomain;
-    }
-    
-    syncTopToggles();
-    render();
-    
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-  });
-
-  // Advanced filters toggle
-  on(els.showAdvanced, "click", () => {
-    const isHidden = els.advancedFilters.style.display === "none";
-    els.advancedFilters.style.display = isHidden ? "block" : "none";
-    const lastSpan = els.showAdvanced.querySelector('span:last-child');
-    if (lastSpan) {
-      lastSpan.textContent = isHidden ? "Hide Filters" : "Advanced Filters";
-    }
-  });
-  
-  // Handle statewide filters accordion toggle
-  const statewideAccordion = document.getElementById('statewideFiltersAccordion');
-  if (statewideAccordion) {
-    statewideAccordion.addEventListener('toggle', () => {
-      const summary = statewideAccordion.querySelector('.advanced-filters-summary');
-      if (summary) {
-        summary.setAttribute('aria-expanded', statewideAccordion.open ? 'true' : 'false');
-      }
-    });
-  }
-
-  // Triage buttons
-  on(els.viewCrisisResources, "click", () => {
-    els.showCrisis.checked = true;
-    syncTopToggles();
-    render();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-  });
-
-  on(els.viewTreatmentOptions, "click", () => {
-    els.showCrisis.checked = false;
-    syncTopToggles();
-    render();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
-  });
-
-  document.addEventListener("keydown", (e) => {
-    // Don't trigger shortcuts when typing in inputs
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-      // Allow Escape to work in inputs
-      if (e.key === "Escape") {
-        if (autocompleteVisible) {
-          hideAutocomplete();
-          e.preventDefault();
-        }
-      }
-      return;
-    }
-    
-    // Keyboard shortcuts
-    if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      els.q.focus();
-      els.q.select();
-    } else if (e.key === "?" && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      if (els.helpModal) {
-        showModal(els.helpModal);
-      }
-    } else if (e.key === "Escape") {
-      // Close expanded cards
-      if (openId) {
-      const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-      if (cur) setCardOpen(cur, false);
-      openId = null;
-    }
-      // Close modals
-      if (els.favoritesModal && els.favoritesModal.getAttribute('aria-hidden') === 'false') {
-        hideModal(els.favoritesModal);
-      }
-      if (els.historyModal && els.historyModal.getAttribute('aria-hidden') === 'false') {
-        hideModal(els.historyModal);
-      }
-      if (els.comparisonModal && els.comparisonModal.getAttribute('aria-hidden') === 'false') {
-        hideModal(els.comparisonModal);
-      }
-      if (els.helpModal && els.helpModal.getAttribute('aria-hidden') === 'false') {
-        hideModal(els.helpModal);
-      }
-      if (els.locationConsentModal && els.locationConsentModal.getAttribute('aria-hidden') === 'false') {
-        handleLocationConsentCancel();
-      }
-    }
-  });
-
-  // Favorites modal
-  on(els.viewFavorites, "click", () => {
-    renderFavorites();
-    showModal(els.favoritesModal);
-  });
-  
-  // Export/print favorites
-  const exportFavoritesBtn = document.getElementById('exportFavorites');
-  if (exportFavoritesBtn) {
-    on(exportFavoritesBtn, "click", exportFavorites);
-  }
-
-  // Call history modal
-  on(els.viewHistory, "click", () => {
-    renderCallHistory();
-    showModal(els.historyModal);
-  });
-
-  // Comparison modal
-  on(els.viewComparison, "click", () => {
-    renderComparison();
-    showModal(els.comparisonModal);
-  });
-  
-  // Share filters
-  if (els.shareFilters) {
-    on(els.shareFilters, "click", () => {
-      shareCurrentFilters();
-    });
-  }
-  
-  // Filter presets
-  document.querySelectorAll('.filter-preset-btn').forEach(btn => {
-    on(btn, "click", () => {
-      const preset = btn.dataset.preset;
-      applyFilterPreset(preset);
-    });
-  });
-
-  // Modal close buttons
-  els.favoritesModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => hideModal(els.favoritesModal));
-  });
-  els.historyModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => hideModal(els.historyModal));
-  });
-  els.comparisonModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => hideModal(els.comparisonModal));
-  });
-  
-  // Clear comparison
-  const clearComparisonBtn = document.getElementById('clearComparison');
-  if (clearComparisonBtn) {
-    on(clearComparisonBtn, "click", () => {
+  // Setup callbacks
+  const callbacks = {
+    render,
+    updateURLState,
+    loadURLState,
+    hideAutocomplete,
+    generateAutocompleteSuggestions,
+    renderAutocomplete,
+    addRecentSearch,
+    setSelectedSuggestion,
+    selectSuggestion,
+    syncTopToggles,
+    syncChipsToSelect,
+    initChipMultiSelects,
+    handleNearMeClick,
+    handleStopLocationSharing,
+    handleLocationConsentAllow,
+    handleLocationConsentCancel,
+    showModal,
+    hideModal,
+    renderFavorites,
+    renderCallHistory,
+    renderComparison,
+    exportFavorites,
+    shareCurrentFilters,
+    applyFilterPreset,
+    setupPrivacyControls,
+    setCardOpen,
+    getAutocompleteVisible: () => autocompleteVisible,
+    getAutocompleteSuggestions: () => autocompleteSuggestions,
+    getAutocompleteSelectedIndex: () => autocompleteSelectedIndex,
+    clearComparison: () => {
       comparisonSet.clear();
       saveComparison();
-      renderComparison();
-      render();
-    });
-  }
-
-  // Close modals when clicking outside
-  on(els.favoritesModal, "click", (e) => {
-    if (e.target === els.favoritesModal) hideModal(els.favoritesModal);
-  });
-  on(els.historyModal, "click", (e) => {
-    if (e.target === els.historyModal) hideModal(els.historyModal);
-  });
-  on(els.comparisonModal, "click", (e) => {
-    if (e.target === els.comparisonModal) hideModal(els.comparisonModal);
-  });
+    }
+  };
   
-  // Help modal
-  if (els.helpModal) {
-    els.helpModal.querySelectorAll('.modal-close').forEach(btn => {
-      on(btn, "click", () => hideModal(els.helpModal));
-    });
-    on(els.helpModal, "click", (e) => {
-      if (e.target === els.helpModal) hideModal(els.helpModal);
-    });
-  }
-
-  syncTopToggles();
+  // Call events module setup
+  window.setupEventHandlers({ els, callbacks, state });
   
-  // Privacy controls
-  setupPrivacyControls();
+  // Make scheduleRender accessible globally (set by events module)
+  // scheduleRenderFn is set inside setupEventHandlers
 }
 
 function setupPrivacyControls() {
