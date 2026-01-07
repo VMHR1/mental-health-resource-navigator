@@ -2125,7 +2125,45 @@ function render(){
   }
   const showCrisis = els.showCrisis?.checked || false;
 
-  const filtered = programs.filter(p => matchesFilters(p));
+  // Use filter module if available, fallback to local function
+  const filterFn = typeof window.matchesFilters === 'function' 
+    ? (p) => {
+        const filters = {
+          query: els.q?.value || '',
+          location: els.loc?.value || '',
+          age: els.age?.value || '',
+          care: els.care?.value || '',
+          insurance: els.insurance?.value || '',
+          onlyVirtual: els.onlyVirtual?.checked || false,
+          showCrisis: showCrisis,
+          county: els.county?.value || '',
+          serviceDomain: els.serviceDomain?.value || '',
+          verificationRecency: els.verificationRecency?.value || '',
+          exactMatch: els.q?.dataset.exactMatch === 'true',
+          matchType: els.q?.dataset.matchType || '',
+          selectedCounty: selectedCounty,
+          selectedServiceDomains: selectedServiceDomains,
+          selectedSudServices: selectedSudServices,
+          verificationRecencyDays: verificationRecencyDays
+        };
+        
+        const options = {
+          safeStr: window.safeStr,
+          parseSmartSearch: window.parseSmartSearch,
+          fuzzyMatch: window.fuzzyMatch,
+          programServesAge: window.programServesAge,
+          hasVirtual: window.hasVirtual,
+          locLabel: window.locLabel,
+          featureFlags: window.FEATURE_FLAGS || {},
+          programs: programs,
+          ready: ready
+        };
+        
+        return window.matchesFilters(p, filters, options);
+      }
+    : matchesFilters; // Fallback to local function
+  
+  const filtered = programs.filter(filterFn);
 
   const treatment = filtered.filter(p => !isCrisis(p));
   const crisis = filtered.filter(p => isCrisis(p));
@@ -2139,10 +2177,22 @@ function render(){
   // Calculate relevance scores for all results
   const query = safeStr(els.q?.value || '').trim();
   if (query) {
+    // Use filter module if available, fallback to local function
+    const scoreFn = typeof window.calculateRelevanceScore === 'function'
+      ? (p) => {
+          const options = {
+            safeStr: window.safeStr,
+            locLabel: window.locLabel,
+            fuzzyMatch: window.fuzzyMatch
+          };
+          return window.calculateRelevanceScore(p, query, options);
+        }
+      : calculateRelevanceScore; // Fallback to local function
+    
     // Map programs with their relevance scores
     const scoredPrograms = activeList.map(p => ({
       program: p,
-      score: calculateRelevanceScore(p, query)
+      score: scoreFn(p)
     }));
     
     // Sort by relevance score (highest first) when sort is "relevance"

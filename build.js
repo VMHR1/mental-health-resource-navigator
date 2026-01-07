@@ -74,13 +74,14 @@ function copyStaticAssets() {
     });
     
     // Copy js directory files
-    const jsFiles = [
-      'js/program-detail.js',
-      'js/modules/distance.js',
-      'js/modules/performance.js',
-      'js/modules/render.js',
-      'js/modules/events.js'
-    ];
+  const jsFiles = [
+    'js/program-detail.js',
+    'js/modules/distance.js',
+    'js/modules/filters.js',
+    'js/modules/performance.js',
+    'js/modules/render.js',
+    'js/modules/events.js'
+  ];
     
     jsFiles.forEach(file => {
       if (existsSync(file)) {
