@@ -6,6 +6,16 @@
 // All debug code has been removed
 
 // ========== State Management ==========
+// Initialize StateManager instance
+let stateManager = null;
+if (typeof window.getStateManager === 'function') {
+  stateManager = window.getStateManager();
+} else {
+  console.error('getStateManager not available. Make sure js/state-manager.js is loaded.');
+}
+
+// Legacy state variables - kept for backward compatibility during migration
+// These will be gradually replaced with stateManager.getState() / stateManager.setState()
 let programs = [];
 let ready = false;
 let openId = null;
@@ -25,6 +35,50 @@ let selectedCounty = null;
 let selectedServiceDomains = [];
 let selectedSudServices = [];
 let verificationRecencyDays = null;
+
+// Sync legacy variables with StateManager
+function syncStateFromManager() {
+  if (!stateManager) return;
+  const state = stateManager.getState();
+  programs = state.programs || [];
+  ready = state.ready || false;
+  openId = state.openId || null;
+  currentSort = state.currentSort || window.DEFAULT_SORT || 'relevance';
+  userLocation = state.userLocation || null;
+  geocodedPrograms = state.geocodedPrograms || null;
+  availableFilters = state.availableFilters || {
+    hasCounty: false,
+    hasServiceDomains: false,
+    hasSUD: false,
+    hasVerification: false,
+    hasServiceArea: false
+  };
+  selectedCounty = state.selectedCounty || null;
+  selectedServiceDomains = state.selectedServiceDomains || [];
+  selectedSudServices = state.selectedSudServices || [];
+  verificationRecencyDays = state.verificationRecencyDays || null;
+}
+
+// Sync StateManager with legacy variables
+function syncStateToManager() {
+  if (!stateManager) return;
+  stateManager.setState({
+    programs,
+    ready,
+    openId,
+    currentSort,
+    userLocation,
+    geocodedPrograms,
+    availableFilters,
+    selectedCounty,
+    selectedServiceDomains,
+    selectedSudServices,
+    verificationRecencyDays
+  });
+}
+
+// Initial sync from StateManager (load persisted state)
+syncStateFromManager();
 
 // Use unified storage functions from js/modules/storage.js
 // These are loaded before app.js and available on window object
@@ -1055,6 +1109,7 @@ function toggleOpen(id){
   }
 
   openId = nextOpenId;
+  syncStateToManager(); // Sync with StateManager
 
   // Open new card if needed
   if (openId){
@@ -2548,24 +2603,73 @@ function bind(){
       return;
     }
     
-  // Setup state accessors
+  // Setup state accessors - use StateManager if available, fallback to legacy variables
   const state = {
-    getReady: () => ready,
-    getOpenId: () => openId,
-    setOpenId: (id) => { openId = id; },
-    getCurrentSort: () => currentSort,
-    setCurrentSort: (sort) => { currentSort = sort; },
-    getUserLocation: () => userLocation,
-    setUserLocation: (loc) => { userLocation = loc; },
-    getPrograms: () => programs,
-    getSelectedCounty: () => selectedCounty,
-    setSelectedCounty: (county) => { selectedCounty = county; },
-    getSelectedServiceDomains: () => selectedServiceDomains,
-    setSelectedServiceDomains: (domains) => { selectedServiceDomains = domains; },
-    getSelectedSudServices: () => selectedSudServices,
-    setSelectedSudServices: (services) => { selectedSudServices = services; },
-    getVerificationRecencyDays: () => verificationRecencyDays,
-    setVerificationRecencyDays: (days) => { verificationRecencyDays = days; }
+    getReady: () => stateManager ? stateManager.getState('ready') : ready,
+    getOpenId: () => stateManager ? stateManager.getState('openId') : openId,
+    setOpenId: (id) => {
+      if (stateManager) {
+        stateManager.setState({ openId: id });
+        syncStateFromManager();
+      } else {
+        openId = id;
+      }
+    },
+    getCurrentSort: () => stateManager ? stateManager.getState('currentSort') : currentSort,
+    setCurrentSort: (sort) => {
+      if (stateManager) {
+        stateManager.setState({ currentSort: sort });
+        syncStateFromManager();
+      } else {
+        currentSort = sort;
+      }
+    },
+    getUserLocation: () => stateManager ? stateManager.getState('userLocation') : userLocation,
+    setUserLocation: (loc) => {
+      if (stateManager) {
+        stateManager.setState({ userLocation: loc });
+        syncStateFromManager();
+      } else {
+        userLocation = loc;
+      }
+    },
+    getPrograms: () => stateManager ? stateManager.getState('programs') : programs,
+    getSelectedCounty: () => stateManager ? stateManager.getState('selectedCounty') : selectedCounty,
+    setSelectedCounty: (county) => {
+      if (stateManager) {
+        stateManager.setState({ selectedCounty: county });
+        syncStateFromManager();
+      } else {
+        selectedCounty = county;
+      }
+    },
+    getSelectedServiceDomains: () => stateManager ? stateManager.getState('selectedServiceDomains') : selectedServiceDomains,
+    setSelectedServiceDomains: (domains) => {
+      if (stateManager) {
+        stateManager.setState({ selectedServiceDomains: domains });
+        syncStateFromManager();
+      } else {
+        selectedServiceDomains = domains;
+      }
+    },
+    getSelectedSudServices: () => stateManager ? stateManager.getState('selectedSudServices') : selectedSudServices,
+    setSelectedSudServices: (services) => {
+      if (stateManager) {
+        stateManager.setState({ selectedSudServices: services });
+        syncStateFromManager();
+      } else {
+        selectedSudServices = services;
+      }
+    },
+    getVerificationRecencyDays: () => stateManager ? stateManager.getState('verificationRecencyDays') : verificationRecencyDays,
+    setVerificationRecencyDays: (days) => {
+      if (stateManager) {
+        stateManager.setState({ verificationRecencyDays: days });
+        syncStateFromManager();
+        } else {
+        verificationRecencyDays = days;
+      }
+    }
   };
   
   // Setup callbacks
@@ -3670,6 +3774,7 @@ async function loadPrograms(retryCount = 0){
     programs = loadedPrograms;
     programDataMap.clear();
     programs.forEach(p => programDataMap.set(p.program_id, p));
+    syncStateToManager(); // Sync with StateManager
     
     // Update available filters after programs are loaded
     availableFilters = computeAvailableFilters(programs);
@@ -3687,6 +3792,7 @@ async function loadPrograms(retryCount = 0){
     updateComparisonCount();
     ready = true;
     openId = null;
+    syncStateToManager(); // Sync with StateManager
     
     // Initialize button visibility (TDPSA: ensure opt-out is visible when needed)
     if (typeof updateLocationButtonVisibility === 'function') {
@@ -3710,6 +3816,7 @@ async function loadPrograms(retryCount = 0){
         programs = mergeGeocodedData(programs);
         programDataMap.clear();
         programs.forEach(p => programDataMap.set(p.program_id, p));
+        syncStateToManager(); // Sync with StateManager
         // Rebuild autocomplete indexes after merge
         buildAutocompleteIndexes(programs);
         // Recompute available filters after geocoded data merge
@@ -3759,6 +3866,7 @@ async function loadPrograms(retryCount = 0){
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);
     openId = null;
+    syncStateToManager(); // Sync with StateManager
     render();
   }
 }

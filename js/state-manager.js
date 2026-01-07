@@ -7,7 +7,21 @@ class StateManager {
       programs: [],
       ready: false,
       openId: null,
-      currentSort: 'relevance',
+      currentSort: (typeof window !== 'undefined' && window.DEFAULT_SORT) || 'relevance',
+      userLocation: null, // { lat, lng } - kept in memory only, never stored (privacy-first)
+      geocodedPrograms: null, // Loaded from programs.geocoded.json if available
+      availableFilters: {
+        hasCounty: false,
+        hasServiceDomains: false,
+        hasSUD: false,
+        hasVerification: false,
+        hasServiceArea: false
+      },
+      // Statewide filter state
+      selectedCounty: null,
+      selectedServiceDomains: [],
+      selectedSudServices: [],
+      verificationRecencyDays: null,
       filters: {
         query: '',
         location: '',
@@ -25,6 +39,7 @@ class StateManager {
     };
     
     this.listeners = new Set();
+    // Only persist non-sensitive state (userLocation is never persisted)
     this.persistKeys = ['currentSort', 'filters'];
   }
 
@@ -77,9 +92,22 @@ class StateManager {
   // Validate state
   validateState() {
     // Validate sort
-    const validSorts = ['relevance', 'name', 'verified', 'location'];
+    const SORT_OPTIONS = (typeof window !== 'undefined' && window.SORT_OPTIONS) || {
+      RELEVANCE: 'relevance',
+      NAME: 'name',
+      VERIFIED: 'verified',
+      LOCATION: 'location',
+      DISTANCE: 'distance'
+    };
+    const validSorts = [
+      SORT_OPTIONS.RELEVANCE,
+      SORT_OPTIONS.NAME,
+      SORT_OPTIONS.VERIFIED,
+      SORT_OPTIONS.LOCATION,
+      SORT_OPTIONS.DISTANCE
+    ];
     if (!validSorts.includes(this.state.currentSort)) {
-      this.state.currentSort = 'relevance';
+      this.state.currentSort = SORT_OPTIONS.RELEVANCE;
     }
     
     // Validate filters
@@ -93,6 +121,18 @@ class StateManager {
     // Validate progressive load
     if (this.state.progressiveLoad.displayedCount < 0) {
       this.state.progressiveLoad.displayedCount = 20;
+    }
+    
+    // Validate statewide filters
+    if (!Array.isArray(this.state.selectedServiceDomains)) {
+      this.state.selectedServiceDomains = [];
+    }
+    if (!Array.isArray(this.state.selectedSudServices)) {
+      this.state.selectedSudServices = [];
+    }
+    if (this.state.verificationRecencyDays !== null && 
+        (!Number.isFinite(this.state.verificationRecencyDays) || this.state.verificationRecencyDays < 0)) {
+      this.state.verificationRecencyDays = null;
     }
   }
 
@@ -149,11 +189,19 @@ class StateManager {
   // Reset state
   reset() {
     const oldState = { ...this.state };
+    const DEFAULT_SORT = (typeof window !== 'undefined' && window.DEFAULT_SORT) || 'relevance';
     this.state = {
       programs: this.state.programs, // Keep programs
       ready: this.state.ready, // Keep ready status
+      geocodedPrograms: this.state.geocodedPrograms, // Keep geocoded data
+      availableFilters: this.state.availableFilters, // Keep available filters metadata
       openId: null,
-      currentSort: 'relevance',
+      currentSort: DEFAULT_SORT,
+      userLocation: null, // Clear user location (privacy-first)
+      selectedCounty: null,
+      selectedServiceDomains: [],
+      selectedSudServices: [],
+      verificationRecencyDays: null,
       filters: {
         query: '',
         location: '',
