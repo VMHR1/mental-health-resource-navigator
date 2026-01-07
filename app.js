@@ -1304,7 +1304,19 @@ function buildLocationOptions(list){
     });
   });
   const cities = Array.from(set).sort((a,b)=>a.localeCompare(b));
-  els.loc.innerHTML = '<option value="">Any</option>' + cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+  
+  // Clear existing options (preserve the select element)
+  if (els.loc) {
+    els.loc.innerHTML = '<option value="">Any</option>';
+    
+    // Add options using DOM methods (safe from XSS)
+    cities.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city; // Browser automatically escapes attribute values
+      option.textContent = city; // textContent is safe from XSS
+      els.loc.appendChild(option);
+    });
+  }
 }
 
 function buildInsuranceOptions(list){
@@ -1344,28 +1356,47 @@ function buildInsuranceOptions(list){
   const types = Array.from(typesSet).sort((a,b)=>a.localeCompare(b));
   const plans = Array.from(plansSet).sort((a,b)=>a.localeCompare(b));
   
-  let html = '<option value="">Any insurance</option>';
-  
-  // Add insurance types section
-  if (types.length > 0) {
-    html += '<optgroup label="Insurance Types">';
-    types.forEach(type => {
-      html += `<option value="type:${escapeHtml(type)}">${escapeHtml(type)}</option>`;
-    });
-    html += '</optgroup>';
-  }
-  
-  // Add insurance plans section
-  if (plans.length > 0) {
-    html += '<optgroup label="Insurance Plans">';
-    plans.forEach(plan => {
-      html += `<option value="plan:${escapeHtml(plan)}">${escapeHtml(plan)}</option>`;
-    });
-    html += '</optgroup>';
-  }
-  
   if (els.insurance) {
-    els.insurance.innerHTML = html;
+    // Clear existing options
+    els.insurance.innerHTML = '';
+    
+    // Add default "Any insurance" option (static, safe)
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Any insurance';
+    els.insurance.appendChild(defaultOption);
+    
+    // Add insurance types section with optgroup
+    if (types.length > 0) {
+      const typesGroup = document.createElement('optgroup');
+      typesGroup.label = 'Insurance Types'; // Static label, safe
+      
+      types.forEach(type => {
+        const option = document.createElement('option');
+        // Value format must be exactly "type:${type}" for filtering logic to work
+        option.value = `type:${type}`; // Browser automatically escapes attribute values
+        option.textContent = type; // textContent is safe from XSS
+        typesGroup.appendChild(option);
+      });
+      
+      els.insurance.appendChild(typesGroup);
+    }
+    
+    // Add insurance plans section with optgroup
+    if (plans.length > 0) {
+      const plansGroup = document.createElement('optgroup');
+      plansGroup.label = 'Insurance Plans'; // Static label, safe
+      
+      plans.forEach(plan => {
+        const option = document.createElement('option');
+        // Value format must be exactly "plan:${plan}" for filtering logic to work
+        option.value = `plan:${plan}`; // Browser automatically escapes attribute values
+        option.textContent = plan; // textContent is safe from XSS
+        plansGroup.appendChild(option);
+      });
+      
+      els.insurance.appendChild(plansGroup);
+    }
   }
 }
 
@@ -2489,23 +2520,40 @@ function showShareModal(url, title) {
   const body = document.getElementById('shareModalBody');
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
   
+  // Create static HTML structure with IDs (no user-controlled data)
   body.innerHTML = `
     <div style="text-align: center;">
-      <p style="margin-bottom: 20px; color: var(--muted);">${escapeHtml(title)}</p>
+      <p id="shareTitle" style="margin-bottom: 20px; color: var(--muted);"></p>
       <div style="margin: 20px 0;">
-        <img src="${qrCodeUrl}" alt="QR Code" style="border: 1px solid var(--stroke); border-radius: 8px; padding: 8px; background: white;" />
+        <img id="shareQrImg" alt="QR Code" style="border: 1px solid var(--stroke); border-radius: 8px; padding: 8px; background: white;" />
       </div>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <input type="text" id="shareUrlInput" value="${escapeHtml(url)}" readonly style="flex: 1; padding: 10px; border: 1px solid var(--stroke); border-radius: 8px; font-size: 13px;" />
-        <button type="button" class="btn-primary" onclick="copyShareUrl()" style="white-space: nowrap;">Copy Link</button>
+        <input type="text" id="shareUrlInput" readonly style="flex: 1; padding: 10px; border: 1px solid var(--stroke); border-radius: 8px; font-size: 13px;" />
+        <button type="button" id="copyShareBtn" class="btn-primary" style="white-space: nowrap;">Copy Link</button>
       </div>
       ${navigator.share ? `
-        <button type="button" class="btn-primary" onclick="nativeShare('${escapeHtml(url)}', '${escapeHtml(title)}')" style="width: 100%; margin-top: 12px;">
+        <button type="button" id="nativeShareBtn" class="btn-primary" style="width: 100%; margin-top: 12px;">
           Share via...
         </button>
       ` : ''}
     </div>
   `;
+  
+  // Set user-controlled values via DOM properties (safe from XSS)
+  document.getElementById('shareTitle').textContent = title;
+  document.getElementById('shareUrlInput').value = url;
+  document.getElementById('shareQrImg').src = qrCodeUrl;
+  
+  // Attach event listeners (no inline handlers)
+  const copyShareBtn = document.getElementById('copyShareBtn');
+  if (copyShareBtn) {
+    copyShareBtn.addEventListener('click', copyShareUrl);
+  }
+  
+  const nativeShareBtn = document.getElementById('nativeShareBtn');
+  if (nativeShareBtn) {
+    nativeShareBtn.addEventListener('click', () => nativeShare(url, title));
+  }
   
   showModal(modal);
 }
