@@ -66,14 +66,24 @@ function mapsLinkFor(p) {
   return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
 }
 
-function stableIdFor(p, i) {
-  const base = `${safeStr(p.program_id)}|${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`.toLowerCase();
+// Stable, cross-sort/cross-filter identifier.
+// IMPORTANT: Do not include the current list index; it changes whenever results are
+// sorted/filtered, which breaks Saved/Compare state.
+function stableIdFor(p, _i) {
+  const pid = safeStr(p.program_id);
+  if (pid) return `p_${pid}`;
+
+  // Fallback (should be rare): hash the core identifying fields.
+  const base =
+    `${safeStr(p.program_name)}|${safeStr(p.organization)}|${locLabel(p)}|${safeStr(p.level_of_care)}|${safeStr(p.entry_type)}`
+    .toLowerCase();
+
   let h = 2166136261;
   for (let k = 0; k < base.length; k++) {
     h ^= base.charCodeAt(k);
     h = Math.imul(h, 16777619);
   }
-  return `p_${(h >>> 0).toString(16)}_${i}`;
+  return `p_${(h >>> 0).toString(16)}`;
 }
 
 function locLabel(p) {

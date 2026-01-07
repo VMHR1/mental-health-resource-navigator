@@ -233,6 +233,8 @@ if (typeof window !== 'undefined') {
   window.levenshteinDistance = levenshteinDistance;
   window.fuzzyMatch = fuzzyMatch;
   window.findBestCityMatch = findBestCityMatch;
+  // Store reference to internal function to avoid recursion
+  const internalParseSmartSearch = parseSmartSearch;
   window.parseSmartSearch = (query) => {
     const cities = window.CITIES || [
       'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton', 
@@ -241,7 +243,8 @@ if (typeof window !== 'undefined') {
       'the colony', 'bedford', 'lewisville', 'carrollton', 'garland', 
       'mesquite', 'irving', 'grand prairie', 'corsicana'
     ];
-    return parseSmartSearch(query, cities);
+    // Call internal function directly to avoid recursion
+    return internalParseSmartSearch(query, cities);
   };
 }
 
