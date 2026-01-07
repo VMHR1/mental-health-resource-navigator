@@ -2347,7 +2347,10 @@ function showToast(message, type = 'success') {
 window.showToast = showToast;
 
 function showModal(modalEl) {
+  // Set aria-hidden to false FIRST to avoid accessibility violation
+  // This must happen before any focusable elements can receive focus
   modalEl.setAttribute('aria-hidden', 'false');
+  
   // Lock body scroll - use both class and inline style for maximum compatibility
   document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
@@ -2356,10 +2359,30 @@ function showModal(modalEl) {
   document.body.style.position = 'fixed';
   document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
+  
+  // Focus management: Focus first focusable element after aria-hidden is set and CSS transition starts
+  // Use double requestAnimationFrame to ensure CSS visibility transition has started
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const firstFocusable = modalEl.querySelector('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+      if (firstFocusable && typeof firstFocusable.focus === 'function') {
+        firstFocusable.focus();
+      }
+    });
+  });
 }
 
 function hideModal(modalEl) {
+  // Blur any focused elements inside modal FIRST to avoid accessibility violation
+  // This must happen before setting aria-hidden="true"
+  const focusedElement = modalEl.querySelector(':focus');
+  if (focusedElement && typeof focusedElement.blur === 'function') {
+    focusedElement.blur();
+  }
+  
+  // Set aria-hidden to true to hide from assistive technology
   modalEl.setAttribute('aria-hidden', 'true');
+  
   // Restore body scroll
   const scrollY = document.body.style.top;
   document.body.classList.remove('modal-open');
@@ -5097,7 +5120,15 @@ async function loadPrograms(retryCount = 0){
       
       // Check for duplicates
       if (validationResults.duplicates.length > 0) {
-        console.warn(`Found ${validationResults.duplicates.length} potential duplicate program(s)`);
+        console.warn(`Found ${validationResults.duplicates.length} potential duplicate program(s):`);
+        validationResults.duplicates.forEach((dup, idx) => {
+          const [org, location, careLevel] = dup.key.split('|');
+          console.warn(`  Duplicate ${idx + 1}: ${dup.programs.length} programs with same org/location/care level`);
+          console.warn(`    Organization: ${org}`);
+          console.warn(`    Location: ${location}`);
+          console.warn(`    Care Level: ${careLevel}`);
+          console.warn(`    Program IDs: ${dup.programs.map(p => p.programId).join(', ')}`);
+        });
       }
     }
     
