@@ -1541,186 +1541,37 @@ function toggleOpen(id){
   }
 }
 
-function createCard(p, idx){
-  const crisis = isCrisis(p);
-  const loc = locLabel(p);
-  const care = safeStr(p.level_of_care) || "Not listed";
-  const id = stableIdFor(p, idx);
-  programDataMap.set(id, p);
-  const isOpen = (openId === id);
+// ========== Rendering Functions ==========
+// All rendering functions are now in js/modules/render.js and available via window.*
+// Removed duplicates to avoid code duplication and maintenance issues
 
-  const phone = safeStr(p.phone);
-  const tel = normalizePhoneForTel(phone);
-  const maps = mapsLinkFor(p);
-
-  const website = safeUrl(p.website_url || p.website || "");
-  const websiteDomain = website ? (safeStr(p.website_domain) || domainFromUrl(website)) : "";
-
-  const addresses = (Array.isArray(p.locations) ? p.locations : [])
-    .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
-    .filter(Boolean);
-
-  const verificationSource = safeStr(p.verification_source);
-  const lastVerified = safeStr(p.last_verified);
-  const accuracyLine = (verificationSource || lastVerified)
-    ? `Source: ${verificationSource || "—"}${verificationSource && lastVerified ? " • " : ""}${lastVerified ? `Last verified: ${lastVerified}` : ""}`
-    : `Verification info not provided for this listing. Please confirm details with the program directly.`;
-
-  // Availability badge
-  const waitlist = safeStr(p.waitlist_status).toLowerCase();
-  const accepting = safeStr(p.accepting_new_patients).toLowerCase();
+function createCard(p, idx) {
+  if (typeof window.createCard !== 'function') {
+    console.error('createCard not available. Make sure js/modules/render.js is loaded.');
+    return document.createElement('div');
+  }
   
-  let availabilityBadge = '';
-  if(accepting === 'yes' && (waitlist === 'none' || waitlist === 'short')) {
-    availabilityBadge = `
-      <div class="availability-badge available">
-        <span class="badge-icon">✓</span>
-        <span>Currently Accepting Patients</span>
-      </div>
-    `;
-  } else if(waitlist === 'long' || waitlist === 'moderate') {
-    availabilityBadge = `
-      <div class="availability-badge limited">
-        <span class="badge-icon">⏱️</span>
-        <span>Limited Availability - ${waitlist.charAt(0).toUpperCase() + waitlist.slice(1)} Waitlist</span>
-      </div>
-    `;
-  }
-
-  const div = document.createElement("article");
-  div.className = "card";
-  div.dataset.open = isOpen ? "true" : "false";
-  div.setAttribute("data-id", id);
-
-  // Check if verified within 60 days
-  let isRecent = false;
-  if(lastVerified) {
-    const date = new Date(lastVerified);
-    const now = new Date();
-    const daysSince = (now - date) / (1000 * 60 * 60 * 24);
-    if(daysSince < 60) {
-      div.dataset.recent = "true";
-      isRecent = true;
-    }
-  }
-
-  div.innerHTML = `
-    <div class="card-meta-header">
-      <div class="badgeRow">
-        <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(care)}</span>
-        <span class="badge ${crisis ? "crisis" : "loc"}">${escapeHtml(loc)}</span>
-        ${hasVirtual(p) ? `<span class="badge ${crisis ? "crisis" : "loc2"}">Virtual option</span>` : ``}
-        ${userLocation && currentSort === 'distance' && typeof window.calculateProgramDistance === 'function' ? (() => {
-          const distance = window.calculateProgramDistance(p, userLocation.lat, userLocation.lng);
-          if (distance !== null && distance !== Infinity) {
-            return `<span class="badge distance-badge">${distance.toFixed(1)} mi</span>`;
-          }
-          return '';
-        })() : ''}
-        ${isRecent ? `<span class="badge recent">Recently Updated</span>` : ''}
-      </div>
-    </div>
-
-    <div class="cardTop">
-      <div style="min-width:0">
-        <p class="pname">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
-        <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
-      </div>
-
-      <button class="expandBtn" type="button"
-        aria-expanded="${isOpen ? "true" : "false"}"
-        aria-controls="panel_${escapeHtml(id)}"
-        title="${isOpen ? "Collapse details" : "Expand details"}">
-        <span class="chev" aria-hidden="true"></span>
-      </button>
-    </div>
-
-    <div class="meta">
-      <span>Age: ${escapeHtml(safeStr(p.ages_served) || "Unknown")}</span>
-      <span>Setting: ${escapeHtml(safeStr(p.service_setting) || "Unknown")}</span>
-    </div>
-
-    ${availabilityBadge}
-
-    <div class="card-actions">
-      <button type="button" class="card-action-btn favorite ${isFavorite(id) ? 'active' : ''}" data-favorite="${escapeHtml(id)}" aria-label="${isFavorite(id) ? 'Remove from saved' : 'Save program'}">
-        <span class="icon">${isFavorite(id) ? '⭐' : '☆'}</span>
-        <span>${isFavorite(id) ? 'Saved' : 'Save'}</span>
-      </button>
-      <button type="button" class="card-action-btn" data-share="${escapeHtml(id)}" aria-label="Share program">
-        <span class="icon">🔗</span>
-        <span>Share</span>
-      </button>
-      <label class="card-action-btn compare-btn ${comparisonSet.has(id) ? 'active' : ''}" ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-        <input type="checkbox" data-compare="${escapeHtml(id)}" ${comparisonSet.has(id) ? 'checked' : ''} ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'disabled' : ''} aria-label="Add to comparison" style="display: none;" />
-        <span class="icon">⚖️</span>
-        <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
-      </label>
-    </div>
-
-    <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
-
-    <div class="panel" id="panel_${escapeHtml(id)}">
-      ${addresses.length ? `
-        <div class="kv">
-          <div class="k">Address</div>
-          <div class="v">${addresses.map(a=>`<div>${escapeHtml(a)}</div>`).join("")}</div>
-        </div>
-      ` : ``}
-
-      <div class="kv">
-        <div class="k">Type</div>
-        <div class="v">${escapeHtml(safeStr(p.entry_type) || "Not listed")}</div>
-      </div>
-        <div class="kv">
-        <div class="k">Insurance</div>
-        <div class="v">${escapeHtml(safeStr(p.insurance_notes) || "Not listed — call to confirm")}</div>
-      </div>
-
-      ${website ? `
-        <div class="kv">
-          <div class="k">Website</div>
-          <div class="v">
-            <a class="siteLink" href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">
-              Visit website <span aria-hidden="true">↗</span>
-            </a>
-            ${websiteDomain ? `<span class="siteDomain">${escapeHtml(websiteDomain)}</span>` : ``}
-          </div>
-        </div>
-      ` : ``}
-      <div class="kv">
-        <div class="k">Transportation</div>
-        <div class="v">${escapeHtml(safeStr(p.transportation_available) || "Not listed")}</div>
-      </div>
-      <div class="kv">
-        <div class="k">Notes</div>
-        <div class="v">${escapeHtml(safeStr(p.notes) || "—")}</div>
-      </div>
-
-
-      <div class="actions">
-        <a class="linkBtn" href="program.html?id=${escapeHtml(safeStr(p.program_id))}" style="margin-right: 8px;">View Details</a>
-        ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}" data-program-id="${escapeHtml(id)}">Call Now</a>` : ``}
-        ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
-        ${(!tel && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
-      </div>
-    </div>
-  `;
-  return div;
+  const state = {
+    getOpenId: () => openId,
+    getUserLocation: () => userLocation,
+    getCurrentSort: () => currentSort
+  };
+  
+  return window.createCard(p, idx, {
+    els,
+    state,
+    isFavorite,
+    comparisonSet,
+    programDataMap
+  });
 }
 
 function renderSkeletons(){
-  const make = () => {
-    const d = document.createElement("div");
-    d.className = "skeleton";
-    d.innerHTML = `<div class="shimmer"></div>`;
-    return d;
-  };
-  els.treatmentGrid.innerHTML = "";
-  for (let i=0; i<9; i++) els.treatmentGrid.appendChild(make());
-  els.treatmentCount.textContent = "Loading…";
-  els.treatmentEmpty.style.display = "none";
-  els.totalCount.textContent = "…";
+  if (typeof window.renderSkeletons === 'function') {
+    window.renderSkeletons(els);
+  } else {
+    console.error('renderSkeletons not available. Make sure js/modules/render.js is loaded.');
+  }
 }
 
 function announceToScreenReader(message, priority = 'polite') {
@@ -1740,16 +1591,14 @@ function announceToScreenReader(message, priority = 'polite') {
 }
 
 function updateStats() {
-  const uniqueCities = new Set();
-  programs.forEach(p => {
-    (p.locations || []).forEach(l => {
-      const city = safeStr(l.city);
-      if(city && city.toLowerCase() !== 'virtual' && city.toLowerCase() !== 'multiple') uniqueCities.add(city);
-    });
-  });
-  
+  if (typeof window.updateStats === 'function') {
+    window.updateStats(programs, els, updateFavoritesCount);
+  } else {
+    console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
+    // Fallback
   els.programCount.textContent = programs.length;
   updateFavoritesCount();
+  }
 }
 
 function updateFavoritesCount() {
@@ -1798,91 +1647,15 @@ function isInComparison(programId) {
 }
 
 function renderComparison() {
-  // SECURITY AUDIT FIX: Add null check before DOM manipulation
-  if (!els.comparisonList) {
-    console.warn('Comparison list element not found');
-    return;
-  }
-
-  if (comparisonSet.size === 0) {
-    els.comparisonList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">No programs selected for comparison. Check the "Compare" box on program cards to add them.</p>';
-    return;
-  }
-  
-  const comparisonPrograms = Array.from(comparisonSet).map(id => {
-    return programDataMap.get(id);
-  }).filter(p => p !== undefined);
-  
-  if (comparisonPrograms.length === 0) {
-    els.comparisonList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">Selected programs not found.</p>';
-    return;
-  }
-  
-  // Create comparison table
-  const fields = [
-    { label: 'Program Name', getValue: (p) => safeStr(p.program_name), isHtml: false },
-    { label: 'Organization', getValue: (p) => safeStr(p.organization), isHtml: false },
-    { label: 'Level of Care', getValue: (p) => safeStr(p.level_of_care), isHtml: false },
-    { label: 'Location', getValue: (p) => locLabel(p), isHtml: false },
-    { label: 'Ages Served', getValue: (p) => safeStr(p.ages_served), isHtml: false },
-    { label: 'Service Setting', getValue: (p) => safeStr(p.service_setting), isHtml: false },
-    { label: 'Phone', getValue: (p) => {
-      const phone = safeStr(p.phone);
-      if (!phone) return '—';
-      const tel = normalizePhoneForTel(phone);
-      return tel ? `<a href="tel:${escapeHtml(tel)}" class="comparison-link">${escapeHtml(phone)}</a>` : escapeHtml(phone);
-    }, isHtml: true },
-    { label: 'Website', getValue: (p) => {
-      const url = safeUrl(p.website_url || p.website || '');
-      if (!url) return '—';
-      const domain = domainFromUrl(url) || url;
-      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="comparison-link">${escapeHtml(domain)} <span aria-hidden="true">↗</span></a>`;
-    }, isHtml: true },
-    { label: 'Insurance', getValue: (p) => {
-      const ins = p.accepted_insurance || {};
-      const types = Array.isArray(ins.types) ? ins.types : [];
-      const plans = Array.isArray(ins.plans) ? ins.plans : [];
-      if (types.length > 0 || plans.length > 0) {
-        const allItems = [...types, ...plans];
-        if (allItems.length === 0) {
-          return escapeHtml(safeStr(p.insurance_notes) || 'Unknown');
-        }
-        // Display all insurance items in a formatted list
-        const itemsHtml = allItems.map(item => {
-          const cleanItem = safeStr(item).trim();
-          return cleanItem ? `<div class="comparison-insurance-item">${escapeHtml(cleanItem)}</div>` : '';
-        }).filter(Boolean).join('');
-        return `<div class="comparison-insurance-list">${itemsHtml}</div>`;
-      }
-      return escapeHtml(safeStr(p.insurance_notes) || 'Unknown');
-    }, isHtml: true },
-    { label: 'Accepting New Patients', getValue: (p) => safeStr(p.accepting_new_patients), isHtml: false },
-    { label: 'Notes', getValue: (p) => safeStr(p.notes) || '—', isHtml: false }
-  ];
-  
-  let html = '<div class="comparison-table-wrapper"><table class="comparison-table"><thead><tr><th class="comparison-label-header">Field</th>';
-  comparisonPrograms.forEach((p) => {
-    // Find the program ID from the comparisonSet
-    const programId = Array.from(comparisonSet).find(id => programDataMap.get(id) === p);
-    html += `<th class="comparison-program-header"><div class="comparison-header"><button type="button" class="remove-compare" data-remove="${escapeHtml(programId)}" aria-label="Remove from comparison">×</button><div class="comparison-header-content"><strong>${escapeHtml(safeStr(p.program_name))}</strong><br><span class="comparison-org">${escapeHtml(safeStr(p.organization))}</span></div></div></th>`;
-  });
-  html += '</tr></thead><tbody>';
-  
-  fields.forEach(field => {
-    html += '<tr><td class="comparison-label">' + escapeHtml(field.label) + '</td>';
-    comparisonPrograms.forEach(p => {
-      const value = field.getValue(p);
-      html += '<td class="comparison-value">' + (field.isHtml ? value : escapeHtml(value)) + '</td>';
+  if (typeof window.renderComparison === 'function') {
+    window.renderComparison({
+      els,
+      comparisonSet,
+      programDataMap
     });
-    html += '</tr>';
-  });
-  
-  html += '</tbody></table></div>';
-  els.comparisonList.innerHTML = html;
-  
-  // SECURITY AUDIT FIX: Use event delegation instead of adding listeners per button
-  // This prevents listener accumulation if renderComparison() is called multiple times
-  // Event delegation is handled at document level in bind() function
+  } else {
+    console.error('renderComparison not available. Make sure js/modules/render.js is loaded.');
+  }
 }
 
 async function saveFavorites() {
@@ -1991,64 +1764,35 @@ function isInCustomList(listName, programId) {
 }
 
 function showToast(message, type = 'success') {
-  if (!els.toast) return;
-  els.toast.textContent = message;
-  els.toast.className = `toast ${type} show`;
-  setTimeout(() => {
-    els.toast.classList.remove('show');
-  }, type === 'error' ? 5000 : 3000);
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, type, els.toast);
+  } else {
+    // Fallback
+    if (!els.toast) return;
+    els.toast.textContent = message;
+    els.toast.className = `toast ${type} show`;
+    setTimeout(() => {
+      els.toast.classList.remove('show');
+    }, type === 'error' ? 5000 : 3000);
+  }
 }
 
 // Make showToast globally available for security.js
 window.showToast = showToast;
 
 function showModal(modalEl) {
-  // Set aria-hidden to false FIRST to avoid accessibility violation
-  // This must happen before any focusable elements can receive focus
-  modalEl.setAttribute('aria-hidden', 'false');
-  
-  // Lock body scroll - use both class and inline style for maximum compatibility
-  document.body.classList.add('modal-open');
-  document.body.style.overflow = 'hidden';
-  // Store scroll position for restoration
-  const scrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.width = '100%';
-  
-  // Focus management: Focus first focusable element after aria-hidden is set and CSS transition starts
-  // Use double requestAnimationFrame to ensure CSS visibility transition has started
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      const firstFocusable = modalEl.querySelector('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
-      if (firstFocusable && typeof firstFocusable.focus === 'function') {
-        firstFocusable.focus();
-      }
-    });
-  });
+  if (typeof window.showModal === 'function') {
+    window.showModal(modalEl);
+  } else {
+    console.error('showModal not available. Make sure js/modules/render.js is loaded.');
+  }
 }
 
 function hideModal(modalEl) {
-  // Blur any focused elements inside modal FIRST to avoid accessibility violation
-  // This must happen before setting aria-hidden="true"
-  const focusedElement = modalEl.querySelector(':focus');
-  if (focusedElement && typeof focusedElement.blur === 'function') {
-    focusedElement.blur();
-  }
-  
-  // Set aria-hidden to true to hide from assistive technology
-  modalEl.setAttribute('aria-hidden', 'true');
-  
-  // Restore body scroll
-  const scrollY = document.body.style.top;
-  document.body.classList.remove('modal-open');
-  document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  // Restore scroll position
-  if (scrollY) {
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  if (typeof window.hideModal === 'function') {
+    window.hideModal(modalEl);
+  } else {
+    console.error('hideModal not available. Make sure js/modules/render.js is loaded.');
   }
 }
 
@@ -3245,9 +2989,9 @@ function bind(){
   // Use events module for event handler setup
   if (typeof window.setupEventHandlers !== 'function') {
     console.error('setupEventHandlers not available. Make sure js/modules/events.js is loaded.');
-    return;
-  }
-  
+      return;
+    }
+    
   // Setup state accessors
   const state = {
     getReady: () => ready,

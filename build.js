@@ -77,6 +77,7 @@ function copyStaticAssets() {
     const jsFiles = [
       'js/program-detail.js',
       'js/modules/distance.js',
+      'js/modules/render.js',
       'js/modules/events.js'
     ];
     
