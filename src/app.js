@@ -1159,13 +1159,8 @@ function createCard(p, idx) {
   });
 }
 
-function renderSkeletons(){
-  if (typeof window.renderSkeletons === 'function') {
-    window.renderSkeletons(els);
-  } else {
-    console.error('renderSkeletons not available. Make sure js/modules/render.js is loaded.');
-  }
-}
+// renderSkeletons is now in js/modules/render.js and available via window.renderSkeletons
+// Removed local wrapper to prevent infinite recursion
 
 function announceToScreenReader(message, priority = 'polite') {
   const announcer = document.createElement('div');
@@ -3687,7 +3682,11 @@ async function loadPrograms(retryCount = 0){
   
   els.loadWarn.classList.remove("show");
   els.loadWarn.textContent = "";
-  renderSkeletons();
+  if (typeof window.renderSkeletons === 'function') {
+    window.renderSkeletons(els);
+  } else {
+    console.error('renderSkeletons not available. Make sure js/modules/render.js is loaded.');
+  }
 
   try{
     let jsonText;
