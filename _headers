@@ -44,6 +44,19 @@
 /programs.json
   Cache-Control: public, max-age=3600, must-revalidate
 
+# Icon files and manifest - shorter cache (may be updated)
+/favicon.ico
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/icon.png
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/icon.svg
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/site.webmanifest
+  Cache-Control: public, max-age=3600, must-revalidate
+
 # Block admin.html from public access (should be protected by Cloudflare Access)
 # This is a safety measure in case the file accidentally gets deployed
 /admin.html
