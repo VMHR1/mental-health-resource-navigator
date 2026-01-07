@@ -41,6 +41,9 @@ function copyStaticAssets() {
       'admin.html', // Protected by Cloudflare Access - safe to include in build
       'program.html',
       'submit.html',
+      'privacy.html',
+      'terms.html',
+      '404.html',
       'styles.css',
       'security.js',
       'sw.js',
