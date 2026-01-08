@@ -498,6 +498,11 @@ function hideModal(modalEl) {
 
 // For non-module environments
 if (typeof window !== 'undefined') {
+  // Create stable namespace that won't be overwritten
+  window.__vmhr = window.__vmhr || {};
+  window.__vmhr.renderSkeletons = renderSkeletons;
+  
+  // Keep window.renderSkeletons for backward compatibility
   window.createCard = createCard;
   window.renderSkeletons = renderSkeletons;
   window.updateStats = updateStats;

@@ -3682,8 +3682,21 @@ async function loadPrograms(retryCount = 0){
   
   els.loadWarn.classList.remove("show");
   els.loadWarn.textContent = "";
-  if (typeof window.renderSkeletons === 'function') {
-    window.renderSkeletons(els);
+  // Use stable alias to prevent recursion if window.renderSkeletons is overwritten
+  let rs = window.__vmhr?.renderSkeletons || window.renderSkeletons;
+  
+  // Defensive check: detect recursive wrapper
+  if (rs === window.renderSkeletons && typeof rs === 'function') {
+    const funcStr = Function.prototype.toString.call(rs);
+    if (funcStr.includes('window.renderSkeletons(')) {
+      console.error('renderSkeletons wrapper recursion detected; using __vmhr.renderSkeletons');
+      // Force use of stable alias only
+      rs = window.__vmhr?.renderSkeletons;
+    }
+  }
+  
+  if (typeof rs === 'function') {
+    rs(els);
   } else {
     console.error('renderSkeletons not available. Make sure js/modules/render.js is loaded.');
   }
