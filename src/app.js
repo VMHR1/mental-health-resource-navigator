@@ -308,8 +308,8 @@ document.addEventListener('click', (e) => {
       const program = programDataMap.get(id);
       if (program) {
         const idx = Array.from(programDataMap.keys()).indexOf(id);
-        if (typeof createCard === 'function') {
-          const newCard = createCard(program, idx);
+        if (typeof appCreateCard === 'function') {
+          const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
         }
       }
@@ -338,8 +338,8 @@ document.addEventListener('click', (e) => {
       const program = programDataMap.get(id);
       if (program) {
         const idx = Array.from(programDataMap.keys()).indexOf(id);
-        if (typeof createCard === 'function') {
-          const newCard = createCard(program, idx);
+        if (typeof appCreateCard === 'function') {
+          const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
         }
       }
@@ -355,7 +355,7 @@ document.addEventListener('click', (e) => {
     const id = removeCompareBtn.dataset.remove;
     if (id) {
       toggleComparison(id);
-      renderComparison();
+      callRenderComparison();
     }
     return;
   }
@@ -1138,26 +1138,27 @@ function toggleOpen(id){
 // All rendering functions are now in js/modules/render.js and available via window.*
 // Removed duplicates to avoid code duplication and maintenance issues
 
-function createCard(p, idx) {
-  if (typeof window.createCard !== 'function') {
+// createCard wrapper - uses const to avoid overwriting window.createCard
+const appCreateCard = (p, idx) => {
+  const fn = window.createCard; // from render.js
+  if (typeof fn === 'function') {
+    const state = {
+      getOpenId: () => openId,
+      getUserLocation: () => userLocation,
+      getCurrentSort: () => currentSort
+    };
+    return fn(p, idx, {
+      els,
+      state,
+      isFavorite,
+      comparisonSet,
+      programDataMap
+    });
+  } else {
     console.error('createCard not available. Make sure js/modules/render.js is loaded.');
     return document.createElement('div');
   }
-  
-  const state = {
-    getOpenId: () => openId,
-    getUserLocation: () => userLocation,
-    getCurrentSort: () => currentSort
-  };
-  
-  return window.createCard(p, idx, {
-    els,
-    state,
-    isFavorite,
-    comparisonSet,
-    programDataMap
-  });
-}
+};
 
 // renderSkeletons is now in js/modules/render.js and available via window.renderSkeletons
 // Removed local wrapper to prevent infinite recursion
@@ -1178,16 +1179,18 @@ function announceToScreenReader(message, priority = 'polite') {
   }, priority === 'assertive' ? 5000 : 3000);
 }
 
-function updateStats() {
-  if (typeof window.updateStats === 'function') {
-    window.updateStats(programs, els, updateFavoritesCount);
+// updateStats wrapper - uses const to avoid overwriting window.updateStats
+const callUpdateStats = () => {
+  const fn = window.updateStats; // from render.js
+  if (typeof fn === 'function') {
+    fn(programs, els, updateFavoritesCount);
   } else {
     console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
     // Fallback
-  els.programCount.textContent = programs.length;
-  updateFavoritesCount();
+    els.programCount.textContent = programs.length;
+    updateFavoritesCount();
   }
-}
+};
 
 function updateFavoritesCount() {
   const count = favorites.size;
@@ -1213,21 +1216,21 @@ function saveComparison() {
 function toggleComparison(programId) {
   if (comparisonSet.has(programId)) {
     comparisonSet.delete(programId);
-    showToast('Removed from comparison', 'success');
+    callShowToast('Removed from comparison', 'success');
   } else {
     if (comparisonSet.size >= 3) {
-      showToast('Maximum 3 programs can be compared', 'error');
+      callShowToast('Maximum 3 programs can be compared', 'error');
       return;
     }
     comparisonSet.add(programId);
-    showToast('Added to comparison', 'success');
+    callShowToast('Added to comparison', 'success');
   }
   saveComparison();
   render();
   
   // Update comparison view if modal is open
   if (els.comparisonModal && els.comparisonModal.getAttribute('aria-hidden') === 'false') {
-    renderComparison();
+    callRenderComparison();
   }
 }
 
@@ -1235,9 +1238,11 @@ function isInComparison(programId) {
   return comparisonSet.has(programId);
 }
 
-function renderComparison() {
-  if (typeof window.renderComparison === 'function') {
-    window.renderComparison({
+// renderComparison wrapper - uses const to avoid overwriting window.renderComparison
+const callRenderComparison = () => {
+  const fn = window.renderComparison; // from render.js
+  if (typeof fn === 'function') {
+    fn({
       els,
       comparisonSet,
       programDataMap
@@ -1245,7 +1250,7 @@ function renderComparison() {
   } else {
     console.error('renderComparison not available. Make sure js/modules/render.js is loaded.');
   }
-}
+};
 
 async function saveFavorites() {
   const STORAGE_KEYS = window.STORAGE_KEYS || { FAVORITES: 'favorites' };
@@ -1268,10 +1273,10 @@ async function toggleFavorite(programId) {
   
   if (favorites.has(sanitizedId)) {
     favorites.delete(sanitizedId);
-    showToast('Removed from saved programs', 'success');
+    callShowToast('Removed from saved programs', 'success');
   } else {
     favorites.add(sanitizedId);
-    showToast('Saved to your programs', 'success');
+    callShowToast('Saved to your programs', 'success');
   }
   await saveFavorites();
   render();
@@ -1359,38 +1364,42 @@ function isInCustomList(listName, programId) {
   return customLists[listName] && customLists[listName].includes(programId);
 }
 
-function showToast(message, type = 'success') {
-  if (typeof window.showToast === 'function') {
-    window.showToast(message, type, els.toast);
+// showToast wrapper - uses const to avoid overwriting window.showToast
+// Note: security.js should use window.showToast directly from render.js
+const callShowToast = (message, type = 'success') => {
+  const fn = window.showToast; // from render.js
+  if (typeof fn === 'function') {
+    fn(message, type, els.toast);
   } else {
     // Fallback
-  if (!els.toast) return;
-  els.toast.textContent = message;
-  els.toast.className = `toast ${type} show`;
-  setTimeout(() => {
-    els.toast.classList.remove('show');
-  }, type === 'error' ? 5000 : 3000);
+    if (!els.toast) return;
+    els.toast.textContent = message;
+    els.toast.className = `toast ${type} show`;
+    setTimeout(() => {
+      els.toast.classList.remove('show');
+    }, type === 'error' ? 5000 : 3000);
   }
-}
+};
 
-// Make showToast globally available for security.js
-window.showToast = showToast;
-
-function showModal(modalEl) {
-  if (typeof window.showModal === 'function') {
-    window.showModal(modalEl);
+// showModal wrapper - uses const to avoid overwriting window.showModal
+const callShowModal = (modalEl) => {
+  const fn = window.showModal; // from render.js
+  if (typeof fn === 'function') {
+    fn(modalEl);
   } else {
     console.error('showModal not available. Make sure js/modules/render.js is loaded.');
   }
-}
+};
 
-function hideModal(modalEl) {
-  if (typeof window.hideModal === 'function') {
-    window.hideModal(modalEl);
+// hideModal wrapper - uses const to avoid overwriting window.hideModal
+const callHideModal = (modalEl) => {
+  const fn = window.hideModal; // from render.js
+  if (typeof fn === 'function') {
+    fn(modalEl);
   } else {
     console.error('hideModal not available. Make sure js/modules/render.js is loaded.');
   }
-}
+};
 
 function sortPrograms(list) {
   const sorted = [...list];
@@ -1537,10 +1546,10 @@ function showShareModal(url, title) {
     
     // Close handlers
     modal.querySelectorAll('.modal-close').forEach(btn => {
-      btn.addEventListener('click', () => hideModal(modal));
+      btn.addEventListener('click', () => callHideModal(modal));
     });
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) hideModal(modal);
+      if (e.target === modal) callHideModal(modal);
     });
   }
   
@@ -1582,7 +1591,7 @@ function showShareModal(url, title) {
     nativeShareBtn.addEventListener('click', () => nativeShare(url, title));
   }
   
-  showModal(modal);
+  callShowModal(modal);
 }
 
 function copyShareUrl() {
@@ -1590,7 +1599,7 @@ function copyShareUrl() {
   if (input) {
     input.select();
     document.execCommand('copy');
-    showToast('Link copied to clipboard', 'success');
+    callShowToast('Link copied to clipboard', 'success');
   }
 }
 
@@ -1714,7 +1723,7 @@ window.nativeShare = nativeShare;
 function copyToClipboard(text) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast('Link copied to clipboard', 'success');
+      callShowToast('Link copied to clipboard', 'success');
     }).catch(() => {
       fallbackCopy(text);
     });
@@ -1732,9 +1741,9 @@ function fallbackCopy(text) {
   textarea.select();
   try {
     document.execCommand('copy');
-    showToast('Link copied to clipboard', 'success');
+    callShowToast('Link copied to clipboard', 'success');
   } catch (err) {
-    showToast('Could not copy link', 'error');
+    callShowToast('Could not copy link', 'error');
   }
   document.body.removeChild(textarea);
 }
@@ -1852,7 +1861,7 @@ function renderFavorites() {
   const grid = els.favoritesList.querySelector('.grid');
   
   favoritePrograms.forEach((p, idx) => {
-    const card = createCard(p, idx);
+    const card = appCreateCard(p, idx);
     
     // Add "Recently Updated" badge to badgeRow if card is recent (instead of ::after overlay)
     if (card.dataset.recent === 'true') {
@@ -1941,7 +1950,7 @@ function exportFavorites() {
   });
   
   if (favoritePrograms.length === 0) {
-    showToast('No saved programs to export', 'error');
+    callShowToast('No saved programs to export', 'error');
     return;
   }
   
@@ -2070,7 +2079,7 @@ function renderProgressive(activeList, isCrisisList = false) {
   
   toDisplay.forEach((p, idx) => {
     const realIdx = isCrisisList ? (idx + 10000) : idx;
-    const card = createCard(p, realIdx);
+    const card = appCreateCard(p, realIdx);
     // Use CSS variable instead of inline style for animation delay
     card.style.setProperty('--enter-delay', `${Math.min(idx, 18) * 18}ms`);
     fragment.appendChild(card);
@@ -2277,7 +2286,7 @@ function render(){
       
       activeList.forEach((p, idx) => {
         const realIdx = showCrisis ? (idx + 10000) : idx;
-        const card = createCard(p, realIdx);
+        const card = appCreateCard(p, realIdx);
         // Use CSS variable instead of inline style for animation delay
         card.style.setProperty('--enter-delay', `${Math.min(idx, 18) * 18}ms`);
         fragment.appendChild(card);
@@ -2845,10 +2854,10 @@ function setupPrivacyControls() {
         updateFavoritesCount();
         renderRecentSearches();
         renderCallHistory();
-        renderComparison();
+        callRenderComparison();
         render();
         
-        showToast('All data cleared', 'success');
+        callShowToast('All data cleared', 'success');
         privacyModal.style.display = 'none';
         privacyModal.setAttribute('aria-hidden', 'true');
       }
@@ -2873,7 +2882,7 @@ function setupPrivacyControls() {
       a.click();
       URL.revokeObjectURL(url);
       
-      showToast('Data exported', 'success');
+      callShowToast('Data exported', 'success');
     });
   }
   
@@ -2882,10 +2891,10 @@ function setupPrivacyControls() {
       if (e.target.checked) {
         // Use sessionStorage instead of localStorage for sensitive data
         localStorage.setItem('disableTracking', 'true');
-        showToast('Tracking disabled - data will clear when browser closes', 'success');
+        callShowToast('Tracking disabled - data will clear when browser closes', 'success');
       } else {
         localStorage.removeItem('disableTracking');
-        showToast('Tracking enabled', 'success');
+        callShowToast('Tracking enabled', 'success');
       }
     });
     
@@ -3319,12 +3328,12 @@ function showLocationConsent() {
     console.error('Location consent modal not found');
     return;
   }
-  showModal(els.locationConsentModal);
+  callShowModal(els.locationConsentModal);
 }
 
 function hideLocationConsent() {
   if (!els.locationConsentModal) return;
-  hideModal(els.locationConsentModal);
+    callHideModal(els.locationConsentModal);
 }
 
 async function handleNearMeClick() {
@@ -3333,7 +3342,7 @@ async function handleNearMeClick() {
   
   // Always show consent modal first (privacy-first approach)
   if (!els.locationConsentModal) {
-    showToast('Location feature not available', 'error');
+    callShowToast('Location feature not available', 'error');
     return;
   }
   showLocationConsent();
@@ -3345,7 +3354,7 @@ async function handleLocationConsentAllow() {
   try {
     // Check if distance module is loaded
     if (typeof window.calculateProgramDistance !== 'function') {
-      showToast('Distance calculation not available. Please refresh the page.', 'error');
+      callShowToast('Distance calculation not available. Please refresh the page.', 'error');
       console.error('Distance module not loaded');
       return;
     }
@@ -3354,7 +3363,7 @@ async function handleLocationConsentAllow() {
     userLocation = await requestUserLocation();
     
     if (!userLocation) {
-      showToast('Failed to get location', 'error');
+      callShowToast('Failed to get location', 'error');
       return;
     }
     
@@ -3375,10 +3384,10 @@ async function handleLocationConsentAllow() {
     // Update button visibility (show stop button, hide near me button)
     updateLocationButtonVisibility();
     
-    showToast('Location found. Results sorted by distance.', 'success');
+    callShowToast('Location found. Results sorted by distance.', 'success');
   } catch (error) {
     console.error('Location error:', error);
-    showToast(error.message || 'Failed to get location', 'error');
+    callShowToast(error.message || 'Failed to get location', 'error');
   }
 }
 
@@ -3411,7 +3420,7 @@ function handleStopLocationSharing() {
   }
   
   // Provide user feedback (TDPSA: clear communication)
-  showToast('Location sharing stopped. Your location has been cleared.', 'success');
+  callShowToast('Location sharing stopped. Your location has been cleared.', 'success');
 }
 
 // Update button visibility based on location state (TDPSA: clear opt-out mechanism)
@@ -3895,7 +3904,7 @@ async function loadPrograms(retryCount = 0){
 
     buildLocationOptions(programs);
     buildInsuranceOptions(programs);
-    updateStats();
+    callUpdateStats();
     updateComparisonCount();
     ready = true;
     openId = null;
