@@ -7,3 +7,6 @@ Allow: /
 
 # Disallow admin pages from being indexed
 Disallow: /admin.html
+
+# Sitemap location
+Sitemap: https://viablemhr.com/sitemap.xml

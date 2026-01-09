@@ -57,6 +57,7 @@ function copyStaticAssets() {
       { src: 'public/icon.png', dest: 'icon.png' },
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
+      { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
       { src: '_redirects', dest: '_redirects' },
