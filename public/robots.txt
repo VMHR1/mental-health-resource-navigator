@@ -1,4 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
+# Mental Health Resource Navigator - robots.txt
+
+# Allow all search engines to crawl the site
 User-agent: *
 Allow: /
 
+# Disallow admin pages from being indexed
+Disallow: /admin.html
