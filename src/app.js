@@ -1142,18 +1142,18 @@ function toggleOpen(id){
 const appCreateCard = (p, idx) => {
   const fn = window.createCard; // from render.js
   if (typeof fn === 'function') {
-    const state = {
-      getOpenId: () => openId,
-      getUserLocation: () => userLocation,
-      getCurrentSort: () => currentSort
-    };
+  const state = {
+    getOpenId: () => openId,
+    getUserLocation: () => userLocation,
+    getCurrentSort: () => currentSort
+  };
     return fn(p, idx, {
-      els,
-      state,
-      isFavorite,
-      comparisonSet,
-      programDataMap
-    });
+    els,
+    state,
+    isFavorite,
+    comparisonSet,
+    programDataMap
+  });
   } else {
     console.error('createCard not available. Make sure js/modules/render.js is loaded.');
     return document.createElement('div');
@@ -1187,8 +1187,8 @@ const callUpdateStats = () => {
   } else {
     console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
     // Fallback
-    els.programCount.textContent = programs.length;
-    updateFavoritesCount();
+  els.programCount.textContent = programs.length;
+  updateFavoritesCount();
   }
 };
 
@@ -1372,12 +1372,12 @@ const callShowToast = (message, type = 'success') => {
     fn(message, type, els.toast);
   } else {
     // Fallback
-    if (!els.toast) return;
-    els.toast.textContent = message;
-    els.toast.className = `toast ${type} show`;
-    setTimeout(() => {
-      els.toast.classList.remove('show');
-    }, type === 'error' ? 5000 : 3000);
+  if (!els.toast) return;
+  els.toast.textContent = message;
+  els.toast.className = `toast ${type} show`;
+  setTimeout(() => {
+    els.toast.classList.remove('show');
+  }, type === 'error' ? 5000 : 3000);
   }
 };
 
@@ -2758,7 +2758,7 @@ function bind(){
       if (stateManager) {
         stateManager.setState({ verificationRecencyDays: days });
         verificationRecencyDays = days; // Update local variable directly
-      } else {
+        } else {
         verificationRecencyDays = days;
       }
     }
@@ -2786,7 +2786,7 @@ function bind(){
     hideModal,
     renderFavorites,
     renderCallHistory,
-    renderComparison,
+    renderComparison: callRenderComparison,
     exportFavorites,
     shareCurrentFilters,
     applyFilterPreset,
