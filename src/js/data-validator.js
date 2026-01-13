@@ -8,7 +8,7 @@ const PROGRAM_SCHEMA = window.PROGRAM_SCHEMA || {
   optional: [
     'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
     'website_url', 'website', 'website_domain', 'notes', 'transportation_available',
-    'insurance_notes', 'verification_source', 'last_verified', 'accepting_new_patients',
+    'insurance_notes', 'verification_source', 'verification_source_url', 'last_verified', 'accepting_new_patients',
     'waitlist_status', 'accepted_insurance',
     // New statewide-ready fields (all optional for backward compatibility)
     'primary_county', 'service_area', 'geo', 'verification', 'sud_services'
@@ -30,6 +30,7 @@ const PROGRAM_SCHEMA = window.PROGRAM_SCHEMA || {
     transportation_available: 'string',
     insurance_notes: 'string',
     verification_source: 'string',
+    verification_source_url: 'string',
     last_verified: 'string',
     accepting_new_patients: 'string',
     waitlist_status: 'string',
@@ -92,6 +93,7 @@ function validateProgramSchema(program, index) {
   }
   
   // Validate locations array structure
+  // Allow blank/empty address for Virtual programs and Crisis/MCOT programs
   if (program.locations && Array.isArray(program.locations)) {
     program.locations.forEach((loc, locIdx) => {
       if (typeof loc !== 'object' || loc === null) {
@@ -102,6 +104,14 @@ function validateProgramSchema(program, index) {
         }
         if (loc.state && typeof loc.state !== 'string') {
           errors.push(`Location ${locIdx} state should be a string`);
+        }
+        // Address can be blank for Virtual programs or Crisis services
+        const isVirtual = safeStr(program.service_setting).toLowerCase().includes('virtual') || 
+                         safeStr(loc.city).toLowerCase() === 'virtual';
+        const isCrisis = safeStr(program.entry_type).toLowerCase().includes('crisis') ||
+                        safeStr(program.level_of_care).toLowerCase().includes('crisis');
+        if (!isVirtual && !isCrisis && loc.address !== undefined && loc.address !== null && safeStr(loc.address) === '') {
+          warnings.push(`Location ${locIdx} has empty address (may be valid for Virtual/Crisis programs)`);
         }
       }
     });
@@ -226,8 +236,38 @@ function validateProgramSchema(program, index) {
   }
   
   // Check for common data quality issues
-  if (program.phone && !/[\d()-\s+]/.test(program.phone)) {
-    warnings.push('Phone number format may be invalid');
+  // Allow shortcodes (3-6 digits) for crisis resources
+  if (program.phone) {
+    const phoneStr = safeStr(program.phone);
+    const isCrisis = safeStr(program.entry_type).toLowerCase().includes('crisis') ||
+                    safeStr(program.level_of_care).toLowerCase().includes('crisis');
+    const digits = phoneStr.replace(/[^\d]/g, '');
+    const isShortcode = digits.length >= 3 && digits.length <= 6;
+    
+    if (!/[\d()-\s+text]/i.test(phoneStr)) {
+      warnings.push('Phone number format may be invalid');
+    } else if (!isCrisis && !isShortcode && digits.length < 10) {
+      warnings.push('Phone number appears to be too short (may be valid for crisis shortcodes)');
+    }
+  }
+  
+  // Validate verification_source_url if present
+  if (program.verification_source_url) {
+    const url = safeStr(program.verification_source_url);
+    if (url && typeof window !== 'undefined' && typeof window.validateUrl === 'function') {
+      if (!window.validateUrl(url)) {
+        errors.push(`Invalid verification_source_url: ${url}`);
+      }
+    } else if (url) {
+      try {
+        const parsed = new URL(url, window?.location?.href || 'https://example.com');
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          errors.push(`verification_source_url must be http or https, got: ${parsed.protocol}`);
+        }
+      } catch (e) {
+        errors.push(`Invalid verification_source_url format: ${url}`);
+      }
+    }
   }
   
   if (program.ages_served && program.ages_served.toLowerCase().includes('unknown')) {

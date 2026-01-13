@@ -3222,6 +3222,46 @@ footer{
   color: var(--muted);
 }
 
+/* Verification source link - subtle, non-intrusive */
+.verified-source{
+  display: inline-block;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--muted);
+  transition: color 0.2s ease;
+}
+.verified-source:hover{
+  color: var(--a);
+  border-bottom-color: var(--a);
+}
+.verified-source:focus{
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 4px;
+}
+
+/* Last verified date - subtle text */
+.last-verified{
+  display: inline-block;
+  font-size: 11px;
+  color: var(--muted2);
+  margin-left: 8px;
+}
+
+/* Ensure verification source wraps cleanly on mobile */
+@media (max-width: 640px){
+  .verified-source, .last-verified{
+    font-size: 11px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  .kv .v .verified-source{
+    display: block;
+    margin-top: 4px;
+  }
+}
+
 /* Optional: make Website action button feel distinct but still neutral */
 .linkBtn.site{
   background: rgba(255,255,255,.92);

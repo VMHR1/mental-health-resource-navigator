@@ -88,13 +88,48 @@ function createCard(program, idx, options) {
   const isOpen = (state.getOpenId() === id);
 
   const phone = safeStr(program.phone);
-  const tel = normalizePhoneForTel(phone);
+  const phoneDigits = phone ? normalizePhoneForTel(phone) : "";
+  const looksLikeShortcode = phoneDigits && phoneDigits.length <= 6;
+  const mentionsText = /text/i.test(phone);
+  const isCrisisTextLine = safeStr(program.program_id) === "crisis-textline-741741";
+  
+  // Determine if this should be SMS or tel link
+  let phoneHref = "";
+  let phoneLabel = "Call Now";
+  if (phoneDigits) {
+    if (looksLikeShortcode || mentionsText || isCrisisTextLine) {
+      phoneHref = `sms:${phoneDigits}`;
+      phoneLabel = "Text Now";
+    } else {
+      phoneHref = `tel:${phoneDigits}`;
+      phoneLabel = "Call Now";
+    }
+  }
+  
   const maps = mapsLinkFor(program);
 
   const website = safeUrl(program.website_url || program.website || "");
   const websiteDomain = website ? (safeStr(program.website_domain) || domainFromUrl(website)) : "";
+  const resolveVerificationUrl = window.resolveVerificationUrl || ((p) => {
+    if (p.verification_source_url) {
+      const url = safeUrl(p.verification_source_url);
+      if (url) return url;
+    }
+    if (p.accepted_insurance && p.accepted_insurance.source_url) {
+      const url = safeUrl(p.accepted_insurance.source_url);
+      if (url) return url;
+    }
+    if (p.website_url || p.website) {
+      const url = safeUrl(p.website_url || p.website);
+      if (url) return url;
+    }
+    return "";
+  });
+  const verificationUrl = resolveVerificationUrl(program);
 
+  // Only include locations with street addresses
   const addresses = (Array.isArray(program.locations) ? program.locations : [])
+    .filter(l => safeStr(l.address)) // Skip locations without street address
     .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
     .filter(Boolean);
 
@@ -229,6 +264,22 @@ function createCard(program, idx, options) {
           </div>
         </div>
       ` : ``}
+      ${verificationUrl ? `
+        <div class="kv">
+          <div class="k"></div>
+          <div class="v">
+            <a class="verified-source" href="${escapeHtml(verificationUrl)}" target="_blank" rel="noopener noreferrer">Verified source</a>
+            ${lastVerified ? `<span class="last-verified"> • Last verified: ${escapeHtml(lastVerified)}</span>` : ``}
+          </div>
+        </div>
+      ` : lastVerified ? `
+        <div class="kv">
+          <div class="k"></div>
+          <div class="v">
+            <span class="last-verified">Last verified: ${escapeHtml(lastVerified)}</span>
+          </div>
+        </div>
+      ` : ``}
       <div class="kv">
         <div class="k">Transportation</div>
         <div class="v">${escapeHtml(safeStr(program.transportation_available) || "Not listed")}</div>
@@ -241,9 +292,9 @@ function createCard(program, idx, options) {
 
       <div class="actions">
         <a class="linkBtn" href="program.html?id=${escapeHtml(safeStr(program.program_id))}" style="margin-right: 8px;">View Details</a>
-        ${tel ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="tel:${escapeHtml(tel)}" data-program-id="${escapeHtml(id)}">Call Now</a>` : ``}
+        ${phoneHref ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="${escapeHtml(phoneHref)}" data-program-id="${escapeHtml(id)}">${escapeHtml(phoneLabel)}</a>` : ``}
         ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
-        ${(!tel && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
+        ${(!phoneHref && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
       </div>
     </div>
   `;
@@ -367,8 +418,13 @@ function renderComparison(options) {
     { label: 'Phone', getValue: (p) => {
       const phone = safeStr(p.phone);
       if (!phone) return '—';
-      const tel = normalizePhoneForTel(phone);
-      return tel ? `<a href="tel:${escapeHtml(tel)}" class="comparison-link">${escapeHtml(phone)}</a>` : escapeHtml(phone);
+      const phoneDigits = normalizePhoneForTel(phone);
+      if (!phoneDigits) return escapeHtml(phone);
+      const looksLikeShortcode = phoneDigits.length <= 6;
+      const mentionsText = /text/i.test(phone);
+      const isCrisisTextLine = safeStr(p.program_id) === "crisis-textline-741741";
+      const href = (looksLikeShortcode || mentionsText || isCrisisTextLine) ? `sms:${phoneDigits}` : `tel:${phoneDigits}`;
+      return `<a href="${escapeHtml(href)}" class="comparison-link">${escapeHtml(phone)}</a>`;
     }, isHtml: true },
     { label: 'Website', getValue: (p) => {
       const url = safeUrl(p.website_url || p.website || '');

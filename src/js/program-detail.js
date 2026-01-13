@@ -90,12 +90,31 @@ function renderProgramDetail(program) {
     return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
   });
   
+  // Only include locations with street addresses
   const addresses = (Array.isArray(program.locations) ? program.locations : [])
+    .filter(l => safeStr(l.address)) // Skip locations without street address
     .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
     .filter(Boolean);
   
   const phone = safeStr(program.phone);
-  const tel = normalizePhoneForTel(phone);
+  const phoneDigits = phone ? normalizePhoneForTel(phone) : "";
+  const looksLikeShortcode = phoneDigits && phoneDigits.length <= 6;
+  const mentionsText = /text/i.test(phone);
+  const isCrisisTextLine = safeStr(program.program_id) === "crisis-textline-741741";
+  
+  // Determine if this should be SMS or tel link
+  let phoneHref = "";
+  let phoneLabel = phone;
+  if (phoneDigits) {
+    if (looksLikeShortcode || mentionsText || isCrisisTextLine) {
+      phoneHref = `sms:${phoneDigits}`;
+      phoneLabel = phone;
+    } else {
+      phoneHref = `tel:${phoneDigits}`;
+      phoneLabel = phone;
+    }
+  }
+  
   const maps = mapsLinkFor(program);
   const website = safeUrl(program.website_url || program.website || "");
   
@@ -147,7 +166,7 @@ function renderProgramDetail(program) {
         ${phone ? `
         <div class="program-detail-label">Phone</div>
         <div class="program-detail-value">
-          ${tel ? `<a href="tel:${escapeHtml(tel)}" class="linkBtn primary">${escapeHtml(phone)}</a>` : escapeHtml(phone)}
+          ${phoneHref ? `<a href="${escapeHtml(phoneHref)}" class="linkBtn primary">${escapeHtml(phoneLabel)}</a>` : escapeHtml(phone)}
         </div>
         ` : ''}
         

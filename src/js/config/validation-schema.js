@@ -6,7 +6,7 @@ export const PROGRAM_SCHEMA = {
   optional: [
     'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
     'website_url', 'website', 'website_domain', 'notes', 'transportation_available',
-    'insurance_notes', 'verification_source', 'last_verified', 'accepting_new_patients',
+    'insurance_notes', 'verification_source', 'verification_source_url', 'last_verified', 'accepting_new_patients',
     'waitlist_status', 'accepted_insurance',
     // New statewide-ready fields (all optional for backward compatibility)
     'primary_county', 'service_area', 'geo', 'verification', 'sud_services'
@@ -28,6 +28,7 @@ export const PROGRAM_SCHEMA = {
     transportation_available: 'string',
     insurance_notes: 'string',
     verification_source: 'string',
+    verification_source_url: 'string',
     last_verified: 'string',
     accepting_new_patients: 'string',
     waitlist_status: 'string',

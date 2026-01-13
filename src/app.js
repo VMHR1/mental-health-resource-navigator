@@ -4005,10 +4005,10 @@ if (document.readyState === 'loading') {
   // DOM already ready
   updateCrisisBannerOffset();
 }
-// Handle call tracking via event delegation
+// Handle call/text tracking via event delegation
 document.addEventListener('click', (e) => {
   const callBtn = e.target.closest('[data-program-id]');
-  if (callBtn && callBtn.href && callBtn.href.startsWith('tel:')) {
+  if (callBtn && callBtn.href && (callBtn.href.startsWith('tel:') || callBtn.href.startsWith('sms:'))) {
     const programId = callBtn.dataset.programId;
     const program = programDataMap.get(programId);
     if (program) trackCallAttempt(program);

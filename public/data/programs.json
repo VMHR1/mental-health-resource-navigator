@@ -2034,7 +2034,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield (incl. BCBS of Texas; BCBS Federal Employee Program is listed in insurance navigation), Carelon Behavioral Health, Cigna, Magellan Health, Optum, UnitedHealthcare, UMR | Types: Commercial (most major) | BasePoint states it accepts most major insurance plans; plan coverage varies—use their insurance verification.",
       "verification_source": "https://basepointacademy.com/contact/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -2064,8 +2064,10 @@
           "UMR"
         ]
       },
-      "website_url": "https://basepointacademy.com/contact/",
+      "website_url": "https://basepointacademy.com/",
+      "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
+      "verification_source_url": "https://basepointacademy.com/",
       "service_domains": [
         "mental_health"
       ]
@@ -2091,11 +2093,11 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
-        "source_url": "https://connectionswellnessgroup.com/faqs/",
+        "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
           "Baylor Scott & White Health Plan",
@@ -2131,8 +2133,10 @@
           "Behavioral Health Systems"
         ]
       },
-      "website_url": "https://connectionswellnessgroup.com/services/virtual-care/",
+      "website_url": "https://connectionswellnessgroup.com/",
+      "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
+      "verification_source_url": "https://connectionswellnessgroup.com/",
       "service_domains": [
         "mental_health"
       ]
@@ -3873,7 +3877,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: UnitedHealthcare, Cigna, Blue Cross Blue Shield, Aetna, Anthem, Humana, TRICARE, Medicaid (in select states) | Types: Commercial (most major), Military (TRICARE), Medicaid (select states) | Charlie Health FAQ lists major in-network insurers; Medicaid coverage depends on state/program—verify with admissions.",
       "verification_source": "https://www.charliehealth.com/contact-us",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -3905,8 +3909,10 @@
           "Medicaid (in select states)"
         ]
       },
-      "website_url": "https://www.charliehealth.com/contact-us",
+      "website_url": "https://www.charliehealth.com/",
+      "website": "https://www.charliehealth.com/",
       "website_domain": "charliehealth.com",
+      "verification_source_url": "https://www.charliehealth.com/",
       "service_domains": [
         "mental_health"
       ]
@@ -3932,7 +3938,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield (incl. BCBS of Texas; BCBS Federal Employee Program is listed in insurance navigation), Carelon Behavioral Health, Cigna, Magellan Health, Optum, UnitedHealthcare, UMR | Types: Commercial (most major) | BasePoint states it accepts most major insurance plans; plan coverage varies—use their insurance verification.",
       "verification_source": "https://basepointacademy.com/contact/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -3962,8 +3968,10 @@
           "UMR"
         ]
       },
-      "website_url": "https://basepointacademy.com/contact/",
+      "website_url": "https://basepointacademy.com/",
+      "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
+      "verification_source_url": "https://basepointacademy.com/",
       "service_domains": [
         "mental_health"
       ]
@@ -3989,11 +3997,11 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
-        "source_url": "https://connectionswellnessgroup.com/faqs/",
+        "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
           "Baylor Scott & White Health Plan",
@@ -4029,8 +4037,10 @@
           "Behavioral Health Systems"
         ]
       },
-      "website_url": "https://connectionswellnessgroup.com/services/virtual-care/",
+      "website_url": "https://connectionswellnessgroup.com/",
+      "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
+      "verification_source_url": "https://connectionswellnessgroup.com/",
       "service_domains": [
         "mental_health"
       ]
@@ -4979,12 +4989,13 @@
           "address": "3300 Oak Lawn Ave., Suite 102"
         }
       ],
-      "phone": "855-245-0961",
+      "phone": "855-808-4213",
       "notes": "Dallas location no longer current / verify current service area. Services: Outpatient and 3 day per week Intensive Outpatient Program for adolescents ages 14-17 with anorexia, bulimia and binge eating disorders",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Eating Disorder Solutions: https://www.eatingdisordersolutions.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
+      "verification_source_url": "https://www.eatingdisordersolutions.com",
       "service_domains": [
         "eating_disorders"
       ],
@@ -5120,20 +5131,23 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all major insurances for intensive outpatient, and Medicaid plans for individual therapy sessions",
       "verification_source": "Grace Counseling: https://www.grace-counseling.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
       "service_domains": [
         "substance_use"
       ],
       "accepted_insurance": {
-        "status": "verified_on_website",
+        "status": "contact_for_info",
         "last_verified": "2025-01-03",
+        "source_url": "https://www.grace-counseling.com/",
+        "notes": "Confirm in-network plans with admissions; website does not publish an up-to-date payer list.",
         "types": [
           "Commercial (all major)",
           "Medicaid/CHIP"
         ]
       },
       "website_url": "https://www.grace-counseling.com",
-      "website_domain": "grace-counseling.com"
+      "website_domain": "grace-counseling.com",
+      "verification_source_url": "https://www.grace-counseling.com/"
     },
     {
       "program_id": "substance-use-imagine-programs-plano",
@@ -5299,7 +5313,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all insurance including Medicaid and Tricare",
       "verification_source": "Carrus Cares Plano: https://www.carruscare.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
       "service_domains": [
         "co_occurring",
         "substance_use"
@@ -5307,6 +5321,7 @@
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-01-03",
+        "source_url": "https://www.carruscare.com/",
         "types": [
           "Commercial (all)",
           "Medicaid/CHIP",
@@ -5314,7 +5329,8 @@
         ]
       },
       "website_url": "https://www.carruscare.com",
-      "website_domain": "carruscare.com"
+      "website_domain": "carruscare.com",
+      "verification_source_url": "https://www.carruscare.com/"
     },
     {
       "program_id": "substance-use-fort-behavioral-evergreen-path-fort-worth",
@@ -5332,12 +5348,13 @@
           "address": "7140 Oakmont Boulevard"
         }
       ],
-      "phone": "855-922-1314",
+      "phone": "844-986-0260",
       "notes": "Phone number may need verification - check official Fort Behavioral / Evergreen Path pages for current admissions/contact number. Residential Treatment Program for females, ages 13-17, with co-occurring substance use and mental health diagnoses.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Fort Behavioral: https://www.fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
+      "verification_source_url": "https://www.fortbehavioral.com/",
       "service_domains": [
         "co_occurring",
         "substance_use"

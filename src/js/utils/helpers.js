@@ -56,12 +56,19 @@ function normalizePhoneForTel(phone) {
 function bestAddress(p) {
   const locs = Array.isArray(p.locations) ? p.locations : [];
   const l = locs[0] || {};
+  // Only include location if it has a street address
+  if (!safeStr(l.address)) return "";
   const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
   return parts.join(", ");
 }
 
 function mapsLinkFor(p) {
-  const addr = bestAddress(p);
+  const locs = Array.isArray(p.locations) ? p.locations : [];
+  const l = locs[0] || {};
+  // Only generate map link if there's a street address
+  if (!safeStr(l.address)) return "";
+  const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
+  const addr = parts.join(", ");
   if (!addr) return "";
   return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
 }
@@ -138,6 +145,34 @@ function programServesAge(p, age) {
   return ranges.some(([min, max]) => age >= min && age <= max);
 }
 
+function isHttpUrl(url) {
+  const s = safeStr(url);
+  if (!s) return false;
+  try {
+    const parsed = new URL(s, window.location.href);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch (_) {
+    return false;
+  }
+}
+
+function resolveVerificationUrl(program) {
+  // Priority: verification_source_url > accepted_insurance.source_url > website
+  if (program.verification_source_url) {
+    const url = safeUrl(program.verification_source_url);
+    if (url && isHttpUrl(url)) return url;
+  }
+  if (program.accepted_insurance && program.accepted_insurance.source_url) {
+    const url = safeUrl(program.accepted_insurance.source_url);
+    if (url && isHttpUrl(url)) return url;
+  }
+  if (program.website_url || program.website) {
+    const url = safeUrl(program.website_url || program.website);
+    if (url && isHttpUrl(url)) return url;
+  }
+  return "";
+}
+
 // For non-module environments
 if (typeof window !== 'undefined') {
   window.safeStr = safeStr;
@@ -153,6 +188,8 @@ if (typeof window !== 'undefined') {
   window.hasVirtual = hasVirtual;
   window.parseAgeSpec = parseAgeSpec;
   window.programServesAge = programServesAge;
+  window.isHttpUrl = isHttpUrl;
+  window.resolveVerificationUrl = resolveVerificationUrl;
 }
 
 
