@@ -17,62 +17,114 @@ async function loadPrograms() {
 }
 
 function findProgramById(programId) {
-  return programs.find(p => {
-    // Try to match by program_id first
+  return programs.find((p) => {
     if (p.program_id === programId) return true;
-    
-    // Try to match by stable ID
     const stableId = window.stableIdFor ? window.stableIdFor(p, programs.indexOf(p)) : null;
     if (stableId === programId) return true;
-    
     return false;
   });
 }
 
 function findRelatedPrograms(program, limit = 3) {
   if (!program) return [];
-  
+
   const related = programs
-    .filter(p => {
-      // Exclude current program
+    .filter((p) => {
       if (p.program_id === program.program_id) return false;
-      
-      // Find programs with same location
+
       const sameLocation = p.locations && program.locations &&
-        p.locations.some(loc1 => 
-          program.locations.some(loc2 => 
+        p.locations.some((loc1) =>
+          program.locations.some((loc2) =>
             loc1.city === loc2.city && loc1.state === loc2.state
           )
         );
-      
-      // Find programs with same level of care
+
       const sameCare = p.level_of_care === program.level_of_care;
-      
-      // Find programs from same organization
       const sameOrg = p.organization === program.organization;
-      
+
       return sameLocation || sameCare || sameOrg;
     })
     .slice(0, limit);
-  
+
   return related;
 }
 
+function renderEmptyState(root, { icon, title, message }) {
+  root.replaceChildren();
+  const wrap = document.createElement('div');
+  wrap.className = 'empty-state';
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'empty-icon';
+  iconEl.textContent = icon;
+
+  const h3 = document.createElement('h3');
+  h3.textContent = title;
+
+  const p = document.createElement('p');
+  p.textContent = message;
+
+  const back = document.createElement('a');
+  back.href = 'index.html';
+  back.className = 'btn-primary';
+  back.style.display = 'inline-block';
+  back.style.marginTop = '16px';
+  back.textContent = 'Back to Search';
+
+  wrap.append(iconEl, h3, p, back);
+  root.appendChild(wrap);
+}
+
+function appendSection(container, titleText) {
+  const section = document.createElement('div');
+  section.className = 'program-detail-section';
+  const h3 = document.createElement('h3');
+  h3.textContent = titleText;
+  section.appendChild(h3);
+  container.appendChild(section);
+  return section;
+}
+
+function appendGridRow(grid, labelText, valueContent) {
+  const label = document.createElement('div');
+  label.className = 'program-detail-label';
+  label.textContent = labelText;
+
+  const value = document.createElement('div');
+  value.className = 'program-detail-value';
+  if (typeof valueContent === 'string') {
+    value.textContent = valueContent;
+  } else if (valueContent instanceof Node) {
+    value.appendChild(valueContent);
+  }
+
+  grid.append(label, value);
+}
+
+function safeMapsHref(mapsUrl) {
+  const s = (mapsUrl || '').toString().trim();
+  if (!s.startsWith('https://www.google.com/maps/')) return '';
+  try {
+    const u = new URL(s);
+    if (u.protocol === 'https:') return u.href;
+  } catch (_) { /* ignore */ }
+  return '';
+}
+
 function renderProgramDetail(program) {
+  const root = document.getElementById('programDetail');
+  if (!root) return;
+
   if (!program) {
-    document.getElementById('programDetail').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">❌</div>
-        <h3>Program not found</h3>
-        <p>The program you're looking for doesn't exist or has been removed.</p>
-        <a href="index.html" class="btn-primary" style="display: inline-block; margin-top: 16px;">Back to Search</a>
-      </div>
-    `;
+    renderEmptyState(root, {
+      icon: '❌',
+      title: 'Program not found',
+      message: "The program you're looking for doesn't exist or has been removed."
+    });
     return;
   }
-  
-  const escapeHtml = window.escapeHtml || ((s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
-  const safeStr = window.safeStr || ((x) => (x ?? "").toString().trim());
+
+  const safeStr = window.safeStr || ((x) => (x ?? '').toString().trim());
   const locLabel = window.locLabel || ((p) => {
     const locs = Array.isArray(p.locations) ? p.locations : [];
     const first = locs[0] || {};
@@ -80,30 +132,28 @@ function renderProgramDetail(program) {
     const state = safeStr(first.state);
     if (city && state) return `${city}, ${state}`;
     if (city) return city;
-    return "Location not listed";
+    return 'Location not listed';
   });
-  const safeUrl = window.safeUrl || ((u) => u || "");
-  const normalizePhoneForTel = window.normalizePhoneForTel || ((p) => p.replace(/[^\d]/g, ""));
+  const safeUrl = window.safeUrl || ((u) => u || '');
+  const normalizePhoneForTel = window.normalizePhoneForTel || ((p) => p.replace(/[^\d]/g, ''));
   const mapsLinkFor = window.mapsLinkFor || ((p) => {
-    const addr = window.bestAddress ? window.bestAddress(p) : "";
-    if (!addr) return "";
-    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
+    const addr = window.bestAddress ? window.bestAddress(p) : '';
+    if (!addr) return '';
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr);
   });
-  
-  // Only include locations with street addresses
+
   const addresses = (Array.isArray(program.locations) ? program.locations : [])
-    .filter(l => safeStr(l.address)) // Skip locations without street address
-    .map(l => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(", "))
+    .filter((l) => safeStr(l.address))
+    .map((l) => [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean).join(', '))
     .filter(Boolean);
-  
+
   const phone = safeStr(program.phone);
-  const phoneDigits = phone ? normalizePhoneForTel(phone) : "";
+  const phoneDigits = phone ? normalizePhoneForTel(phone) : '';
   const looksLikeShortcode = phoneDigits && phoneDigits.length <= 6;
   const mentionsText = /text/i.test(phone);
-  const isCrisisTextLine = safeStr(program.program_id) === "crisis-textline-741741";
-  
-  // Determine if this should be SMS or tel link
-  let phoneHref = "";
+  const isCrisisTextLine = safeStr(program.program_id) === 'crisis-textline-741741';
+
+  let phoneHref = '';
   let phoneLabel = phone;
   if (phoneDigits) {
     if (looksLikeShortcode || mentionsText || isCrisisTextLine) {
@@ -114,171 +164,246 @@ function renderProgramDetail(program) {
       phoneLabel = phone;
     }
   }
-  
-  const maps = mapsLinkFor(program);
-  const website = safeUrl(program.website_url || program.website || "");
-  
+
+  const mapsRaw = mapsLinkFor(program);
+  const mapsHref = safeMapsHref(mapsRaw);
+  const website = safeUrl(program.website_url || program.website || '');
+
   const relatedPrograms = findRelatedPrograms(program, 3);
-  
-  const html = `
-    <div class="program-detail-header">
-      <h1 class="program-detail-title">${escapeHtml(safeStr(program.program_name) || "Program")}</h1>
-      <p class="program-detail-org">${escapeHtml(safeStr(program.organization) || "")}</p>
-      <div class="program-detail-badges">
-        <span class="badge">${escapeHtml(safeStr(program.level_of_care) || "Unknown")}</span>
-        <span class="badge loc">${escapeHtml(locLabel(program))}</span>
-        ${window.hasVirtual && window.hasVirtual(program) ? '<span class="badge loc2">Virtual option</span>' : ''}
-      </div>
-    </div>
-    
-    <div class="program-detail-section">
-      <h3>Program Information</h3>
-      <div class="program-detail-grid">
-        <div class="program-detail-label">Level of Care</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.level_of_care) || "Unknown")}</div>
-        
-        <div class="program-detail-label">Service Setting</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.service_setting) || "Unknown")}</div>
-        
-        <div class="program-detail-label">Ages Served</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.ages_served) || "Unknown")}</div>
-        
-        <div class="program-detail-label">Entry Type</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.entry_type) || "Unknown")}</div>
-      </div>
-    </div>
-    
-    ${addresses.length > 0 ? `
-    <div class="program-detail-section">
-      <h3>Location${addresses.length > 1 ? 's' : ''}</h3>
-      ${addresses.map(addr => `
-        <div style="margin-bottom: 12px;">
-          <div class="program-detail-value">${escapeHtml(addr)}</div>
-          ${maps ? `<a href="${escapeHtml(maps)}" target="_blank" rel="noopener" class="linkBtn" style="margin-top: 8px; display: inline-block;">Get Directions</a>` : ''}
-        </div>
-      `).join('')}
-    </div>
-    ` : ''}
-    
-    <div class="program-detail-section">
-      <h3>Contact Information</h3>
-      <div class="program-detail-grid">
-        ${phone ? `
-        <div class="program-detail-label">Phone</div>
-        <div class="program-detail-value">
-          ${phoneHref ? `<a href="${escapeHtml(phoneHref)}" class="linkBtn primary">${escapeHtml(phoneLabel)}</a>` : escapeHtml(phone)}
-        </div>
-        ` : ''}
-        
-        ${website ? `
-        <div class="program-detail-label">Website</div>
-        <div class="program-detail-value">
-          <a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="siteLink">
-            Visit website <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-        ` : ''}
-      </div>
-    </div>
-    
-    <div class="program-detail-section">
-      <h3>Insurance & Access</h3>
-      <div class="program-detail-grid">
-        <div class="program-detail-label">Insurance</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.insurance_notes) || "Unknown")}</div>
-        
-        <div class="program-detail-label">Transportation</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.transportation_available) || "Unknown")}</div>
-        
-        ${program.accepting_new_patients ? `
-        <div class="program-detail-label">Accepting Patients</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.accepting_new_patients))}</div>
-        ` : ''}
-        
-        ${program.waitlist_status ? `
-        <div class="program-detail-label">Waitlist</div>
-        <div class="program-detail-value">${escapeHtml(safeStr(program.waitlist_status))}</div>
-        ` : ''}
-      </div>
-    </div>
-    
-    ${program.notes ? `
-    <div class="program-detail-section">
-      <h3>Additional Notes</h3>
-      <div class="program-detail-value">${escapeHtml(safeStr(program.notes))}</div>
-    </div>
-    ` : ''}
-    
-    ${program.verification_source || program.last_verified ? `
-    <div class="program-detail-section">
-      <h3>Verification</h3>
-      <div class="program-detail-value" style="font-size: 13px; color: var(--muted);">
-        ${program.verification_source ? `Source: ${escapeHtml(safeStr(program.verification_source))}` : ''}
-        ${program.verification_source && program.last_verified ? ' • ' : ''}
-        ${program.last_verified ? `Last verified: ${escapeHtml(safeStr(program.last_verified))}` : ''}
-      </div>
-    </div>
-    ` : ''}
-    
-    ${relatedPrograms.length > 0 ? `
-    <div class="related-programs">
-      <h2 style="font-size: 22px; margin-bottom: 16px;">Related Programs</h2>
-      <div class="related-programs-grid">
-        ${relatedPrograms.map(p => `
-          <div class="card">
-            <div class="cardTop">
-              <div>
-                <p class="pname">${escapeHtml(safeStr(p.program_name) || "Program")}</p>
-                <p class="org">${escapeHtml(safeStr(p.organization) || "")}</p>
-              </div>
-            </div>
-            <div class="badgeRow">
-              <span class="badge">${escapeHtml(safeStr(p.level_of_care) || "Unknown")}</span>
-              <span class="badge loc">${escapeHtml(locLabel(p))}</span>
-            </div>
-            <div class="actions" style="margin-top: 12px;">
-              <a href="program.html?id=${escapeHtml(p.program_id)}" class="linkBtn primary">View Details</a>
-              <a href="index.html?program=${escapeHtml(p.program_id)}" class="linkBtn">View in Search</a>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    ` : ''}
-  `;
-  
-  document.getElementById('programDetail').innerHTML = html;
-  
-  // Update page title
+
+  root.replaceChildren();
+
+  const header = document.createElement('div');
+  header.className = 'program-detail-header';
+
+  const titleEl = document.createElement('h1');
+  titleEl.className = 'program-detail-title';
+  titleEl.textContent = safeStr(program.program_name) || 'Program';
+
+  const orgEl = document.createElement('p');
+  orgEl.className = 'program-detail-org';
+  orgEl.textContent = safeStr(program.organization) || '';
+
+  const badges = document.createElement('div');
+  badges.className = 'program-detail-badges';
+
+  const badgeCare = document.createElement('span');
+  badgeCare.className = 'badge';
+  badgeCare.textContent = safeStr(program.level_of_care) || 'Unknown';
+
+  const badgeLoc = document.createElement('span');
+  badgeLoc.className = 'badge loc';
+  badgeLoc.textContent = locLabel(program);
+
+  badges.append(badgeCare, badgeLoc);
+
+  if (window.hasVirtual && window.hasVirtual(program)) {
+    const badgeVirt = document.createElement('span');
+    badgeVirt.className = 'badge loc2';
+    badgeVirt.textContent = 'Virtual option';
+    badges.appendChild(badgeVirt);
+  }
+
+  header.append(titleEl, orgEl, badges);
+  root.appendChild(header);
+
+  const infoSection = appendSection(root, 'Program Information');
+  const infoGrid = document.createElement('div');
+  infoGrid.className = 'program-detail-grid';
+  appendGridRow(infoGrid, 'Level of Care', safeStr(program.level_of_care) || 'Unknown');
+  appendGridRow(infoGrid, 'Service Setting', safeStr(program.service_setting) || 'Unknown');
+  appendGridRow(infoGrid, 'Ages Served', safeStr(program.ages_served) || 'Unknown');
+  appendGridRow(infoGrid, 'Entry Type', safeStr(program.entry_type) || 'Unknown');
+  infoSection.appendChild(infoGrid);
+
+  if (addresses.length > 0) {
+    const locSection = appendSection(root, addresses.length > 1 ? 'Locations' : 'Location');
+    addresses.forEach((addr) => {
+      const block = document.createElement('div');
+      block.style.marginBottom = '12px';
+
+      const addrEl = document.createElement('div');
+      addrEl.className = 'program-detail-value';
+      addrEl.textContent = addr;
+      block.appendChild(addrEl);
+
+      if (mapsHref) {
+        const dir = document.createElement('a');
+        dir.href = mapsHref;
+        dir.target = '_blank';
+        dir.rel = 'noopener';
+        dir.className = 'linkBtn';
+        dir.style.marginTop = '8px';
+        dir.style.display = 'inline-block';
+        dir.textContent = 'Get Directions';
+        block.appendChild(dir);
+      }
+      locSection.appendChild(block);
+    });
+  }
+
+  const contactSection = appendSection(root, 'Contact Information');
+  const contactGrid = document.createElement('div');
+  contactGrid.className = 'program-detail-grid';
+
+  if (phone) {
+    appendGridRow(contactGrid, 'Phone', (() => {
+      if (phoneHref) {
+        const a = document.createElement('a');
+        a.href = phoneHref;
+        a.className = 'linkBtn primary';
+        a.textContent = phoneLabel;
+        return a;
+      }
+      return phone;
+    })());
+  }
+
+  if (website) {
+    const siteWrap = document.createElement('a');
+    siteWrap.href = website;
+    siteWrap.target = '_blank';
+    siteWrap.rel = 'noopener';
+    siteWrap.className = 'siteLink';
+    siteWrap.textContent = 'Visit website ';
+    const arrow = document.createElement('span');
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.textContent = '↗';
+    siteWrap.appendChild(arrow);
+    appendGridRow(contactGrid, 'Website', siteWrap);
+  }
+
+  contactSection.appendChild(contactGrid);
+
+  const accessSection = appendSection(root, 'Insurance & Access');
+  const accessGrid = document.createElement('div');
+  accessGrid.className = 'program-detail-grid';
+  appendGridRow(accessGrid, 'Insurance', safeStr(program.insurance_notes) || 'Unknown');
+  appendGridRow(accessGrid, 'Transportation', safeStr(program.transportation_available) || 'Unknown');
+
+  if (program.accepting_new_patients) {
+    appendGridRow(accessGrid, 'Accepting Patients', safeStr(program.accepting_new_patients));
+  }
+  if (program.waitlist_status) {
+    appendGridRow(accessGrid, 'Waitlist', safeStr(program.waitlist_status));
+  }
+  accessSection.appendChild(accessGrid);
+
+  if (program.notes) {
+    const notesSection = appendSection(root, 'Additional Notes');
+    const notesVal = document.createElement('div');
+    notesVal.className = 'program-detail-value';
+    notesVal.textContent = safeStr(program.notes);
+    notesSection.appendChild(notesVal);
+  }
+
+  if (program.verification_source || program.last_verified) {
+    const verSection = appendSection(root, 'Verification');
+    const verVal = document.createElement('div');
+    verVal.className = 'program-detail-value';
+    verVal.style.fontSize = '13px';
+    verVal.style.color = 'var(--muted)';
+
+    let verText = '';
+    if (program.verification_source) {
+      verText += `Source: ${safeStr(program.verification_source)}`;
+    }
+    if (program.verification_source && program.last_verified) {
+      verText += ' • ';
+    }
+    if (program.last_verified) {
+      verText += `Last verified: ${safeStr(program.last_verified)}`;
+    }
+    verVal.textContent = verText;
+    verSection.appendChild(verVal);
+  }
+
+  if (relatedPrograms.length > 0) {
+    const relatedWrap = document.createElement('div');
+    relatedWrap.className = 'related-programs';
+
+    const relatedTitle = document.createElement('h2');
+    relatedTitle.style.fontSize = '22px';
+    relatedTitle.style.marginBottom = '16px';
+    relatedTitle.textContent = 'Related Programs';
+    relatedWrap.appendChild(relatedTitle);
+
+    const grid = document.createElement('div');
+    grid.className = 'related-programs-grid';
+
+    relatedPrograms.forEach((p) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const cardTop = document.createElement('div');
+      cardTop.className = 'cardTop';
+      const inner = document.createElement('div');
+      const pname = document.createElement('p');
+      pname.className = 'pname';
+      pname.textContent = safeStr(p.program_name) || 'Program';
+      const org = document.createElement('p');
+      org.className = 'org';
+      org.textContent = safeStr(p.organization) || '';
+      inner.append(pname, org);
+      cardTop.appendChild(inner);
+      card.appendChild(cardTop);
+
+      const badgeRow = document.createElement('div');
+      badgeRow.className = 'badgeRow';
+      const b1 = document.createElement('span');
+      b1.className = 'badge';
+      b1.textContent = safeStr(p.level_of_care) || 'Unknown';
+      const b2 = document.createElement('span');
+      b2.className = 'badge loc';
+      b2.textContent = locLabel(p);
+      badgeRow.append(b1, b2);
+      card.appendChild(badgeRow);
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.style.marginTop = '12px';
+
+      const idEnc = encodeURIComponent(p.program_id || '');
+      const detailLink = document.createElement('a');
+      detailLink.href = `program.html?id=${idEnc}`;
+      detailLink.className = 'linkBtn primary';
+      detailLink.textContent = 'View Details';
+
+      const searchLink = document.createElement('a');
+      searchLink.href = `index.html?program=${idEnc}`;
+      searchLink.className = 'linkBtn';
+      searchLink.textContent = 'View in Search';
+
+      actions.append(detailLink, searchLink);
+      card.appendChild(actions);
+      grid.appendChild(card);
+    });
+
+    relatedWrap.appendChild(grid);
+    root.appendChild(relatedWrap);
+  }
+
   document.title = `${safeStr(program.program_name)} • Texas Youth Mental Health Resource Finder`;
 }
 
-// Initialize
 (async () => {
   await loadPrograms();
-  
+
   const params = new URLSearchParams(window.location.search);
   const programId = params.get('id');
-  
+
+  const root = document.getElementById('programDetail');
+  if (!root) return;
+
   if (programId) {
     const program = findProgramById(programId);
     currentProgram = program;
     renderProgramDetail(program);
   } else {
-    document.getElementById('programDetail').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">❌</div>
-        <h3>No program specified</h3>
-        <p>Please select a program from the search results.</p>
-        <a href="index.html" class="btn-primary" style="display: inline-block; margin-top: 16px;">Back to Search</a>
-      </div>
-    `;
+    renderEmptyState(root, {
+      icon: '❌',
+      title: 'No program specified',
+      message: 'Please select a program from the search results.'
+    });
   }
 })();
-
-
-
-
-
-
-

@@ -101,6 +101,7 @@ function copyStaticAssets() {
     // Copy js directory files
     const jsFiles = [
       'src/js/program-detail.js',
+      'src/js/submit.js',
       'src/js/modules/distance.js',
       'src/js/modules/filters.js',
       'src/js/modules/sort.js',

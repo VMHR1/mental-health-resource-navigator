@@ -672,362 +672,62 @@ function buildInsuranceOptions(list){
   }
 }
 
-// ========== Relevance Scoring ==========
-function calculateRelevanceScore(program, query) {
-  if (!query || !query.trim()) return 0;
-  
-  let score = 0;
-  const qLower = query.toLowerCase().trim();
-  const orgLower = safeStr(program.organization).toLowerCase();
-  const progLower = safeStr(program.program_name).toLowerCase();
-  const levelOfCare = safeStr(program.level_of_care).toLowerCase();
-  const entryType = safeStr(program.entry_type).toLowerCase();
-  const serviceSetting = safeStr(program.service_setting).toLowerCase();
-  const agesServed = safeStr(program.ages_served).toLowerCase();
-  const notes = safeStr(program.notes || '').toLowerCase();
-  const loc = locLabel(program).toLowerCase();
-  
-  // Exact matches get highest priority
-  if (orgLower === qLower) {
-    score += 100;
-  } else if (progLower === qLower) {
-    score += 90;
-  } else {
-    // Organization name matching (high priority)
-    if (orgLower.includes(qLower)) {
-      score += 80;
-    } else if (qLower.includes(orgLower)) {
-      score += 75;
-    } else if (window.fuzzyMatch && window.fuzzyMatch(qLower, orgLower, 0.85)) {
-      score += 60;
+// ========== Filter / relevance (delegate to modules) ==========
+/** Shared bindings for `js/modules/filters.js` — single source to avoid duplicating filter state in render(). */
+function getFilterModuleBindings(showCrisis) {
+  return {
+    filters: {
+      query: els.q?.value || '',
+      location: els.loc?.value || '',
+      age: els.age?.value || '',
+      care: els.care?.value || '',
+      insurance: els.insurance?.value || '',
+      onlyVirtual: els.onlyVirtual?.checked || false,
+      showCrisis,
+      county: els.county?.value || '',
+      serviceDomain: els.serviceDomain?.value || '',
+      verificationRecency: els.verificationRecency?.value || '',
+      exactMatch: els.q?.dataset.exactMatch === 'true',
+      matchType: els.q?.dataset.matchType || '',
+      selectedCounty,
+      selectedServiceDomains,
+      selectedSudServices,
+      verificationRecencyDays
+    },
+    options: {
+      safeStr: window.safeStr,
+      parseSmartSearch: window.parseSmartSearch,
+      fuzzyMatch: window.fuzzyMatch,
+      programServesAge: window.programServesAge,
+      hasVirtual: window.hasVirtual,
+      locLabel: window.locLabel,
+      featureFlags: window.FEATURE_FLAGS || {},
+      programs,
+      ready
     }
-    
-    // Program name matching
-    if (progLower.includes(qLower)) {
-      score += 70;
-    } else if (qLower.includes(progLower)) {
-      score += 65;
-    } else if (window.fuzzyMatch && window.fuzzyMatch(qLower, progLower, 0.85)) {
-      score += 50;
-    }
-  }
-  
-  // Word-boundary aware matching for multi-word queries
-  const queryWords = qLower.split(/\s+/).filter(w => w.length > 2);
-  if (queryWords.length > 1) {
-    const orgWords = orgLower.split(/\s+/);
-    const progWords = progLower.split(/\s+/);
-    
-    // Check if all query words appear in organization
-    const allWordsInOrg = queryWords.every(qw => 
-      orgWords.some(ow => ow.includes(qw) || qw.includes(ow))
-    );
-    if (allWordsInOrg && score < 70) {
-      score += 55;
-    }
-    
-    // Check if all query words appear in program name
-    const allWordsInProg = queryWords.every(qw => 
-      progWords.some(pw => pw.includes(qw) || qw.includes(pw))
-    );
-    if (allWordsInProg && score < 60) {
-      score += 45;
-    }
-  }
-  
-  // Other field matches (lower priority)
-  if (levelOfCare.includes(qLower)) score += 30;
-  if (entryType.includes(qLower)) score += 25;
-  if (serviceSetting.includes(qLower)) score += 20;
-  if (agesServed.includes(qLower)) score += 15;
-  if (loc.includes(qLower)) score += 20;
-  if (notes.includes(qLower)) score += 10;
-  
-  return score;
+  };
 }
 
-function matchesFilters(p){
-  const q = safeStr(els.q?.value || '').toLowerCase();
-  const loc = safeStr(els.loc?.value || '').toLowerCase();
-  const ageVal = safeStr(els.age?.value || '');
-  const care = safeStr(els.care?.value || '').toLowerCase();
-  const onlyVirtual = els.onlyVirtual?.checked || false;
+function calculateRelevanceScore(program, query) {
+  const q = safeStr(query).trim();
+  if (!q) return 0;
+  if (typeof window.calculateRelevanceScore !== 'function') return 0;
+  return window.calculateRelevanceScore(program, query, {
+    safeStr: window.safeStr,
+    locLabel: window.locLabel,
+    fuzzyMatch: window.fuzzyMatch
+  });
+}
 
-  // Parse smart search to get additional filters
-  // Use module function directly, then add organization detection if needed
-  const query = els.q?.value || '';
-  const parsed = typeof window.parseSmartSearch === 'function' 
-    ? window.parseSmartSearch(query)
-    : { loc: '', locs: [], age: '', minAge: null, care: '', showCrisis: false, organization: '' };
-  
-  // App-specific: Try to detect organization name from query
-  if (ready && programs.length > 0 && !parsed.loc && typeof window.parseSmartSearch === 'function') {
-    const q = query.toLowerCase();
-    const exactOrg = programs.find(p => safeStr(p.organization).toLowerCase() === q);
-    if (exactOrg) {
-      parsed.organization = exactOrg.organization;
-    }
+/** Fallback only if filters module failed to load. Must not be named `matchesFilters` — that would overwrite `window.matchesFilters` from `js/modules/filters.js`. */
+function matchesFiltersFallback(p) {
+  if (typeof window.matchesFilters !== 'function') {
+    console.warn('matchesFilters: js/modules/filters.js not loaded; skipping filter logic');
+    return true;
   }
-  const searchMinAge = parsed.minAge;
-
-  // Text search - check if query terms appear in program fields
-  if (q && q.trim()) {
-    const orgLower = safeStr(p.organization).toLowerCase();
-    const progLower = safeStr(p.program_name).toLowerCase();
-    const qLower = q.toLowerCase().trim();
-    
-    // Check for exact matches first (highest priority)
-    // Only check dataset attributes if there's actually a query
-    const isExactMatch = els.q?.dataset.exactMatch === 'true';
-    const matchType = els.q?.dataset.matchType;
-    
-    // If this was selected from autocomplete as an organization, match all programs from that org
-    if (matchType === 'organization' && qLower) {
-      // For organization matches, check if this program belongs to the selected organization
-      // Use case-insensitive comparison
-      if (orgLower === qLower) {
-        // This program belongs to the selected organization - continue with other filters
-      } else {
-        // Organization name doesn't match exactly - this program should be filtered out
-        return false;
-      }
-    } else if (matchType === 'program' && isExactMatch && qLower) {
-      // Exact program match required
-      if (progLower !== qLower) {
-        return false;
-      }
-    } else {
-      // No specific match type or not exact - check normal matching
-      // Check exact organization or program name match before other checks
-      if (orgLower === qLower || progLower === qLower) {
-        // Exact match found - continue with other filters but this will score highest
-      } else {
-        // Remove location, age, and care level terms from search query for text matching
-        // BUT preserve organization-like terms (don't remove words that might be part of org names)
-        const searchTerms = q
-          .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
-          .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
-          // Only remove city names if they're standalone (not part of organization names)
-          // Use word boundaries to avoid removing city names embedded in org names
-          .replace(/\b(dallas|plano|frisco|mckinney|richardson|denton|arlington|fort worth|mansfield|keller|desoto|de soto|rockwall|sherman|forney|burleson|flower mound|the colony|bedford|lewisville|carrollton|garland|mesquite|irving|grand prairie|corsicana)\b(?=\s|$)/gi, '')
-          .trim();
-        
-        if (searchTerms) {
-          const hay = [
-            p.program_name, p.organization, p.level_of_care,
-            p.entry_type, p.service_setting, p.ages_served,
-            locLabel(p),
-            (p.notes || ""),
-          ].map(safeStr).join(" ").toLowerCase();
-          
-          // Check if all remaining search terms appear (with fuzzy matching for typos)
-          const terms = searchTerms.split(/\s+/).filter(t => t.length > 0);
-          if (terms.length > 0) {
-            // Prioritize organization and program name matches
-            const orgMatch = terms.every(term => {
-              if (orgLower.includes(term)) return true;
-              if (term.length > 3) return window.fuzzyMatch && window.fuzzyMatch(term, orgLower, 0.85);
-              return false;
-            });
-            
-            const progMatch = terms.every(term => {
-              if (progLower.includes(term)) return true;
-              if (term.length > 3) return window.fuzzyMatch && window.fuzzyMatch(term, progLower, 0.85);
-              return false;
-            });
-            
-            // If matches organization or program name, allow it
-            if (orgMatch || progMatch) {
-              // Continue with other filters
-            } else {
-              // Check other fields with fuzzy matching
-              const allMatch = terms.every(term => {
-                if (hay.includes(term)) return true;
-                // Fuzzy match for terms longer than 3 characters
-                if (term.length > 3) {
-                  return window.fuzzyMatch && window.fuzzyMatch(term, hay, 0.7);
-                }
-                return false;
-              });
-              if (!allMatch) return false;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Location filter - use parsed location or dropdown value, support multi-location
-  if (parsed.locs && parsed.locs.length > 0) {
-    // Multi-location search: program must serve at least one of the specified locations
-    const programCities = (p.locations || []).map(l => safeStr(l.city).toLowerCase());
-    const searchCities = parsed.locs.map(loc => loc.toLowerCase());
-    const matches = searchCities.some(searchCity => {
-      if (searchCity === 'de soto') {
-        return programCities.some(c => c === 'de soto' || c === 'desoto');
-      }
-      return programCities.some(c => c === searchCity || (window.fuzzyMatch && window.fuzzyMatch(searchCity, c, 0.8)));
-    });
-    if (!matches) return false;
-  } else {
-    const locationToCheck = parsed.loc ? parsed.loc.toLowerCase() : loc;
-    if (locationToCheck) {
-      const cities = (p.locations || []).map(l => safeStr(l.city).toLowerCase());
-      // Handle "De Soto" matching both "De Soto" and "Desoto"
-      const normalizedLocation = locationToCheck.replace(/\s+/g, ' ').trim();
-      if (normalizedLocation === 'de soto') {
-        if (!cities.some(c => c === 'de soto' || c === 'desoto')) return false;
-      } else {
-        // Use fuzzy matching for location
-        const matches = cities.some(c => c === normalizedLocation || (window.fuzzyMatch && window.fuzzyMatch(normalizedLocation, c, 0.8)));
-        if (!matches) return false;
-      }
-    }
-  }
-
-  // Level of care filter - use parsed care or dropdown value
-  const careToCheck = parsed.care ? parsed.care.toLowerCase() : care;
-  if (careToCheck) {
-    if (safeStr(p.level_of_care).toLowerCase() !== careToCheck) return false;
-  }
-
-  // Age filter - handle both exact age and "and up" patterns
-  const ageToCheck = ageVal || (parsed.age || '');
-  if (ageToCheck) {
-    const age = Number(ageToCheck);
-    if (Number.isFinite(age)) {
-      if (searchMinAge !== null) {
-        // "13 and up" - check if program serves this age or higher
-        // Program must serve at least age 13
-        if (!programServesAge(p, age)) return false;
-      } else {
-        // Exact age match
-        if (!programServesAge(p, age)) return false;
-      }
-    }
-  }
-
-  // Insurance filter
-  const insuranceVal = els.insurance ? safeStr(els.insurance.value) : '';
-  if (insuranceVal) {
-    const insurance = p.accepted_insurance || {};
-    const insuranceTypes = Array.isArray(insurance.types) ? insurance.types.map(t => safeStr(t).toLowerCase()) : [];
-    const insurancePlans = Array.isArray(insurance.plans) ? insurance.plans.map(pl => safeStr(pl).toLowerCase()) : [];
-    
-    // Check if it's a type or plan filter
-    if (insuranceVal.startsWith('type:')) {
-      const filterType = insuranceVal.replace('type:', '').toLowerCase();
-      // Normalize for matching (remove qualifiers like "(many)", "(some)", etc.)
-      const normalizedTypes = insuranceTypes.map(t => 
-        t.replace(/\(many\)/g, '').replace(/\(some\)/g, '').replace(/\(varies\)/g, '').replace(/\(listed\)/g, '').replace(/\(most major\)/g, '').trim()
-      );
-      if (!normalizedTypes.some(t => t.includes(filterType) || filterType.includes(t))) {
-        return false;
-      }
-    } else if (insuranceVal.startsWith('plan:')) {
-      const filterPlan = insuranceVal.replace('plan:', '').toLowerCase();
-      if (!insurancePlans.some(pl => pl === filterPlan || pl.includes(filterPlan) || filterPlan.includes(pl))) {
-        return false;
-      }
-    }
-  }
-
-  if (onlyVirtual && !hasVirtual(p)) {
-    return false;
-  }
-
-  // ========== Statewide Filters (Feature Flag Protected) ==========
-  // These filters only apply when the corresponding feature flags are enabled
-  const flags = window.FEATURE_FLAGS || {};
-  
-  // County filter - only applies when STATEWIDE_MODE is enabled
-  if (flags.STATEWIDE_MODE) {
-    const countyVal = els.county ? safeStr(els.county.value || '') : '';
-    if (countyVal) {
-      const programCounty = safeStr(p.primary_county || '').toLowerCase();
-      const serviceAreaCounties = Array.isArray(p.service_area?.counties) 
-        ? p.service_area.counties.map(c => safeStr(c).toLowerCase())
-        : [];
-      // Also check locations for county data
-      const locationCounties = (p.locations || [])
-        .map(loc => safeStr(loc.county || '').toLowerCase())
-        .filter(c => c);
-      const countyMatch = programCounty === countyVal.toLowerCase() ||
-                          serviceAreaCounties.includes(countyVal.toLowerCase()) ||
-                          locationCounties.includes(countyVal.toLowerCase());
-      if (!countyMatch) return false;
-    }
-    
-    // Placeholder for Texas-wide location filtering (future enhancement)
-    // When STATEWIDE_MODE is enabled, can filter by state == "TX" and optionally city/county
-    // For now, existing location filter handles city-level filtering
-    // Future: if (flags.STATEWIDE_MODE && selectedState && selectedState !== 'TX') {
-    //   const programStates = (p.locations || []).map(loc => safeStr(loc.state).toUpperCase());
-    //   if (!programStates.includes(selectedState.toUpperCase())) return false;
-    // }
-  }
-
-  const programDomains = Array.isArray(p.service_domains)
-    ? p.service_domains.map(d => safeStr(d).toLowerCase())
-    : [];
-  const effectiveServiceDomains = new Set();
-  const selectedServiceDomain = els.serviceDomain ? safeStr(els.serviceDomain.value || '') : '';
-  if (selectedServiceDomain) effectiveServiceDomains.add(selectedServiceDomain.toLowerCase());
-  if (parsed.serviceDomain) effectiveServiceDomains.add(safeStr(parsed.serviceDomain).toLowerCase());
-  if (Array.isArray(selectedServiceDomains)) {
-    selectedServiceDomains.forEach((domain) => {
-      if (domain) effectiveServiceDomains.add(safeStr(domain).toLowerCase());
-    });
-  }
-  if (effectiveServiceDomains.size > 0) {
-    const hasDomainMatch = [...effectiveServiceDomains].some((domain) => programDomains.includes(domain));
-    if (!hasDomainMatch) return false;
-  }
-  
-  // SUD services filter - only applies when SHOW_SUD_FILTERS is enabled
-  if (flags.SHOW_SUD_FILTERS) {
-
-    // SUD services filter - only applies when SHOW_SUD_FILTERS is enabled
-    if (els.sudServices) {
-      const selectedOptions = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
-      if (selectedOptions.length > 0 && selectedServiceDomain.toLowerCase() === 'substance_use') {
-        const programSudServices = Array.isArray(p.sud_services)
-          ? p.sud_services.map(s => safeStr(s).toLowerCase())
-          : [];
-        // Check if there's any intersection between selected and program SUD services
-        const hasMatch = selectedOptions.some(selected =>
-          programSudServices.includes(selected.toLowerCase())
-        );
-        if (!hasMatch) return false;
-      }
-    }
-  }
-
-  // Verification recency filter - only applies when SHOW_VERIFICATION_FILTERS is enabled
-  if (flags.SHOW_VERIFICATION_FILTERS) {
-    const verificationRecencyVal = els.verificationRecency ? safeStr(els.verificationRecency.value || '') : '';
-    if (verificationRecencyVal) {
-      const recencyDays = parseInt(verificationRecencyVal, 10);
-      if (!isNaN(recencyDays) && recencyDays > 0) {
-        const verifiedAt = p.verification?.last_verified_at || p.last_verified; // Support legacy field
-        if (!verifiedAt) return false; // Program must have verification date
-        
-        try {
-          const verifiedDate = new Date(verifiedAt);
-          if (isNaN(verifiedDate.getTime())) return false; // Invalid date
-          
-          const now = new Date();
-          const daysDiff = Math.floor((now - verifiedDate) / (1000 * 60 * 60 * 24));
-          if (daysDiff > recencyDays) return false;
-        } catch (e) {
-          // Invalid date format - exclude programs with malformed dates
-          return false;
-        }
-      }
-    }
-  }
-
-  return true;
+  const showCrisis = els.showCrisis?.checked || false;
+  const { filters, options } = getFilterModuleBindings(showCrisis);
+  return window.matchesFilters(p, filters, options);
 }
 
 // Additional helper functions (normalizePhoneForTel, bestAddress, mapsLinkFor, stableIdFor)
@@ -2147,44 +1847,13 @@ function render(){
   }
   const showCrisis = els.showCrisis?.checked || false;
 
-  // Use filter module if available, fallback to local function
-  const filterFn = typeof window.matchesFilters === 'function' 
+  const filterFn = typeof window.matchesFilters === 'function'
     ? (p) => {
-        const filters = {
-          query: els.q?.value || '',
-          location: els.loc?.value || '',
-          age: els.age?.value || '',
-          care: els.care?.value || '',
-          insurance: els.insurance?.value || '',
-          onlyVirtual: els.onlyVirtual?.checked || false,
-          showCrisis: showCrisis,
-          county: els.county?.value || '',
-          serviceDomain: els.serviceDomain?.value || '',
-          verificationRecency: els.verificationRecency?.value || '',
-          exactMatch: els.q?.dataset.exactMatch === 'true',
-          matchType: els.q?.dataset.matchType || '',
-          selectedCounty: selectedCounty,
-          selectedServiceDomains: selectedServiceDomains,
-          selectedSudServices: selectedSudServices,
-          verificationRecencyDays: verificationRecencyDays
-        };
-        
-        const options = {
-          safeStr: window.safeStr,
-          parseSmartSearch: window.parseSmartSearch,
-          fuzzyMatch: window.fuzzyMatch,
-          programServesAge: window.programServesAge,
-          hasVirtual: window.hasVirtual,
-          locLabel: window.locLabel,
-          featureFlags: window.FEATURE_FLAGS || {},
-          programs: programs,
-          ready: ready
-        };
-        
+        const { filters, options } = getFilterModuleBindings(showCrisis);
         return window.matchesFilters(p, filters, options);
       }
-    : matchesFilters; // Fallback to local function
-  
+    : matchesFiltersFallback;
+
   const filtered = programs.filter(filterFn);
 
   const treatment = filtered.filter(p => !isCrisis(p));
@@ -2199,18 +1868,8 @@ function render(){
   // Calculate relevance scores for all results
   const query = safeStr(els.q?.value || '').trim();
   if (query) {
-    // Use filter module if available, fallback to local function
-    const scoreFn = typeof window.calculateRelevanceScore === 'function'
-      ? (p) => {
-          const options = {
-            safeStr: window.safeStr,
-            locLabel: window.locLabel,
-            fuzzyMatch: window.fuzzyMatch
-          };
-          return window.calculateRelevanceScore(p, query, options);
-        }
-      : calculateRelevanceScore; // Fallback to local function
-    
+    const scoreFn = (p) => calculateRelevanceScore(p, query);
+
     // Map programs with their relevance scores
     const scoredPrograms = activeList.map(p => ({
       program: p,

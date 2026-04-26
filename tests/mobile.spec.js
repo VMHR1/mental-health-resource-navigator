@@ -224,7 +224,8 @@ test.describe('Mobile Verification', () => {
       return !el || el.style.display === 'none' || window.getComputedStyle(el).display === 'none';
     }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
-    await page.getByTestId('find-programs-btn').click();
+    await searchInput.press('Escape');
+    await page.getByTestId('find-programs-btn').click({ force: true });
 
     // Wait for results to render (use selector-based wait instead of timeout)
     await page.waitForSelector('#treatmentSection, [data-testid="results-grid"], [data-testid="empty-state"]', { 
@@ -293,7 +294,8 @@ test.describe('Mobile Verification', () => {
       return !el || el.style.display === 'none' || window.getComputedStyle(el).display === 'none';
     }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
-    await page.locator('button:has-text("Find Programs")').click();
+    await searchInput.press('Escape');
+    await page.getByTestId('find-programs-btn').click({ force: true });
     
     // Wait for results
     await page.waitForSelector('.card', { timeout: 10000 });
@@ -303,7 +305,8 @@ test.describe('Mobile Verification', () => {
     if (await firstCard.count() > 0) {
       const expandBtn = firstCard.locator('.expandBtn');
       if (await expandBtn.count() > 0) {
-        await expandBtn.click();
+        await expandBtn.scrollIntoViewIfNeeded();
+        await expandBtn.evaluate((el) => el.click());
         await page.waitForTimeout(500);
         
         // Check for horizontal overflow

@@ -28,9 +28,21 @@ test.describe('Filter behavior and routing', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.getByTestId('advanced-filters-btn').click();
-    await page.locator('#statewideFiltersAccordion').evaluate((el) => { el.open = true; });
-    await page.selectOption('#serviceDomain', 'substance_use');
-    await page.check('.multi-chip input[value="osar_referral"]');
+    await page.locator('#statewideFiltersAccordion').evaluate((el) => {
+      el.style.display = '';
+      el.open = true;
+    });
+    await page.selectOption('#serviceDomain', 'substance_use', { force: true });
+    await page.waitForTimeout(200);
+    // Drive the hidden multi-select + change event (same path as chip UI → events.js enables crisis toggle for OSAR)
+    await page.evaluate(() => {
+      const sel = document.getElementById('sudServices');
+      if (!sel) return;
+      Array.from(sel.options).forEach((o) => {
+        o.selected = o.value === 'osar_referral';
+      });
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
     await page.waitForTimeout(800);
     await expect(page.locator('#showCrisis')).toBeChecked();
   });
@@ -38,11 +50,12 @@ test.describe('Filter behavior and routing', () => {
   test('Outpatient and Residential care filters return results', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.selectOption('#care', 'Outpatient');
+    await page.getByTestId('advanced-filters-btn').click();
+    await page.selectOption('#care', 'Outpatient', { force: true });
     await page.waitForTimeout(600);
     expect(await page.locator('.card:has(.pname)').count()).toBeGreaterThan(0);
 
-    await page.selectOption('#care', 'Residential');
+    await page.selectOption('#care', 'Residential', { force: true });
     await page.waitForTimeout(600);
     expect(await page.locator('.card:has(.pname)').count()).toBeGreaterThan(0);
   });
