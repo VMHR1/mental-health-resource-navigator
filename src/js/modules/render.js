@@ -227,16 +227,15 @@ function createCard(program, idx, options) {
         <span class="icon">🔗</span>
         <span>Share</span>
       </button>
-      <label class="card-action-btn compare-btn ${comparisonSet.has(id) ? 'active' : ''}" ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-        <input type="checkbox" data-compare="${escapeHtml(id)}" ${comparisonSet.has(id) ? 'checked' : ''} ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'disabled' : ''} aria-label="Add to comparison" style="display: none;" />
+      <button type="button" class="card-action-btn compare-btn ${comparisonSet.has(id) ? 'active' : ''}" data-compare="${escapeHtml(id)}" ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} aria-pressed="${comparisonSet.has(id) ? 'true' : 'false'}" aria-label="${comparisonSet.has(id) ? 'Remove from comparison' : 'Add to comparison'}">
         <span class="icon">⚖️</span>
         <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
-      </label>
+      </button>
     </div>
 
     <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
 
-    <div class="panel" id="panel_${escapeHtml(id)}">
+    <div class="panel" id="panel_${escapeHtml(id)}" aria-hidden="${isOpen ? "false" : "true"}" ${!isOpen ? "inert" : ""}>
       ${addresses.length ? `
         <div class="kv">
           <div class="k">Address</div>

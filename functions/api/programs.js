@@ -69,11 +69,14 @@ export async function onRequestGet(context) {
       total: data.programs?.length || 0
     };
     
+    const generatedAt = data?.metadata?.generatedAt || data?.metadata?.generated_at || '';
+    const etagSeed = generatedAt || JSON.stringify(responseData);
+    const stableEtag = `"${await sha256Hex(etagSeed)}"`;
     // Set cache headers
     const cacheHeaders = {
       'Content-Type': 'application/json',
       'Cache-Control': 'public, max-age=3600, must-revalidate',
-      'ETag': `"${Date.now()}"`, // Simple ETag - can be improved with hash
+      'ETag': stableEtag,
       'Access-Control-Allow-Origin': '*'
     };
     
@@ -107,5 +110,11 @@ export async function onRequestGet(context) {
       }
     );
   }
+}
+
+async function sha256Hex(input) {
+  const msgUint8 = new TextEncoder().encode(String(input));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+  return [...new Uint8Array(hashBuffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 

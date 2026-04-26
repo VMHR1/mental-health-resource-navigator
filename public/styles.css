@@ -1248,9 +1248,16 @@ html.perf-no-sticky .search-section {
 
 /* CRITICAL FIX: Refined mobile performance fix - disable only the problematic combinations */
 @media (pointer: coarse) {
-  /* Disable performance-hazard properties that cause cumulative stutter */
-  *, *::before, *::after {
-    /* These three together cause the worst stutter */
+  /* Disable performance-hazard properties only on known heavy elements. */
+  .bg-gradient,
+  .floating-card,
+  .btn-emergency,
+  .accuracyStrip,
+  .shimmer,
+  .card,
+  .search-section,
+  .triage-card,
+  .modal-content {
     animation: none !important;
     transition: none !important;
     content-visibility: visible !important;

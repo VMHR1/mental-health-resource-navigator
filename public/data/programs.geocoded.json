@@ -14,7 +14,7 @@
       "with_website_url": 92,
       "missing_website_url": 0
     },
-    "geocoded_at": "2026-01-03T22:59:24.316Z",
+    "geocoded_at": "2026-01-13T04:33:43.328Z",
     "geocoding_service": "Nominatim OpenStreetMap",
     "geocoding_attribution": "© OpenStreetMap contributors",
     "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
@@ -63,7 +63,10 @@
         ]
       },
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-day-treatment-program",
-      "website_domain": "childrens.com"
+      "website_domain": "childrens.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-dallas-behavioral-health-care-hospital-desoto",
@@ -136,7 +139,10 @@
         ]
       },
       "website_url": "https://www.dallasbehavioral.com/",
-      "website_domain": "dallasbehavioral.com"
+      "website_domain": "dallasbehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-texas-health-bh-center-richardson",
@@ -182,7 +188,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-reflections-dallas",
@@ -233,7 +242,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-reflections-richardson",
@@ -284,7 +296,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-changes-frisco",
@@ -329,7 +344,10 @@
         ]
       },
       "website_url": "https://mesasprings.com/locations/changes-frisco/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-changes-mckinney",
@@ -374,7 +392,10 @@
         ]
       },
       "website_url": "https://mesasprings.com/locations/changes-mckinney/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-texas-health-seay-plano",
@@ -422,7 +443,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-mckinney",
@@ -492,7 +516,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-plano",
@@ -562,7 +589,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-reflections-the-colony",
@@ -613,7 +643,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-frisco",
@@ -661,7 +694,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-mckinney",
@@ -709,7 +745,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-plano",
@@ -757,7 +796,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/plano",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-basepoint-mckinney",
@@ -817,7 +859,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-basepoint-frisco",
@@ -877,7 +922,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-denton",
@@ -947,7 +995,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/denton/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-branches-denton",
@@ -1010,7 +1061,10 @@
         ]
       },
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
-      "website_domain": "ubhdenton.com"
+      "website_domain": "ubhdenton.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-bricolage-flower-mound",
@@ -1089,7 +1143,10 @@
         ]
       },
       "website_url": "https://www.bricolagebh.com/",
-      "website_domain": "bricolagebh.com"
+      "website_domain": "bricolagebh.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-flower-mound",
@@ -1137,7 +1194,10 @@
         ]
       },
       "website_url": "https://carrushealth.com/our-locations/carrus-behavioral-hospital/",
-      "website_domain": "carrushealth.com"
+      "website_domain": "carrushealth.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-texas-health-arlington",
@@ -1183,7 +1243,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-arlington-memorial/THBHCAMH",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-texas-health-springwood-bedford",
@@ -1229,7 +1292,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-branches-fort-worth",
@@ -1292,7 +1358,10 @@
         ]
       },
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
-      "website_domain": "millwoodhospital.com"
+      "website_domain": "millwoodhospital.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-mesa-springs-innovations-arlington",
@@ -1337,7 +1406,10 @@
         ]
       },
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-mesa-springs-innovations-fort-worth",
@@ -1382,7 +1454,10 @@
         ]
       },
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-mind-above-matter-keller",
@@ -1458,7 +1533,10 @@
         ]
       },
       "website_url": "https://mindabovematter.com/contact-us/",
-      "website_domain": "mindabovematter.com"
+      "website_domain": "mindabovematter.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-mind-above-matter-burleson",
@@ -1534,7 +1612,10 @@
         ]
       },
       "website_url": "https://mindabovematter.com/contact-us/",
-      "website_domain": "mindabovematter.com"
+      "website_domain": "mindabovematter.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-keller",
@@ -1604,7 +1685,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-mansfield",
@@ -1674,7 +1758,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-mansfield",
@@ -1722,7 +1809,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-keller",
@@ -1770,7 +1860,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/keller",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-cook-childrens-fort-worth",
@@ -1815,7 +1908,10 @@
         ]
       },
       "website_url": "https://www.cookchildrens.org/services/behavioral-health/contact-us/psychiatry-fort-worth/",
-      "website_domain": "cookchildrens.org"
+      "website_domain": "cookchildrens.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-branches-excel-fort-worth",
@@ -1876,7 +1972,10 @@
         ]
       },
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
-      "website_domain": "millwoodhospital.com"
+      "website_domain": "millwoodhospital.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-basepoint-forney",
@@ -1936,7 +2035,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-connections-rockwall",
@@ -2004,7 +2106,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-carrus-sherman",
@@ -2052,7 +2157,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/sherman",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-virtual-basepoint",
@@ -2076,7 +2184,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield (incl. BCBS of Texas; BCBS Federal Employee Program is listed in insurance navigation), Carelon Behavioral Health, Cigna, Magellan Health, Optum, UnitedHealthcare, UMR | Types: Commercial (most major) | BasePoint states it accepts most major insurance plans; plan coverage varies—use their insurance verification.",
       "verification_source": "https://basepointacademy.com/contact/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -2106,8 +2214,13 @@
           "UMR"
         ]
       },
-      "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_url": "https://basepointacademy.com/",
+      "website": "https://basepointacademy.com/",
+      "website_domain": "basepointacademy.com",
+      "verification_source_url": "https://basepointacademy.com/",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "php-virtual-connections",
@@ -2131,11 +2244,11 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
-        "source_url": "https://connectionswellnessgroup.com/faqs/",
+        "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
           "Baylor Scott & White Health Plan",
@@ -2171,8 +2284,13 @@
           "Behavioral Health Systems"
         ]
       },
-      "website_url": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_url": "https://connectionswellnessgroup.com/",
+      "website": "https://connectionswellnessgroup.com/",
+      "website_domain": "connectionswellnessgroup.com",
+      "verification_source_url": "https://connectionswellnessgroup.com/",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-childrens-sparc-dallas",
@@ -2216,7 +2334,10 @@
         ]
       },
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/who-do-i-call",
-      "website_domain": "childrens.com"
+      "website_domain": "childrens.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-southern-area-dallas",
@@ -2265,7 +2386,10 @@
         ]
       },
       "website_url": "https://sabhc.org/iop/",
-      "website_domain": "sabhc.org"
+      "website_domain": "sabhc.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-unity-richardson",
@@ -2302,7 +2426,10 @@
         "notes": "No accepted-insurance list found on their public site at time of verification."
       },
       "website_url": "https://unitybehavioral.com/",
-      "website_domain": "unitybehavioral.com"
+      "website_domain": "unitybehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-texas-health-bh-center-richardson",
@@ -2348,7 +2475,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-dallas-behavioral-health-care-hospital-desoto",
@@ -2421,7 +2551,10 @@
         ]
       },
       "website_url": "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
-      "website_domain": "dallasbehavioral.com"
+      "website_domain": "dallasbehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-reflections-dallas",
@@ -2472,7 +2605,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-changes-frisco",
@@ -2517,7 +2653,10 @@
         ]
       },
       "website_url": "https://mesasprings.com/locations/changes-frisco/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-changes-mckinney",
@@ -2562,7 +2701,10 @@
         ]
       },
       "website_url": "https://mesasprings.com/locations/changes-mckinney/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-texas-health-bh-center-frisco",
@@ -2608,7 +2750,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-frisco/THBHCFR",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-texas-health-seay-plano",
@@ -2656,7 +2801,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-plano",
@@ -2726,7 +2874,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-mckinney",
@@ -2796,7 +2947,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-denton",
@@ -2866,7 +3020,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/denton/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-reflections-richardson",
@@ -2917,7 +3074,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-bricolage-flower-mound",
@@ -2996,7 +3156,10 @@
         ]
       },
       "website_url": "https://www.bricolagebh.com/",
-      "website_domain": "bricolagebh.com"
+      "website_domain": "bricolagebh.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-flower-mound",
@@ -3044,7 +3207,10 @@
         ]
       },
       "website_url": "https://carrushealth.com/our-locations/carrus-behavioral-hospital/",
-      "website_domain": "carrushealth.com"
+      "website_domain": "carrushealth.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-reflections-the-colony",
@@ -3095,7 +3261,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-branches-denton",
@@ -3158,7 +3327,10 @@
         ]
       },
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
-      "website_domain": "ubhdenton.com"
+      "website_domain": "ubhdenton.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-plano",
@@ -3206,7 +3378,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/plano",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-basepoint-mckinney",
@@ -3266,7 +3441,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-basepoint-frisco",
@@ -3326,7 +3504,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-mckinney",
@@ -3374,7 +3555,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-reflections-the-colony-10plus",
@@ -3425,7 +3609,10 @@
         ]
       },
       "website_url": "https://reflectionslifestyle.com/contact/",
-      "website_domain": "reflectionslifestyle.com"
+      "website_domain": "reflectionslifestyle.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-frisco",
@@ -3473,7 +3660,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-branches-fort-worth",
@@ -3536,7 +3726,10 @@
         ]
       },
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
-      "website_domain": "millwoodhospital.com"
+      "website_domain": "millwoodhospital.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-mesa-springs-fort-worth",
@@ -3581,7 +3774,10 @@
         ]
       },
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-mesa-springs-arlington",
@@ -3626,7 +3822,10 @@
         ]
       },
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
-      "website_domain": "mesasprings.com"
+      "website_domain": "mesasprings.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-mind-above-matter-keller",
@@ -3702,7 +3901,10 @@
         ]
       },
       "website_url": "https://mindabovematter.com/contact-us/",
-      "website_domain": "mindabovematter.com"
+      "website_domain": "mindabovematter.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-mind-above-matter-burleson",
@@ -3778,7 +3980,10 @@
         ]
       },
       "website_url": "https://mindabovematter.com/contact-us/",
-      "website_domain": "mindabovematter.com"
+      "website_domain": "mindabovematter.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-keller",
@@ -3848,7 +4053,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-mansfield",
@@ -3918,7 +4126,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-virtual-charlie-health",
@@ -3942,7 +4153,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: UnitedHealthcare, Cigna, Blue Cross Blue Shield, Aetna, Anthem, Humana, TRICARE, Medicaid (in select states) | Types: Commercial (most major), Military (TRICARE), Medicaid (select states) | Charlie Health FAQ lists major in-network insurers; Medicaid coverage depends on state/program—verify with admissions.",
       "verification_source": "https://www.charliehealth.com/contact-us",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -3974,8 +4185,13 @@
           "Medicaid (in select states)"
         ]
       },
-      "website_url": "https://www.charliehealth.com/contact-us",
-      "website_domain": "charliehealth.com"
+      "website_url": "https://www.charliehealth.com/",
+      "website": "https://www.charliehealth.com/",
+      "website_domain": "charliehealth.com",
+      "verification_source_url": "https://www.charliehealth.com/",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-virtual-basepoint",
@@ -3999,7 +4215,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield (incl. BCBS of Texas; BCBS Federal Employee Program is listed in insurance navigation), Carelon Behavioral Health, Cigna, Magellan Health, Optum, UnitedHealthcare, UMR | Types: Commercial (most major) | BasePoint states it accepts most major insurance plans; plan coverage varies—use their insurance verification.",
       "verification_source": "https://basepointacademy.com/contact/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
@@ -4029,8 +4245,13 @@
           "UMR"
         ]
       },
-      "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_url": "https://basepointacademy.com/",
+      "website": "https://basepointacademy.com/",
+      "website_domain": "basepointacademy.com",
+      "verification_source_url": "https://basepointacademy.com/",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-virtual-connections",
@@ -4054,11 +4275,11 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2025-12-21",
+      "last_verified": "2026-01-12",
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-12-26",
-        "source_url": "https://connectionswellnessgroup.com/faqs/",
+        "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
           "Baylor Scott & White Health Plan",
@@ -4094,8 +4315,13 @@
           "Behavioral Health Systems"
         ]
       },
-      "website_url": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_url": "https://connectionswellnessgroup.com/",
+      "website": "https://connectionswellnessgroup.com/",
+      "website_domain": "connectionswellnessgroup.com",
+      "verification_source_url": "https://connectionswellnessgroup.com/",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-basepoint-forney",
@@ -4155,7 +4381,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-texas-health-rockwall",
@@ -4201,7 +4430,10 @@
         ]
       },
       "website_url": "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
-      "website_domain": "texashealth.org"
+      "website_domain": "texashealth.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-connections-rockwall",
@@ -4269,7 +4501,10 @@
         ]
       },
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
-      "website_domain": "connectionswellnessgroup.com"
+      "website_domain": "connectionswellnessgroup.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-sherman",
@@ -4317,7 +4552,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/sherman",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-mansfield",
@@ -4365,7 +4603,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-carrus-keller",
@@ -4413,7 +4654,10 @@
         ]
       },
       "website_url": "https://www.carruscarebehavioral.com/keller",
-      "website_domain": "carruscarebehavioral.com"
+      "website_domain": "carruscarebehavioral.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "iop-basepoint-arlington",
@@ -4471,7 +4715,10 @@
         ]
       },
       "website_url": "https://basepointacademy.com/contact/",
-      "website_domain": "basepointacademy.com"
+      "website_domain": "basepointacademy.com",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-mcot-ntbha",
@@ -4504,7 +4751,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.hhs.texas.gov/services/mental-health-substance-use/mental-health-crisis-services",
-      "website_domain": "hhs.texas.gov"
+      "website_domain": "hhs.texas.gov",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-mcot-lifepath",
@@ -4537,7 +4787,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.lifepathsystems.org/get-help/crisis-services/",
-      "website_domain": "lifepathsystems.org"
+      "website_domain": "lifepathsystems.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-mcot-denton-mhmr",
@@ -4570,7 +4823,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
-      "website_domain": "dentoncounty.gov"
+      "website_domain": "dentoncounty.gov",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-mcot-icare-tarrant",
@@ -4605,7 +4861,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://mhmrtarrant.org/",
-      "website_domain": "mhmrtarrant.org"
+      "website_domain": "mhmrtarrant.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-mcot-lakes-regional",
@@ -4638,7 +4897,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.lakesregional.org/get-help/",
-      "website_domain": "lakesregional.org"
+      "website_domain": "lakesregional.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-988",
@@ -4671,7 +4933,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://988lifeline.org/",
-      "website_domain": "988lifeline.org"
+      "website_domain": "988lifeline.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-trevor",
@@ -4706,7 +4971,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.thetrevorproject.org/get-help/",
-      "website_domain": "thetrevorproject.org"
+      "website_domain": "thetrevorproject.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-sccntx",
@@ -4741,7 +5009,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.sccenter.org/",
-      "website_domain": "sccenter.org"
+      "website_domain": "sccenter.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-textline-741741",
@@ -4776,7 +5047,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.crisistextline.org/",
-      "website_domain": "crisistextline.org"
+      "website_domain": "crisistextline.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-walkin-southern-area-urgent-care",
@@ -4809,7 +5083,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://sabhc.org/contact-us/",
-      "website_domain": "sabhc.org"
+      "website_domain": "sabhc.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-walkin-lifepath-outpatient-clinic",
@@ -4852,7 +5129,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.lifepathsystems.org/connect-with-us/contact-us/",
-      "website_domain": "lifepathsystems.org"
+      "website_domain": "lifepathsystems.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-walkin-denton-mhmr-triage",
@@ -4885,7 +5165,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
-      "website_domain": "dentoncounty.gov"
+      "website_domain": "dentoncounty.gov",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "crisis-walkin-metrocare",
@@ -4918,7 +5201,10 @@
         "last_verified": "2025-12-26"
       },
       "website_url": "https://www.metrocareservices.org/contact-us/",
-      "website_domain": "metrocareservices.org"
+      "website_domain": "metrocareservices.org",
+      "service_domains": [
+        "mental_health"
+      ]
     },
     {
       "program_id": "eating-disorder-childrens-health-plano",
@@ -4945,7 +5231,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "See Children's Health contracted insurance plans",
       "verification_source": "Children's Health Eating Disorders Program: https://www.childrens.com",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "eating_disorders"
       ],
@@ -5018,7 +5304,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Center for Discovery Plano: https://www.centerfordiscoveryplano.com",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "eating_disorders"
       ],
@@ -5042,10 +5328,10 @@
           "city": "Plano",
           "state": "TX",
           "zip": "75024",
-          "address": "5120 Legacy Dr, Plano, TX 75024",
+          "address": "5120 Legacy Dr",
           "geo": {
-            "lat": 33.0136764,
-            "lng": -96.6925096
+            "lat": 33.0708126,
+            "lng": -96.8016974
           }
         }
       ],
@@ -5054,7 +5340,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Eating Recovery Center of Dallas: https://www.eatingrecoverycenter.com",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "eating_disorders"
       ],
@@ -5066,111 +5352,40 @@
       "website_domain": "eatingrecoverycenter.com"
     },
     {
-      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-residential",
+      "program_id": "eating-disorder-eating-disorder-solutions-dallas",
       "entry_type": "Treatment Program",
       "organization": "Eating Disorder Solutions",
-      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (Residential)",
-      "level_of_care": "Residential",
-      "service_setting": "In-person",
-      "ages_served": "18+",
-      "locations": [
-        {
-          "city": "Weatherford",
-          "state": "TX",
-          "zip": "76085",
-          "address": "1664 Whippoorwill Trail",
-          "geo": {
-            "lat": 32.7589648,
-            "lng": -97.7970748
-          }
-        }
-      ],
-      "phone": "855-808-4213",
-      "notes": "Dallas location no longer current. Current location: The Ranch at Weatherford. Residential treatment center with homelike setting for adults (18+) with eating disorders and co-occurring mental health conditions.",
-      "transportation_available": "Unknown",
-      "insurance_notes": "Contact for insurance information",
-      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
-      "last_verified": "2026-01-03",
-      "service_domains": [
-        "eating_disorders"
-      ],
-      "accepted_insurance": {
-        "status": "contact_for_info",
-        "last_verified": "2026-01-03"
-      },
-      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
-      "website_domain": "eatingdisordersolutions.com"
-    },
-    {
-      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-php",
-      "entry_type": "Treatment Program",
-      "organization": "Eating Disorder Solutions",
-      "program_name": "Eating Disorder Treatment - The Ranch at Weatherford (PHP)",
-      "level_of_care": "Partial Hospitalization (PHP)",
-      "service_setting": "In-person",
-      "ages_served": "18+",
-      "locations": [
-        {
-          "city": "Weatherford",
-          "state": "TX",
-          "zip": "76085",
-          "address": "879 Eureka St",
-          "geo": {
-            "lat": 32.7494282,
-            "lng": -97.7805892
-          }
-        }
-      ],
-      "phone": "855-808-4213",
-      "notes": "Partial Hospitalization Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
-      "transportation_available": "Unknown",
-      "insurance_notes": "Contact for insurance information",
-      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
-      "last_verified": "2026-01-03",
-      "service_domains": [
-        "eating_disorders"
-      ],
-      "accepted_insurance": {
-        "status": "contact_for_info",
-        "last_verified": "2026-01-03"
-      },
-      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
-      "website_domain": "eatingdisordersolutions.com"
-    },
-    {
-      "program_id": "eating-disorder-eating-disorder-solutions-weatherford-iop",
-      "entry_type": "Treatment Program",
-      "organization": "Eating Disorder Solutions",
-      "program_name": "Eating Disorder Treatment - Outpatient Center (IOP)",
+      "program_name": "Eating Disorder Treatment",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
-      "ages_served": "18+",
+      "ages_served": "14-17",
       "locations": [
         {
-          "city": "Weatherford",
+          "city": "Dallas",
           "state": "TX",
-          "zip": "76086",
-          "address": "879 Eureka St",
+          "zip": "75219",
+          "address": "3300 Oak Lawn Ave., Suite 102",
           "geo": {
-            "lat": 32.7494282,
-            "lng": -97.7805892
+            "lat": 32.7762719,
+            "lng": -96.7968559
           }
         }
       ],
       "phone": "855-808-4213",
-      "notes": "Intensive Outpatient Program for adults (18+) with eating disorders and co-occurring mental health conditions. Located at Outpatient Center in Weatherford.",
+      "notes": "Dallas location no longer current / verify current service area. Services: Outpatient and 3 day per week Intensive Outpatient Program for adolescents ages 14-17 with anorexia, bulimia and binge eating disorders",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Eating Disorder Solutions official website: https://eatingdisordersolutions.com/locations/weatherford/",
-      "last_verified": "2026-01-03",
+      "verification_source": "Eating Disorder Solutions: https://www.eatingdisordersolutions.com",
+      "last_verified": "2026-01-12",
+      "verification_source_url": "https://www.eatingdisordersolutions.com",
       "service_domains": [
         "eating_disorders"
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-01-03"
+        "last_verified": "2025-01-03"
       },
-      "website_url": "https://eatingdisordersolutions.com/locations/weatherford/",
+      "website_url": "https://www.eatingdisordersolutions.com",
       "website_domain": "eatingdisordersolutions.com"
     },
     {
@@ -5211,6 +5426,43 @@
       "website_domain": "childrens.com"
     },
     {
+      "program_id": "substance-use-newport-academy-dallas",
+      "entry_type": "Treatment Program",
+      "organization": "Newport Academy",
+      "program_name": "Substance Use and Mental Health Treatment",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "service_setting": "In-person",
+      "ages_served": "13-17",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75225",
+          "address": "9201 North Central Expressway, Ste 150",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
+        }
+      ],
+      "phone": "469-733-1515",
+      "notes": "Dallas location closed / no longer listed. Intensive Outpatient Program and Partial Hospitalization Program for teens, ages 13-17, with co-occurring substance use and mental health diagnoses. Offers out-of-state residential programs.",
+      "transportation_available": "Unknown",
+      "insurance_notes": "Contact for insurance information",
+      "verification_source": "Newport Academy: https://www.newportacademy.com",
+      "last_verified": "2025-01-03",
+      "service_domains": [
+        "co_occurring",
+        "substance_use"
+      ],
+      "accepted_insurance": {
+        "status": "contact_for_info",
+        "last_verified": "2025-01-03"
+      },
+      "website_url": "https://www.newportacademy.com",
+      "website_domain": "newportacademy.com"
+    },
+    {
       "program_id": "substance-use-youth180-dallas",
       "entry_type": "Treatment Program",
       "organization": "Youth180",
@@ -5235,7 +5487,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Youth180: https://www.youth180tx.org",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "substance_use"
       ],
@@ -5281,20 +5533,23 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all major insurances for intensive outpatient, and Medicaid plans for individual therapy sessions",
       "verification_source": "Grace Counseling: https://www.grace-counseling.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
       "service_domains": [
         "substance_use"
       ],
       "accepted_insurance": {
-        "status": "verified_on_website",
+        "status": "contact_for_info",
         "last_verified": "2025-01-03",
+        "source_url": "https://www.grace-counseling.com/",
+        "notes": "Confirm in-network plans with admissions; website does not publish an up-to-date payer list.",
         "types": [
           "Commercial (all major)",
           "Medicaid/CHIP"
         ]
       },
       "website_url": "https://www.grace-counseling.com",
-      "website_domain": "grace-counseling.com"
+      "website_domain": "grace-counseling.com",
+      "verification_source_url": "https://www.grace-counseling.com/"
     },
     {
       "program_id": "substance-use-imagine-programs-plano",
@@ -5352,11 +5607,11 @@
           }
         }
       ],
-      "phone": "469-617-6429",
+      "phone": "469-634-1270",
       "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 9-17. Mental health must be the primary issue.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
+      "verification_source": "Changes McKinney: https://www.carrolltonsprings.com",
       "last_verified": "2025-01-03",
       "service_domains": [
         "co_occurring",
@@ -5393,7 +5648,7 @@
       "notes": "Intensive Outpatient Program and Partial Hospitalization Program for children with co-occurring mental health disorders and substance use disorders, ages 11-17. Mental health must be the primary issue.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Psychology Today listing: https://www.psychologytoday.com/us/treatment-rehab/collin-springs-mckinney-tx/1572884",
+      "verification_source": "Changes Frisco: https://www.carrolltonsprings.com",
       "last_verified": "2025-01-03",
       "service_domains": [
         "co_occurring",
@@ -5488,7 +5743,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all insurance including Medicaid and Tricare",
       "verification_source": "Carrus Cares Plano: https://www.carruscare.com",
-      "last_verified": "2025-01-03",
+      "last_verified": "2026-01-12",
       "service_domains": [
         "co_occurring",
         "substance_use"
@@ -5496,6 +5751,7 @@
       "accepted_insurance": {
         "status": "verified_on_website",
         "last_verified": "2025-01-03",
+        "source_url": "https://www.carruscare.com/",
         "types": [
           "Commercial (all)",
           "Medicaid/CHIP",
@@ -5503,7 +5759,8 @@
         ]
       },
       "website_url": "https://www.carruscare.com",
-      "website_domain": "carruscare.com"
+      "website_domain": "carruscare.com",
+      "verification_source_url": "https://www.carruscare.com/"
     },
     {
       "program_id": "substance-use-fort-behavioral-evergreen-path-fort-worth",
@@ -5512,7 +5769,7 @@
       "program_name": "Residential Substance Use Treatment",
       "level_of_care": "Residential",
       "service_setting": "In-person",
-      "ages_served": "11-17",
+      "ages_served": "13-17",
       "locations": [
         {
           "city": "Fort Worth",
@@ -5525,12 +5782,13 @@
           }
         }
       ],
-      "phone": "844-332-1807",
-      "notes": "Residential Treatment Program for adolescents ages 11-17, with co-occurring substance use and mental health diagnoses. Also treats primary mental health disorders.",
+      "phone": "844-986-0260",
+      "notes": "Phone number may need verification - check official Fort Behavioral / Evergreen Path pages for current admissions/contact number. Residential Treatment Program for females, ages 13-17, with co-occurring substance use and mental health diagnoses.",
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
-      "verification_source": "Fort Behavioral Health official website: https://fortbehavioral.com/contact-fort-behavioral-health-texas/ and https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
-      "last_verified": "2026-01-03",
+      "verification_source": "Fort Behavioral: https://www.fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "last_verified": "2026-01-12",
+      "verification_source_url": "https://www.fortbehavioral.com/",
       "service_domains": [
         "co_occurring",
         "substance_use"
@@ -5542,7 +5800,7 @@
         "status": "contact_for_info",
         "last_verified": "2025-01-03"
       },
-      "website_url": "https://fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
+      "website_url": "https://www.fortbehavioral.com/about-fort-behavioral-health-texas/evergreen-path-schedule-fort-worth-tx/",
       "website_domain": "fortbehavioral.com"
     },
     {
@@ -5701,7 +5959,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "Recovery Resource Council: https://www.recoverycouncil.org",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "substance_use"
       ],
@@ -5716,11 +5974,11 @@
       "website_domain": "recoverycouncil.org"
     },
     {
-      "program_id": "crisis-mhmr-tarrant-county",
+      "program_id": "osar-mhmr-tarrant-county",
       "entry_type": "Crisis Service",
       "organization": "MHMR of Tarrant County",
-      "program_name": "Crisis Line / Access Line",
-      "level_of_care": "Crisis Hotline",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
       "locations": [
@@ -5736,13 +5994,16 @@
         }
       ],
       "phone": "800-866-2465",
-      "notes": "Covers Cooke, Denton, Erath, Fannin, Grayson, Hood, Johnson, Palo Pinto, Parker, Somervell, Tarrant and Wise Counties. 24/7 Crisis Hotline: 800-866-2465. For OSAR services, contact Recovery Resource Council at 817-332-6329 (listed separately).",
+      "notes": "Covers Cooke, Denton, Erath, Fannin, Grayson, Hood, Johnson, Palo Pinto, Parker, Somervell, Tarrant and Wise Counties. OSAR contact number needs verification - check official MHMR of Tarrant County website for current OSAR contact information. Note: 817-332-6329 is Recovery Resource Council's OSAR line (listed separately). Crisis phone: 800-866-2465. Contact MHMR directly for OSAR services.",
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "MHMR of Tarrant County: https://www.mhmrtarrant.org",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
-        "mental_health"
+        "substance_use"
+      ],
+      "sud_services": [
+        "osar_referral"
       ],
       "accepted_insurance": {
         "status": "not_applicable",
@@ -5752,10 +6013,10 @@
       "website_domain": "mhmrtarrant.org"
     },
     {
-      "program_id": "osar-etcada-longview",
+      "program_id": "osar-andrews-center-east-texas",
       "entry_type": "Crisis Service",
-      "organization": "East Texas Council on Alcoholism and Drug Abuse (ETCADA)",
-      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "organization": "Andrews Center Behavioral Healthcare System",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral) / Crisis Services",
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
@@ -5772,11 +6033,11 @@
         }
       ],
       "phone": "903-753-7633",
-      "notes": "OSAR services to assist with linkage to substance use services. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
+      "notes": "Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties. 24/7 Hotline: 877-934-2131. OSAR services to assist with linkage to substance use services.",
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
-      "last_verified": "2026-01-03",
+      "last_verified": "2025-01-03",
       "service_domains": [
         "substance_use"
       ],
@@ -5785,46 +6046,10 @@
       ],
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-01-03"
+        "last_verified": "2025-01-03"
       },
       "website_url": "https://www.etcada.com",
       "website_domain": "etcada.com"
-    },
-    {
-      "program_id": "crisis-andrews-center-east-texas",
-      "entry_type": "Crisis Service",
-      "organization": "Andrews Center Behavioral Healthcare System",
-      "program_name": "24/7 Hotline",
-      "level_of_care": "Crisis Hotline",
-      "service_setting": "Phone",
-      "ages_served": "All ages",
-      "locations": [
-        {
-          "city": "Longview",
-          "state": "TX",
-          "zip": "75601",
-          "address": "708 Glencrest Lane",
-          "geo": {
-            "lat": 32.508348,
-            "lng": -94.7459912
-          }
-        }
-      ],
-      "phone": "877-934-2131",
-      "notes": "24/7 Crisis Hotline for mental health emergencies. Covers Anderson, Bowie, Camp, Cass, Cherokee, Delta, Franklin, Gregg, Harrison, Henderson, Hopkins, Lamar, Marion, Morris, Panola, Rains, Red River, Rusk, Smith, Titus, Upshur, Van Zandt and Wood Counties.",
-      "transportation_available": "N/A",
-      "insurance_notes": "N/A (not an insurance-billed service)",
-      "verification_source": "Andrews Center official website and Texas resource directories: https://texassuicideprevention.org/texas-community-centers/ and https://www.uttua.org/families-students/mental-health-resources/index.php",
-      "last_verified": "2026-01-03",
-      "service_domains": [
-        "mental_health"
-      ],
-      "accepted_insurance": {
-        "status": "not_applicable",
-        "last_verified": "2026-01-03"
-      },
-      "website_url": "https://www.andrewscenter.com",
-      "website_domain": "andrewscenter.com"
     }
   ]
 }

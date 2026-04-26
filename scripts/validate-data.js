@@ -182,6 +182,73 @@ function validateProgramsJson() {
   return true;
 }
 
+function toProgramsArray(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.programs)) return data.programs;
+  return [];
+}
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch (err) {
+    error(`Failed to parse ${path}: ${err.message}`);
+    return null;
+  }
+}
+
+function validateCrossFileParity() {
+  console.log('\nValidating cross-file parity...\n');
+
+  const canonicalPath = join(rootDir, 'public', 'data', 'programs.json');
+  const geocodedPath = join(rootDir, 'public', 'data', 'programs.geocoded.json');
+  const regionalPath = join(rootDir, 'public', 'data', 'regions', 'dfw.details.json');
+
+  const canonicalData = readJson(canonicalPath);
+  const geocodedData = readJson(geocodedPath);
+  const regionalData = readJson(regionalPath);
+  if (!canonicalData || !geocodedData || !regionalData) return;
+
+  const canonicalPrograms = toProgramsArray(canonicalData);
+  const geocodedPrograms = toProgramsArray(geocodedData);
+  const regionalPrograms = toProgramsArray(regionalData);
+
+  const canonicalIds = new Set(canonicalPrograms.map((p) => p.program_id).filter(Boolean));
+  const geocodedIds = new Set(geocodedPrograms.map((p) => p.program_id).filter(Boolean));
+  const regionalIds = new Set(regionalPrograms.map((p) => p.program_id).filter(Boolean));
+
+  const missingInGeocoded = [...canonicalIds].filter((id) => !geocodedIds.has(id));
+  const extraInGeocoded = [...geocodedIds].filter((id) => !canonicalIds.has(id));
+  const missingInRegional = [...canonicalIds].filter((id) => !regionalIds.has(id));
+  const extraInRegional = [...regionalIds].filter((id) => !canonicalIds.has(id));
+
+  console.log(`Canonical programs.json count: ${canonicalIds.size}`);
+  console.log(`Geocoded programs.geocoded.json count: ${geocodedIds.size}`);
+  console.log(`Regional dfw.details.json count: ${regionalIds.size}`);
+  console.log(`Missing canonical IDs in geocoded: ${missingInGeocoded.length}`);
+  console.log(`Extra IDs in geocoded: ${extraInGeocoded.length}`);
+  console.log(`Missing canonical IDs in regional: ${missingInRegional.length}`);
+  console.log(`Extra IDs in regional: ${extraInRegional.length}`);
+
+  if (extraInGeocoded.length > 0) {
+    error(
+      `programs.geocoded.json contains IDs not present in canonical programs.json: ${extraInGeocoded.join(', ')}`,
+    );
+  }
+
+  if (missingInGeocoded.length > 0) {
+    console.warn(
+      `⚠ [GLOBAL] programs.geocoded.json is missing canonical IDs (${missingInGeocoded.length}): ${missingInGeocoded.slice(0, 25).join(', ')}`,
+    );
+  }
+
+  if (regionalIds.size < canonicalIds.size) {
+    console.warn(
+      `⚠ [GLOBAL] dfw.details.json appears partial (${regionalIds.size}/${canonicalIds.size}); runtime should continue using programs.json as canonical.`,
+    );
+  }
+}
+
 // Main execution
 console.log('='.repeat(60));
 console.log('Data Validation');
@@ -189,6 +256,7 @@ console.log('='.repeat(60));
 console.log();
 
 validateProgramsJson();
+validateCrossFileParity();
 
 console.log();
 console.log('='.repeat(60));

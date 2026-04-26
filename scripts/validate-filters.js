@@ -112,6 +112,16 @@ function runFilterTests() {
   }
 
   const programs = testData.programs;
+  // Keep verification-recency test deterministic without relying on a hard-coded date.
+  // Set the fixture program to "7 days ago" at runtime so it must pass a 30-day filter.
+  const verifiedProgramFixture = programs.find(p => p.program_id === 'test-verified-program');
+  if (verifiedProgramFixture?.verification) {
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 7);
+    const recentIso = recentDate.toISOString();
+    verifiedProgramFixture.verification.last_verified_at = recentIso;
+    verifiedProgramFixture.last_verified = recentIso.split('T')[0];
+  }
   let passed = 0;
   let failed = 0;
   const failures = [];

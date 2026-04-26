@@ -249,30 +249,26 @@ function matchesFilters(program, filters, options = {}) {
     }
   }
 
-  // Service domain filter - check both UI element and parsed search filters
-  const serviceDomainVal = safeStr(serviceDomain || '') || parsed.serviceDomain || '';
-  if (serviceDomainVal) {
-    const programDomains = Array.isArray(program.service_domains) 
-      ? program.service_domains.map(d => safeStr(d).toLowerCase())
-      : [];
-    // Check if program's service_domains includes the selected domain
-    if (!programDomains.includes(serviceDomainVal.toLowerCase())) return false;
+  const programDomains = Array.isArray(program.service_domains)
+    ? program.service_domains.map(d => safeStr(d).toLowerCase())
+    : [];
+  const effectiveServiceDomains = new Set();
+  if (serviceDomain) effectiveServiceDomains.add(safeStr(serviceDomain).toLowerCase());
+  if (parsed.serviceDomain) effectiveServiceDomains.add(safeStr(parsed.serviceDomain).toLowerCase());
+  if (Array.isArray(selectedServiceDomains)) {
+    selectedServiceDomains.forEach((domain) => {
+      if (domain) effectiveServiceDomains.add(safeStr(domain).toLowerCase());
+    });
   }
-  
-  // Also check selectedServiceDomains array (from multi-select)
-  if (selectedServiceDomains.length > 0) {
-    const programDomains = Array.isArray(program.service_domains) 
-      ? program.service_domains.map(d => safeStr(d).toLowerCase())
-      : [];
-    const hasMatch = selectedServiceDomains.some(selected =>
-      programDomains.includes(selected.toLowerCase())
-    );
-    if (!hasMatch) return false;
+  if (effectiveServiceDomains.size > 0) {
+    const hasDomainMatch = [...effectiveServiceDomains].some((domain) => programDomains.includes(domain));
+    if (!hasDomainMatch) return false;
   }
   
   // SUD services filter - only applies when SHOW_SUD_FILTERS is enabled
   if (featureFlags.SHOW_SUD_FILTERS) {
-    if (selectedSudServices.length > 0) {
+    const selectedDomain = safeStr(serviceDomain || parsed.serviceDomain || '').toLowerCase();
+    if (selectedSudServices.length > 0 && selectedDomain === 'substance_use') {
       const programSudServices = Array.isArray(program.sud_services)
         ? program.sud_services.map(s => safeStr(s).toLowerCase())
         : [];

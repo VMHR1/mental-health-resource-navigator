@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Texas Youth Mental Health Resource Finder</title>
   <meta name="description" content="A neutral directory of adolescent and youth mental health programs across the Dallas-Fort Worth Metroplex. Filter by level of care, location, and needs." />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <!-- TODO(security): move CSP fully to _headers and remove unsafe-inline after inline analytics snippets are migrated to external scripts. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=self, microphone=(), camera=()">
@@ -15,8 +16,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Texas Youth Mental Health Resource Finder">
   <meta property="og:description" content="A neutral directory of adolescent and youth mental health programs across the Dallas-Fort Worth Metroplex. Filter by level of care, location, and needs.">
-  <!-- TODO: Update og:url with actual production URL -->
-  <meta property="og:url" content="https://example.com/">
+  <meta property="og:url" content="https://viablemhr.com/">
   <meta property="og:image" content="/icon.png">
   <meta property="og:image:alt" content="Texas Youth Mental Health Resource Finder">
   
@@ -308,6 +308,8 @@
               <option value="">Any</option>
               <option value="Partial Hospitalization (PHP)">Partial Hospitalization (PHP)</option>
               <option value="Intensive Outpatient (IOP)">Intensive Outpatient (IOP)</option>
+              <option value="Outpatient">Outpatient</option>
+              <option value="Residential">Residential</option>
               <option value="Navigation">Navigation</option>
             </select>
           </div>
@@ -358,7 +360,7 @@
 
             <!-- Service Domain toggle (conditional) -->
             <div class="input-group" id="serviceDomainFilterGroup" style="display: none;">
-              <label for="serviceDomain">Service Type</label>
+              <label for="serviceDomain">Program focus</label>
               <select id="serviceDomain">
                 <option value="">Any type</option>
                 <option value="mental_health">Mental Health</option>
@@ -372,19 +374,20 @@
             <div class="input-group" id="sudServicesFilterGroup" style="display: none;">
               <label for="sudServices">Substance Use Services</label>
               <p class="filter-helper-text" style="font-size: 12px; color: var(--muted); margin: 0 0 10px 2px;">Select one or more</p>
+              <p id="sudServicesHelp" class="filter-helper-text" style="font-size: 12px; color: var(--muted); margin: 0 0 10px 2px;">These options apply when Program focus is set to Substance Use.</p>
               
               <!-- Hidden select for compatibility with existing filtering logic -->
               <select id="sudServices" multiple size="4" class="visually-hidden" aria-hidden="true">
                 <option value="detox">Detox</option>
-                <option value="residential_sud">Residential SUD</option>
-                <option value="outpatient_sud">Outpatient SUD</option>
-                <option value="iop_sud">IOP SUD</option>
-                <option value="php_sud">PHP SUD</option>
+                <option value="residential_sud">Residential</option>
+                <option value="outpatient_sud">Outpatient</option>
+                <option value="iop_sud">IOP</option>
+                <option value="php_sud">PHP</option>
                 <option value="osar_referral">OSAR Referral</option>
               </select>
               
               <!-- Chip-based UI -->
-              <div class="multi-chip" data-sync-select="sudServices" role="group" aria-label="Substance Use Services">
+              <div class="multi-chip" data-sync-select="sudServices" role="group" aria-label="Substance Use Services" aria-describedby="sudServicesHelp">
                 <label class="chip-check">
                   <input type="checkbox" value="detox" aria-label="Detox">
                   <span>Detox</span>

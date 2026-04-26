@@ -8,10 +8,17 @@
 
 export async function onRequestPost(context) {
   const { request, env } = context;
-  
-  // CORS headers for cross-origin requests
+  const allowedOrigins = new Set([
+    'https://viablemhr.com',
+    'http://localhost:4173',
+    'http://localhost:8788',
+    'http://127.0.0.1:4173',
+    'http://127.0.0.1:8788'
+  ]);
+  const requestOrigin = request.headers.get('Origin');
+  const allowOrigin = requestOrigin && allowedOrigins.has(requestOrigin) ? requestOrigin : 'https://viablemhr.com';
   const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
@@ -23,22 +30,49 @@ export async function onRequestPost(context) {
   }
 
   try {
-    // Parse request body
-    const data = await request.json();
-    
-    // Basic validation
-    if (!data.org_name || !data.program_name) {
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Missing required fields: org_name and program_name' 
-        }),
-        { 
-          status: 400, 
-          headers: corsHeaders 
-        }
-      );
+    const contentLength = Number(request.headers.get('content-length') || '0');
+    if (Number.isFinite(contentLength) && contentLength > 100_000) {
+      return new Response(JSON.stringify({ success: false, error: 'Payload too large' }), { status: 413, headers: corsHeaders });
     }
+    const data = await request.json();
+    const field = (name) => (data?.[name] ?? '').toString().trim();
+    const requiredFields = ['org_name', 'program_name', 'level_of_care', 'service_setting', 'admin_contact_email'];
+    const missing = requiredFields.filter((name) => !field(name));
+    if (missing.length > 0) {
+      return new Response(JSON.stringify({ success: false, error: `Missing required fields: ${missing.join(', ')}` }), { status: 400, headers: corsHeaders });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[\d+()\-\s.]{7,25}$/;
+    const isHttpUrl = (value) => {
+      if (!value) return true;
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch (_) {
+        return false;
+      }
+    };
+    if (field('general_email') && !emailRegex.test(field('general_email'))) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid general_email format' }), { status: 400, headers: corsHeaders });
+    }
+    if (!emailRegex.test(field('admin_contact_email'))) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid admin_contact_email format' }), { status: 400, headers: corsHeaders });
+    }
+    if (field('general_phone') && !phoneRegex.test(field('general_phone'))) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid general_phone format' }), { status: 400, headers: corsHeaders });
+    }
+    if (field('intake_phone') && !phoneRegex.test(field('intake_phone'))) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid intake_phone format' }), { status: 400, headers: corsHeaders });
+    }
+    if (!isHttpUrl(field('website_url'))) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid website_url' }), { status: 400, headers: corsHeaders });
+    }
+    const minAge = Number(field('min_age'));
+    const maxAge = Number(field('max_age'));
+    if ((field('min_age') || field('max_age')) && (!Number.isFinite(minAge) || !Number.isFinite(maxAge) || minAge < 0 || maxAge > 120 || maxAge < minAge)) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid age range' }), { status: 400, headers: corsHeaders });
+    }
+    let existingRateLimit = null;
 
     // Rate limiting check (simple IP-based)
     const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -48,7 +82,8 @@ export async function onRequestPost(context) {
     if (env.SUBMISSIONS_KV) {
       const rateLimit = await env.SUBMISSIONS_KV.get(rateLimitKey);
       if (rateLimit) {
-        const { count, resetTime } = JSON.parse(rateLimit);
+        existingRateLimit = JSON.parse(rateLimit);
+        const { count, resetTime } = existingRateLimit;
         if (count >= 3 && Date.now() < resetTime) {
           return new Response(
             JSON.stringify({ 
@@ -105,7 +140,7 @@ export async function onRequestPost(context) {
     // Update rate limit
     if (env.SUBMISSIONS_KV) {
       const resetTime = Date.now() + (60 * 60 * 1000); // 1 hour
-      const count = rateLimit ? JSON.parse(rateLimit).count + 1 : 1;
+      const count = existingRateLimit ? existingRateLimit.count + 1 : 1;
       await env.SUBMISSIONS_KV.put(rateLimitKey, JSON.stringify({ count, resetTime }), {
         expirationTtl: 3600 // 1 hour
       });

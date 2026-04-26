@@ -1,0 +1,18 @@
+{
+  "program_id": "xss-fixture-program",
+  "entry_type": "Treatment Program",
+  "organization": "<script>alert(1)</script> Family Org",
+  "program_name": "<img src=x onerror=alert(1)> Safe Program",
+  "level_of_care": "Outpatient",
+  "service_setting": "In-person",
+  "ages_served": "13+",
+  "locations": [
+    {
+      "city": "Dallas",
+      "state": "TX",
+      "address": "1 Safety Way",
+      "zip": "75001"
+    }
+  ],
+  "notes": "<script>alert(1)</script> Notes should render as text"
+}

@@ -967,14 +967,21 @@ function matchesFilters(p){
     // }
   }
 
-  // Service domain filter - check both UI element and parsed search filters
-  const serviceDomainVal = (els.serviceDomain ? safeStr(els.serviceDomain.value || '') : '') || parsed.serviceDomain || '';
-  if (serviceDomainVal) {
-    const programDomains = Array.isArray(p.service_domains) 
-      ? p.service_domains.map(d => safeStr(d).toLowerCase())
-      : [];
-    // Check if program's service_domains includes the selected domain
-    if (!programDomains.includes(serviceDomainVal.toLowerCase())) return false;
+  const programDomains = Array.isArray(p.service_domains)
+    ? p.service_domains.map(d => safeStr(d).toLowerCase())
+    : [];
+  const effectiveServiceDomains = new Set();
+  const selectedServiceDomain = els.serviceDomain ? safeStr(els.serviceDomain.value || '') : '';
+  if (selectedServiceDomain) effectiveServiceDomains.add(selectedServiceDomain.toLowerCase());
+  if (parsed.serviceDomain) effectiveServiceDomains.add(safeStr(parsed.serviceDomain).toLowerCase());
+  if (Array.isArray(selectedServiceDomains)) {
+    selectedServiceDomains.forEach((domain) => {
+      if (domain) effectiveServiceDomains.add(safeStr(domain).toLowerCase());
+    });
+  }
+  if (effectiveServiceDomains.size > 0) {
+    const hasDomainMatch = [...effectiveServiceDomains].some((domain) => programDomains.includes(domain));
+    if (!hasDomainMatch) return false;
   }
   
   // SUD services filter - only applies when SHOW_SUD_FILTERS is enabled
@@ -983,7 +990,7 @@ function matchesFilters(p){
     // SUD services filter - only applies when SHOW_SUD_FILTERS is enabled
     if (els.sudServices) {
       const selectedOptions = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
-      if (selectedOptions.length > 0) {
+      if (selectedOptions.length > 0 && selectedServiceDomain.toLowerCase() === 'substance_use') {
         const programSudServices = Array.isArray(p.sud_services)
           ? p.sud_services.map(s => safeStr(s).toLowerCase())
           : [];
@@ -1064,6 +1071,12 @@ function setCardOpen(cardEl, isOpen){
   cardEl.dataset.open = isOpen ? "true" : "false";
   const btn = cardEl.querySelector(".expandBtn");
   if (btn) btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  const panel = cardEl.querySelector('.panel');
+  if (panel) {
+    panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    // Keep collapsed panel content out of keyboard/AT flow.
+    if ('inert' in panel) panel.inert = !isOpen;
+  }
 }
 
 // Toggle modal-local card details (self-contained, doesn't affect main page)
@@ -2068,17 +2081,22 @@ let progressiveLoadState = {
   isLoading: false
 };
 
-function renderProgressive(activeList, isCrisisList = false) {
+function renderProgressive(activeList, isCrisisList = false, appendOnly = false) {
   if (!els.treatmentGrid) return;
   
-  const toDisplay = activeList.slice(0, progressiveLoadState.displayedCount);
-  els.treatmentGrid.innerHTML = "";
+  const existingCards = appendOnly ? els.treatmentGrid.querySelectorAll('.card').length : 0;
+  const startIndex = appendOnly ? existingCards : 0;
+  const toDisplay = activeList.slice(startIndex, progressiveLoadState.displayedCount);
+  if (!appendOnly) {
+    els.treatmentGrid.innerHTML = "";
+  }
   
   // Use DocumentFragment to batch DOM operations
   const fragment = document.createDocumentFragment();
   
   toDisplay.forEach((p, idx) => {
-    const realIdx = isCrisisList ? (idx + 10000) : idx;
+    const absoluteIdx = startIndex + idx;
+    const realIdx = isCrisisList ? (absoluteIdx + 10000) : absoluteIdx;
     const card = appCreateCard(p, realIdx);
     // Use CSS variable instead of inline style for animation delay
     card.style.setProperty('--enter-delay', `${Math.min(idx, 18) * 18}ms`);
@@ -2106,7 +2124,7 @@ function renderProgressive(activeList, isCrisisList = false) {
           activeList.length
         );
         // Use requestIdleCallback for progressive loading if available
-        const loadMore = () => renderProgressive(activeList);
+        const loadMore = () => renderProgressive(activeList, isCrisisList, true);
         if (window.requestIdleCallback) {
           requestIdleCallback(loadMore, { timeout: 1000 });
         } else {
@@ -3761,7 +3779,7 @@ async function loadPrograms(retryCount = 0){
       let canonicalPrograms = Array.isArray(canonicalData) ? canonicalData : (canonicalData.programs || []);
       let regionalPrograms = Array.isArray(regionalData) ? regionalData : (regionalData.programs || []);
       
-      // Create a map of canonical programs by program_id for deduplication
+      // Use canonical as source-of-truth and only augment missing geo/location fields.
       const canonicalMap = new Map();
       canonicalPrograms.forEach(p => {
         if (p.program_id) {
@@ -3769,10 +3787,37 @@ async function loadPrograms(retryCount = 0){
         }
       });
       
-      // Add regional programs that don't exist in canonical (augmentation only)
-      regionalPrograms.forEach(p => {
-        if (p.program_id && !canonicalMap.has(p.program_id)) {
-          canonicalPrograms.push(p);
+      regionalPrograms.forEach((regionalProgram) => {
+        if (!regionalProgram?.program_id) return;
+        const canonicalProgram = canonicalMap.get(regionalProgram.program_id);
+        if (!canonicalProgram) {
+          return;
+        }
+
+        const maybeAugmentField = (field) => {
+          if ((canonicalProgram[field] === undefined || canonicalProgram[field] === null || canonicalProgram[field] === '') &&
+              regionalProgram[field] !== undefined && regionalProgram[field] !== null && regionalProgram[field] !== '') {
+            canonicalProgram[field] = regionalProgram[field];
+          }
+        };
+
+        maybeAugmentField('latitude');
+        maybeAugmentField('longitude');
+        maybeAugmentField('primary_county');
+
+        if (!Array.isArray(canonicalProgram.locations) && Array.isArray(regionalProgram.locations)) {
+          canonicalProgram.locations = regionalProgram.locations;
+        } else if (Array.isArray(canonicalProgram.locations) && Array.isArray(regionalProgram.locations)) {
+          canonicalProgram.locations = canonicalProgram.locations.map((location, idx) => {
+            const regionalLocation = regionalProgram.locations[idx];
+            if (!regionalLocation) return location;
+            return {
+              ...location,
+              lat: location.lat ?? regionalLocation.lat,
+              lng: location.lng ?? regionalLocation.lng,
+              county: location.county ?? regionalLocation.county
+            };
+          });
         }
       });
       
@@ -3782,7 +3827,7 @@ async function loadPrograms(retryCount = 0){
         metadata: canonicalData.metadata || regionalData.metadata || {}
       };
       
-      console.info(`Merged regional data: ${regionalPrograms.length} regional programs into ${canonicalPrograms.length} canonical programs`);
+      console.info(`Merged regional augmentation into canonical programs: ${regionalPrograms.length} regional records scanned, canonical total ${canonicalPrograms.length}`);
     } else if (canonicalData) {
       // Use canonical data only
       data = canonicalData;
@@ -3790,7 +3835,11 @@ async function loadPrograms(retryCount = 0){
     } else if (regionalData) {
       // Fallback to regional data only
       data = regionalData;
-      console.log('Using regional data only (fallback):', data.programs ? data.programs.length : 'no programs array');
+      console.warn('Using regional data fallback because canonical programs.json could not load. Some data may be partial.');
+      if (els.loadWarn) {
+        els.loadWarn.textContent = 'We could not load the primary programs dataset. Showing fallback data that may be incomplete.';
+        els.loadWarn.classList.add('show');
+      }
     } else {
       // No data available - throw error
       console.error('No data available - canonicalData:', !!canonicalData, 'regionalData:', !!regionalData);
