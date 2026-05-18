@@ -228,15 +228,97 @@ function parseSmartSearch(query, cities) {
   return filters;
 }
 
+/** Words stripped after smart-parse so "IOP in Plano" does not match every program on "in". */
+const SEARCH_STOPWORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'in', 'at', 'for', 'to', 'of', 'on', 'near',
+  'around', 'my', 'me', 'with', 'from', 'by', 'up', 'is', 'are', 'be',
+]);
+
+function stripParsedQueryTokens(query, cities) {
+  const q = safeStr(query).toLowerCase().trim();
+  if (!q) return '';
+
+  const parsed = parseSmartSearch(query, cities || []);
+  let terms = q;
+
+  terms = terms
+    .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
+    .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
+    .replace(
+      /\b(crisis|emergency|urgent|eating disorder|anorexia|bulimia|binge eating|substance use|substance abuse|drug treatment|alcohol treatment|addiction)\b/gi,
+      ''
+    )
+    .replace(/\b(virtual|telehealth|tele)\b/gi, '');
+
+  const cityList = cities || [];
+  const sortedCities = [...cityList].sort((a, b) => b.length - a.length);
+  for (const city of sortedCities) {
+    const cityPattern = new RegExp(
+      `(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`,
+      'gi'
+    );
+    terms = terms.replace(cityPattern, ' ');
+  }
+
+  if (parsed.loc) {
+    const re = new RegExp(`\\b${parsed.loc.replace(/\s+/g, '\\s+')}\\b`, 'gi');
+    terms = terms.replace(re, ' ');
+  }
+
+  if (parsed.locs && parsed.locs.length) {
+    parsed.locs.forEach((loc) => {
+      const re = new RegExp(`\\b${loc.replace(/\s+/g, '\\s+')}\\b`, 'gi');
+      terms = terms.replace(re, ' ');
+    });
+  }
+
+  return terms.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Remaining meaningful text terms after smart-parse (for relevance cutoff + text filter).
+ */
+function getTextSearchTerms(query, cities) {
+  const residual = stripParsedQueryTokens(query, cities);
+  if (!residual) return '';
+
+  return residual
+    .split(/\s+/)
+    .filter((t) => t.length > 0 && !SEARCH_STOPWORDS.has(t.toLowerCase()))
+    .join(' ')
+    .trim();
+}
+
+/** Token list for matchesFilters text matching (word-boundary safe). */
+function getTextSearchTermList(query, cities) {
+  const residual = getTextSearchTerms(query, cities);
+  if (!residual) return [];
+  return residual.split(/\s+/).filter((t) => t.length > 0);
+}
+
+function safeStr(x) {
+  return (x ?? '').toString().trim();
+}
+
 // For non-module environments
 if (typeof window !== 'undefined') {
   window.levenshteinDistance = levenshteinDistance;
   window.fuzzyMatch = fuzzyMatch;
   window.findBestCityMatch = findBestCityMatch;
-  // Store reference to internal function to avoid recursion
+  // Store references before assigning to window (global name shadowing causes infinite recursion)
+  const internalGetTextSearchTerms = getTextSearchTerms;
+  const internalGetTextSearchTermList = getTextSearchTermList;
   const internalParseSmartSearch = parseSmartSearch;
+  window.getTextSearchTerms = (query) => {
+    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
+    return internalGetTextSearchTerms(query, cities);
+  };
+  window.getTextSearchTermList = (query) => {
+    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
+    return internalGetTextSearchTermList(query, cities);
+  };
   window.parseSmartSearch = (query) => {
-    const cities = window.CITIES || [
+    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [
       'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton', 
       'arlington', 'fort worth', 'mansfield', 'keller', 'desoto', 'de soto',
       'rockwall', 'sherman', 'forney', 'burleson', 'flower mound', 

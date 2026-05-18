@@ -2116,6 +2116,21 @@ a.btnlike:focus{
   padding: 14px 16px;
   border-bottom: 1px solid rgba(15,23,42,.06);
 }
+
+.sectionHead--with-intro {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding-bottom: 12px;
+}
+
+.sectionHead-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
 .sectionHead h2{
   margin:0;
   font-size: 13px;
@@ -4724,5 +4739,25 @@ body.high-contrast textarea {
     font-size: 11px;
     min-height: 36px;
   }
+}
+
+.sectionHead--with-intro .results-intro {
+  margin: 10px 0 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 72ch;
+}
+
+.listing-related-note {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  background: rgba(241, 245, 249, 0.85);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
 }
 

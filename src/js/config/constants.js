@@ -1,5 +1,15 @@
 // ========== Configuration Constants ==========
 
+const SITE = {
+  name: 'ViableMHR',
+  tagline: 'Texas youth mental health resources',
+  geoScope: 'the Dallas–Fort Worth metro and surrounding North Texas',
+  url: 'https://viablemhr.com',
+  ogImage: 'https://viablemhr.com/icon.png',
+  description:
+    'A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs.',
+};
+
 const CITIES = [
   'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton', 
   'arlington', 'fort worth', 'mansfield', 'keller', 'desoto', 'de soto',
@@ -28,7 +38,7 @@ const FILTER_PRESETS = {
   },
   'virtual-therapy': {
     onlyVirtual: true,
-    query: 'virtual therapy'
+    query: ''
   },
   'iop-plano': {
     location: 'Plano',
@@ -84,6 +94,7 @@ const FEATURE_FLAGS = {
 
 // For non-module environments
 if (typeof window !== 'undefined') {
+  window.SITE = SITE;
   window.CITIES = CITIES;
   window.LEVELS_OF_CARE = LEVELS_OF_CARE;
   window.FILTER_PRESETS = FILTER_PRESETS;

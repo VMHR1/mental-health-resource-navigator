@@ -305,13 +305,140 @@ function runFilterTests() {
     console.log('\nFailures:');
     failures.forEach(f => console.log(`  - ${f}`));
     console.log('\n❌ Filter validation failed. Please fix the issues above.');
-    process.exit(1);
-  } else {
-    console.log('\n✅ All filter validation tests passed!');
-    process.exit(0);
+    return false;
   }
+  console.log('\n✅ All filter validation tests passed!');
+  return true;
 }
 
-// Run tests
-runFilterTests();
+function loadBrowserScript(relativePath, win = {}) {
+  const code = readFileSync(join(rootDir, relativePath), 'utf8');
+  const fn = new Function('window', code);
+  fn(win);
+  return win;
+}
+
+function runSearchFilterTests() {
+  console.log('\nRunning search/location/age filter tests...\n');
+  const win = {};
+  loadBrowserScript('src/js/utils/location-match.js', win);
+  loadBrowserScript('src/js/utils/helpers.js', win);
+
+  const { programServesLocation, countyForCity, parseAgeSpec, programServesAge } = win;
+
+  let passed = 0;
+  let failed = 0;
+  const failures = [];
+
+  const assert = (name, condition) => {
+    if (condition) {
+      console.log(`  ✓ ${name}`);
+      passed++;
+    } else {
+      console.log(`  ✗ ${name}`);
+      failed++;
+      failures.push(name);
+    }
+  };
+
+  const hasVirtual = (p) => {
+    const s = (p.service_setting || '').toLowerCase();
+    return s.includes('virtual') || (p.locations || []).some((l) => (l.city || '').toLowerCase() === 'virtual');
+  };
+  const opts = { safeStr, hasVirtual };
+
+  assert(
+    'Same-county match (McKinney program, Plano search)',
+    programServesLocation(
+      { locations: [{ city: 'McKinney' }] },
+      'Plano',
+      opts
+    ) === true
+  );
+
+  assert(
+    'Direct city match',
+    programServesLocation(
+      { locations: [{ city: 'Dallas' }] },
+      'Dallas',
+      opts
+    ) === true
+  );
+
+  assert(
+    'Houston program excluded for Plano search',
+    programServesLocation(
+      { locations: [{ city: 'Houston' }], notes: '' },
+      'Plano',
+      opts
+    ) === false
+  );
+
+  assert(
+    'Virtual program included for Plano search',
+    programServesLocation(
+      {
+        service_setting: 'Virtual',
+        locations: [{ city: 'Virtual' }],
+      },
+      'Plano',
+      opts
+    ) === true
+  );
+
+  assert(
+    'Broad location (Multiple) matches any city',
+    programServesLocation(
+      { locations: [{ city: 'Multiple' }] },
+      'Frisco',
+      opts
+    ) === true
+  );
+
+  assert(
+    'service_area county match',
+    programServesLocation(
+      {
+        locations: [{ city: 'Austin' }],
+        service_area: { counties: ['Collin'] },
+      },
+      'Plano',
+      opts
+    ) === true
+  );
+
+  assert('countyForCity(Plano) is Collin', countyForCity('Plano') === 'Collin');
+
+  assert(
+    'parseAgeSpec handles 13–24',
+    JSON.stringify(parseAgeSpec('13–24')) === JSON.stringify([[13, 24]])
+  );
+
+  assert(
+    'parseAgeSpec handles Child & Adolescent',
+    parseAgeSpec('Child & Adolescent').length > 0
+  );
+
+  assert(
+    'programServesAge 15 for 13-24',
+    programServesAge({ ages_served: '13-24' }, 15) === true
+  );
+
+  assert(
+    'programServesAge unknown returns null',
+    programServesAge({ ages_served: 'Unknown' }, 14) === null
+  );
+
+  console.log(`\nSearch filter tests: ${passed} passed, ${failed} failed`);
+  if (failed > 0) {
+    failures.forEach((f) => console.log(`  - ${f}`));
+    return false;
+  }
+  console.log('✅ Search/location/age tests passed!');
+  return true;
+}
+
+const statewideOk = runFilterTests();
+const searchOk = runSearchFilterTests();
+process.exit(statewideOk && searchOk ? 0 : 1);
 

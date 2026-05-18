@@ -9,7 +9,7 @@ export const PROGRAM_SCHEMA = {
     'insurance_notes', 'verification_source', 'verification_source_url', 'last_verified', 'accepting_new_patients',
     'waitlist_status', 'accepted_insurance',
     // New statewide-ready fields (all optional for backward compatibility)
-    'primary_county', 'service_area', 'geo', 'verification', 'sud_services'
+    'primary_county', 'service_area', 'geo', 'verification', 'sud_services',
   ],
   types: {
     program_id: 'string',

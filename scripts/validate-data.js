@@ -112,6 +112,27 @@ function validateProgram(program, index) {
     }
   }
 
+  if (program.verification && program.verification.status) {
+    const validStatuses = [
+      'verified',
+      'partially_verified',
+      'unable_to_verify',
+      'conflicting_information',
+    ];
+    if (!validStatuses.includes(program.verification.status)) {
+      error(
+        `verification.status must be one of: ${validStatuses.join(', ')}`,
+        programId,
+      );
+    }
+  }
+
+  if (program.verification && program.verification.source_urls) {
+    if (!Array.isArray(program.verification.source_urls)) {
+      error(`verification.source_urls must be an array`, programId);
+    }
+  }
+
   // Validate level_of_care matches UI enum strings where applicable
   if (program.level_of_care) {
     const validLevels = [
@@ -242,9 +263,15 @@ function validateCrossFileParity() {
     );
   }
 
-  if (regionalIds.size < canonicalIds.size) {
-    console.warn(
-      `⚠ [GLOBAL] dfw.details.json appears partial (${regionalIds.size}/${canonicalIds.size}); runtime should continue using programs.json as canonical.`,
+  if (missingInRegional.length > 0) {
+    error(
+      `dfw.details.json is missing canonical program IDs (${missingInRegional.length}): ${missingInRegional.join(', ')}. Run: node scripts/sync-regional-data.js`,
+    );
+  }
+
+  if (extraInRegional.length > 0) {
+    error(
+      `dfw.details.json contains IDs not in programs.json: ${extraInRegional.join(', ')}. Run: node scripts/sync-regional-data.js`,
     );
   }
 }

@@ -33,3 +33,5 @@ for (const rel of files) {
   writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
   console.log(`${rel}: marked ${n} programs verified ${VERIFIED}`);
 }
+
+console.log('\nRun: npm run sync-regional-data');

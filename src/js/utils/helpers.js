@@ -114,18 +114,39 @@ function hasVirtual(p) {
   return locs.some(l => safeStr(l.city).toLowerCase() === "virtual");
 }
 
+/** Upper bound for open-ended "N+" age strings in this youth-focused directory. */
+const DIRECTORY_MAX_AGE = 24;
+
 function parseAgeSpec(spec) {
   const s0 = safeStr(spec);
   if (!s0) return [];
   const s = s0.toLowerCase();
 
-  if (s.includes("all ages") || s.includes("any age")) return [[0, 17]];
-  if (s.includes("child") && s.includes("adolescent")) return [[0, 17]];
+  if (s === 'unknown') return [];
 
-  const norm = s0.toLowerCase().replace(/[\u2013\u2014\u2212\u2015\u2010\u2011]/g, "-").replace(/\s+/g, " ").trim();
+  if (s.includes('all ages') || s.includes('any age')) return [[0, DIRECTORY_MAX_AGE]];
+
+  if (
+    (s.includes('child') && s.includes('adolescent')) ||
+    s.includes('children & adolescents') ||
+    s.includes('children and adolescents') ||
+    (s.includes('child') && s.includes('adolescent') && s.includes('services'))
+  ) {
+    return [[0, 17]];
+  }
+
+  if (/\bteen(s)?\b/.test(s) || /\badolescent(s)?\b/.test(s)) {
+    return [[13, 17]];
+  }
+
+  const norm = s0
+    .toLowerCase()
+    .replace(/[\u2013\u2014\u2212\u2015\u2010\u2011]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
 
   const plus = norm.match(/(\d+)\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up)/);
-  if (plus) return [[Number(plus[1]), 17]];
+  if (plus) return [[Number(plus[1]), DIRECTORY_MAX_AGE]];
 
   const range = norm.match(/(\d+)\s*-\s*(\d+)/);
   if (range) return [[Number(range[1]), Number(range[2])]];
@@ -133,15 +154,22 @@ function parseAgeSpec(spec) {
   const to = norm.match(/(\d+)\s*(?:to|through|thru)\s*(\d+)/);
   if (to) return [[Number(to[1]), Number(to[2])]];
 
-  const nums = (norm.match(/\d+/g) || []).map(n => Number(n)).filter(n => Number.isFinite(n));
-  if (nums.length >= 2) return [[Math.min(nums[0], nums[1]), Math.max(nums[0], nums[1])]];
+  const nums = (norm.match(/\d+/g) || [])
+    .map((n) => Number(n))
+    .filter((n) => Number.isFinite(n));
+  if (nums.length >= 2) {
+    return [[Math.min(nums[0], nums[1]), Math.max(nums[0], nums[1])]];
+  }
   if (nums.length === 1) return [[nums[0], nums[0]]];
   return [];
 }
 
+/**
+ * @returns {boolean|null} true/false when ages_served is parseable; null when unknown (do not exclude).
+ */
 function programServesAge(p, age) {
   const ranges = parseAgeSpec(p.ages_served);
-  if (!ranges.length) return false;
+  if (!ranges.length) return null;
   return ranges.some(([min, max]) => age >= min && age <= max);
 }
 

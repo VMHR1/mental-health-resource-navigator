@@ -19,6 +19,7 @@ const buildOptions = {
     'src/js/modules/search.js',
     'src/js/modules/storage.js',
     'src/js/utils/helpers.js',
+    'src/js/utils/location-match.js',
     'src/js/config/constants.js',
     'src/js/state-manager.js',
     'src/js/data-validator.js'
@@ -110,7 +111,8 @@ function copyStaticAssets() {
       'src/js/modules/sort.js',
       'src/js/modules/performance.js',
       'src/js/modules/render.js',
-      'src/js/modules/events.js'
+      'src/js/modules/events.js',
+      'src/js/utils/location-match.js'
     ];
     
     jsFiles.forEach(file => {

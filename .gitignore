@@ -44,6 +44,15 @@ Thumbs.db
 playwright-report/
 test-results/
 
+# Generated verification reports (regenerate with scripts/verify-*.js)
+scripts/full-program-verification-report.json
+scripts/link-verification-report.json
+scripts/spot-check-25-report.json
+scripts/spot-check-25-summary.json
+scripts/spot-check-28-summary.json
+scripts/data-audit-summary.json
+scripts/internet-verification-report-may2026.json
+
 # Documentation (local only)
 CLOUDFLARE_*.md
 IMPROVEMENT_AVENUES.md

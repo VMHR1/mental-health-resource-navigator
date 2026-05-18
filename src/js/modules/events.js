@@ -24,6 +24,7 @@ function setupEventHandlers(options) {
     if (raf) cancelAnimationFrame(raf);
     raf = requestAnimationFrame(() => {
       raf = null;
+      if (typeof window.refreshEls === 'function') window.refreshEls();
       state.setOpenId(null);
       callbacks.render();
       callbacks.updateURLState();
@@ -61,6 +62,13 @@ function setupEventHandlers(options) {
     // Debounced search
     if (searchDebounce) clearTimeout(searchDebounce);
     searchDebounce = setTimeout(() => {
+      if (typeof window.parseSmartSearch === 'function') {
+        const parsed = window.parseSmartSearch(query);
+        if (parsed.showCrisis && els.showCrisis && !els.showCrisis.checked) {
+          els.showCrisis.checked = true;
+          callbacks.syncTopToggles();
+        }
+      }
       callbacks.addRecentSearch(query);
       scheduleRender();
     }, 300);
@@ -209,19 +217,14 @@ function setupEventHandlers(options) {
   
   // Sort functionality
   on(els.sortSelect, "change", (e) => {
-    state.setCurrentSort(e.target.value);
-    // If switching to distance, always prompt for location (privacy-first: ask every time)
-    if (e.target.value === 'distance') {
-      // Clear any previous location to ensure fresh consent
+    const newSort = e.target.value;
+    // Distance sort requires location consent first — do not auto-revert via timeout
+    if (newSort === 'distance') {
       state.setUserLocation(null);
+      state.setCurrentSort('distance');
       callbacks.handleNearMeClick();
-      // Reset sort if user cancels
-      setTimeout(() => {
-        if (!state.getUserLocation() && els.sortSelect) {
-          els.sortSelect.value = 'relevance';
-          state.setCurrentSort('relevance');
-        }
-      }, 100);
+    } else {
+      state.setCurrentSort(newSort);
     }
     scheduleRender();
     callbacks.updateURLState();

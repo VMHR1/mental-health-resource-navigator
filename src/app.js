@@ -184,6 +184,34 @@ function buildAutocompleteIndexes(list){
 }
 
 // ========== DOM Elements ==========
+/** Live DOM refs — re-query when disconnected (e.g. hot reload) so filters match visible inputs. */
+function refreshEls() {
+  const ids = [
+    'q', 'loc', 'age', 'care', 'showCrisis', 'onlyVirtual', 'showCrisisTop', 'onlyVirtualTop',
+    'reset', 'resetTop', 'viewAll', 'treatmentSection', 'treatmentGrid', 'treatmentCount',
+    'totalCount', 'resultsLabel', 'sectionTitle', 'treatmentEmpty', 'loadWarn', 'smartSearchBtn',
+    'showAdvanced', 'advancedFilters', 'viewCrisisResources', 'viewTreatmentOptions',
+    'programCount', 'sortSelect', 'viewFavorites', 'viewHistory', 'favoritesCount',
+    'favoritesModal', 'historyModal', 'favoritesList', 'historyList', 'insurance', 'county',
+    'serviceDomain', 'sudServices', 'verificationRecency',
+  ];
+  ids.forEach((id) => {
+    const live = document.getElementById(id);
+    if (live) els[id] = live;
+  });
+}
+
+function readSearchQuery() {
+  refreshEls();
+  const qEl = els.q || document.getElementById('q');
+  return safeStr(qEl?.value || '').trim();
+}
+
+if (typeof window !== 'undefined') {
+  window.refreshEls = refreshEls;
+  window.readSearchQuery = readSearchQuery;
+}
+
 const els = {
   q: document.getElementById("q"),
   loc: document.getElementById("loc"),
@@ -591,6 +619,30 @@ function buildLocationOptions(list){
   }
 }
 
+function buildSearchCities(list) {
+  const set = new Set(
+    (window.CITIES || []).map((c) => c.toLowerCase())
+  );
+  list.forEach((p) => {
+    (p.locations || []).forEach((l) => {
+      const c = safeStr(l.city);
+      const key = c.toLowerCase();
+      if (
+        c &&
+        key !== 'virtual' &&
+        key !== 'multiple' &&
+        key !== 'national' &&
+        key !== 'n/a'
+      ) {
+        set.add(key);
+      }
+    });
+  });
+  const cities = Array.from(set).sort((a, b) => a.localeCompare(b));
+  window.getSearchCities = () => cities;
+  return cities;
+}
+
 function buildInsuranceOptions(list){
   const typesSet = new Set();
   const plansSet = new Set();
@@ -637,6 +689,29 @@ function buildInsuranceOptions(list){
     defaultOption.value = '';
     defaultOption.textContent = 'Any insurance';
     els.insurance.appendChild(defaultOption);
+
+    const buckets = window.INSURANCE_BUCKETS || {};
+    const bucketOrder = [
+      'bucket:medicaid',
+      'bucket:medicare',
+      'bucket:tricare',
+      'bucket:commercial',
+      'bucket:self_pay',
+      'bucket:contact',
+    ];
+    const bucketsGroup = document.createElement('optgroup');
+    bucketsGroup.label = 'Common coverage';
+    bucketOrder.forEach((key) => {
+      const meta = buckets[key];
+      if (!meta) return;
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = meta.label;
+      bucketsGroup.appendChild(option);
+    });
+    if (bucketsGroup.children.length > 0) {
+      els.insurance.appendChild(bucketsGroup);
+    }
     
     // Add insurance types section with optgroup
     if (types.length > 0) {
@@ -675,20 +750,27 @@ function buildInsuranceOptions(list){
 // ========== Filter / relevance (delegate to modules) ==========
 /** Shared bindings for `js/modules/filters.js` — single source to avoid duplicating filter state in render(). */
 function getFilterModuleBindings(showCrisis) {
+  refreshEls();
+  const qEl = els.q || document.getElementById('q');
+  const locEl = els.loc || document.getElementById('loc');
+  const careEl = els.care || document.getElementById('care');
+  const ageEl = els.age || document.getElementById('age');
+  const insuranceEl = els.insurance || document.getElementById('insurance');
+  const onlyVirtualEl = els.onlyVirtual || document.getElementById('onlyVirtual');
   return {
     filters: {
-      query: els.q?.value || '',
-      location: els.loc?.value || '',
-      age: els.age?.value || '',
-      care: els.care?.value || '',
-      insurance: els.insurance?.value || '',
-      onlyVirtual: els.onlyVirtual?.checked || false,
+      query: readSearchQuery(),
+      location: locEl?.value || '',
+      age: ageEl?.value || '',
+      care: careEl?.value || '',
+      insurance: insuranceEl?.value || '',
+      onlyVirtual: onlyVirtualEl?.checked || false,
       showCrisis,
       county: els.county?.value || '',
       serviceDomain: els.serviceDomain?.value || '',
       verificationRecency: els.verificationRecency?.value || '',
-      exactMatch: els.q?.dataset.exactMatch === 'true',
-      matchType: els.q?.dataset.matchType || '',
+      exactMatch: qEl?.dataset.exactMatch === 'true',
+      matchType: qEl?.dataset.matchType || '',
       selectedCounty,
       selectedServiceDomains,
       selectedSudServices,
@@ -697,8 +779,10 @@ function getFilterModuleBindings(showCrisis) {
     options: {
       safeStr: window.safeStr,
       parseSmartSearch: window.parseSmartSearch,
+      getTextSearchTermList: window.getTextSearchTermList,
       fuzzyMatch: window.fuzzyMatch,
       programServesAge: window.programServesAge,
+      programServesLocation: window.programServesLocation,
       hasVirtual: window.hasVirtual,
       locLabel: window.locLabel,
       featureFlags: window.FEATURE_FLAGS || {},
@@ -708,7 +792,8 @@ function getFilterModuleBindings(showCrisis) {
   };
 }
 
-function calculateRelevanceScore(program, query) {
+/** App wrapper — must not be named calculateRelevanceScore (would overwrite window.calculateRelevanceScore from filters.js). */
+function getProgramRelevanceScore(program, query) {
   const q = safeStr(query).trim();
   if (!q) return 0;
   if (typeof window.calculateRelevanceScore !== 'function') return 0;
@@ -865,7 +950,8 @@ const appCreateCard = (p, idx) => {
     state,
     isFavorite,
     comparisonSet,
-    programDataMap
+    programDataMap,
+    allPrograms: programs
   });
   } else {
     console.error('createCard not available. Make sure js/modules/render.js is loaded.');
@@ -1114,7 +1200,8 @@ const callHideModal = (modalEl) => {
   }
 };
 
-function sortPrograms(list) {
+/** Local sort fallback — must not be named sortPrograms (would overwrite window.sortPrograms from sort.js). */
+function sortProgramsLocal(list) {
   const sorted = [...list];
   
   const SORT_OPTIONS = window.SORT_OPTIONS || {
@@ -1364,7 +1451,6 @@ function applyFilterPreset(preset) {
       break;
     case 'virtual-therapy':
       els.onlyVirtual.checked = true;
-      els.q.value = 'virtual therapy';
       break;
     case 'iop-plano':
       els.loc.value = 'Plano';
@@ -1490,7 +1576,7 @@ function printProgram(programId) {
       <div class="info"><span class="label">Service Setting:</span> ${escapeHtml(safeStr(program.service_setting))}</div>
       ${program.notes ? `<div class="info"><span class="label">Notes:</span> ${escapeHtml(safeStr(program.notes))}</div>` : ''}
       <div style="margin-top: 30px; font-size: 12px; color: #666;">
-        Printed from Texas Youth Mental Health Resource Finder
+        Printed from ViableMHR (viablemhr.com)
       </div>
     </body>
     </html>
@@ -1512,6 +1598,8 @@ async function addRecentSearch(query) {
 }
 
 let scheduleRenderFn = null;
+/** Bumped on each render; stale async renders must not overwrite the UI. */
+let renderGeneration = 0;
 
 function renderRecentSearches() {
   const container = document.querySelector('.recent-searches');
@@ -1845,13 +1933,13 @@ function render(){
   if (!ready) {
     return;
   }
+  const generation = ++renderGeneration;
+  refreshEls();
   const showCrisis = els.showCrisis?.checked || false;
+  const { filters: filterSnapshot, options: filterOptions } = getFilterModuleBindings(showCrisis);
 
   const filterFn = typeof window.matchesFilters === 'function'
-    ? (p) => {
-        const { filters, options } = getFilterModuleBindings(showCrisis);
-        return window.matchesFilters(p, filters, options);
-      }
+    ? (p) => window.matchesFilters(p, filterSnapshot, filterOptions)
     : matchesFiltersFallback;
 
   const filtered = programs.filter(filterFn);
@@ -1860,21 +1948,33 @@ function render(){
   const crisis = filtered.filter(p => isCrisis(p));
 
   let activeList = showCrisis ? crisis : treatment;
+
   const activeLabel = showCrisis ? "Crisis Resources" : "Treatment Programs";
   
-  // Update active filter chips
-  updateActiveFilterChips();
+  // Calculate relevance scores for all results (use same snapshot as filtering)
+  const query = safeStr(filterSnapshot.query || '').trim();
+  const textTerms =
+    typeof window.getTextSearchTerms === 'function'
+      ? window.getTextSearchTerms(query)
+      : query;
+  const isExactMatch = filterSnapshot.exactMatch === true;
+  const applyRelevanceCutoff =
+    query.length >= 3 &&
+    textTerms.length > 0 &&
+    !isExactMatch;
 
-  // Calculate relevance scores for all results
-  const query = safeStr(els.q?.value || '').trim();
   if (query) {
-    const scoreFn = (p) => calculateRelevanceScore(p, query);
+    const scoreFn = (p) => getProgramRelevanceScore(p, query);
 
     // Map programs with their relevance scores
-    const scoredPrograms = activeList.map(p => ({
+    let scoredPrograms = activeList.map(p => ({
       program: p,
       score: scoreFn(p)
     }));
+
+    if (applyRelevanceCutoff) {
+      scoredPrograms = scoredPrograms.filter((sp) => sp.score > 0);
+    }
     
     // Sort by relevance score (highest first) when sort is "relevance"
     const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
@@ -1901,7 +2001,7 @@ function render(){
             };
             return window.sortPrograms(list, currentSort, options);
           }
-        : sortPrograms; // Fallback to local function
+        : sortProgramsLocal; // Fallback to local function
       activeList = sortFn(activeList);
     }
   } else {
@@ -1924,7 +2024,7 @@ function render(){
           };
           return window.sortPrograms(list, currentSort, options);
         }
-      : sortPrograms; // Fallback to local function
+      : sortProgramsLocal; // Fallback to local function
     activeList = sortFn(activeList);
   }
   
@@ -1936,6 +2036,12 @@ function render(){
     const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === openId);
     if (!stillExists) openId = null;
   }
+
+  if (generation !== renderGeneration) {
+    return;
+  }
+
+  updateActiveFilterChips();
 
   if (els.sectionTitle) els.sectionTitle.textContent = activeLabel;
   if (els.resultsLabel) els.resultsLabel.textContent = showCrisis ? "crisis matches" : "treatment matches";
@@ -1981,6 +2087,19 @@ function render(){
 
   if (els.treatmentCount) els.treatmentCount.textContent = `${activeList.length} result${activeList.length===1?"":"s"}`;
 
+  const resultsIntro = document.getElementById('resultsIntro');
+  if (resultsIntro) {
+    if (showCrisis) {
+      resultsIntro.textContent = activeList.length === 0
+        ? 'No crisis resources match these filters. Try clearing filters or turn off other filters.'
+        : `Showing ${activeList.length} crisis resource${activeList.length === 1 ? '' : 's'}.`;
+    } else if (activeList.length === 0) {
+      resultsIntro.textContent = 'No treatment programs match these filters. Try clearing filters or use View all in the search panel.';
+    } else {
+      resultsIntro.textContent = `Showing ${activeList.length} treatment program${activeList.length === 1 ? '' : 's'}. Use filters above to narrow results; crisis resources stay hidden unless you enable them.`;
+    }
+  }
+
   // Show/hide empty state with improved messaging
   if (els.treatmentEmpty) {
     if (activeList.length === 0) {
@@ -2001,6 +2120,7 @@ function render(){
   const label = showCrisis ? "crisis resources" : "treatment programs";
   announceToScreenReader(`${count} ${label} found${count === 0 ? '. Try adjusting your filters.' : ''}`);
   updateComparisonCount();
+
 }
 
 function syncTopToggles(){
@@ -2478,6 +2598,7 @@ function bind(){
     }
   };
   
+  refreshEls();
   // Call events module setup
   window.setupEventHandlers({ els, callbacks, state });
   
@@ -2840,6 +2961,25 @@ function updateActiveFilterChips() {
   
   const flags = window.FEATURE_FLAGS || {};
   const activeFilters = [];
+
+  if (typeof window.getEffectiveSearchFilters === 'function') {
+    const { chips } = window.getEffectiveSearchFilters(readSearchQuery(), {
+      location: els.loc?.value || '',
+      age: els.age?.value || '',
+      care: els.care?.value || '',
+      insurance: els.insurance?.value || '',
+      onlyVirtual: els.onlyVirtual?.checked || false,
+      showCrisis: els.showCrisis?.checked || false,
+    }, { parseSmartSearch: window.parseSmartSearch, safeStr });
+
+    chips.forEach((chip, idx) => {
+      activeFilters.push({
+        type: chip.type || `search-${idx}`,
+        label: chip.label,
+        removeFn: () => clearActiveFilterChip(chip.type),
+      });
+    });
+  }
   
   // County filter - only show if STATEWIDE_MODE is enabled
   if (flags.STATEWIDE_MODE && els.county && els.county.value) {
@@ -2849,7 +2989,8 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.county.value = '';
         selectedCounty = null;
-        scheduleRender();
+        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        else render();
       }
     });
   }
@@ -2868,7 +3009,8 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.serviceDomain.value = '';
         selectedServiceDomains = [];
-        scheduleRender();
+        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        else render();
       }
     });
   }
@@ -2895,7 +3037,8 @@ function updateActiveFilterChips() {
           Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
           selectedSudServices = [];
           syncChipsToSelect('sudServices');
-          scheduleRender();
+          if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+          else render();
         }
       });
     }
@@ -2914,7 +3057,8 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.verificationRecency.value = '';
         verificationRecencyDays = null;
-        scheduleRender();
+        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        else render();
       }
     });
   }
@@ -2960,8 +3104,60 @@ function updateActiveFilterChips() {
   }
 }
 
+function clearActiveFilterChip(chipType) {
+  switch (chipType) {
+    case 'query':
+      if (els.q) {
+        els.q.value = '';
+        delete els.q.dataset.exactMatch;
+        delete els.q.dataset.matchType;
+      }
+      break;
+    case 'location':
+    case 'parsedLocation':
+      if (els.loc) els.loc.value = '';
+      break;
+    case 'age':
+    case 'parsedAge':
+      if (els.age) {
+        els.age.value = '';
+        if (window.__ageDropdownSync) window.__ageDropdownSync();
+      }
+      break;
+    case 'care':
+    case 'parsedCare':
+      if (els.care) els.care.value = '';
+      break;
+    case 'insurance':
+      if (els.insurance) els.insurance.value = '';
+      break;
+    case 'virtual':
+      if (els.onlyVirtual) els.onlyVirtual.checked = false;
+      break;
+    case 'crisis':
+    case 'parsedCrisis':
+      if (els.showCrisis) els.showCrisis.checked = false;
+      break;
+    case 'parsedDomain':
+      if (els.serviceDomain) {
+        els.serviceDomain.value = '';
+        selectedServiceDomains = [];
+      }
+      break;
+    default:
+      break;
+  }
+  if (typeof syncTopToggles === 'function') syncTopToggles();
+  if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+  else render();
+}
+
 function requestUserLocation() {
   return new Promise((resolve, reject) => {
+    if (!window.isSecureContext) {
+      reject(new Error('Location access requires a secure connection (HTTPS). Use https://viablemhr.com or test on localhost.'));
+      return;
+    }
     if (!navigator.geolocation) {
       reject(new Error('Geolocation is not supported by this browser'));
       return;
@@ -3016,7 +3212,8 @@ function hideLocationConsent() {
 async function handleNearMeClick() {
   // Always clear previous location to ensure fresh consent every time
   userLocation = null;
-  
+  syncStateToManager();
+
   // Always show consent modal first (privacy-first approach)
   if (!els.locationConsentModal) {
     callShowToast('Location feature not available', 'error');
@@ -3026,8 +3223,10 @@ async function handleNearMeClick() {
 }
 
 async function handleLocationConsentAllow() {
+  // Start geolocation in the same user gesture (before await) for Safari/Chrome
+  const locationPromise = requestUserLocation();
   hideLocationConsent();
-  
+
   try {
     // Check if distance module is loaded
     if (typeof window.calculateProgramDistance !== 'function') {
@@ -3035,48 +3234,66 @@ async function handleLocationConsentAllow() {
       console.error('Distance module not loaded');
       return;
     }
-    
-    // Request location
-    userLocation = await requestUserLocation();
-    
+
+    userLocation = await locationPromise;
+
     if (!userLocation) {
       callShowToast('Failed to get location', 'error');
       return;
     }
-    
+
+    syncStateToManager();
+
     // Set sort to distance
-    const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance' };
+    const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
     currentSort = SORT_OPTIONS.DISTANCE;
     if (els.sortSelect) {
       els.sortSelect.value = SORT_OPTIONS.DISTANCE;
     }
-    
+
     // Re-render with distance sorting
     if (typeof scheduleRenderFn === 'function') {
       scheduleRenderFn();
     } else {
       render();
     }
-    
-    // Update button visibility (show stop button, hide near me button)
+
     updateLocationButtonVisibility();
-    
+
     callShowToast('Location found. Results sorted by distance.', 'success');
   } catch (error) {
     console.error('Location error:', error);
     callShowToast(error.message || 'Failed to get location', 'error');
+    revertDistanceSortWithoutLocation();
+  }
+}
+
+function revertDistanceSortWithoutLocation() {
+  const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
+  if (userLocation || currentSort !== SORT_OPTIONS.DISTANCE) return;
+  currentSort = SORT_OPTIONS.RELEVANCE;
+  if (els.sortSelect) {
+    els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
+  }
+  syncStateToManager();
+  if (typeof scheduleRenderFn === 'function') {
+    scheduleRenderFn();
+  } else {
+    render();
   }
 }
 
 function handleLocationConsentCancel() {
   hideLocationConsent();
+  revertDistanceSortWithoutLocation();
 }
 
 // TDPSA Compliance: Stop sharing location (right to opt-out)
 function handleStopLocationSharing() {
   // Clear location data (TDPSA: right to delete personal data)
   userLocation = null;
-  
+  syncStateToManager();
+
   // Reset sort if it was set to distance
   const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
   if (currentSort === SORT_OPTIONS.DISTANCE) {
@@ -3614,6 +3831,7 @@ async function loadPrograms(retryCount = 0){
     buildAutocompleteIndexes(programs);
 
     buildLocationOptions(programs);
+    buildSearchCities(programs);
     buildInsuranceOptions(programs);
     callUpdateStats();
     updateComparisonCount();
@@ -3816,8 +4034,9 @@ function updateURLState() {
   const params = new URLSearchParams();
   
   // Add search query
-  if (els.q && els.q.value) {
-    params.set('q', els.q.value);
+  const searchQ = readSearchQuery();
+  if (searchQ) {
+    params.set('q', searchQ);
   }
   
   // Add location

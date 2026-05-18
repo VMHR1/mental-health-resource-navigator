@@ -1,6 +1,120 @@
 // ========== Filter Logic ==========
 // Pure functions for program filtering
 
+/** Canonical insurance buckets for family-friendly filtering. */
+const INSURANCE_BUCKETS = {
+  'bucket:medicaid': {
+    label: 'Medicaid / CHIP',
+    patterns: ['medicaid', 'chip', 'star ', 'star+', 'mco'],
+  },
+  'bucket:medicare': {
+    label: 'Medicare',
+    patterns: ['medicare'],
+  },
+  'bucket:tricare': {
+    label: 'TRICARE / Military',
+    patterns: ['tricare', 'military', 'triwest', 'champus'],
+  },
+  'bucket:commercial': {
+    label: 'Commercial insurance',
+    patterns: ['commercial', 'private insurance', 'employer', 'most major'],
+  },
+  'bucket:self_pay': {
+    label: 'Self-pay / sliding scale',
+    patterns: ['self-pay', 'self pay', 'sliding scale', 'private pay', 'cash pay'],
+  },
+  'bucket:contact': {
+    label: 'Call to verify insurance',
+    patterns: [],
+  },
+};
+
+function insuranceHaystack(program, safeStr) {
+  const insurance = program.accepted_insurance || {};
+  const types = Array.isArray(insurance.types)
+    ? insurance.types.map((t) => safeStr(t).toLowerCase())
+    : [];
+  const plans = Array.isArray(insurance.plans)
+    ? insurance.plans.map((pl) => safeStr(pl).toLowerCase())
+    : [];
+  const plansRaw = Array.isArray(insurance.plans_raw)
+    ? insurance.plans_raw.map((pl) => safeStr(pl).toLowerCase())
+    : [];
+  const notes = [
+    safeStr(insurance.notes),
+    safeStr(program.insurance_notes),
+  ]
+    .join(' ')
+    .toLowerCase();
+  return { types, plans, plansRaw, notes, status: safeStr(insurance.status).toLowerCase() };
+}
+
+function programMatchesInsuranceBucket(program, bucketKey, safeStr) {
+  const bucket = INSURANCE_BUCKETS[bucketKey];
+  if (!bucket) return false;
+
+  const { types, plans, plansRaw, notes, status } = insuranceHaystack(program, safeStr);
+  const combined = [...types, ...plans, ...plansRaw, notes].join(' | ');
+
+  if (bucketKey === 'bucket:contact') {
+    return (
+      status === 'contact_for_info' ||
+      status === 'not_listed' ||
+      (!plans.length && !types.length && notes.includes('call'))
+    );
+  }
+
+  return bucket.patterns.some((pat) => combined.includes(pat));
+}
+
+function programMatchesInsuranceFilter(program, insuranceVal, safeStr) {
+  const insurance = program.accepted_insurance || {};
+  const insuranceTypes = Array.isArray(insurance.types)
+    ? insurance.types.map((t) => safeStr(t).toLowerCase())
+    : [];
+  const insurancePlans = Array.isArray(insurance.plans)
+    ? insurance.plans.map((pl) => safeStr(pl).toLowerCase())
+    : [];
+
+  if (insuranceVal.startsWith('bucket:')) {
+    return programMatchesInsuranceBucket(program, insuranceVal, safeStr);
+  }
+
+  if (insuranceVal.startsWith('type:')) {
+    const filterType = insuranceVal.replace('type:', '').toLowerCase();
+    const normalizedTypes = insuranceTypes.map((t) =>
+      t
+        .replace(/\(many\)/g, '')
+        .replace(/\(some\)/g, '')
+        .replace(/\(varies\)/g, '')
+        .replace(/\(listed\)/g, '')
+        .replace(/\(most major\)/g, '')
+        .trim()
+    );
+    if (
+      normalizedTypes.some(
+        (t) => t.includes(filterType) || filterType.includes(t)
+      )
+    ) {
+      return true;
+    }
+    // Bucket alias: type filter "Medicaid/CHIP" matches bucket patterns
+    if (filterType.includes('medicaid') || filterType.includes('chip')) {
+      return programMatchesInsuranceBucket(program, 'bucket:medicaid', safeStr);
+    }
+    return false;
+  }
+
+  if (insuranceVal.startsWith('plan:')) {
+    const filterPlan = insuranceVal.replace('plan:', '').toLowerCase();
+    return insurancePlans.some(
+      (pl) => pl === filterPlan || pl.includes(filterPlan) || filterPlan.includes(pl)
+    );
+  }
+
+  return true;
+}
+
 /**
  * Check if a program matches the given filters
  * @param {Object} program - The program to check
@@ -15,6 +129,7 @@ function matchesFilters(program, filters, options = {}) {
     parseSmartSearch = () => ({ loc: '', locs: [], age: '', minAge: null, care: '', showCrisis: false, organization: '' }),
     fuzzyMatch = null,
     programServesAge = null,
+    programServesLocation = null,
     hasVirtual = null,
     locLabel = null,
     // Feature flags
@@ -95,83 +210,62 @@ function matchesFilters(program, filters, options = {}) {
       // No specific match type or not exact - check normal matching
       // Check exact organization or program name match before other checks
       if (orgLower !== qLower && progLower !== qLower) {
-        // Remove location, age, and care level terms from search query for text matching
-        // BUT preserve organization-like terms (don't remove words that might be part of org names)
-        const searchTerms = q
-          .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
-          .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
-          // Only remove city names if they're standalone (not part of organization names)
-          // Use word boundaries to avoid removing city names embedded in org names
-          .replace(/\b(dallas|plano|frisco|mckinney|richardson|denton|arlington|fort worth|mansfield|keller|desoto|de soto|rockwall|sherman|forney|burleson|flower mound|the colony|bedford|lewisville|carrollton|garland|mesquite|irving|grand prairie|corsicana)\b(?=\s|$)/gi, '')
-          .trim();
-        
-        if (searchTerms) {
+        const getTermList =
+          typeof options.getTextSearchTermList === 'function'
+            ? options.getTextSearchTermList
+            : typeof window !== 'undefined' && typeof window.getTextSearchTermList === 'function'
+              ? (text) => window.getTextSearchTermList(text)
+              : null;
+        const terms = getTermList ? getTermList(q) : [];
+
+        if (terms.length > 0) {
           const hay = [
             program.program_name, program.organization, program.level_of_care,
             program.entry_type, program.service_setting, program.ages_served,
             locLabel ? locLabel(program) : '',
             (program.notes || ""),
           ].map(safeStr).join(" ").toLowerCase();
-          
-          // Check if all remaining search terms appear (with fuzzy matching for typos)
-          const terms = searchTerms.split(/\s+/).filter(t => t.length > 0);
-          if (terms.length > 0) {
-            // Prioritize organization and program name matches
-            const orgMatch = terms.every(term => {
-              if (orgLower.includes(term)) return true;
-              if (term.length > 3) return fuzzyMatch && fuzzyMatch(term, orgLower, 0.85);
-              return false;
-            });
-            
-            const progMatch = terms.every(term => {
-              if (progLower.includes(term)) return true;
-              if (term.length > 3) return fuzzyMatch && fuzzyMatch(term, progLower, 0.85);
-              return false;
-            });
-            
-            // If matches organization or program name, allow it
-            if (!orgMatch && !progMatch) {
-              // Check other fields with fuzzy matching
-              const allMatch = terms.every(term => {
-                if (hay.includes(term)) return true;
-                // Fuzzy match for terms longer than 3 characters
-                if (term.length > 3) {
-                  return fuzzyMatch && fuzzyMatch(term, hay, 0.7);
-                }
-                return false;
-              });
-              if (!allMatch) return false;
+
+          const termMatchesHay = (term) => {
+            const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const wordRe = new RegExp(`\\b${escaped}\\b`, 'i');
+            if (wordRe.test(hay) || wordRe.test(orgLower) || wordRe.test(progLower)) {
+              return true;
             }
+            if (term.length > 3) {
+              return (
+                (fuzzyMatch && fuzzyMatch(term, hay, 0.7)) ||
+                (fuzzyMatch && fuzzyMatch(term, orgLower, 0.85)) ||
+                (fuzzyMatch && fuzzyMatch(term, progLower, 0.85))
+              );
+            }
+            return false;
+          };
+
+          if (terms.length > 0) {
+            const allMatch = terms.every(termMatchesHay);
+            if (!allMatch) return false;
           }
         }
       }
     }
   }
 
-  // Location filter - use parsed location or dropdown value, support multi-location
+  // Location filter — city, county, service_area, virtual, and broad regional coverage
+  const locationFn =
+    programServesLocation ||
+    (typeof window !== 'undefined' ? window.programServesLocation : null);
+  const locationOpts = { safeStr, fuzzyMatch, hasVirtual };
+
   if (parsed.locs && parsed.locs.length > 0) {
-    // Multi-location search: program must serve at least one of the specified locations
-    const programCities = (program.locations || []).map(l => safeStr(l.city).toLowerCase());
-    const searchCities = parsed.locs.map(loc => loc.toLowerCase());
-    const matches = searchCities.some(searchCity => {
-      if (searchCity === 'de soto') {
-        return programCities.some(c => c === 'de soto' || c === 'desoto');
-      }
-      return programCities.some(c => c === searchCity || (fuzzyMatch && fuzzyMatch(searchCity, c, 0.8)));
-    });
-    if (!matches) return false;
+    if (!locationFn || !locationFn(program, parsed.locs, locationOpts)) return false;
   } else {
-    const locationToCheck = parsed.loc ? parsed.loc.toLowerCase() : loc;
+    const dropdownLoc = safeStr(location);
+    const parsedLoc = parsed.loc ? safeStr(parsed.loc) : '';
+    const locationToCheck = parsedLoc || dropdownLoc;
     if (locationToCheck) {
-      const cities = (program.locations || []).map(l => safeStr(l.city).toLowerCase());
-      // Handle "De Soto" matching both "De Soto" and "Desoto"
-      const normalizedLocation = locationToCheck.replace(/\s+/g, ' ').trim();
-      if (normalizedLocation === 'de soto') {
-        if (!cities.some(c => c === 'de soto' || c === 'desoto')) return false;
-      } else {
-        // Use fuzzy matching for location
-        const matches = cities.some(c => c === normalizedLocation || (fuzzyMatch && fuzzyMatch(normalizedLocation, c, 0.8)));
-        if (!matches) return false;
+      if (!locationFn || !locationFn(program, locationToCheck, locationOpts)) {
+        return false;
       }
     }
   }
@@ -187,39 +281,17 @@ function matchesFilters(program, filters, options = {}) {
   if (ageToCheck) {
     const age = Number(ageToCheck);
     if (Number.isFinite(age)) {
-      if (searchMinAge !== null) {
-        // "13 and up" - check if program serves this age or higher
-        // Program must serve at least age 13
-        if (!programServesAge || !programServesAge(program, age)) return false;
-      } else {
-        // Exact age match
-        if (!programServesAge || !programServesAge(program, age)) return false;
-      }
+      const serves = programServesAge ? programServesAge(program, age) : null;
+      // null = ages_served unparseable — do not exclude
+      if (serves === false) return false;
     }
   }
 
-  // Insurance filter
+  // Insurance filter (buckets, types, plans)
   const insuranceVal = safeStr(insurance);
   if (insuranceVal) {
-    const insurance = program.accepted_insurance || {};
-    const insuranceTypes = Array.isArray(insurance.types) ? insurance.types.map(t => safeStr(t).toLowerCase()) : [];
-    const insurancePlans = Array.isArray(insurance.plans) ? insurance.plans.map(pl => safeStr(pl).toLowerCase()) : [];
-    
-    // Check if it's a type or plan filter
-    if (insuranceVal.startsWith('type:')) {
-      const filterType = insuranceVal.replace('type:', '').toLowerCase();
-      // Normalize for matching (remove qualifiers like "(many)", "(some)", etc.)
-      const normalizedTypes = insuranceTypes.map(t => 
-        t.replace(/\(many\)/g, '').replace(/\(some\)/g, '').replace(/\(varies\)/g, '').replace(/\(listed\)/g, '').replace(/\(most major\)/g, '').trim()
-      );
-      if (!normalizedTypes.some(t => t.includes(filterType) || filterType.includes(t))) {
-        return false;
-      }
-    } else if (insuranceVal.startsWith('plan:')) {
-      const filterPlan = insuranceVal.replace('plan:', '').toLowerCase();
-      if (!insurancePlans.some(pl => pl === filterPlan || pl.includes(filterPlan) || filterPlan.includes(pl))) {
-        return false;
-      }
+    if (!programMatchesInsuranceFilter(program, insuranceVal, safeStr)) {
+      return false;
     }
   }
 
@@ -411,9 +483,105 @@ function calculateRelevanceScore(program, query, options = {}) {
   return score;
 }
 
+/**
+ * Effective filters from smart search + dropdowns (for chips / UI).
+ */
+function getEffectiveSearchFilters(query, dropdowns = {}, options = {}) {
+  const { parseSmartSearch: parseFn = () => ({}) } = options;
+  const parsed = typeof parseFn === 'function' ? parseFn(query) : {};
+  const safeStr = options.safeStr || ((x) => (x ?? '').toString().trim());
+
+  const chips = [];
+  const locDropdown = safeStr(dropdowns.location);
+  const parsedLoc =
+    parsed.locs && parsed.locs.length
+      ? parsed.locs.map((c) => (window.formatCityLabel ? window.formatCityLabel(c) : c)).join(' or ')
+      : parsed.loc
+        ? window.formatCityLabel
+          ? window.formatCityLabel(parsed.loc)
+          : parsed.loc
+        : '';
+
+  if (parsedLoc && (!locDropdown || locDropdown.toLowerCase() !== parsedLoc.toLowerCase())) {
+    chips.push({ type: 'parsedLocation', label: `Location (search): ${parsedLoc}` });
+  } else if (locDropdown) {
+    chips.push({ type: 'location', label: `Location: ${locDropdown}` });
+  }
+
+  const ageDropdown = safeStr(dropdowns.age);
+  if (parsed.age && parsed.age !== ageDropdown) {
+    const ageLabel =
+      parsed.minAge != null ? `Age ${parsed.age}+` : `Age ${parsed.age}`;
+    chips.push({ type: 'parsedAge', label: ageLabel });
+  } else if (ageDropdown) {
+    chips.push({
+      type: 'age',
+      label: parsed.minAge != null ? `Age ${ageDropdown}+` : `Age ${ageDropdown}`,
+    });
+  }
+
+  const careDropdown = safeStr(dropdowns.care);
+  if (parsed.care && parsed.care !== careDropdown) {
+    chips.push({ type: 'parsedCare', label: `Care: ${parsed.care}` });
+  } else if (careDropdown) {
+    chips.push({ type: 'care', label: `Care: ${careDropdown}` });
+  }
+
+  if (parsed.serviceDomain) {
+    const domainLabels = {
+      eating_disorders: 'Eating disorders',
+      substance_use: 'Substance use',
+    };
+    chips.push({
+      type: 'parsedDomain',
+      label: `Focus: ${domainLabels[parsed.serviceDomain] || parsed.serviceDomain}`,
+    });
+  }
+
+  if (parsed.showCrisis) {
+    chips.push({ type: 'parsedCrisis', label: 'Crisis resources included' });
+  }
+
+  const insuranceVal = safeStr(dropdowns.insurance);
+  if (insuranceVal.startsWith('bucket:')) {
+    const bucket = INSURANCE_BUCKETS[insuranceVal];
+    chips.push({
+      type: 'insurance',
+      label: `Insurance: ${bucket?.label || insuranceVal}`,
+    });
+  } else if (insuranceVal.startsWith('type:')) {
+    chips.push({
+      type: 'insurance',
+      label: `Insurance: ${insuranceVal.replace('type:', '')}`,
+    });
+  } else if (insuranceVal.startsWith('plan:')) {
+    chips.push({
+      type: 'insurance',
+      label: `Plan: ${insuranceVal.replace('plan:', '')}`,
+    });
+  }
+
+  if (dropdowns.onlyVirtual) {
+    chips.push({ type: 'virtual', label: 'Virtual only' });
+  }
+
+  if (dropdowns.showCrisis && !parsed.showCrisis) {
+    chips.push({ type: 'crisis', label: 'Crisis resources' });
+  }
+
+  const qTrim = safeStr(query);
+  if (qTrim) {
+    chips.push({ type: 'query', label: `Search: “${qTrim.length > 40 ? `${qTrim.slice(0, 40)}…` : qTrim}”` });
+  }
+
+  return { parsed, chips };
+}
+
 // For non-module environments
 if (typeof window !== 'undefined') {
   window.matchesFilters = matchesFilters;
   window.calculateRelevanceScore = calculateRelevanceScore;
+  window.getEffectiveSearchFilters = getEffectiveSearchFilters;
+  window.INSURANCE_BUCKETS = INSURANCE_BUCKETS;
 }
 

@@ -3,6 +3,60 @@
 // This module handles card rendering, modals, toasts, and other UI updates
 
 /**
+ * Substance-use / co-occurring directory track (cross-listed alongside MH at same site).
+ */
+function isSubstanceUseTrackListing(program, safeStr) {
+  const id = safeStr(program.program_id).toLowerCase();
+  if (id.startsWith('substance-use')) return true;
+  const raw = program.service_domains || program.service_domain;
+  const domains = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  return domains.some((d) => {
+    const token = safeStr(d).toLowerCase();
+    return token === 'substance_use' || token === 'co_occurring' || token === 'co-occurring';
+  });
+}
+
+/**
+ * Cross-listed pair: same org, city, and level of care, but separate MH vs SUD/co-occurring entries.
+ * Returns the matching sibling program or null.
+ */
+function findCrossListedSibling(program, allPrograms, safeStr) {
+  const list = allPrograms || [];
+  const org = safeStr(program.organization).toLowerCase();
+  const city = safeStr((program.locations || [])[0]?.city).toLowerCase();
+  const care = safeStr(program.level_of_care).toLowerCase();
+  if (!org || !city || !care || city === 'virtual' || city === 'multiple') return null;
+
+  const selfIsSud = isSubstanceUseTrackListing(program, safeStr);
+
+  for (const other of list) {
+    if (other.program_id === program.program_id) continue;
+    if (safeStr(other.organization).toLowerCase() !== org) continue;
+    if (safeStr((other.locations || [])[0]?.city).toLowerCase() !== city) continue;
+    if (safeStr(other.level_of_care).toLowerCase() !== care) continue;
+
+    const otherIsSud = isSubstanceUseTrackListing(other, safeStr);
+    if (selfIsSud === otherIsSud) continue;
+
+    return other;
+  }
+  return null;
+}
+
+/**
+ * Note only for intentional cross-listings (e.g. MH PHP + co-occurring PHP at same provider).
+ */
+function getRelatedListingNote(program, allPrograms, escapeHtml, safeStr) {
+  const sibling = findCrossListedSibling(program, allPrograms, safeStr);
+  if (!sibling) return '';
+
+  const siblingName = safeStr(sibling.program_name) || safeStr(sibling.level_of_care);
+  if (!siblingName) return '';
+
+  return `<p class="listing-related-note">This provider also has a separate listing: <strong>${escapeHtml(siblingName)}</strong>. Confirm which program fits your needs when you call.</p>`;
+}
+
+/**
  * Create a program card element
  * @param {Object} program - Program data object
  * @param {number} idx - Index in the list
@@ -12,10 +66,11 @@
  * @param {Function} options.isFavorite - Function to check if program is favorited
  * @param {Set} options.comparisonSet - Set of program IDs in comparison
  * @param {Map} options.programDataMap - Map of program IDs to program data
+ * @param {Array} options.allPrograms - Full program list (for related-listing notes)
  * @returns {HTMLElement} Card element
  */
 function createCard(program, idx, options) {
-  const { els, state, isFavorite, comparisonSet, programDataMap } = options;
+  const { els, state, isFavorite, comparisonSet, programDataMap, allPrograms } = options;
   
   // Helper functions are available via window.* from helpers.js
   const safeStr = window.safeStr || ((x) => (x ?? "").toString().trim());
@@ -217,6 +272,8 @@ function createCard(program, idx, options) {
     </div>
 
     ${availabilityBadge}
+
+    ${getRelatedListingNote(program, allPrograms, escapeHtml, safeStr)}
 
     <div class="card-actions">
       <button type="button" class="card-action-btn favorite ${isFavorite(id) ? 'active' : ''}" data-favorite="${escapeHtml(id)}" aria-label="${isFavorite(id) ? 'Remove from saved' : 'Save program'}">

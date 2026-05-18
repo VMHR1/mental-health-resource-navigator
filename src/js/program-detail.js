@@ -383,7 +383,7 @@ function renderProgramDetail(program) {
     root.appendChild(relatedWrap);
   }
 
-  document.title = `${safeStr(program.program_name)} • Texas Youth Mental Health Resource Finder`;
+  document.title = `${safeStr(program.program_name)} • ViableMHR`;
 }
 
 (async () => {

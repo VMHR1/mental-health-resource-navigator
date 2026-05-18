@@ -1,19 +1,32 @@
 {
   "metadata": {
-    "generated_at": "2025-12-21",
-    "notes": "All program records have a fact-checked verification_source URL and last_verified date as of 2025-12-21; navigation-only psychiatry placeholders removed.",
-    "generatedAt": "2025-12-22T05:30:38.701524Z",
+    "generated_at": "2026-05-17",
+    "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
+    "generatedAt": "2026-05-18T03:32:52.506Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
-    "insurance_verified_programs": 78,
+    "insurance_verified_programs": 83,
     "insurance_not_listed_programs": 1,
-    "insurance_not_applicable_entries": 13,
+    "insurance_not_applicable_entries": 16,
     "website_links_added_on": "2025-12-26",
     "website_links_method": "Parsed first URL from verification_source when present; else used accepted_insurance.source_url.",
     "website_links_coverage": {
-      "with_website_url": 92,
+      "with_website_url": 112,
       "missing_website_url": 0
-    }
+    },
+    "last_full_verification": "2026-05-18",
+    "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-05-18T03:32:52.506Z",
+    "regional_sync_source": "public/data/programs.json",
+    "regional_program_count": 112,
+    "last_spot_check_fixes": "2026-05-18",
+    "last_spot_check_fix_notes": "May 2026: Bricolage domain correction, BasePoint location URLs, Unity insurance re-check.",
+    "audit_verified": 74,
+    "audit_partially_verified": 38,
+    "audit_unable_to_verify": 0,
+    "audit_conflicting": 0,
+    "last_internet_verification": "2026-05-18",
+    "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json"
   },
   "programs": [
     {
@@ -194,7 +207,7 @@
           "city": "McKinney",
           "state": "TX",
           "zip": "75072",
-          "address": "3600 Eldorado Pkwy, Bldg C, Ste 1"
+          "address": "3600 Eldorado Parkway, Building C, Suite 1"
         }
       ]
     },
@@ -208,7 +221,7 @@
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "4701 Old Shepard Place, Ste. 200"
+          "address": "4701 Old Shepard Place, Suite 200"
         }
       ]
     },
@@ -291,7 +304,7 @@
         {
           "city": "Flower Mound",
           "state": "TX",
-          "zip": "75022",
+          "zip": "75028",
           "address": "2750 Churchill Dr., Suite 110"
         }
       ]
@@ -446,7 +459,7 @@
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4561 Heritage Trace Pkwy, Ste. 109"
+          "address": "4561 Heritage Trace Parkway, Suite 109"
         }
       ]
     },
@@ -516,7 +529,7 @@
           "city": "Sherman",
           "state": "TX",
           "zip": "75092",
-          "address": "1724 US Highway 82 W, Suite 100"
+          "address": "1724 U.S. Highway 82 W"
         }
       ]
     },
@@ -767,7 +780,7 @@
         {
           "city": "Flower Mound",
           "state": "TX",
-          "zip": "75022",
+          "zip": "75028",
           "address": "2750 Churchill Dr., Suite 110"
         }
       ]
@@ -810,7 +823,7 @@
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "4701 Old Shepard Place, Ste 200"
+          "address": "4701 Old Shepard Place, Suite 200"
         }
       ]
     },
@@ -852,7 +865,7 @@
           "city": "McKinney",
           "state": "TX",
           "zip": "75072",
-          "address": "3600 Eldorado Pkwy, Bldg C, Ste 1"
+          "address": "3600 Eldorado Parkway, Building C, Suite 1"
         }
       ]
     },
@@ -1076,7 +1089,7 @@
           "city": "Sherman",
           "state": "TX",
           "zip": "75092",
-          "address": "1724 US Highway 82 W, Suite 100"
+          "address": "1724 U.S. Highway 82 W"
         }
       ]
     },
@@ -1104,7 +1117,7 @@
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4561 Heritage Trace Pkwy, Ste. 109"
+          "address": "4561 Heritage Trace Parkway, Suite 109"
         }
       ]
     },
@@ -1307,6 +1320,304 @@
           "state": "TX",
           "zip": "",
           "address": "Multiple locations (Westmoreland, Samuell, Grand Prairie, Skillman, Midway)"
+        }
+      ]
+    },
+    {
+      "program_id": "eating-disorder-childrens-health-plano",
+      "program_name": "Children's Eating Disorders Program",
+      "organization": "Children's Health",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75024",
+          "address": "7609 Preston Rd, Suite P4300"
+        }
+      ]
+    },
+    {
+      "program_id": "eating-disorder-walker-wellness-dallas",
+      "program_name": "Eating Disorder Treatment",
+      "organization": "Walker Wellness Clinics",
+      "level_of_care": "Outpatient",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75230",
+          "address": "12200 Preston Road @ Cooper Aerobics Center"
+        }
+      ]
+    },
+    {
+      "program_id": "eating-disorder-center-discovery-plano",
+      "program_name": "Eating Disorder Treatment",
+      "organization": "Center for Discovery Plano",
+      "level_of_care": "Residential",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75093",
+          "address": "5124 Corinthian Bay Drive"
+        }
+      ]
+    },
+    {
+      "program_id": "eating-disorder-eating-recovery-center-dallas",
+      "program_name": "Eating Disorder Treatment",
+      "organization": "Eating Recovery Center of Dallas",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75024",
+          "address": "5120 Legacy Dr"
+        }
+      ]
+    },
+    {
+      "program_id": "eating-disorder-eating-disorder-solutions-dallas",
+      "program_name": "Eating Disorder Treatment",
+      "organization": "Eating Disorder Solutions",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75219",
+          "address": "3300 Oak Lawn Ave., Suite 102"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-childrens-health-teen-recovery-dallas",
+      "program_name": "Teen Recovery Program",
+      "organization": "Children's Health",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75247",
+          "address": "1341 West Mockingbird Lane, Ste 500E"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-youth180-dallas",
+      "program_name": "Substance Abuse Counseling",
+      "organization": "Youth180",
+      "level_of_care": "Outpatient",
+      "locations": [
+        {
+          "city": "Dallas",
+          "state": "TX",
+          "zip": "75208",
+          "address": "201 S. Tyler St., Suite 100"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-grace-counseling-lewisville",
+      "program_name": "Substance Use Treatment",
+      "organization": "Grace Counseling",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "locations": [
+        {
+          "city": "Lewisville",
+          "state": "TX",
+          "zip": "75067",
+          "address": "105 Kathryn Dr, Building 3, Suite D"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-imagine-programs-plano",
+      "program_name": "Substance Use Treatment",
+      "organization": "Imagine Programs",
+      "level_of_care": "Intensive Outpatient (IOP)",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75074",
+          "address": "1947 Ave K, Suite 100"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-changes-mckinney",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "organization": "Changes McKinney",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "McKinney",
+          "state": "TX",
+          "zip": "75071",
+          "address": "1820 N. Lake Forest Drive"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-changes-frisco",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "organization": "Changes Frisco",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "Frisco",
+          "state": "TX",
+          "zip": "75034",
+          "address": "6870 Lebanon Rd., Suite 300"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-basepoint-academy-arlington",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "organization": "BasePoint Academy",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "Arlington",
+          "state": "TX",
+          "zip": "76018",
+          "address": "3900 Arlington Highlands Blvd., Suite 237"
+        },
+        {
+          "city": "McKinney",
+          "state": "TX",
+          "zip": "75069",
+          "address": "4733 Medical Center Dr"
+        },
+        {
+          "city": "Forney",
+          "state": "TX",
+          "zip": "75126",
+          "address": "713 W Broad St, Suite 200"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-carrus-cares-plano",
+      "program_name": "Co-occurring Mental Health and Substance Use Treatment",
+      "organization": "Carrus Care Plano",
+      "level_of_care": "Partial Hospitalization (PHP)",
+      "locations": [
+        {
+          "city": "Plano",
+          "state": "TX",
+          "zip": "75093",
+          "address": "4701 Old Shepard Place, Suite 200"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-fort-behavioral-evergreen-path-fort-worth",
+      "program_name": "Residential Substance Use Treatment",
+      "organization": "Fort Behavioral – Evergreen Path Program",
+      "level_of_care": "Residential",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76132",
+          "address": "7140 Oakmont Boulevard"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-cenikor-odyssey-house-houston",
+      "program_name": "Substance Use Treatment",
+      "organization": "Cenikor Odyssey House",
+      "level_of_care": "Residential",
+      "locations": [
+        {
+          "city": "Houston",
+          "state": "TX",
+          "zip": "77085",
+          "address": "5629 Grapevine St"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-sundown-ranch-canton",
+      "program_name": "Residential Substance Use Treatment",
+      "organization": "Sundown Ranch",
+      "level_of_care": "Residential",
+      "locations": [
+        {
+          "city": "Canton",
+          "state": "TX",
+          "zip": "75103",
+          "address": "3120 VZ County Road 2318, Ste. 100"
+        }
+      ]
+    },
+    {
+      "program_id": "substance-use-clearfork-academy-fort-worth",
+      "program_name": "Substance Use Treatment",
+      "organization": "Clearfork Academy",
+      "level_of_care": "Residential",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76135",
+          "address": "7820 Hanger Cutoff Road"
+        },
+        {
+          "city": "Cleburne",
+          "state": "TX",
+          "zip": "76031",
+          "address": "1632 E FM 4"
+        }
+      ]
+    },
+    {
+      "program_id": "osar-recovery-resource-council-fort-worth",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "organization": "Recovery Resource Council",
+      "level_of_care": "Navigation",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76111",
+          "address": "2700 Airport Freeway"
+        }
+      ]
+    },
+    {
+      "program_id": "osar-mhmr-tarrant-county",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral)",
+      "organization": "MHMR of Tarrant County",
+      "level_of_care": "Navigation",
+      "locations": [
+        {
+          "city": "Fort Worth",
+          "state": "TX",
+          "zip": "76107",
+          "address": "3840 Hulen Tower North"
+        }
+      ]
+    },
+    {
+      "program_id": "osar-andrews-center-east-texas",
+      "program_name": "OSAR (Outreach, Screening, Assessment and Referral) / Crisis Services",
+      "organization": "Andrews Center Behavioral Healthcare System",
+      "level_of_care": "Navigation",
+      "locations": [
+        {
+          "city": "Longview",
+          "state": "TX",
+          "zip": "75601",
+          "address": "708 Glencrest Lane"
         }
       ]
     }

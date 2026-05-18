@@ -128,13 +128,26 @@ async function pool(items, fn, limit) {
   return results;
 }
 
+const force = process.argv.includes('--force');
 const data = JSON.parse(readFileSync(programsPath, 'utf8'));
 const alreadyReviewed = new Set(
   data.programs.filter((p) => p.last_verified === REVIEW_DATE).map((p) => p.program_id),
 );
 
-const toReview = data.programs.filter((p) => !alreadyReviewed.has(p.program_id));
-console.log(`Reviewing ${toReview.length} programs (skipped ${alreadyReviewed.size} already marked ${REVIEW_DATE})\n`);
+const toReview = force
+  ? data.programs
+  : data.programs.filter((p) => !alreadyReviewed.has(p.program_id));
+
+if (toReview.length === 0) {
+  console.log(
+    `All ${data.programs.length} programs already marked ${REVIEW_DATE}. Use --force to re-check URLs.`,
+  );
+  process.exit(0);
+}
+
+console.log(
+  `Reviewing ${toReview.length} programs${force ? ' (--force)' : ''} (skipped ${data.programs.length - toReview.length} already marked ${REVIEW_DATE})\n`,
+);
 
 const programResults = await pool(
   toReview,
@@ -252,7 +265,7 @@ const report = {
 
 writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
-console.log('=== Full review summary (92 programs) ===');
+console.log(`=== Full review summary (${programResults.length} programs) ===`);
 console.log(`Clean (links OK, signals OK): ${clean.length}`);
 console.log(`Stale date only (links OK): ${staleOnly.length}`);
 console.log(`Needs attention: ${needsAttention.length}`);

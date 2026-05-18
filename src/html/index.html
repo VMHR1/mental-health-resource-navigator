@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Texas Youth Mental Health Resource Finder</title>
-  <meta name="description" content="A neutral directory of adolescent and youth mental health programs across the Dallas-Fort Worth Metroplex. Filter by level of care, location, and needs." />
+  <title>ViableMHR — Texas Youth Mental Health Resources</title>
+  <meta name="description" content="A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs." />
   <!-- TODO(security): move CSP fully to _headers and remove unsafe-inline after inline analytics snippets are migrated to external scripts. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -14,11 +14,11 @@
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Texas Youth Mental Health Resource Finder">
-  <meta property="og:description" content="A neutral directory of adolescent and youth mental health programs across the Dallas-Fort Worth Metroplex. Filter by level of care, location, and needs.">
+  <meta property="og:title" content="ViableMHR — Texas Youth Mental Health Resources">
+  <meta property="og:description" content="A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs.">
   <meta property="og:url" content="https://viablemhr.com/">
-  <meta property="og:image" content="/icon.png">
-  <meta property="og:image:alt" content="Texas Youth Mental Health Resource Finder">
+  <meta property="og:image" content="https://viablemhr.com/icon.png">
+  <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
   
   <!-- Icons -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -26,20 +26,21 @@
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
   <script defer src="js/data-validator.js?v=3"></script>
   <script defer src="js/config/constants.js?v=3"></script>
-  <script defer src="js/utils/helpers.js?v=3"></script>
+  <script defer src="js/utils/location-match.js?v=1"></script>
+  <script defer src="js/utils/helpers.js?v=4"></script>
   <script defer src="js/modules/storage.js?v=3"></script>
-  <script defer src="js/modules/search.js?v=3"></script>
-  <script defer src="js/modules/filters.js?v=3"></script>
+  <script defer src="js/modules/search.js?v=6"></script>
+  <script defer src="js/modules/filters.js?v=5"></script>
   <script defer src="js/modules/sort.js?v=3"></script>
   <script defer src="js/modules/distance.js?v=2"></script>
   <script defer src="js/modules/performance.js?v=3"></script>
   <script defer src="js/modules/render.js?v=3"></script>
-  <script defer src="js/modules/events.js?v=3"></script>
+  <script defer src="js/modules/events.js?v=4"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -62,8 +63,8 @@
         <div class="brand">
           <div class="mark" aria-hidden="true"></div>
           <div>
-            <p class="kicker">Texas Youth Mental Health</p>
-            <p class="title">Resource Finder</p>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
           </div>
         </div>
 
@@ -102,7 +103,7 @@
           <div class="trust-item">
             <div class="trust-icon">✓</div>
             <div class="trust-text">
-              <strong><span id="programCount">150+</span> Programs</strong>
+              <strong><span id="programCount">—</span> programs</strong>
               <span>Information may change—please call to confirm</span>
             </div>
           </div>
@@ -166,7 +167,7 @@
         <div class="hero-copy">
           <h1>Find the right level of support—clearly, calmly, and without judgment.</h1>
           <p class="sub">
-            Search programs by level of care (PHP, IOP, outpatient) and location. Crisis resources are kept separate by default for clarity.
+            Search programs by level of care (PHP, IOP, outpatient) and location across the Dallas–Fort Worth metro and surrounding North Texas. Treatment programs load below; crisis resources stay separate unless you turn them on.
           </p>
 
           <div class="hero-bullets">
@@ -203,8 +204,8 @@
 
     <section class="search-section" aria-label="Search and filters">
       <div class="search-header">
-        <h3>Search programs across the Dallas-Fort Worth Metroplex</h3>
-        <p>Neutral directory view. No endorsements. Always confirm details directly with the program.</p>
+        <h3>Search programs in North Texas</h3>
+        <p>Neutral directory for the Dallas–Fort Worth metro and surrounding communities. No endorsements—always confirm details with each program.</p>
         <div class="filter-presets" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center;">
           <button type="button" class="filter-preset-btn" data-preset="teens-dallas">Teens in Dallas</button>
           <button type="button" class="filter-preset-btn" data-preset="crisis-support">Crisis Support</button>
@@ -545,9 +546,12 @@
     </details>
 
     <section class="section" id="treatmentSection">
-      <div class="sectionHead">
-        <h2 id="sectionTitle">Treatment Programs</h2>
-        <div class="count" id="treatmentCount">0 results</div>
+      <div class="sectionHead sectionHead--with-intro">
+        <div class="sectionHead-top">
+          <h2 id="sectionTitle">Treatment Programs</h2>
+          <div class="count" id="treatmentCount">0 results</div>
+        </div>
+        <p class="results-intro" id="resultsIntro">Loading programs…</p>
       </div>
       <div class="grid" id="treatmentGrid" data-testid="results-grid" aria-live="polite"></div>
       <div class="empty-state" id="treatmentEmpty" data-testid="empty-state" style="display:none;" role="status">
@@ -667,7 +671,7 @@
     </div>
   </div>
 
-  <script defer src="app.js?v=15"></script>
+  <script defer src="app.js?v=19"></script>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">

@@ -1,6 +1,6 @@
 {
-  "name": "Texas Youth Mental Health Resource Finder",
-  "short_name": "TX Youth MH",
+  "name": "ViableMHR — Texas Youth Mental Health Resources",
+  "short_name": "ViableMHR",
   "icons": [
     {
       "src": "/icon.png",
@@ -13,4 +13,3 @@
   "background_color": "#ffffff",
   "theme_color": "#ffffff"
 }
-
