@@ -95,16 +95,18 @@ function findBestCityMatch(query, cities) {
   if (!q) return null;
   
   for (const city of cities) {
+    if (!isPlausibleCityName(city)) continue;
     const cityLower = city.toLowerCase();
-    if (cityLower === q || cityLower.includes(q) || q.includes(cityLower)) {
-      return city;
-    }
+    if (cityLower === q) return city;
+    const cityPattern = new RegExp(`(^|\\s)${escapeRegex(cityLower).replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
+    if (cityPattern.test(q)) return city;
   }
   
   let bestMatch = null;
   let bestScore = Infinity;
   
   for (const city of cities) {
+    if (!isPlausibleCityName(city)) continue;
     const cityLower = city.toLowerCase();
     const distance = levenshteinDistance(q, cityLower);
     const maxLen = Math.max(q.length, cityLower.length);
@@ -385,8 +387,9 @@ function parseSmartSearch(query, cities) {
     // Only match if city appears as a standalone word or at the end
     const sortedCities = [...cities].sort((a, b) => b.length - a.length);
     for (const city of sortedCities) {
+      if (!isPlausibleCityName(city)) continue;
       // Match city only if it's a complete word (word boundary) or at start/end
-      const cityPattern = new RegExp(`(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
+      const cityPattern = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
       if (cityPattern.test(q)) {
         // Normalize city name - handle "de soto" -> "De Soto", "desoto" -> "De Soto"
         if (city === 'desoto' || city === 'de soto') {
@@ -457,11 +460,51 @@ const SEARCH_STOPWORDS = new Set([
   'around', 'my', 'me', 'with', 'from', 'by', 'up', 'is', 'are', 'be',
 ]);
 
+/** Never treat these as city names when parsing or stripping queries. */
+const CITY_QUERY_STOPWORDS = new Set([
+  'in', 'at', 'for', 'on', 'near', 'around', 'to', 'the', 'and', 'or', 'up',
+  'a', 'an', 'of', 'by', 'with', 'from',
+]);
+
+/** Fallback city list when program data / getSearchCities is not ready yet. */
+const DEFAULT_SEARCH_CITIES = [
+  'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton',
+  'arlington', 'fort worth', 'mansfield', 'keller', 'desoto', 'de soto',
+  'rockwall', 'sherman', 'forney', 'burleson', 'flower mound',
+  'the colony', 'bedford', 'lewisville', 'carrollton', 'garland',
+  'mesquite', 'irving', 'grand prairie', 'corsicana',
+];
+
+function resolveSearchCities(cities) {
+  if (Array.isArray(cities) && cities.length > 0) return cities;
+  if (typeof window !== 'undefined') {
+    if (typeof window.getSearchCities === 'function') {
+      const fromData = window.getSearchCities();
+      if (Array.isArray(fromData) && fromData.length > 0) return fromData;
+    }
+    if (Array.isArray(window.CITIES) && window.CITIES.length > 0) return window.CITIES;
+  }
+  return DEFAULT_SEARCH_CITIES;
+}
+
+function isPlausibleCityName(city) {
+  const c = safeStr(city).toLowerCase();
+  return c.length >= 3 && !CITY_QUERY_STOPWORDS.has(c);
+}
+
+function cleanOrphanLocationWords(text) {
+  return safeStr(text)
+    .replace(/\b(in|for|at|on|near|around|to|the)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function stripParsedQueryTokens(query, cities) {
   const q = safeStr(query).toLowerCase().trim();
   if (!q) return '';
 
-  const parsed = parseSmartSearch(query, cities || []);
+  const cityList = resolveSearchCities(cities);
+  const parsed = parseSmartSearch(query, cityList);
   let terms = q;
 
   terms = terms
@@ -484,24 +527,41 @@ function stripParsedQueryTokens(query, cities) {
     )
     .replace(/\b(virtual|telehealth|tele)\b/gi, '');
 
-  const cityList = cities || [];
+  // Strip parsed age before city names (e.g. "Frisco 14" → remove 14 first)
+  if (parsed.age) {
+    terms = terms.replace(new RegExp(`\\b${parsed.age}\\b`, 'g'), ' ');
+  }
+  if (parsed.minAge != null) {
+    terms = terms.replace(
+      new RegExp(
+        `\\b${parsed.minAge}\\s*(?:\\+|and\\s*up|years?\\s*and\\s*up|yrs?\\s*and\\s*up|and\\s*older)\\b`,
+        'gi'
+      ),
+      ' '
+    );
+  }
+
   const sortedCities = [...cityList].sort((a, b) => b.length - a.length);
   for (const city of sortedCities) {
     const cityPattern = new RegExp(
-      `(^|\\s)${city.replace(/\s+/g, '\\s+')}(\\s|$)`,
+      `(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`,
       'gi'
     );
     terms = terms.replace(cityPattern, ' ');
   }
 
   if (parsed.loc) {
-    const re = new RegExp(`\\b${parsed.loc.replace(/\s+/g, '\\s+')}\\b`, 'gi');
+    const loc = parsed.loc.toLowerCase();
+    const re = new RegExp(`\\b${escapeRegex(loc).replace(/\s+/g, '\\s+')}\\b`, 'gi');
     terms = terms.replace(re, ' ');
   }
 
   if (parsed.locs && parsed.locs.length) {
     parsed.locs.forEach((loc) => {
-      const re = new RegExp(`\\b${loc.replace(/\s+/g, '\\s+')}\\b`, 'gi');
+      const re = new RegExp(
+        `\\b${escapeRegex(loc.toLowerCase()).replace(/\s+/g, '\\s+')}\\b`,
+        'gi'
+      );
       terms = terms.replace(re, ' ');
     });
   }
@@ -536,6 +596,85 @@ function getTextSearchTermList(query, cities) {
   return residual.split(/\s+/).filter((t) => t.length > 0);
 }
 
+function removeCityFromQuery(text, city) {
+  if (!city) return text;
+  const re = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`, 'gi');
+  return text.replace(re, ' ');
+}
+
+/**
+ * Remove one active-filter chip's contribution from the search box (keeps other filters).
+ */
+function stripFilterFromQuery(query, chipType, cities = []) {
+  let q = safeStr(query);
+  if (!q) return '';
+  if (chipType === 'query') return '';
+
+  const cityList = resolveSearchCities(cities);
+  const parsed = parseSmartSearch(q, cityList);
+
+  switch (chipType) {
+    case 'parsedLocation':
+    case 'location':
+      if (parsed.locs?.length) {
+        parsed.locs.forEach((loc) => {
+          q = removeCityFromQuery(q, loc);
+        });
+      } else if (parsed.loc) {
+        q = removeCityFromQuery(q, parsed.loc);
+      }
+      break;
+    case 'parsedAge':
+    case 'age':
+      q = q.replace(
+        /\b\d{1,2}\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi,
+        ' '
+      );
+      if (parsed.age) {
+        q = q.replace(new RegExp(`\\b${parsed.age}\\b`, 'g'), ' ');
+      }
+      break;
+    case 'parsedCare':
+    case 'care':
+      q = q.replace(
+        /\b(partial\s+hospital(?:ization)?|php\b|day\s+(?:hospital|treatment|program)|iop|intensive\s+outpatient|outpatient|residential|inpatient|rtc|navigation|care\s+navigation)\b/gi,
+        ' '
+      );
+      break;
+    case 'parsedInsurance':
+    case 'insurance':
+      q = q.replace(
+        /\b(accepts?|takes?|with)\s+(medicaid|medicare|tricare|triwest|chip\b|mco\b|insurance)\b/gi,
+        ' '
+      );
+      q = q.replace(
+        /\b(medicaid|medicare|tricare|triwest|chip\b|mco\b|self[- ]?pay|sliding\s+scale|cash\s+pay|commercial\s+insurance|private\s+insurance|insurance\s+accepted|accepts?\s+insurance|medicaid\s+(accepted|friendly))\b/gi,
+        ' '
+      );
+      if (parsed.insurance?.startsWith('plan:')) {
+        q = stripDetectedPlanTokens(q, parsed.insurance);
+      }
+      break;
+    case 'virtual':
+      q = q.replace(/\b(virtual|telehealth|tele)\b/gi, ' ');
+      break;
+    case 'parsedCrisis':
+    case 'crisis':
+      q = q.replace(/\b(crisis|emergency|urgent)\b/gi, ' ');
+      break;
+    case 'parsedDomain':
+      q = q.replace(
+        /\b(eating disorder|anorexia|bulimia|binge eating|substance use|substance abuse|drug treatment|alcohol treatment|addiction)\b/gi,
+        ' '
+      );
+      break;
+    default:
+      break;
+  }
+
+  return cleanOrphanLocationWords(q);
+}
+
 function safeStr(x) {
   return (x ?? '').toString().trim();
 }
@@ -549,28 +688,22 @@ if (typeof window !== 'undefined') {
   const internalGetTextSearchTerms = getTextSearchTerms;
   const internalGetTextSearchTermList = getTextSearchTermList;
   const internalParseSmartSearch = parseSmartSearch;
+  const internalStripFilterFromQuery = stripFilterFromQuery;
   const internalDetectCareLevel = detectCareLevel;
   const internalDetectInsuranceFromQuery = detectInsuranceFromQuery;
   window.detectCareLevel = (query) => internalDetectCareLevel(query);
   window.detectInsuranceFromQuery = (query) => internalDetectInsuranceFromQuery(query);
   window.getTextSearchTerms = (query) => {
-    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
-    return internalGetTextSearchTerms(query, cities);
+    return internalGetTextSearchTerms(query, resolveSearchCities());
   };
   window.getTextSearchTermList = (query) => {
-    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
-    return internalGetTextSearchTermList(query, cities);
+    return internalGetTextSearchTermList(query, resolveSearchCities());
+  };
+  window.stripFilterFromQuery = (query, chipType) => {
+    return internalStripFilterFromQuery(query, chipType, resolveSearchCities());
   };
   window.parseSmartSearch = (query) => {
-    const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [
-      'dallas', 'plano', 'frisco', 'mckinney', 'richardson', 'denton', 
-      'arlington', 'fort worth', 'mansfield', 'keller', 'desoto', 'de soto',
-      'rockwall', 'sherman', 'forney', 'burleson', 'flower mound', 
-      'the colony', 'bedford', 'lewisville', 'carrollton', 'garland', 
-      'mesquite', 'irving', 'grand prairie', 'corsicana'
-    ];
-    // Call internal function directly to avoid recursion
-    return internalParseSmartSearch(query, cities);
+    return internalParseSmartSearch(query, resolveSearchCities());
   };
   window.registerInsurancePlansFromData = registerInsurancePlansFromData;
   window.getInsurancePlanAliasEntry = getInsurancePlanAliasEntry;

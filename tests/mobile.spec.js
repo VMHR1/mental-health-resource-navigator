@@ -121,25 +121,12 @@ test.describe('Mobile Verification', () => {
       }
     }
 
-    // Try age dropdown if available
-    const ageBtn = page.locator('#ageBtn');
-    if (await ageBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await ageBtn.click();
-      await page.waitForTimeout(300);
-
-      const ageMenu = page.locator('#ageMenu');
-      const menuVisible = await ageMenu.isVisible().catch(() => false);
-      expect(menuVisible).toBeTruthy();
-
-      // Select an age option
-      const ageOption = ageMenu.locator('.dd-option').nth(1);
-      if (await ageOption.isVisible({ timeout: 500 }).catch(() => false)) {
-        await ageOption.click();
-        await page.waitForTimeout(500);
-        // Verify age was selected
-        const ageValue = await page.locator('#ageBtnValue').textContent();
-        expect(ageValue).not.toBe('Any age');
-      }
+    // Age filter matches other native selects
+    const ageSelect = page.locator('#age');
+    if (await ageSelect.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await ageSelect.selectOption('14');
+      await page.waitForTimeout(400);
+      await expect(ageSelect).toHaveValue('14');
     }
   });
 
@@ -297,16 +284,16 @@ test.describe('Mobile Verification', () => {
     await searchInput.press('Escape');
     await page.getByTestId('find-programs-btn').click({ force: true });
     
-    // Wait for results
+    // Wait for results to settle (cards can re-render once after filter apply)
     await page.waitForSelector('.card', { timeout: 10000 });
-    
+    await page.waitForTimeout(400);
+
     // Expand first card
     const firstCard = page.locator('.card').first();
     if (await firstCard.count() > 0) {
       const expandBtn = firstCard.locator('.expandBtn');
       if (await expandBtn.count() > 0) {
-        await expandBtn.scrollIntoViewIfNeeded();
-        await expandBtn.evaluate((el) => el.click());
+        await expandBtn.click({ force: true });
         await page.waitForTimeout(500);
         
         // Check for horizontal overflow

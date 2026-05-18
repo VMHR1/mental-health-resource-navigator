@@ -26,7 +26,7 @@
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=11">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
   <script defer src="js/data-validator.js?v=3"></script>
@@ -34,14 +34,14 @@
   <script defer src="js/utils/location-match.js?v=1"></script>
   <script defer src="js/utils/helpers.js?v=4"></script>
   <script defer src="js/modules/storage.js?v=3"></script>
-  <script defer src="js/modules/search.js?v=10"></script>
+  <script defer src="js/modules/search.js?v=14"></script>
   <script defer src="js/modules/empty-state.js?v=1"></script>
-  <script defer src="js/modules/filters.js?v=5"></script>
+  <script defer src="js/modules/filters.js?v=6"></script>
   <script defer src="js/modules/sort.js?v=3"></script>
   <script defer src="js/modules/distance.js?v=2"></script>
   <script defer src="js/modules/performance.js?v=3"></script>
   <script defer src="js/modules/render.js?v=3"></script>
-  <script defer src="js/modules/events.js?v=5"></script>
+  <script defer src="js/modules/events.js?v=7"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -206,16 +206,18 @@
     <section class="search-section" aria-label="Search and filters">
       <div class="search-header">
         <h3>Search programs in North Texas</h3>
-        <p>Neutral directory for the Dallas–Fort Worth metro and surrounding communities. No endorsements—always confirm details with each program.</p>
-        <div class="filter-presets" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center;">
-          <button type="button" class="filter-preset-btn" data-preset="teens-dallas">Teens in Dallas</button>
-          <button type="button" class="filter-preset-btn" data-preset="crisis-support">Crisis Support</button>
-          <button type="button" class="filter-preset-btn" data-preset="virtual-therapy">Virtual Therapy</button>
-          <button type="button" class="filter-preset-btn" data-preset="iop-plano">IOP in Plano</button>
+        <p class="search-header-lead">DFW-area treatment programs. Confirm details with each program.</p>
+        <div class="filter-presets filter-presets--quickstart" role="group" aria-label="Quick start searches">
+          <span class="filter-presets-label">Quick start</span>
+          <div class="filter-presets-buttons">
+            <button type="button" class="filter-preset-btn" data-preset="teens-dallas">Teens in Dallas</button>
+            <button type="button" class="filter-preset-btn" data-preset="crisis-support">Crisis Support</button>
+            <button type="button" class="filter-preset-btn" data-preset="virtual-therapy">Virtual Therapy</button>
+            <button type="button" class="filter-preset-btn" data-preset="iop-plano">IOP in Plano</button>
+          </div>
         </div>
       </div>
 
-      <!-- Smart Search -->
       <div class="search-simple">
         <div class="input-group-primary">
           <label for="q">What are you looking for?</label>
@@ -224,12 +226,13 @@
             <input id="q" type="search" data-testid="search-input" placeholder="City, level of care (PHP, IOP), age — e.g. IOP in Plano for 14" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" aria-describedby="searchTipsText" />
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="Search suggestions" style="display: none;"></div>
           </div>
+          <div class="recent-searches" id="recentSearchesContainer" style="display:none;" aria-live="polite"></div>
         </div>
 
         <details class="search-tips" id="searchTips">
           <summary>How to search</summary>
           <div class="search-tips-body" id="searchTipsText">
-            <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Use Advanced Filters for insurance and more.</p>
+            <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Open <strong>More filters</strong> for insurance and other options.</p>
             <ul class="search-tips-list">
               <li><strong>Location:</strong> Plano, Dallas, Frisco (includes nearby counties &amp; telehealth when listed)</li>
               <li><strong>Care level:</strong> PHP, IOP, outpatient, partial hospitalization, day treatment, residential</li>
@@ -241,29 +244,26 @@
             <div class="search-examples" data-testid="search-examples">
               <button type="button" class="search-example-chip" data-search-example="IOP in Plano">IOP in Plano</button>
               <button type="button" class="search-example-chip" data-search-example="partial hospitalization Dallas">PHP in Dallas</button>
-              <button type="button" class="search-example-chip" data-search-example="outpatient Frisco 14">Outpatient Frisco, age 14</button>
+              <button type="button" class="search-example-chip" data-search-example="IOP in Frisco for 14">IOP in Frisco, age 14</button>
               <button type="button" class="search-example-chip" data-search-example="IOP 13 and up">IOP, 13 and up</button>
               <button type="button" class="search-example-chip" data-search-example="IOP accepts Medicaid">IOP accepts Medicaid</button>
             </div>
           </div>
         </details>
         
-        <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">
-          Find Programs →
-        </button>
-        
-        <button class="btn-advanced" id="showAdvanced" type="button" data-testid="advanced-filters-btn">
-          <span class="icon">⚙️</span>
-          <span>Advanced Filters</span>
-        </button>
-        
-        <button class="btn-advanced" id="resetTop" type="button" data-testid="reset-btn" style="background: rgba(255,255,255,.85);">
-          <span>Reset</span>
-        </button>
+        <div class="search-toolbar">
+          <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">
+            Find Programs →
+          </button>
+          <button class="btn-advanced" id="showAdvanced" type="button" data-testid="advanced-filters-btn" aria-expanded="false" aria-controls="advancedFilters">
+            <span class="icon" aria-hidden="true">⚙️</span>
+            <span class="btn-advanced-label">More filters</span>
+          </button>
+          <button type="button" class="btn-reset-link" id="resetTop" data-testid="reset-btn">Reset</button>
+        </div>
       </div>
 
-      <!-- Advanced Filters -->
-      <div class="search-advanced" id="advancedFilters" style="display:none">
+      <div class="search-advanced" id="advancedFilters" style="display:none" role="region" aria-label="More filters">
         <div class="search-grid">
           <div class="input-group">
             <label for="loc">Location</label>
@@ -273,57 +273,28 @@
           </div>
 
           <div class="input-group">
-            <label class="dd-label">Age</label>
-            <div class="dropdown" data-dd="age">
-              <button type="button" class="dd-btn" id="ageBtn" aria-haspopup="listbox" aria-controls="ageMenu" aria-expanded="false">
-                <span class="dd-value" id="ageBtnValue">Any age</span>
-                <span class="dd-icon" aria-hidden="true">▾</span>
-              </button>
-
-              <div class="dd-menu" id="ageMenu" role="listbox" tabindex="-1" aria-labelledby="ageBtn">
-                <div class="dd-option is-selected" role="option" aria-selected="true" data-value="">Any age<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="0">0<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="1">1<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="2">2<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="3">3<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="4">4<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="5">5<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="6">6<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="7">7<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="8">8<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="9">9<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="10">10<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="11">11<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="12">12<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="13">13<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="14">14<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="15">15<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="16">16<span class="dd-check" aria-hidden="true">✓</span></div>
-                <div class="dd-option" role="option" aria-selected="false" data-value="17">17<span class="dd-check" aria-hidden="true">✓</span></div>
-              </div>
-
-              <select id="age" class="dd-native" aria-hidden="true" tabindex="-1">
-                <option value="">Any age</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-              </select>
-            </div>
+            <label for="age">Age</label>
+            <select id="age">
+              <option value="">Any age</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+            </select>
           </div>
 
           <div class="input-group">
@@ -346,33 +317,8 @@
           </div>
         </div>
 
-        <div class="search-actions">
-          <div class="toggles">
-            <label class="toggle-chip">
-              <input id="showCrisis" type="checkbox" />
-              <span>Show crisis resources</span>
-            </label>
-
-            <label class="toggle-chip">
-              <input id="onlyVirtual" type="checkbox" />
-              <span>Virtual only</span>
-            </label>
-          </div>
-
-          <div class="btns">
-            <button id="reset" type="button">Reset</button>
-            <button class="btn-primary" id="viewAll" type="button">View all</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Statewide/Advanced Filters Accordion -->
-      <details class="advanced-filters-accordion" id="statewideFiltersAccordion" style="display: none;">
-        <summary class="advanced-filters-summary" aria-expanded="false" aria-controls="statewideFiltersContent">
-          <span class="advanced-filters-summary-text">Additional Filters</span>
-          <span class="advanced-filters-summary-icon" aria-hidden="true">▾</span>
-        </summary>
-        <div class="advanced-filters-content" id="statewideFiltersContent">
+        <div class="more-filters-extended" id="statewideFiltersSection" style="display: none;">
+          <p class="more-filters-extended-label">Program focus &amp; verification</p>
           <div class="search-grid">
             <!-- County selector (conditional) -->
             <div class="input-group" id="countyFilterGroup" style="display: none;">
@@ -453,9 +399,26 @@
             </div>
           </div>
         </div>
-      </details>
 
-      <div class="recent-searches" style="display:none;"></div>
+        <div class="search-actions">
+          <div class="toggles">
+            <label class="toggle-chip">
+              <input id="showCrisis" type="checkbox" />
+              <span>Show crisis resources</span>
+            </label>
+
+            <label class="toggle-chip">
+              <input id="onlyVirtual" type="checkbox" />
+              <span>Virtual only</span>
+            </label>
+          </div>
+
+          <div class="btns">
+            <button id="reset" type="button">Reset</button>
+            <button class="btn-primary" id="viewAll" type="button">View all</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <div class="results-header" aria-label="Results summary">
@@ -465,42 +428,58 @@
         <div id="resultsCountAnnouncer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
       </div>
       <div class="results-actions">
-        <button type="button" class="btn-near-me" id="nearMeBtn" aria-label="Sort by distance from your location">
-          <span class="icon">📍</span>
-          <span class="btn-text">Near Me</span>
-        </button>
-        <button type="button" class="btn-stop-location" id="stopLocationBtn" aria-label="Stop sharing location" style="display: none;">
-          <span class="icon">🚫</span>
-          <span class="btn-text">Stop sharing location</span>
-        </button>
-        <div class="sort-group">
-          <label for="sortSelect" class="sr-only">Sort by</label>
-          <select id="sortSelect" class="sort-select" aria-label="Sort results">
-            <option value="relevance">Sort by relevance</option>
-            <option value="name">Sort by name</option>
-            <option value="verified">Recently verified</option>
-            <option value="location">Location</option>
-            <option value="distance">Distance</option>
-          </select>
+        <div class="results-actions-primary">
+          <button type="button" class="btn-near-me" id="nearMeBtn" aria-label="Sort by distance from your location">
+            <span class="icon" aria-hidden="true">📍</span>
+            <span class="btn-text">Near Me</span>
+          </button>
+          <button type="button" class="btn-stop-location" id="stopLocationBtn" aria-label="Stop sharing location" style="display: none;">
+            <span class="icon" aria-hidden="true">🚫</span>
+            <span class="btn-text">Stop sharing location</span>
+          </button>
+          <div class="sort-group">
+            <label for="sortSelect" class="sr-only">Sort by</label>
+            <select id="sortSelect" class="sort-select" aria-label="Sort results">
+              <option value="relevance">Sort by relevance</option>
+              <option value="name">Sort by name</option>
+              <option value="verified">Recently verified</option>
+              <option value="location">Location</option>
+              <option value="distance">Distance</option>
+            </select>
+          </div>
         </div>
-        <button type="button" class="btn-icon" id="viewFavorites" data-testid="favorites-btn" title="View saved programs" aria-label="View saved programs">
-          <span class="icon">⭐</span>
-          <span class="btn-text">Saved</span>
-          <span class="badge-count" id="favoritesCount">0</span>
-        </button>
-        <button type="button" class="btn-icon" id="viewHistory" data-testid="history-btn" title="View call history" aria-label="View call history">
-          <span class="icon">📞</span>
-          <span class="btn-text">History</span>
-        </button>
-        <button type="button" class="btn-icon" id="viewComparison" title="Compare selected programs" aria-label="Compare programs">
-          <span class="icon">⚖️</span>
-          <span class="btn-text">Compare</span>
-          <span class="badge-count" id="comparisonCount">0</span>
-        </button>
-        <button type="button" class="btn-icon" id="shareFilters" title="Share current filters" aria-label="Share current search">
-          <span class="icon">🔗</span>
-          <span class="btn-text">Share</span>
-        </button>
+        <div class="results-actions-secondary" data-testid="results-actions-secondary">
+          <button type="button" class="btn-icon btn-icon--compact" id="viewFavorites" data-testid="favorites-btn" title="View saved programs" aria-label="View saved programs">
+            <span class="icon" aria-hidden="true">⭐</span>
+            <span class="btn-text">Saved</span>
+            <span class="badge-count" id="favoritesCount">0</span>
+          </button>
+          <button type="button" class="btn-icon btn-icon--compact" id="viewHistory" data-testid="history-btn" title="View call history" aria-label="View call history">
+            <span class="icon" aria-hidden="true">📞</span>
+            <span class="btn-text">History</span>
+          </button>
+          <button type="button" class="btn-icon btn-icon--compact" id="viewComparison" title="Compare selected programs" aria-label="Compare programs">
+            <span class="icon" aria-hidden="true">⚖️</span>
+            <span class="btn-text">Compare</span>
+            <span class="badge-count" id="comparisonCount">0</span>
+          </button>
+          <button type="button" class="btn-icon btn-icon--compact" id="shareFilters" title="Share current filters" aria-label="Share current search">
+            <span class="icon" aria-hidden="true">🔗</span>
+            <span class="btn-text">Share</span>
+          </button>
+        </div>
+        <div class="results-actions-overflow">
+          <button type="button" class="btn-icon btn-results-more" id="resultsMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="resultsMoreMenu" data-testid="results-more-btn">
+            <span class="icon" aria-hidden="true">⋯</span>
+            <span class="btn-text">More</span>
+          </button>
+          <div class="results-overflow-menu" id="resultsMoreMenu" role="menu" hidden>
+            <button type="button" class="results-overflow-item" role="menuitem" data-results-action="favorites">Saved <span class="badge-count" id="favoritesCountMenu">0</span></button>
+            <button type="button" class="results-overflow-item" role="menuitem" data-results-action="history">History</button>
+            <button type="button" class="results-overflow-item" role="menuitem" data-results-action="comparison">Compare <span class="badge-count" id="comparisonCountMenu">0</span></button>
+            <button type="button" class="results-overflow-item" role="menuitem" data-results-action="share">Share search</button>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -694,7 +673,7 @@
     </div>
   </div>
 
-  <script defer src="app.js?v=23"></script>
+  <script defer src="app.js?v=24"></script>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">

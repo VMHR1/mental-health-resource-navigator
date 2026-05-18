@@ -333,6 +333,8 @@ function runSearchFilterTests() {
     programServesAge,
     detectCareLevel,
     parseSmartSearch,
+    getTextSearchTerms,
+    stripFilterFromQuery,
   } = win;
 
   let passed = 0;
@@ -453,6 +455,27 @@ function runSearchFilterTests() {
   assert(
     'parseSmartSearch: outpatient without intensive',
     parseSmartSearch('outpatient Frisco', ['frisco', 'dallas']).care === 'Outpatient'
+  );
+
+  const iopFrisco14 = parseSmartSearch('IOP in Frisco for 14', ['frisco', 'dallas']);
+  assert(
+    'parseSmartSearch: IOP in Frisco for 14',
+    iopFrisco14.care === 'Intensive Outpatient (IOP)' &&
+      iopFrisco14.loc === 'Frisco' &&
+      iopFrisco14.age === '14'
+  );
+  win.getSearchCities = () => ['frisco', 'dallas', 'plano'];
+  assert(
+    'getTextSearchTerms: IOP in Frisco for 14 has no leftover tokens',
+    getTextSearchTerms('IOP in Frisco for 14') === ''
+  );
+  assert(
+    'stripFilterFromQuery: remove location keeps care and age',
+    stripFilterFromQuery('IOP in Frisco for 14', 'parsedLocation') === 'IOP 14'
+  );
+  assert(
+    'parseSmartSearch: does not treat "in" as a city',
+    parseSmartSearch('IOP in for 14', ['frisco', 'in', 'dallas']).loc === ''
   );
 
   console.log(`\nSearch filter tests: ${passed} passed, ${failed} failed`);

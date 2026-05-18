@@ -28,9 +28,8 @@ test.describe('Filter behavior and routing', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.getByTestId('advanced-filters-btn').click();
-    await page.locator('#statewideFiltersAccordion').evaluate((el) => {
-      el.style.display = '';
-      el.open = true;
+    await page.locator('#statewideFiltersSection').evaluate((el) => {
+      el.style.display = 'block';
     });
     await page.selectOption('#serviceDomain', 'substance_use', { force: true });
     await page.waitForTimeout(200);

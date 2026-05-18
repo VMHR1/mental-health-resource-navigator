@@ -56,6 +56,40 @@ test.describe('Search & filter localhost audit', () => {
     expect(names.length).toBeGreaterThan(0);
   });
 
+  test('example: IOP in Frisco age 14 returns results', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.locator('#searchTips summary').click();
+    await page.locator('[data-search-example="IOP in Frisco for 14"]').click();
+    await page.waitForTimeout(600);
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThan(20);
+  });
+
+  test('active filter chip removes only that filter', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('search-input').fill('IOP in Frisco for 14');
+    await page.getByTestId('find-programs-btn').click();
+    await page.waitForTimeout(600);
+    expect(await getCount(page)).toBeGreaterThan(0);
+    const locRemove = page
+      .getByTestId('remove-filter-location')
+      .or(page.getByTestId('remove-filter-parsedLocation'));
+    await expect(locRemove).toBeVisible();
+    const chipsBefore = await page.locator('[data-testid="active-filter-chips"] .active-filter-chip').count();
+    await locRemove.click();
+    await page.waitForTimeout(600);
+    await expect(page.getByTestId('search-input')).not.toHaveValue(/Frisco/i);
+    await expect(page.locator('#loc')).toHaveValue('');
+    await expect(locRemove).toBeHidden();
+    const chipsAfter = await page.locator('[data-testid="active-filter-chips"] .active-filter-chip').count();
+    expect(chipsAfter).toBe(chipsBefore - 1);
+    await expect(page.getByTestId('search-input')).not.toHaveValue('');
+    await expect(page.getByTestId('remove-filter-care').or(page.getByTestId('remove-filter-parsedCare'))).toBeVisible();
+  });
+
   test('search tips and example chips are available', async ({ page }) => {
     await waitForPrograms(page);
     const tips = page.locator('#searchTips');

@@ -410,186 +410,6 @@ document.addEventListener('keydown', (e) => {
 // Note: We use the module function directly and add organization detection inline where needed
 // to avoid naming conflicts and recursion issues
 
-// ========== Age Dropdown Custom Component ==========
-function initAgeDropdown(){
-  const root = document.querySelector('.dropdown[data-dd="age"]');
-  if (!root) return;
-
-  const btn = root.querySelector('#ageBtn');
-  const valueEl = root.querySelector('#ageBtnValue');
-  const menu = root.querySelector('#ageMenu');
-  const native = root.querySelector('#age');
-  const label = root.closest('.input-group') ? root.closest('.input-group').querySelector('.dd-label') : null;
-
-  const options = Array.from(menu.querySelectorAll('.dd-option'));
-  let activeIndex = 0;
-  let typeBuf = "";
-  let typeT = null;
-
-  function setActive(i, scroll){
-    activeIndex = Math.max(0, Math.min(options.length - 1, i));
-    options.forEach((o, idx) => o.classList.toggle('is-active', idx === activeIndex));
-    if (scroll) options[activeIndex].scrollIntoView({ block: "nearest" });
-  }
-
-  function syncFromNative(){
-    const val = native.value || "";
-    valueEl.textContent = (val === "") ? "Any age" : String(val);
-    options.forEach(o => {
-      const v = (o.dataset.value ?? "");
-      const isSel = v === String(val);
-      o.classList.toggle('is-selected', isSel);
-      o.setAttribute('aria-selected', isSel ? "true" : "false");
-    });
-  }
-
-  window.__ageDropdownSync = syncFromNative;
-
-  function open(){
-    if (root.classList.contains('open')) return;
-    root.classList.add('open');
-    btn.setAttribute('aria-expanded', 'true');
-
-    const val = native.value || "";
-    let idx = options.findIndex(o => (o.dataset.value ?? "") === String(val));
-    if (idx < 0) idx = 0;
-    setActive(idx, true);
-
-    menu.focus({ preventScroll: true });
-  }
-
-  function close(focusBtn){
-    if (!root.classList.contains('open')) return;
-    root.classList.remove('open');
-    btn.setAttribute('aria-expanded', 'false');
-    if (focusBtn) btn.focus({ preventScroll: true });
-  }
-
-  function toggle(){
-    if (root.classList.contains('open')) close(false);
-    else open();
-  }
-
-  function choose(val){
-    native.value = val;
-    syncFromNative();
-    native.dispatchEvent(new Event("change", { bubbles: true }));
-  }
-
-  syncFromNative();
-  native.addEventListener("change", syncFromNative);
-
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    toggle();
-  });
-
-  if (label){
-    label.style.cursor = "pointer";
-    label.addEventListener("click", () => btn.click());
-  }
-
-  options.forEach((opt, idx) => {
-    opt.addEventListener("click", (e) => {
-      e.preventDefault();
-      choose(opt.dataset.value ?? "");
-      close(true);
-    });
-    opt.addEventListener("mousemove", () => {
-      if (root.classList.contains('open')) setActive(idx, false);
-    });
-  });
-
-  btn.addEventListener("keydown", (e) => {
-    const k = e.key;
-    if (k === "Escape") {
-      e.preventDefault();
-      close(false);
-      return;
-    }
-    if (k === "ArrowDown" || k === "Enter" || k === " "){
-      e.preventDefault();
-      open();
-    } else if (k === "ArrowUp"){
-      e.preventDefault();
-      open();
-      setActive(activeIndex - 1, true);
-    }
-  });
-
-  menu.addEventListener("keydown", (e) => {
-    const k = e.key;
-
-    if (k === "Escape"){
-      e.preventDefault();
-      close(true);
-      return;
-    }
-    if (k === "ArrowDown"){
-      e.preventDefault();
-      setActive(activeIndex + 1, true);
-      return;
-    }
-    if (k === "ArrowUp"){
-      e.preventDefault();
-      setActive(activeIndex - 1, true);
-      return;
-    }
-    if (k === "Home"){
-      e.preventDefault();
-      setActive(0, true);
-      return;
-    }
-    if (k === "End"){
-      e.preventDefault();
-      setActive(options.length - 1, true);
-      return;
-    }
-    if (k === "Enter" || k === " "){
-      e.preventDefault();
-      const opt = options[activeIndex];
-      choose(opt.dataset.value ?? "");
-      close(true);
-      return;
-    }
-
-    if (/^\d$/.test(k)){
-      typeBuf += k;
-      if (typeT) clearTimeout(typeT);
-      typeT = setTimeout(() => { typeBuf = ""; }, 650);
-
-      const needle = typeBuf;
-      const idx = options.findIndex(o => (o.dataset.value ?? "") === needle);
-      if (idx >= 0){
-        setActive(idx, true);
-      } else {
-        const idx2 = options.findIndex(o => (o.textContent || "").trim().startsWith(needle));
-        if (idx2 >= 0) setActive(idx2, true);
-      }
-    }
-  });
-
-  document.addEventListener("mousedown", (e) => {
-    if (!root.classList.contains('open')) return;
-    if (root.contains(e.target)) return;
-    close(false);
-  });
-
-  // SECURITY AUDIT FIX: Throttle resize handler to prevent jank
-  let __modalResizeRAF = null;
-  let __modalResizeT = null;
-  const handleModalResize = () => {
-    if (__modalResizeRAF) cancelAnimationFrame(__modalResizeRAF);
-    __modalResizeRAF = requestAnimationFrame(() => {
-      if (__modalResizeT) clearTimeout(__modalResizeT);
-      __modalResizeT = setTimeout(() => {
-        close(false);
-      }, 150);
-    });
-  };
-  window.addEventListener("resize", handleModalResize);
-}
-
 // ========== Utility Functions ==========
 // ========== Helper Functions ==========
 // All helper functions are now in js/utils/helpers.js and available via window.*
@@ -998,19 +818,22 @@ const callUpdateStats = () => {
   }
 };
 
+function updateBadgeCount(el, count) {
+  if (!el) return;
+  el.textContent = count;
+  el.style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
 function updateFavoritesCount() {
   const count = favorites.size;
-  els.favoritesCount.textContent = count;
-  els.favoritesCount.style.display = count > 0 ? 'block' : 'none';
+  updateBadgeCount(els.favoritesCount, count);
+  updateBadgeCount(document.getElementById('favoritesCountMenu'), count);
 }
 
 function updateComparisonCount() {
   const count = comparisonSet.size;
-  const countEl = document.getElementById('comparisonCount');
-  if (countEl) {
-    countEl.textContent = count;
-    countEl.style.display = count > 0 ? 'block' : 'none';
-  }
+  updateBadgeCount(document.getElementById('comparisonCount'), count);
+  updateBadgeCount(document.getElementById('comparisonCountMenu'), count);
 }
 
 function saveComparison() {
@@ -1438,7 +1261,6 @@ function clearAllFilters(options = {}) {
   if (els.loc) els.loc.value = '';
   if (els.age) {
     els.age.value = '';
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
   }
   if (els.care) els.care.value = '';
   if (els.insurance) els.insurance.value = '';
@@ -1500,6 +1322,7 @@ function getFilterContextForEmptyState() {
   if (typeof window.getEffectiveSearchFilters === 'function') {
     ({ chips } = window.getEffectiveSearchFilters(query, dropdowns, {
       parseSmartSearch: window.parseSmartSearch,
+      getTextSearchTerms: window.getTextSearchTerms,
       safeStr,
     }));
   }
@@ -1641,7 +1464,6 @@ function broadenSearchOneStep() {
     case 'age':
       if (els.age) {
         els.age.value = '';
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
       }
       if (els.q) {
         els.q.value = rebuild({ ...parsed, age: '', minAge: null });
@@ -1710,7 +1532,6 @@ function applyPresetConfig(config) {
   if (config.location && els.loc) els.loc.value = config.location;
   if (config.age && els.age) {
     els.age.value = config.age;
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
   }
   if (config.care && els.care) els.care.value = config.care;
   if (config.insurance && els.insurance) els.insurance.value = config.insurance;
@@ -1819,8 +1640,17 @@ function printProgram(programId) {
   setTimeout(() => printWindow.print(), 250);
 }
 
+function isValidRecentSearchQuery(query) {
+  const trimmed = (query || '').trim();
+  if (trimmed.length < 3) return false;
+  if (/^accepts\.?$/i.test(trimmed)) return false;
+  if (/^(accepts|accept)\s*\.?\s*$/i.test(trimmed)) return false;
+  if (!/[a-z0-9]/i.test(trimmed)) return false;
+  return true;
+}
+
 async function addRecentSearch(query) {
-  if (!query || query.trim().length < 3) return;
+  if (!isValidRecentSearchQuery(query)) return;
   const trimmed = sanitizeText(query.trim(), 200);
   recentSearches = recentSearches.filter(s => s !== trimmed);
   recentSearches.unshift(trimmed);
@@ -1834,18 +1664,25 @@ let scheduleRenderFn = null;
 /** Bumped on each render; stale async renders must not overwrite the UI. */
 let renderGeneration = 0;
 
+let recentSearchesPanelOpen = false;
+
 function renderRecentSearches() {
-  const container = document.querySelector('.recent-searches');
+  const container = document.getElementById('recentSearchesContainer')
+    || document.querySelector('.recent-searches');
   if (!container) return;
-  
-  if (recentSearches.length === 0) {
+
+  const validRecent = recentSearches.filter(isValidRecentSearchQuery);
+  const queryEmpty = !els.q?.value?.trim();
+  const shouldShow = validRecent.length > 0 && (recentSearchesPanelOpen || queryEmpty);
+
+  if (!shouldShow) {
     container.style.display = 'none';
+    container.innerHTML = '';
     return;
   }
-  
+
   container.style.display = 'block';
-  // Only show the 3 most recent
-  const recentToShow = recentSearches.slice(0, 3);
+  const recentToShow = validRecent.slice(0, 3);
   container.innerHTML = `
     <p class="recent-searches-title">Recent</p>
     <div class="recent-search-tags">
@@ -1870,6 +1707,14 @@ function renderRecentSearches() {
       if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
     });
   });
+}
+
+if (typeof window !== 'undefined') {
+  window.setRecentSearchesPanelOpen = (open) => {
+    recentSearchesPanelOpen = !!open;
+    renderRecentSearches();
+  };
+  window.renderRecentSearches = renderRecentSearches;
 }
 
 function renderFavorites() {
@@ -3133,8 +2978,8 @@ function applyFeatureFlagsToUI() {
 
 // Update filter UI visibility based on availableFilters AND feature flags
 function updateFilterVisibility() {
-  const accordion = document.getElementById('statewideFiltersAccordion');
-  if (!accordion) return;
+  const extendedSection = document.getElementById('statewideFiltersSection');
+  if (!extendedSection) return;
   
   const flags = window.FEATURE_FLAGS || {};
   
@@ -3145,7 +2990,7 @@ function updateFilterVisibility() {
     (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ||
     availableFilters.hasServiceArea; // Service area is always available if present
   
-  accordion.style.display = hasAnyAdvancedFilter ? 'block' : 'none';
+  extendedSection.style.display = hasAnyAdvancedFilter ? 'block' : 'none';
   
   // Show/hide individual filter groups (respect both data availability and feature flags)
   const countyGroup = document.getElementById('countyFilterGroup');
@@ -3185,12 +3030,6 @@ function updateFilterVisibility() {
     verificationGroup.style.display = (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ? 'block' : 'none';
   }
   
-  // Update ARIA expanded state
-  const summary = accordion.querySelector('.advanced-filters-summary');
-  if (summary) {
-    summary.setAttribute('aria-expanded', accordion.open ? 'true' : 'false');
-  }
-  
   // Apply feature flags to ensure disabled filters are hidden and cleared
   applyFeatureFlagsToUI();
 }
@@ -3212,13 +3051,16 @@ function updateActiveFilterChips() {
       insurance: els.insurance?.value || '',
       onlyVirtual: els.onlyVirtual?.checked || false,
       showCrisis: els.showCrisis?.checked || false,
-    }, { parseSmartSearch: window.parseSmartSearch, safeStr });
+    }, {
+      parseSmartSearch: window.parseSmartSearch,
+      getTextSearchTerms: window.getTextSearchTerms,
+      safeStr,
+    });
 
     chips.forEach((chip, idx) => {
       activeFilters.push({
         type: chip.type || `search-${idx}`,
         label: chip.label,
-        removeFn: () => clearActiveFilterChip(chip.type),
       });
     });
   }
@@ -3320,6 +3162,8 @@ function updateActiveFilterChips() {
             class="active-filter-chip-remove" 
             aria-label="Remove ${escapeHtml(filter.label)} filter"
             data-filter-type="${escapeHtml(filter.type)}"
+            data-filter-index="${idx}"
+            data-testid="remove-filter-${escapeHtml(filter.type)}"
             tabindex="0">
             <span aria-hidden="true">×</span>
           </button>
@@ -3327,16 +3171,18 @@ function updateActiveFilterChips() {
       `;
     }).join('');
     
-    // Attach remove handlers
-    chipsContainer.querySelectorAll('.active-filter-chip-remove').forEach((btn, idx) => {
-      btn.addEventListener('click', () => {
-        activeFilters[idx].removeFn();
-      });
-      // Keyboard support
+    // Bind each remove button to its filter type (fresh nodes each render — no duplicate listeners)
+    activeFilters.forEach((filter, idx) => {
+      const btn = chipsContainer.querySelector(
+        `.active-filter-chip-remove[data-filter-index="${idx}"]`
+      );
+      if (!btn) return;
+      const chipType = filter.type;
+      btn.addEventListener('click', () => clearActiveFilterChip(chipType));
       btn.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          activeFilters[idx].removeFn();
+          clearActiveFilterChip(chipType);
         }
       });
     });
@@ -3347,24 +3193,38 @@ function updateActiveFilterChips() {
 }
 
 function clearActiveFilterChip(chipType) {
-  switch (chipType) {
-    case 'query':
-      if (els.q) {
-        els.q.value = '';
-        delete els.q.dataset.exactMatch;
-        delete els.q.dataset.matchType;
+  refreshEls();
+
+  if (els.q) {
+    let next = els.q.value;
+    if (chipType === 'location' || chipType === 'parsedLocation') {
+      const locVal = (els.loc?.value || '').trim();
+      if (locVal) {
+        const re = new RegExp(
+          `(^|\\s)${locVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')}(\\s|$)`,
+          'gi'
+        );
+        next = next.replace(re, ' ').replace(/\s+/g, ' ').trim();
       }
-      break;
+    }
+    if (typeof window.stripFilterFromQuery === 'function') {
+      next = window.stripFilterFromQuery(next, chipType);
+    } else if (chipType === 'query') {
+      next = '';
+    }
+    els.q.value = next;
+    delete els.q.dataset.exactMatch;
+    delete els.q.dataset.matchType;
+  }
+
+  switch (chipType) {
     case 'location':
     case 'parsedLocation':
       if (els.loc) els.loc.value = '';
       break;
     case 'age':
     case 'parsedAge':
-      if (els.age) {
-        els.age.value = '';
-        if (window.__ageDropdownSync) window.__ageDropdownSync();
-      }
+      if (els.age) els.age.value = '';
       break;
     case 'care':
     case 'parsedCare':
@@ -3391,6 +3251,7 @@ function clearActiveFilterChip(chipType) {
       break;
   }
   if (typeof syncTopToggles === 'function') syncTopToggles();
+  if (typeof updateURLState === 'function') updateURLState();
   if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
   else render();
 }
@@ -4232,7 +4093,6 @@ document.addEventListener('click', (e) => {
     delete els.q.dataset.matchType;
     els.loc.value = '';
     els.age.value = '';
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
     els.care.value = '';
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
@@ -4322,7 +4182,6 @@ function loadURLState() {
   // Load age
   if (params.has('age') && els.age) {
     els.age.value = params.get('age');
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
   }
   
   // Load level of care
@@ -4427,7 +4286,6 @@ function handleURLParams() {
 // Document-level event delegation is set up at the top of the file (after DOM elements)
 
 // Initialize
-initAgeDropdown();
 bind();
 initSwipeGestures();
 
@@ -4440,6 +4298,7 @@ window.addEventListener('beforeunload', () => {
 });
 
 loadPrograms().then(() => {
+  recentSearches = recentSearches.filter(isValidRecentSearchQuery);
   // Clear any stale dataset attributes on initial load if q is empty
   if (els.q && (!els.q.value || !els.q.value.trim())) {
     delete els.q.dataset.exactMatch;

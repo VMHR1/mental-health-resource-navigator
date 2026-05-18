@@ -581,9 +581,18 @@ function getEffectiveSearchFilters(query, dropdowns = {}, options = {}) {
     chips.push({ type: 'crisis', label: 'Crisis resources' });
   }
 
-  const qTrim = safeStr(query);
-  if (qTrim) {
-    chips.push({ type: 'query', label: `Search: “${qTrim.length > 40 ? `${qTrim.slice(0, 40)}…` : qTrim}”` });
+  const getResidual =
+    typeof options.getTextSearchTerms === 'function'
+      ? options.getTextSearchTerms
+      : typeof window !== 'undefined' && typeof window.getTextSearchTerms === 'function'
+        ? (q) => window.getTextSearchTerms(q)
+        : null;
+  const residualText = getResidual ? safeStr(getResidual(query)) : '';
+  if (residualText) {
+    chips.push({
+      type: 'query',
+      label: `Search: “${residualText.length > 40 ? `${residualText.slice(0, 40)}…` : residualText}”`,
+    });
   }
 
   return { parsed, chips };

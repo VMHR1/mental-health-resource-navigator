@@ -1006,8 +1006,8 @@ h1{
     word-wrap: break-word !important;
   }
   
-  /* Fix filter presets spacing */
-  .filter-presets {
+  /* Fix filter presets spacing (exclude quick start — stays centered) */
+  .filter-presets:not(.filter-presets--quickstart) {
     margin: 12px 0 !important;
     gap: 8px !important;
     justify-content: flex-start !important;
@@ -1573,6 +1573,10 @@ html.perf-no-sticky .search-section {
   max-width: 70ch;
 }
 
+.search-header .filter-presets--quickstart{
+  margin: 14px auto 0;
+}
+
 .search-simple{
   display: flex;
   gap: 12px;
@@ -1621,6 +1625,91 @@ html.perf-no-sticky .search-section {
 .btn-advanced:hover{
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+.search-toolbar{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 100%;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.search-toolbar .btn-smart-search{
+  flex: 1 1 auto;
+  min-width: 140px;
+}
+
+.btn-reset-link{
+  margin-left: auto;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.btn-reset-link:hover{
+  color: var(--ink);
+}
+
+.filter-presets--quickstart{
+  display: flex;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  overflow: visible;
+}
+
+.filter-presets--quickstart .filter-presets-label{
+  display: block;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.filter-presets--quickstart .filter-presets-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center !important;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.more-filters-extended{
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(15,23,42,.10);
+}
+
+.more-filters-extended-label{
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.search-actions .btns #reset{
+  display: none;
 }
 
 .btn-advanced .icon{
@@ -3303,9 +3392,71 @@ footer{
   gap: 10px;
   flex-wrap: wrap;
   max-width: 100%;
-  min-width: 0; /* Allow flex items to shrink */
-  flex: 0 1 auto; /* Don't grow, but can shrink */
-  overflow: visible; /* Allow buttons to wrap */
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: visible;
+}
+
+.results-actions-primary,
+.results-actions-secondary{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.results-actions-secondary .btn-icon--compact{
+  padding: 10px 12px;
+}
+
+.results-actions-overflow{
+  display: none;
+  position: relative;
+}
+
+.results-overflow-menu{
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 16px 40px rgba(15,23,42,.12);
+}
+
+.results-overflow-menu[hidden]{
+  display: none !important;
+}
+
+.results-overflow-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.results-overflow-item:hover{
+  background: rgba(122,167,255,.10);
+}
+
+.results-overflow-item .badge-count{
+  position: static;
+  margin-left: auto;
 }
 
 /* Ensure all button children in results-actions can shrink */
@@ -3819,7 +3970,7 @@ body.modal-open {
 }
 
 /* Filter Presets */
-.filter-presets {
+.filter-presets:not(.filter-presets--quickstart) {
   margin-top: 12px;
 }
 
@@ -4426,7 +4577,7 @@ body.high-contrast textarea {
     overflow: visible; /* Allow content to wrap */
   }
   
-  /* Results actions: clean wrapped 2-row layout */
+  /* Results actions: primary row + overflow menu */
   .results-actions {
     display: flex;
     flex-wrap: wrap;
@@ -4436,12 +4587,31 @@ body.high-contrast textarea {
     align-items: flex-start;
     justify-content: flex-start;
   }
+
+  .results-actions-secondary{
+    display: none;
+  }
+
+  .results-actions-overflow{
+    display: block;
+    margin-left: auto;
+  }
   
   /* Ensure all buttons in results-actions are mobile-friendly */
   .results-actions > * {
     min-height: 44px; /* Tap target */
     min-width: 0; /* Allow shrinking */
     flex-shrink: 1;
+  }
+
+  .search-toolbar{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-toolbar .btn-reset-link{
+    margin-left: 0;
+    align-self: flex-end;
   }
   
   /* Alternative: horizontal scroll toolbar (uncomment if wrapping causes issues) */
@@ -4799,8 +4969,8 @@ body.high-contrast textarea {
     max-width: 100%;
   }
   
-  /* Fix filter presets */
-  .filter-presets {
+  /* Fix filter presets (quick start centered in search-header) */
+  .filter-presets:not(.filter-presets--quickstart) {
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
@@ -4808,6 +4978,17 @@ body.high-contrast textarea {
     margin-top: 4px !important;
     gap: 6px !important;
     margin-bottom: 6px;
+  }
+
+  .search-header .filter-presets--quickstart {
+    margin-top: 12px !important;
+    overflow-x: visible;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .filter-presets--quickstart .filter-presets-buttons {
+    justify-content: center !important;
   }
   
   .filter-preset-btn {

@@ -291,7 +291,6 @@ function setupEventHandlers(options) {
     delete els.q.dataset.matchType;
     els.loc.value = '';
     els.age.value = '';
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
     els.care.value = '';
     if (els.insurance) els.insurance.value = '';
     els.onlyVirtual.checked = false;
@@ -350,7 +349,6 @@ function setupEventHandlers(options) {
     if(parsed.loc) els.loc.value = parsed.loc;
     if(parsed.age) {
       els.age.value = parsed.age;
-      if(window.__ageDropdownSync) window.__ageDropdownSync();
     }
     if(parsed.care) els.care.value = parsed.care;
     if (parsed.insurance && els.insurance) els.insurance.value = parsed.insurance;
@@ -372,22 +370,84 @@ function setupEventHandlers(options) {
   on(els.showAdvanced, "click", () => {
     const isHidden = els.advancedFilters.style.display === "none";
     els.advancedFilters.style.display = isHidden ? "block" : "none";
-    const lastSpan = els.showAdvanced.querySelector('span:last-child');
-    if (lastSpan) {
-      lastSpan.textContent = isHidden ? "Hide Filters" : "Advanced Filters";
+    els.showAdvanced.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+    const label = els.showAdvanced.querySelector('.btn-advanced-label');
+    if (label) {
+      label.textContent = isHidden ? 'Hide filters' : 'More filters';
     }
   });
-  
-  // Handle statewide filters accordion toggle
-  const statewideAccordion = document.getElementById('statewideFiltersAccordion');
-  if (statewideAccordion) {
-    statewideAccordion.addEventListener('toggle', () => {
-      const summary = statewideAccordion.querySelector('.advanced-filters-summary');
-      if (summary) {
-        summary.setAttribute('aria-expanded', statewideAccordion.open ? 'true' : 'false');
+
+  // Recent searches: show when search is focused or empty
+  let recentBlurTimer = null;
+  const recentContainer = document.getElementById('recentSearchesContainer');
+  on(els.q, 'focus', () => {
+    clearTimeout(recentBlurTimer);
+    if (typeof window.setRecentSearchesPanelOpen === 'function') {
+      window.setRecentSearchesPanelOpen(true);
+    }
+  });
+  on(els.q, 'blur', () => {
+    recentBlurTimer = setTimeout(() => {
+      if (typeof window.setRecentSearchesPanelOpen === 'function') {
+        window.setRecentSearchesPanelOpen(false);
       }
+    }, 160);
+  });
+  on(els.q, 'input', () => {
+    if (typeof window.renderRecentSearches === 'function') {
+      window.renderRecentSearches();
+    }
+  });
+  if (recentContainer) {
+    on(recentContainer, 'mousedown', (e) => {
+      e.preventDefault();
     });
   }
+
+  // Results toolbar overflow menu (mobile)
+  const resultsMoreBtn = document.getElementById('resultsMoreBtn');
+  const resultsMoreMenu = document.getElementById('resultsMoreMenu');
+
+  function closeResultsOverflowMenu() {
+    if (!resultsMoreMenu) return;
+    resultsMoreMenu.hidden = true;
+    if (resultsMoreBtn) resultsMoreBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleResultsOverflowMenu() {
+    if (!resultsMoreMenu || !resultsMoreBtn) return;
+    const willOpen = resultsMoreMenu.hidden;
+    resultsMoreMenu.hidden = !willOpen;
+    resultsMoreBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
+
+  on(resultsMoreBtn, 'click', (e) => {
+    e.stopPropagation();
+    toggleResultsOverflowMenu();
+  });
+
+  if (resultsMoreMenu) {
+    resultsMoreMenu.querySelectorAll('[data-results-action]').forEach((item) => {
+      on(item, 'click', () => {
+        const action = item.getAttribute('data-results-action');
+        if (action === 'favorites' && els.viewFavorites) els.viewFavorites.click();
+        else if (action === 'history' && els.viewHistory) els.viewHistory.click();
+        else if (action === 'comparison' && els.viewComparison) els.viewComparison.click();
+        else if (action === 'share' && els.shareFilters) els.shareFilters.click();
+        closeResultsOverflowMenu();
+      });
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!resultsMoreMenu || resultsMoreMenu.hidden) return;
+    if (e.target.closest('.results-actions-overflow')) return;
+    closeResultsOverflowMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeResultsOverflowMenu();
+  });
 
   // Triage buttons
   on(els.viewCrisisResources, "click", () => {
@@ -497,7 +557,7 @@ function setupEventHandlers(options) {
     });
   });
 
-  // Search example chips (fill query and run search)
+  // Search example chips (fill query, apply parsed filters like Find Programs)
   document.querySelectorAll('[data-search-example]').forEach((btn) => {
     on(btn, 'click', () => {
       const example = btn.getAttribute('data-search-example') || '';
@@ -507,7 +567,22 @@ function setupEventHandlers(options) {
         delete els.q.dataset.matchType;
       }
       callbacks.hideAutocomplete();
+
+      const parsed =
+        typeof window.parseSmartSearch === 'function'
+          ? window.parseSmartSearch(example)
+          : {};
+      if (parsed.loc && els.loc) els.loc.value = parsed.loc;
+      if (parsed.age && els.age) els.age.value = parsed.age;
+      if (parsed.care && els.care) els.care.value = parsed.care;
+      if (parsed.insurance && els.insurance) els.insurance.value = parsed.insurance;
+      if (els.showCrisis) els.showCrisis.checked = !!parsed.showCrisis;
+      if (parsed.serviceDomain && els.serviceDomain) {
+        els.serviceDomain.value = parsed.serviceDomain;
+      }
+      callbacks.syncTopToggles();
       scheduleRender();
+
       const section = document.getElementById('treatmentSection');
       if (section) {
         window.scrollTo({ top: section.offsetTop - 10, behavior: 'smooth' });
