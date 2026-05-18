@@ -17,6 +17,7 @@ const buildOptions = {
   entryPoints: [
     'src/app.js',
     'src/js/modules/search.js',
+    'src/js/modules/empty-state.js',
     'src/js/modules/storage.js',
     'src/js/utils/helpers.js',
     'src/js/utils/location-match.js',
@@ -229,6 +230,7 @@ async function createLegacyBundle() {
       'src/js/utils/helpers.js',
       'src/js/modules/storage.js',
       'src/js/modules/search.js',
+    'src/js/modules/empty-state.js',
       'src/js/state-manager.js',
       'src/js/data-validator.js'
     ];

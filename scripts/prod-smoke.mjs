@@ -68,6 +68,33 @@ async function getCount(page) {
 
     await page.getByTestId('reset-btn').click();
     await page.waitForTimeout(500);
+    await page.getByTestId('search-input').fill('accepts Cigna');
+    await page.waitForTimeout(900);
+    const cignaCount = await getCount(page);
+    row(
+      'Smart search: accepts Cigna',
+      cignaCount > 20 && cignaCount < 60,
+      String(cignaCount)
+    );
+
+    await page.getByTestId('reset-btn').click();
+    await page.waitForTimeout(500);
+    await page.getByTestId('search-input').fill('accepts BCBS');
+    await page.waitForTimeout(900);
+    const bcbsCount = await getCount(page);
+    row(
+      'Smart search: accepts BCBS',
+      bcbsCount > 20 && bcbsCount < 60,
+      String(bcbsCount)
+    );
+
+    await page.getByTestId('reset-btn').click();
+    await page.waitForTimeout(500);
+    const afterReset = await getCount(page);
+    row('Reset returns baseline', afterReset >= 80 && afterReset <= 100, String(afterReset));
+
+    await page.getByTestId('reset-btn').click();
+    await page.waitForTimeout(500);
     const tips = page.locator('#searchTips');
     row('Search tips present', (await tips.count()) > 0);
     await tips.locator('summary').click();

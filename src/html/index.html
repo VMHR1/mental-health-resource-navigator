@@ -35,6 +35,7 @@
   <script defer src="js/utils/helpers.js?v=4"></script>
   <script defer src="js/modules/storage.js?v=3"></script>
   <script defer src="js/modules/search.js?v=10"></script>
+  <script defer src="js/modules/empty-state.js?v=1"></script>
   <script defer src="js/modules/filters.js?v=5"></script>
   <script defer src="js/modules/sort.js?v=3"></script>
   <script defer src="js/modules/distance.js?v=2"></script>
@@ -578,18 +579,18 @@
       <div class="grid" id="treatmentGrid" data-testid="results-grid" aria-live="polite"></div>
       <div class="empty-state" id="treatmentEmpty" data-testid="empty-state" style="display:none;" role="status">
         <div class="empty-icon">🔍</div>
-        <h3>No programs match these filters</h3>
-        <p>Try one of the options below.</p>
+        <h3 id="emptyStateTitle">No programs match these filters</h3>
+        <p id="emptyStateBody">Try one of the options below.</p>
         <div class="empty-actions">
-          <button data-action="clear-filters" class="btn-primary" type="button">
+          <button data-action="clear-filters" class="btn-primary" type="button" data-testid="empty-clear-filters">
             Clear filters
           </button>
-          <button data-action="broaden-search" class="btn-primary" type="button">
+          <button data-action="broaden-search" class="btn-primary" type="button" data-testid="empty-broaden-search">
             Broaden search
           </button>
           <a href="#whatToAskGuide" class="empty-state-link" data-action="open-what-to-ask">Not sure what to ask? See questions for programs.</a>
         </div>
-        <p class="empty-state-tip">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
+        <p class="empty-state-tip" id="emptyStateTip">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
       </div>
     </section>
 
@@ -693,7 +694,7 @@
     </div>
   </div>
 
-  <script defer src="app.js?v=22"></script>
+  <script defer src="app.js?v=23"></script>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">

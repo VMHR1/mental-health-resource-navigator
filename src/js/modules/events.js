@@ -278,73 +278,52 @@ function setupEventHandlers(options) {
   });
 
   function resetFilters() {
-    els.q.value = "";
-    // Clear dataset attributes
+    if (typeof callbacks.clearAllFilters === 'function') {
+      callbacks.clearAllFilters();
+      return;
+    }
+    clearAllFiltersFallback();
+  }
+
+  function clearAllFiltersFallback() {
+    els.q.value = '';
     delete els.q.dataset.exactMatch;
     delete els.q.dataset.matchType;
-    els.loc.value = "";
-    els.age.value = "";
+    els.loc.value = '';
+    els.age.value = '';
     if (window.__ageDropdownSync) window.__ageDropdownSync();
-    els.care.value = "";
-    if (els.insurance) els.insurance.value = "";
+    els.care.value = '';
+    if (els.insurance) els.insurance.value = '';
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
-    
-    // Reset statewide filters
     state.setSelectedCounty(null);
     state.setSelectedServiceDomains([]);
     state.setSelectedSudServices([]);
     state.setVerificationRecencyDays(null);
-    if (els.county) els.county.value = "";
-    if (els.serviceDomain) els.serviceDomain.value = "";
+    if (els.county) els.county.value = '';
+    if (els.serviceDomain) els.serviceDomain.value = '';
     if (els.sudServices) {
-      Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+      Array.from(els.sudServices.options).forEach((opt) => {
+        opt.selected = false;
+      });
       callbacks.syncChipsToSelect('sudServices');
     }
-    if (els.verificationRecency) els.verificationRecency.value = "";
-    
+    if (els.verificationRecency) els.verificationRecency.value = '';
     state.setOpenId(null);
     callbacks.syncTopToggles();
     callbacks.updateURLState();
     callbacks.render();
   }
-  
-  on(els.reset, "click", resetFilters);
+
+  on(els.reset, 'click', resetFilters);
   if (els.resetTop) {
-    on(els.resetTop, "click", resetFilters);
+    on(els.resetTop, 'click', resetFilters);
   }
 
-  on(els.viewAll, "click", () => {
-    els.q.value = "";
-    // Clear dataset attributes
-    delete els.q.dataset.exactMatch;
-    delete els.q.dataset.matchType;
-    els.loc.value = "";
-    els.age.value = "";
-    if (window.__ageDropdownSync) window.__ageDropdownSync();
-    els.care.value = "";
-    if (els.insurance) els.insurance.value = "";
-    els.onlyVirtual.checked = false;
-    els.showCrisis.checked = false;
-    
-    // Reset statewide filters
-    state.setSelectedCounty(null);
-    state.setSelectedServiceDomains([]);
-    state.setSelectedSudServices([]);
-    state.setVerificationRecencyDays(null);
-    if (els.county) els.county.value = "";
-    if (els.serviceDomain) els.serviceDomain.value = "";
-    if (els.sudServices) {
-      Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-      callbacks.syncChipsToSelect('sudServices');
-    }
-    if (els.verificationRecency) els.verificationRecency.value = "";
-    
-    state.setOpenId(null);
-    callbacks.syncTopToggles();
-    callbacks.render();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
+  on(els.viewAll, 'click', () => {
+    resetFilters();
+    const t = document.getElementById('treatmentSection');
+    if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: 'smooth' });
   });
 
   // Smart search

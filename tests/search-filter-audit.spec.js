@@ -213,6 +213,48 @@ test.describe('Search & filter localhost audit', () => {
     }
   });
 
+  test('reset returns to full baseline count', async ({ page }) => {
+    await waitForPrograms(page);
+    const baseline = await getCount(page);
+    await page.getByTestId('search-input').fill('IOP in Plano');
+    await page.waitForTimeout(700);
+    expect(await getCount(page)).toBeLessThan(baseline);
+    await page.getByTestId('reset-btn').click();
+    await page.waitForTimeout(600);
+    expect(await getCount(page)).toBe(baseline);
+    await expect(page.getByTestId('active-filter-chips')).toBeHidden();
+  });
+
+  test('empty state shows context and broaden increases results', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('advanced-filters-btn').click();
+    await page.selectOption('#care', 'Partial Hospitalization (PHP)');
+    await page.selectOption('#insurance', { label: 'Beacon' });
+    await page.selectOption('#loc', 'Houston');
+    await page.waitForTimeout(700);
+    await expect(page.getByTestId('empty-state')).toBeVisible();
+    await expect(page.locator('#emptyStateBody')).toContainText(/Beacon|PHP|Houston|Location|Care|Insurance/i);
+    await page.getByTestId('empty-broaden-search').click();
+    await page.waitForTimeout(700);
+    const afterBroaden = await getCount(page);
+    expect(afterBroaden).toBeGreaterThan(0);
+  });
+
+  test('empty state clear filters restores baseline', async ({ page }) => {
+    await waitForPrograms(page);
+    const baseline = await getCount(page);
+    await page.getByTestId('advanced-filters-btn').click();
+    await page.selectOption('#care', 'Partial Hospitalization (PHP)');
+    await page.selectOption('#insurance', { label: 'Beacon' });
+    await page.selectOption('#loc', 'Houston');
+    await page.waitForTimeout(700);
+    await expect(page.getByTestId('empty-state')).toBeVisible();
+    await page.getByTestId('empty-clear-filters').click();
+    await page.waitForTimeout(600);
+    expect(await getCount(page)).toBe(baseline);
+  });
+
   test('crisis toggle shows crisis programs', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
