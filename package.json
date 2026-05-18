@@ -26,6 +26,7 @@
     "audit": "lhci autorun --config=lighthouserc.json",
     "verify": "npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit",
     "audit:search": "node scripts/audit-search-localhost.mjs",
+    "audit:insurance": "node scripts/audit-insurance-plans.mjs",
     "smoke:prod": "node scripts/prod-smoke.mjs"
   },
   "devDependencies": {

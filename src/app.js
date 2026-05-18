@@ -3824,6 +3824,9 @@ async function loadPrograms(retryCount = 0){
     buildLocationOptions(programs);
     buildSearchCities(programs);
     buildInsuranceOptions(programs);
+    if (typeof window.registerInsurancePlansFromData === 'function') {
+      window.registerInsurancePlansFromData(programs);
+    }
     callUpdateStats();
     updateComparisonCount();
     ready = true;

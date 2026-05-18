@@ -147,8 +147,167 @@ function detectCareLevel(q) {
   return '';
 }
 
+/** Extra search phrases per canonical plan name (beyond auto-generated aliases). */
+const INSURANCE_PLAN_ALIAS_EXTRAS = {
+  Aetna: ['aetna better health'],
+  Ambetter: ['ambetter superior', 'ambetter from superior'],
+  Anthem: ['anthem blue cross'],
+  'Baylor Scott & White': ['bsw', 'baylor scott white', 'baylor scott and white'],
+  'Baylor Scott & White Health Plan': [
+    'bsw health plan',
+    'baylor scott white health plan',
+    'baylor scott and white health plan',
+  ],
+  Beacon: ['beacon health'],
+  'Behavioral Health Systems': ['bhs', 'behavioral health system'],
+  'Blue Cross Blue Shield': ['bcbs', 'blue cross', 'blue cross blue shield'],
+  'Bright Healthcare': ['bright health'],
+  CHIP: ['chip plan', 'childrens chip', "children's chip"],
+  'Carelon Behavioral Health': ['carelon', 'carelon behavioral'],
+  Champva: ['champ va', 'champ-va', 'va champ'],
+  Cigna: ['evernorth', 'cigna evernorth'],
+  Compsych: ['com psych'],
+  'Cook Childrens Health Plan': [
+    "cook children's health plan",
+    'cook childrens',
+    "cook children's",
+  ],
+  HealthNet: ['health net'],
+  Humana: ['humana insurance'],
+  Magellan: ['magellan health'],
+  Medicaid: ['traditional medicaid plan'],
+  Medicare: ['traditional medicare plan'],
+  'Meritain Health': ['meritain'],
+  'Molina Healthcare': ['molina', 'molina medicaid'],
+  Optum: ['optum health', 'optum behavioral'],
+  'Parkland Community Health Plan': [
+    'parkland community',
+    'parkland health plan',
+    'pchp',
+  ],
+  Superior: ['superior mco'],
+  SuperiorHealthPlan: [], // typo guard — real key below
+  'Superior HealthPlan': ['superior healthplan', 'superior health plan', 'superior star'],
+  TRICARE: ['tri care', 'tricare east', 'tricare west'],
+  UMR: ['umr insurance'],
+  UnitedHealthcare: ['uhc', 'united healthcare', 'united health care', 'united health'],
+  Wellpoint: ['well point'],
+};
+
+// Remove typo guard key if added
+delete INSURANCE_PLAN_ALIAS_EXTRAS.SuperiorHealthPlan;
+
+/** Flat alias index sorted longest-first; built from program data via registerInsurancePlansFromData. */
+let insurancePlanAliasFlat = [];
+/** @type {Map<string, { plan: string, aliases: string[] }>} */
+let insurancePlanAliasByPlan = new Map();
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildAliasesForPlanName(plan) {
+  const aliases = new Set();
+  const planLower = safeStr(plan).toLowerCase();
+  if (!planLower) return [];
+
+  aliases.add(planLower);
+  aliases.add(planLower.replace(/&/g, 'and'));
+  aliases.add(planLower.replace(/['']/g, ''));
+
+  const suffixes = [
+    ' health plan',
+    ' healthcare',
+    ' behavioral health',
+    ' insurance',
+    ' health',
+  ];
+  for (const suf of suffixes) {
+    if (planLower.endsWith(suf) && planLower.length > suf.length + 2) {
+      aliases.add(planLower.slice(0, -suf.length).trim());
+    }
+  }
+
+  const words = plan.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    const acronym = words.map((w) => w[0]).join('').toLowerCase();
+    if (acronym.length >= 3 && acronym.length <= 8) {
+      aliases.add(acronym);
+    }
+  }
+
+  return [...aliases].filter((a) => a.length >= 2);
+}
+
 /**
- * Map insurance phrases in search text to dropdown bucket values (bucket:*).
+ * Build search aliases from loaded programs (call after programs.json loads).
+ * @param {Array} programs
+ */
+function registerInsurancePlansFromData(programs) {
+  const planNames = new Set();
+  (programs || []).forEach((p) => {
+    const plans = p.accepted_insurance?.plans;
+    if (Array.isArray(plans)) {
+      plans.forEach((pl) => {
+        const name = safeStr(pl);
+        if (name) planNames.add(name);
+      });
+    }
+  });
+
+  const entries = [];
+  const flat = [];
+
+  for (const plan of planNames) {
+    const aliasSet = new Set(buildAliasesForPlanName(plan));
+    const extras = INSURANCE_PLAN_ALIAS_EXTRAS[plan] || [];
+    extras.forEach((a) => aliasSet.add(safeStr(a).toLowerCase()));
+
+    const aliases = [...aliasSet].filter((a) => a.length >= 2);
+    entries.push({ plan, aliases });
+
+    aliases.forEach((alias) => {
+      flat.push({ alias, plan, len: alias.length });
+    });
+  }
+
+  flat.sort((a, b) => b.len - a.len);
+  insurancePlanAliasFlat = flat;
+  insurancePlanAliasByPlan = new Map(entries.map((e) => [e.plan, e]));
+}
+
+function getInsurancePlanAliasEntry(planName) {
+  return insurancePlanAliasByPlan.get(planName) || null;
+}
+
+function detectInsurancePlanFromQuery(q) {
+  const s = safeStr(q).toLowerCase();
+  if (!s || !insurancePlanAliasFlat.length) return '';
+
+  for (const { alias, plan } of insurancePlanAliasFlat) {
+    const re = new RegExp(`\\b${escapeRegex(alias)}\\b`, 'i');
+    if (re.test(s)) return `plan:${plan}`;
+  }
+  return '';
+}
+
+function stripDetectedPlanTokens(terms, insuranceVal) {
+  if (!insuranceVal.startsWith('plan:')) return terms;
+  const planName = insuranceVal.replace('plan:', '');
+  const entry = insurancePlanAliasByPlan.get(planName);
+  let out = terms;
+  const toStrip = entry
+    ? [...entry.aliases, planName.toLowerCase()]
+    : [planName.toLowerCase()];
+  for (const token of toStrip) {
+    const re = new RegExp(`\\b${escapeRegex(token)}\\b`, 'gi');
+    out = out.replace(re, ' ');
+  }
+  return out.replace(/\b(accepts?|takes?|with)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Map insurance phrases in search text to bucket:* or plan:* filter values.
  */
 function detectInsuranceFromQuery(q) {
   const s = safeStr(q).toLowerCase();
@@ -182,7 +341,8 @@ function detectInsuranceFromQuery(q) {
   ) {
     return 'bucket:commercial';
   }
-  return '';
+
+  return detectInsurancePlanFromQuery(q);
 }
 
 function parseSmartSearch(query, cities) {
@@ -346,7 +506,9 @@ function stripParsedQueryTokens(query, cities) {
     });
   }
 
-  if (parsed.insurance) {
+  if (parsed.insurance?.startsWith('plan:')) {
+    terms = stripDetectedPlanTokens(terms, parsed.insurance);
+  } else if (parsed.insurance) {
     terms = terms.replace(/\b(accepts?|takes?|with)\b/gi, ' ');
   }
 
@@ -410,6 +572,8 @@ if (typeof window !== 'undefined') {
     // Call internal function directly to avoid recursion
     return internalParseSmartSearch(query, cities);
   };
+  window.registerInsurancePlansFromData = registerInsurancePlansFromData;
+  window.getInsurancePlanAliasEntry = getInsurancePlanAliasEntry;
 }
 
 

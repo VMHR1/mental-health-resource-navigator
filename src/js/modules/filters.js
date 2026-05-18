@@ -548,9 +548,12 @@ function getEffectiveSearchFilters(query, dropdowns = {}, options = {}) {
 
   if (parsedInsurance && parsedInsurance !== insuranceDropdown) {
     const bucket = INSURANCE_BUCKETS[parsedInsurance];
+    const parsedLabel = parsedInsurance.startsWith('plan:')
+      ? `Plan (search): ${parsedInsurance.replace('plan:', '')}`
+      : `Insurance (search): ${bucket?.label || parsedInsurance.replace('bucket:', '')}`;
     chips.push({
       type: 'parsedInsurance',
-      label: `Insurance (search): ${bucket?.label || parsedInsurance.replace('bucket:', '')}`,
+      label: parsedLabel,
     });
   } else if (insuranceVal.startsWith('bucket:')) {
     const bucket = INSURANCE_BUCKETS[insuranceVal];

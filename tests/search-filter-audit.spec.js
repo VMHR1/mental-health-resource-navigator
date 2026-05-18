@@ -147,6 +147,36 @@ test.describe('Search & filter localhost audit', () => {
     await expect(page.getByText(/Insurance \(search\): Medicaid/i)).toBeVisible();
   });
 
+  test('smart search: accepts Cigna', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('search-input').fill('accepts Cigna');
+    await page.waitForTimeout(700);
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(20);
+    await expect(page.getByText(/Plan \(search\): Cigna/i)).toBeVisible();
+  });
+
+  test('smart search: BCBS shorthand', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('search-input').fill('accepts BCBS');
+    await page.waitForTimeout(700);
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(20);
+    await expect(page.getByText(/Plan \(search\): Blue Cross Blue Shield/i)).toBeVisible();
+  });
+
+  test('smart search: BHS shorthand', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('search-input').fill('accepts BHS');
+    await page.waitForTimeout(700);
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(5);
+    await expect(page.getByText(/Plan \(search\): Behavioral Health Systems/i)).toBeVisible();
+  });
+
   test('care level PHP filter', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);

@@ -22,6 +22,7 @@ loadBrowserScript('src/js/modules/search.js', win);
 loadBrowserScript('src/js/modules/filters.js', win);
 
 const data = JSON.parse(readFileSync(join(root, 'public/data/programs.json'), 'utf8'));
+win.registerInsurancePlansFromData(data.programs);
 const allPrograms = data.programs;
 const treatment = allPrograms.filter((p) => (p.entry_type || '').toLowerCase() !== 'crisis service');
 const crisis = allPrograms.filter((p) => (p.entry_type || '').toLowerCase() === 'crisis service');
@@ -243,6 +244,35 @@ row(
   iopMedicaid.length,
   iopMedicaid.length > 0 && iopMedicaid.length < medicaid.length,
   `medicaid-only: ${medicaid.length}`
+);
+
+// Spot-check named plans (full matrix: npm run audit:insurance)
+const uhcParse = win.parseSmartSearch('accepts uhc');
+const uhcPlanCount = filter(treatment, { insurance: 'plan:UnitedHealthcare' }, false).length;
+const uhcQueryCount = filter(treatment, { query: 'accepts uhc' }, false).length;
+row(
+  'Smart parse: accepts uhc → plan:UnitedHealthcare',
+  'plan:UnitedHealthcare',
+  uhcParse.insurance,
+  uhcParse.insurance === 'plan:UnitedHealthcare' && uhcQueryCount === uhcPlanCount
+);
+const umrParse = win.parseSmartSearch('accepts umr');
+const umrPlanCount = filter(treatment, { insurance: 'plan:UMR' }, false).length;
+const umrQueryCount = filter(treatment, { query: 'accepts umr' }, false).length;
+row(
+  'Smart parse: accepts umr → plan:UMR (not UnitedHealthcare)',
+  'plan:UMR',
+  umrParse.insurance,
+  umrParse.insurance === 'plan:UMR' && umrQueryCount === umrPlanCount
+);
+const bhsParse = win.parseSmartSearch('accepts bhs');
+const bhsCount = filter(treatment, { insurance: 'plan:Behavioral Health Systems' }, false).length;
+row(
+  'Smart parse: accepts bhs → Behavioral Health Systems',
+  'plan:Behavioral Health Systems',
+  bhsParse.insurance,
+  bhsParse.insurance === 'plan:Behavioral Health Systems' &&
+    filter(treatment, { query: 'accepts bhs' }, false).length === bhsCount
 );
 
 // --- Virtual only ---

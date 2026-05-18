@@ -6,6 +6,7 @@
  */
 
 import { readFileSync } from 'fs';
+import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -463,7 +464,22 @@ function runSearchFilterTests() {
   return true;
 }
 
+function runInsurancePlanAudit() {
+  console.log('\nRunning insurance plan smart-search audit...\n');
+  const result = spawnSync('node', ['scripts/audit-insurance-plans.mjs'], {
+    cwd: rootDir,
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) {
+    console.log('\n❌ Insurance plan audit failed.');
+    return false;
+  }
+  console.log('\n✅ Insurance plan audit passed!');
+  return true;
+}
+
 const statewideOk = runFilterTests();
 const searchOk = runSearchFilterTests();
-process.exit(statewideOk && searchOk ? 0 : 1);
+const insuranceOk = runInsurancePlanAudit();
+process.exit(statewideOk && searchOk && insuranceOk ? 0 : 1);
 
