@@ -287,10 +287,10 @@ function matchesFilters(program, filters, options = {}) {
     }
   }
 
-  // Insurance filter (buckets, types, plans)
-  const insuranceVal = safeStr(insurance);
-  if (insuranceVal) {
-    if (!programMatchesInsuranceFilter(program, insuranceVal, safeStr)) {
+  // Insurance filter (dropdown or smart-search bucket)
+  const insuranceToCheck = safeStr(insurance) || safeStr(parsed.insurance || '');
+  if (insuranceToCheck) {
+    if (!programMatchesInsuranceFilter(program, insuranceToCheck, safeStr)) {
       return false;
     }
   }
@@ -542,8 +542,17 @@ function getEffectiveSearchFilters(query, dropdowns = {}, options = {}) {
     chips.push({ type: 'parsedCrisis', label: 'Crisis resources included' });
   }
 
-  const insuranceVal = safeStr(dropdowns.insurance);
-  if (insuranceVal.startsWith('bucket:')) {
+  const insuranceDropdown = safeStr(dropdowns.insurance);
+  const parsedInsurance = safeStr(parsed.insurance || '');
+  const insuranceVal = insuranceDropdown || parsedInsurance;
+
+  if (parsedInsurance && parsedInsurance !== insuranceDropdown) {
+    const bucket = INSURANCE_BUCKETS[parsedInsurance];
+    chips.push({
+      type: 'parsedInsurance',
+      label: `Insurance (search): ${bucket?.label || parsedInsurance.replace('bucket:', '')}`,
+    });
+  } else if (insuranceVal.startsWith('bucket:')) {
     const bucket = INSURANCE_BUCKETS[insuranceVal];
     chips.push({
       type: 'insurance',

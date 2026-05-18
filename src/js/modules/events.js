@@ -374,6 +374,7 @@ function setupEventHandlers(options) {
       if(window.__ageDropdownSync) window.__ageDropdownSync();
     }
     if(parsed.care) els.care.value = parsed.care;
+    if (parsed.insurance && els.insurance) els.insurance.value = parsed.insurance;
     els.showCrisis.checked = parsed.showCrisis;
     
     // Apply service domain filter if detected

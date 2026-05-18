@@ -147,6 +147,44 @@ function detectCareLevel(q) {
   return '';
 }
 
+/**
+ * Map insurance phrases in search text to dropdown bucket values (bucket:*).
+ */
+function detectInsuranceFromQuery(q) {
+  const s = safeStr(q).toLowerCase();
+  if (!s) return '';
+
+  if (
+    /\b(medicaid|chip\b|star\s*\+|star\s+health|mco\b)\b/i.test(s) ||
+    /\b(accepts?|takes?|with)\s+medicaid/i.test(s) ||
+    /\bmedicaid\s+(accepted|friendly)\b/i.test(s)
+  ) {
+    return 'bucket:medicaid';
+  }
+  if (/\bmedicare\b/i.test(s) || /\b(accepts?|takes?|with)\s+medicare/i.test(s)) {
+    return 'bucket:medicare';
+  }
+  if (
+    /\b(tricare|triwest|champus|military\s+insurance)\b/i.test(s) ||
+    /\b(accepts?|takes?|with)\s+tricare/i.test(s)
+  ) {
+    return 'bucket:tricare';
+  }
+  if (
+    /\b(self[- ]?pay|sliding\s+scale|cash\s+pay|private\s+pay)\b/i.test(s) ||
+    /\bpay\s+out\s+of\s+pocket\b/i.test(s)
+  ) {
+    return 'bucket:self_pay';
+  }
+  if (
+    /\b(commercial\s+insurance|private\s+insurance|most\s+major\s+insurance|accepts?\s+insurance)\b/i.test(s) ||
+    /\b(employer\s+insurance|insurance\s+accepted)\b/i.test(s)
+  ) {
+    return 'bucket:commercial';
+  }
+  return '';
+}
+
 function parseSmartSearch(query, cities) {
   const q = query.toLowerCase();
   const filters = {
@@ -155,6 +193,7 @@ function parseSmartSearch(query, cities) {
     age: '',
     minAge: null,
     care: '',
+    insurance: '',
     showCrisis: false,
     organization: '' // Store detected organization name
   };
@@ -245,6 +284,9 @@ function parseSmartSearch(query, cities) {
   if(q.includes('crisis') || q.includes('emergency') || q.includes('urgent')) {
     filters.showCrisis = true;
   }
+
+  const insurance = detectInsuranceFromQuery(q);
+  if (insurance) filters.insurance = insurance;
   
   return filters;
 }
@@ -272,6 +314,14 @@ function stripParsedQueryTokens(query, cities) {
       /\b(crisis|emergency|urgent|eating disorder|anorexia|bulimia|binge eating|substance use|substance abuse|drug treatment|alcohol treatment|addiction)\b/gi,
       ''
     )
+    .replace(
+      /\b(accepts?|takes?|with)\s+(medicaid|medicare|tricare|triwest|chip\b|mco\b|insurance)\b/gi,
+      ''
+    )
+    .replace(
+      /\b(medicaid|medicare|tricare|triwest|chip\b|mco\b|self[- ]?pay|sliding\s+scale|cash\s+pay|commercial\s+insurance|private\s+insurance|insurance\s+accepted|accepts?\s+insurance|medicaid\s+(accepted|friendly))\b/gi,
+      ''
+    )
     .replace(/\b(virtual|telehealth|tele)\b/gi, '');
 
   const cityList = cities || [];
@@ -294,6 +344,10 @@ function stripParsedQueryTokens(query, cities) {
       const re = new RegExp(`\\b${loc.replace(/\s+/g, '\\s+')}\\b`, 'gi');
       terms = terms.replace(re, ' ');
     });
+  }
+
+  if (parsed.insurance) {
+    terms = terms.replace(/\b(accepts?|takes?|with)\b/gi, ' ');
   }
 
   return terms.replace(/\s+/g, ' ').trim();
@@ -334,7 +388,9 @@ if (typeof window !== 'undefined') {
   const internalGetTextSearchTermList = getTextSearchTermList;
   const internalParseSmartSearch = parseSmartSearch;
   const internalDetectCareLevel = detectCareLevel;
+  const internalDetectInsuranceFromQuery = detectInsuranceFromQuery;
   window.detectCareLevel = (query) => internalDetectCareLevel(query);
+  window.detectInsuranceFromQuery = (query) => internalDetectInsuranceFromQuery(query);
   window.getTextSearchTerms = (query) => {
     const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
     return internalGetTextSearchTerms(query, cities);

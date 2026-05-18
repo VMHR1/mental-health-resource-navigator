@@ -757,13 +757,20 @@ function getFilterModuleBindings(showCrisis) {
   const ageEl = els.age || document.getElementById('age');
   const insuranceEl = els.insurance || document.getElementById('insurance');
   const onlyVirtualEl = els.onlyVirtual || document.getElementById('onlyVirtual');
+  const query = readSearchQuery();
+  const parsed =
+    typeof window.parseSmartSearch === 'function'
+      ? window.parseSmartSearch(query)
+      : {};
+  const insuranceFromDropdown = insuranceEl?.value || '';
+  const effectiveInsurance = insuranceFromDropdown || parsed.insurance || '';
   return {
     filters: {
-      query: readSearchQuery(),
+      query,
       location: locEl?.value || '',
       age: ageEl?.value || '',
       care: careEl?.value || '',
-      insurance: insuranceEl?.value || '',
+      insurance: effectiveInsurance,
       onlyVirtual: onlyVirtualEl?.checked || false,
       showCrisis,
       county: els.county?.value || '',
@@ -3112,6 +3119,7 @@ function clearActiveFilterChip(chipType) {
       if (els.care) els.care.value = '';
       break;
     case 'insurance':
+    case 'parsedInsurance':
       if (els.insurance) els.insurance.value = '';
       break;
     case 'virtual':

@@ -24,13 +24,18 @@
     "test:e2e:update:linux": "docker run --rm -v $(pwd):/workspace -w /workspace mcr.microsoft.com/playwright:v1.40.0-focal /bin/bash -c \"npm install && npx playwright install chromium firefox webkit && npm run build && npx playwright test --update-snapshots\"",
     "test:mobile": "playwright test --project=mobile --project=mobile-webkit",
     "audit": "lhci autorun --config=lighthouserc.json",
-    "verify": "npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit"
+    "verify": "npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit",
+    "audit:search": "node scripts/audit-search-localhost.mjs",
+    "smoke:prod": "node scripts/prod-smoke.mjs"
   },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.40.0",
     "esbuild": "^0.27.2",
     "http-server": "^14.1.1"
+  },
+  "overrides": {
+    "tmp": "^0.2.5"
   },
   "keywords": [
     "mental-health",

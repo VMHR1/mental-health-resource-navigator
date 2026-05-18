@@ -212,6 +212,39 @@ row(
   `manual upper bound ~${medicaidManual.length}`
 );
 
+// --- Insurance smart search ---
+const medicaidParse = win.parseSmartSearch('accepts Medicaid');
+row(
+  'Smart parse: accepts Medicaid → bucket',
+  'bucket:medicaid',
+  medicaidParse.insurance,
+  medicaidParse.insurance === 'bucket:medicaid'
+);
+const medicaidQuery = filter(treatment, { query: 'accepts Medicaid' }, false);
+row(
+  'Query "accepts Medicaid" matches bucket filter',
+  medicaid.length,
+  medicaidQuery.length,
+  medicaidQuery.length === medicaid.length,
+  `bucket-only: ${medicaid.length}`
+);
+const iopMedicaidParse = win.parseSmartSearch('IOP accepts Medicaid');
+row(
+  'Smart parse: IOP accepts Medicaid → care + insurance',
+  'IOP + medicaid',
+  `${iopMedicaidParse.care}|${iopMedicaidParse.insurance}`,
+  iopMedicaidParse.care === 'Intensive Outpatient (IOP)' &&
+    iopMedicaidParse.insurance === 'bucket:medicaid'
+);
+const iopMedicaid = filter(treatment, { query: 'IOP accepts Medicaid' }, false);
+row(
+  'Query "IOP accepts Medicaid" narrows results',
+  `>0 and <${medicaid.length}`,
+  iopMedicaid.length,
+  iopMedicaid.length > 0 && iopMedicaid.length < medicaid.length,
+  `medicaid-only: ${medicaid.length}`
+);
+
 // --- Virtual only ---
 const virtualOnly = filter(treatment, { onlyVirtual: true }, false);
 const virtualManual = treatment.filter((p) => opts.hasVirtual(p));

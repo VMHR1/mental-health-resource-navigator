@@ -136,6 +136,17 @@ test.describe('Search & filter localhost audit', () => {
     expect(count).toBeLessThan(90);
   });
 
+  test('smart search: accepts Medicaid', async ({ page }) => {
+    await waitForPrograms(page);
+    await resetFilters(page);
+    await page.getByTestId('search-input').fill('accepts Medicaid');
+    await page.waitForTimeout(700);
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(10);
+    expect(count).toBeLessThan(90);
+    await expect(page.getByText(/Insurance \(search\): Medicaid/i)).toBeVisible();
+  });
+
   test('care level PHP filter', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
