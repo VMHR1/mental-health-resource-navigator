@@ -30,21 +30,68 @@ const FILTER_PRESETS = {
   'teens-dallas': {
     location: 'Dallas',
     age: '13',
-    query: ''
+    query: '',
   },
   'crisis-support': {
     showCrisis: true,
-    query: 'crisis support'
+    query: 'crisis support',
   },
   'virtual-therapy': {
     onlyVirtual: true,
-    query: ''
+    query: '',
   },
   'iop-plano': {
     location: 'Plano',
-    care: 'Intensive Outpatient (IOP)'
-  }
+    care: 'Intensive Outpatient (IOP)',
+    query: '',
+  },
+  'eating-disorders-all': {
+    serviceDomain: 'eating_disorders',
+    query: '',
+  },
+  'eating-disorders-php': {
+    serviceDomain: 'eating_disorders',
+    care: 'Partial Hospitalization (PHP)',
+    query: '',
+  },
+  'eating-disorders-iop': {
+    serviceDomain: 'eating_disorders',
+    care: 'Intensive Outpatient (IOP)',
+    query: '',
+  },
+  'eating-disorders-outpatient': {
+    serviceDomain: 'eating_disorders',
+    care: 'Outpatient',
+    query: '',
+  },
+  'substance-use-all': {
+    serviceDomain: 'substance_use',
+    query: '',
+  },
+  'substance-use-php': {
+    serviceDomain: 'substance_use',
+    care: 'Partial Hospitalization (PHP)',
+    query: '',
+  },
+  'substance-use-iop': {
+    serviceDomain: 'substance_use',
+    care: 'Intensive Outpatient (IOP)',
+    query: '',
+  },
+  'substance-use-outpatient': {
+    serviceDomain: 'substance_use',
+    care: 'Outpatient',
+    query: '',
+  },
 };
+
+/** Quick-fill examples shown under the search box (also documented in search tips). */
+const SEARCH_EXAMPLES = [
+  { label: 'IOP in Plano', query: 'IOP in Plano' },
+  { label: 'PHP in Dallas', query: 'partial hospitalization Dallas' },
+  { label: 'Teen (age 14)', query: 'outpatient Dallas 14' },
+  { label: '13 and up', query: 'IOP 13 and up' },
+];
 
 const PROGRESSIVE_LOAD_INCREMENT = 20;
 const INITIAL_LOAD_COUNT = 20;
@@ -98,6 +145,7 @@ if (typeof window !== 'undefined') {
   window.CITIES = CITIES;
   window.LEVELS_OF_CARE = LEVELS_OF_CARE;
   window.FILTER_PRESETS = FILTER_PRESETS;
+  window.SEARCH_EXAMPLES = SEARCH_EXAMPLES;
   window.FEATURE_FLAGS = FEATURE_FLAGS;
   window.SORT_OPTIONS = SORT_OPTIONS;
   window.DEFAULT_SORT = DEFAULT_SORT;

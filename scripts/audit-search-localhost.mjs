@@ -114,6 +114,22 @@ const houstonExcluded = !filter(treatment, { location: 'Plano' }, false).some((p
 );
 row('Plano excludes Houston-only site', true, houstonExcluded, houstonExcluded);
 
+// --- Care level synonyms ---
+const phpDay = win.parseSmartSearch('day treatment Dallas');
+row(
+  'Smart parse: day treatment → PHP',
+  'Partial Hospitalization (PHP)',
+  phpDay.care,
+  phpDay.care === 'Partial Hospitalization (PHP)'
+);
+const phpPartial = win.parseSmartSearch('partial hospitalization Plano');
+row(
+  'Smart parse: partial hospitalization → PHP',
+  'Partial Hospitalization (PHP)',
+  phpPartial.care,
+  phpPartial.care === 'Partial Hospitalization (PHP)'
+);
+
 // --- Smart search: IOP Plano ---
 const iopPlano = filter(treatment, { query: 'IOP in Plano' }, false);
 const iopPlanoParsed = win.parseSmartSearch('IOP in Plano');

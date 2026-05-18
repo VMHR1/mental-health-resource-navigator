@@ -323,8 +323,16 @@ function runSearchFilterTests() {
   const win = {};
   loadBrowserScript('src/js/utils/location-match.js', win);
   loadBrowserScript('src/js/utils/helpers.js', win);
+  loadBrowserScript('src/js/modules/search.js', win);
 
-  const { programServesLocation, countyForCity, parseAgeSpec, programServesAge } = win;
+  const {
+    programServesLocation,
+    countyForCity,
+    parseAgeSpec,
+    programServesAge,
+    detectCareLevel,
+    parseSmartSearch,
+  } = win;
 
   let passed = 0;
   let failed = 0;
@@ -427,6 +435,23 @@ function runSearchFilterTests() {
   assert(
     'programServesAge unknown returns null',
     programServesAge({ ages_served: 'Unknown' }, 14) === null
+  );
+
+  assert(
+    'detectCareLevel: day treatment → PHP',
+    detectCareLevel('day treatment Dallas') === 'Partial Hospitalization (PHP)'
+  );
+  assert(
+    'detectCareLevel: partial hospitalization → PHP',
+    detectCareLevel('partial hospitalization') === 'Partial Hospitalization (PHP)'
+  );
+  assert(
+    'detectCareLevel: intensive outpatient → IOP',
+    detectCareLevel('intensive outpatient') === 'Intensive Outpatient (IOP)'
+  );
+  assert(
+    'parseSmartSearch: outpatient without intensive',
+    parseSmartSearch('outpatient Frisco', ['frisco', 'dallas']).care === 'Outpatient'
   );
 
   console.log(`\nSearch filter tests: ${passed} passed, ${failed} failed`);

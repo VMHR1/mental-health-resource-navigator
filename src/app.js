@@ -1414,92 +1414,75 @@ function nativeShare(url, title) {
   }
 }
 
-function applyFilterPreset(preset) {
-  // Clear ALL current filters comprehensively
-  els.q.value = "";
-  delete els.q.dataset.exactMatch;
-  delete els.q.dataset.matchType;
-  els.loc.value = "";
-  els.age.value = "";
-  if (window.__ageDropdownSync) window.__ageDropdownSync();
-  els.care.value = "";
-  if (els.insurance) els.insurance.value = "";
-  els.onlyVirtual.checked = false;
-  els.showCrisis.checked = false;
-
-  // Clear statewide filters
-  if (els.serviceDomain) els.serviceDomain.value = "";
+function clearAllFilters() {
+  refreshEls();
+  const qEl = els.q || document.getElementById('q');
+  if (qEl) {
+    qEl.value = '';
+    delete qEl.dataset.exactMatch;
+    delete qEl.dataset.matchType;
+  }
+  if (els.loc) els.loc.value = '';
+  if (els.age) {
+    els.age.value = '';
+    if (window.__ageDropdownSync) window.__ageDropdownSync();
+  }
+  if (els.care) els.care.value = '';
+  if (els.insurance) els.insurance.value = '';
+  if (els.onlyVirtual) els.onlyVirtual.checked = false;
+  if (els.showCrisis) els.showCrisis.checked = false;
+  if (els.serviceDomain) els.serviceDomain.value = '';
   selectedServiceDomains = [];
   if (els.sudServices) {
-    Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
+    Array.from(els.sudServices.options).forEach((opt) => {
+      opt.selected = false;
+    });
   }
   selectedSudServices = [];
-  if (els.county) els.county.value = "";
+  if (els.county) els.county.value = '';
   selectedCounty = null;
-  if (els.verificationRecency) els.verificationRecency.value = "";
+  if (els.verificationRecency) els.verificationRecency.value = '';
   verificationRecencyDays = null;
-  
-  switch(preset) {
-    case 'teens-dallas':
-      els.loc.value = 'Dallas';
-      els.age.value = '13';
-      if (window.__ageDropdownSync) window.__ageDropdownSync();
-      break;
-    case 'crisis-support':
-      els.showCrisis.checked = true;
-      els.q.value = 'crisis support';
-      break;
-    case 'virtual-therapy':
-      els.onlyVirtual.checked = true;
-      break;
-    case 'iop-plano':
-      els.loc.value = 'Plano';
-      els.care.value = 'Intensive Outpatient (IOP)';
-      break;
-    
-    // Eating Disorders presets
-    case 'eating-disorders-all':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      break;
-    case 'eating-disorders-php':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Partial Hospitalization (PHP)';
-      break;
-    case 'eating-disorders-iop':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Intensive Outpatient (IOP)';
-      break;
-    case 'eating-disorders-outpatient':
-      if (els.serviceDomain) els.serviceDomain.value = 'eating_disorders';
-      selectedServiceDomains = ['eating_disorders'];
-      els.care.value = 'Outpatient';
-      break;
-    
-    // Substance Use presets
-    case 'substance-use-all':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      break;
-    case 'substance-use-php':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Partial Hospitalization (PHP)';
-      break;
-    case 'substance-use-iop':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Intensive Outpatient (IOP)';
-      break;
-    case 'substance-use-outpatient':
-      if (els.serviceDomain) els.serviceDomain.value = 'substance_use';
-      selectedServiceDomains = ['substance_use'];
-      els.care.value = 'Outpatient';
-      break;
+}
+
+/** Apply a FILTER_PRESETS entry (see js/config/constants.js). */
+function applyPresetConfig(config) {
+  if (!config || typeof config !== 'object') return;
+  refreshEls();
+
+  if (config.query !== undefined && els.q) {
+    els.q.value = safeStr(config.query);
+    if (!config.query) {
+      delete els.q.dataset.exactMatch;
+      delete els.q.dataset.matchType;
+    }
   }
-  
+  if (config.location && els.loc) els.loc.value = config.location;
+  if (config.age && els.age) {
+    els.age.value = config.age;
+    if (window.__ageDropdownSync) window.__ageDropdownSync();
+  }
+  if (config.care && els.care) els.care.value = config.care;
+  if (config.insurance && els.insurance) els.insurance.value = config.insurance;
+  if (config.onlyVirtual && els.onlyVirtual) els.onlyVirtual.checked = true;
+  if (config.showCrisis && els.showCrisis) els.showCrisis.checked = true;
+  if (config.serviceDomain && els.serviceDomain) {
+    els.serviceDomain.value = config.serviceDomain;
+    selectedServiceDomains = [config.serviceDomain];
+  }
+}
+
+function applyFilterPreset(preset) {
+  clearAllFilters();
+
+  const presets = window.FILTER_PRESETS || {};
+  const config = presets[preset];
+  if (!config) {
+    console.warn('Unknown filter preset:', preset);
+    return;
+  }
+  applyPresetConfig(config);
+
   syncTopToggles();
   
   // Sync chips after preset is applied

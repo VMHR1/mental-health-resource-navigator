@@ -517,6 +517,24 @@ function setupEventHandlers(options) {
     });
   });
 
+  // Search example chips (fill query and run search)
+  document.querySelectorAll('[data-search-example]').forEach((btn) => {
+    on(btn, 'click', () => {
+      const example = btn.getAttribute('data-search-example') || '';
+      if (els.q) {
+        els.q.value = example;
+        delete els.q.dataset.exactMatch;
+        delete els.q.dataset.matchType;
+      }
+      callbacks.hideAutocomplete();
+      scheduleRender();
+      const section = document.getElementById('treatmentSection');
+      if (section) {
+        window.scrollTo({ top: section.offsetTop - 10, behavior: 'smooth' });
+      }
+    });
+  });
+
   // Modal close buttons
   els.favoritesModal.querySelectorAll('.modal-close').forEach(btn => {
     on(btn, "click", () => callbacks.hideModal(els.favoritesModal));

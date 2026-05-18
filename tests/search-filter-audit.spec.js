@@ -56,6 +56,20 @@ test.describe('Search & filter localhost audit', () => {
     expect(names.length).toBeGreaterThan(0);
   });
 
+  test('search tips and example chips are available', async ({ page }) => {
+    await waitForPrograms(page);
+    const tips = page.locator('#searchTips');
+    await expect(tips).toBeAttached();
+    await tips.locator('summary').click();
+    await expect(page.getByTestId('search-examples')).toBeVisible();
+    await page.locator('[data-search-example="IOP in Plano"]').click();
+    await page.waitForTimeout(600);
+    await expect(page.getByTestId('search-input')).toHaveValue('IOP in Plano');
+    const count = await getCount(page);
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThan(50);
+  });
+
   test('smart search: IOP in Plano parses and filters', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);

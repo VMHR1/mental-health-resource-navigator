@@ -26,21 +26,21 @@
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
   <script defer src="js/data-validator.js?v=3"></script>
-  <script defer src="js/config/constants.js?v=3"></script>
+  <script defer src="js/config/constants.js?v=4"></script>
   <script defer src="js/utils/location-match.js?v=1"></script>
   <script defer src="js/utils/helpers.js?v=4"></script>
   <script defer src="js/modules/storage.js?v=3"></script>
-  <script defer src="js/modules/search.js?v=6"></script>
+  <script defer src="js/modules/search.js?v=7"></script>
   <script defer src="js/modules/filters.js?v=5"></script>
   <script defer src="js/modules/sort.js?v=3"></script>
   <script defer src="js/modules/distance.js?v=2"></script>
   <script defer src="js/modules/performance.js?v=3"></script>
   <script defer src="js/modules/render.js?v=3"></script>
-  <script defer src="js/modules/events.js?v=4"></script>
+  <script defer src="js/modules/events.js?v=5"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -220,10 +220,30 @@
           <label for="q">What are you looking for?</label>
           <div class="input-wrapper" style="position: relative;">
             <span class="input-icon" aria-hidden="true">🔍</span>
-            <input id="q" type="search" data-testid="search-input" placeholder="Try: 'IOP in Plano for 14-year-old' or 'crisis support'" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" />
+            <input id="q" type="search" data-testid="search-input" placeholder="City, level of care (PHP, IOP), age — e.g. IOP in Plano for 14" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" aria-describedby="searchTipsText" />
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="Search suggestions" style="display: none;"></div>
           </div>
         </div>
+
+        <details class="search-tips" id="searchTips">
+          <summary>How to search</summary>
+          <div class="search-tips-body" id="searchTipsText">
+            <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Use Advanced Filters for insurance and more.</p>
+            <ul class="search-tips-list">
+              <li><strong>Location:</strong> Plano, Dallas, Frisco (includes nearby counties &amp; telehealth when listed)</li>
+              <li><strong>Care level:</strong> PHP, IOP, outpatient, partial hospitalization, day treatment, residential</li>
+              <li><strong>Age:</strong> <code>14</code>, <code>13 and up</code>, <code>16 year old</code></li>
+              <li><strong>Crisis:</strong> type <em>crisis support</em> or use the preset / “Show crisis resources” chip</li>
+            </ul>
+            <p class="search-tips-examples-label">Try an example:</p>
+            <div class="search-examples" data-testid="search-examples">
+              <button type="button" class="search-example-chip" data-search-example="IOP in Plano">IOP in Plano</button>
+              <button type="button" class="search-example-chip" data-search-example="partial hospitalization Dallas">PHP in Dallas</button>
+              <button type="button" class="search-example-chip" data-search-example="outpatient Frisco 14">Outpatient Frisco, age 14</button>
+              <button type="button" class="search-example-chip" data-search-example="IOP 13 and up">IOP, 13 and up</button>
+            </div>
+          </div>
+        </details>
         
         <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">
           Find Programs →
@@ -671,7 +691,7 @@
     </div>
   </div>
 
-  <script defer src="app.js?v=19"></script>
+  <script defer src="app.js?v=20"></script>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">

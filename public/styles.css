@@ -3843,6 +3843,83 @@ body.modal-open {
   transform: translateY(-1px);
 }
 
+/* Smart search tips & examples */
+.search-tips {
+  flex: 1 1 100%;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.search-tips summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--ink);
+  list-style-position: outside;
+  padding: 4px 0;
+}
+
+.search-tips summary:hover {
+  color: var(--c);
+}
+
+.search-tips-body {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.search-tips-body p {
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+
+.search-tips-list {
+  margin: 0 0 10px 1.1rem;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.search-tips-list code {
+  font-size: 12px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(122, 167, 255, 0.12);
+}
+
+.search-tips-examples-label {
+  margin: 0 0 6px !important;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.search-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.search-example-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px dashed rgba(122, 167, 255, 0.45);
+  background: rgba(122, 167, 255, 0.08);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-example-chip:hover {
+  background: rgba(122, 167, 255, 0.18);
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
 /* Comparison Styles */
 .compare-btn {
   position: relative;

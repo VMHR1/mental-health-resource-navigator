@@ -119,6 +119,34 @@ function findBestCityMatch(query, cities) {
   return bestMatch;
 }
 
+/**
+ * Map natural-language care terms to canonical level_of_care values.
+ * Order matters: check PHP/IOP before generic "outpatient".
+ */
+function detectCareLevel(q) {
+  const s = safeStr(q).toLowerCase();
+  if (!s) return '';
+
+  if (
+    /\b(partial\s+hospital(?:ization)?|php\b|day\s+(?:hospital|treatment|program))\b/i.test(s)
+  ) {
+    return 'Partial Hospitalization (PHP)';
+  }
+  if (/\b(intensive\s+outpatient|\biop\b)/i.test(s)) {
+    return 'Intensive Outpatient (IOP)';
+  }
+  if (/\b(residential|inpatient|\brtc\b)\b/i.test(s)) {
+    return 'Residential';
+  }
+  if (/\b(outpatient)\b/i.test(s) && !/\bintensive\s+outpatient\b/i.test(s)) {
+    return 'Outpatient';
+  }
+  if (/\b(navigation|care\s+navigation|resource\s+navigation)\b/i.test(s)) {
+    return 'Navigation';
+  }
+  return '';
+}
+
 function parseSmartSearch(query, cities) {
   const q = query.toLowerCase();
   const filters = {
@@ -199,16 +227,9 @@ function parseSmartSearch(query, cities) {
     }
   }
   
-  // Level of care detection
-  if(q.includes('php') || q.includes('partial hospitalization')) {
-    filters.care = 'Partial Hospitalization (PHP)';
-  } else if(q.includes('iop') || q.includes('intensive outpatient')) {
-    filters.care = 'Intensive Outpatient (IOP)';
-  } else if(q.includes('outpatient') && !q.includes('intensive')) {
-    filters.care = 'Outpatient';
-  } else if(q.includes('navigation')) {
-    filters.care = 'Navigation';
-  }
+  // Level of care detection (specific patterns before generic outpatient)
+  const care = detectCareLevel(q);
+  if (care) filters.care = care;
   
   // Service domain detection - eating disorders
   if(q.includes('eating disorder') || q.includes('anorexia') || q.includes('bulimia') || q.includes('binge eating')) {
@@ -242,7 +263,10 @@ function stripParsedQueryTokens(query, cities) {
   let terms = q;
 
   terms = terms
-    .replace(/\b(php|partial hospitalization|iop|intensive outpatient|outpatient|navigation)\b/gi, '')
+    .replace(
+      /\b(php|partial\s+hospital(?:ization)?|day\s+(?:hospital|treatment|program)|iop|intensive\s+outpatient|outpatient|residential|inpatient|rtc|navigation|care\s+navigation)\b/gi,
+      ''
+    )
     .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
     .replace(
       /\b(crisis|emergency|urgent|eating disorder|anorexia|bulimia|binge eating|substance use|substance abuse|drug treatment|alcohol treatment|addiction)\b/gi,
@@ -309,6 +333,8 @@ if (typeof window !== 'undefined') {
   const internalGetTextSearchTerms = getTextSearchTerms;
   const internalGetTextSearchTermList = getTextSearchTermList;
   const internalParseSmartSearch = parseSmartSearch;
+  const internalDetectCareLevel = detectCareLevel;
+  window.detectCareLevel = (query) => internalDetectCareLevel(query);
   window.getTextSearchTerms = (query) => {
     const cities = window.getSearchCities ? window.getSearchCities() : window.CITIES || [];
     return internalGetTextSearchTerms(query, cities);
