@@ -27,7 +27,8 @@
     "verify": "npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit",
     "audit:search": "node scripts/audit-search-localhost.mjs",
     "audit:insurance": "node scripts/audit-insurance-plans.mjs",
-    "smoke:prod": "node scripts/prod-smoke.mjs"
+    "smoke:prod": "node scripts/prod-smoke.mjs",
+    "push:deploy": "git push origin HEAD:updated-main"
   },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
