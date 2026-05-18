@@ -60,6 +60,9 @@ function copyStaticAssets() {
       { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
+      // Keep dist/data in sync for any legacy paths or tooling that reference it
+      { src: 'public/data/programs.json', dest: 'data/programs.json' },
+      { src: 'public/data/programs.geocoded.json', dest: 'data/programs.geocoded.json' },
       { src: '_redirects', dest: '_redirects' },
       { src: '_headers', dest: '_headers' }
     ];

@@ -3120,8 +3120,11 @@ function updateLastUpdatedDisplay() {
   const lastUpdatedEl = document.getElementById('lastUpdated');
   if (!lastUpdatedEl || !programsMetadata) return;
   
-  // Try generatedAt first (ISO format), then generated_at (date format)
-  const dateStr = programsMetadata.generatedAt || programsMetadata.generated_at;
+  // Prefer explicit full-verification date, then generatedAt (ISO), then generated_at
+  const dateStr =
+    programsMetadata.last_full_verification ||
+    programsMetadata.generatedAt ||
+    programsMetadata.generated_at;
   if (dateStr) {
     try {
       const date = new Date(dateStr);
