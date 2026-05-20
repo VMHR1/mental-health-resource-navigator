@@ -218,6 +218,12 @@ if (typeof window !== 'undefined') {
   window.programServesAge = programServesAge;
   window.isHttpUrl = isHttpUrl;
   window.resolveVerificationUrl = resolveVerificationUrl;
+  /** Root-relative program detail URL (Phase 2 slug pages). */
+  window.programPublicPath = function programPublicPath(programId) {
+    const id = safeStr(programId);
+    if (!id) return '/program.html';
+    return `/programs/${encodeURIComponent(id)}.html`;
+  };
 }
 
 

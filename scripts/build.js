@@ -44,6 +44,7 @@ function copyStaticAssets() {
       { src: 'src/html/admin.html', dest: 'admin.html' },
       { src: 'src/html/program.html', dest: 'program.html' },
       { src: 'src/html/submit.html', dest: 'submit.html' },
+      { src: 'src/html/guides.html', dest: 'guides.html' },
       { src: 'src/html/privacy.html', dest: 'privacy.html' },
       { src: 'src/html/terms.html', dest: 'terms.html' },
       { src: 'src/html/404.html', dest: '404.html' }
@@ -52,6 +53,7 @@ function copyStaticAssets() {
     // Static assets from public
     const staticFiles = [
       { src: 'public/styles.css', dest: 'styles.css' },
+      { src: 'public/phase1-design.css', dest: 'phase1-design.css' },
       { src: 'public/security.js', dest: 'security.js' },
       { src: 'public/sw.js', dest: 'sw.js' },
       { src: 'public/site.webmanifest', dest: 'site.webmanifest' },
@@ -113,6 +115,7 @@ function copyStaticAssets() {
       'src/js/modules/performance.js',
       'src/js/modules/render.js',
       'src/js/modules/events.js',
+      'src/js/modules/home-phase1.js',
       'src/js/utils/location-match.js'
     ];
     
@@ -275,6 +278,12 @@ build()
   .then(async () => {
     if (!isWatch) {
       await createLegacyBundle();
+      try {
+        const { generateProgramPages } = await import('./generate-program-pages.js');
+        generateProgramPages();
+      } catch (e) {
+        console.warn('Program slug page generation skipped:', e?.message || e);
+      }
     }
     console.log('Build process completed successfully');
     process.exit(0);

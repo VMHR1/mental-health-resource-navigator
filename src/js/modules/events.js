@@ -366,8 +366,15 @@ function setupEventHandlers(options) {
     window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
   });
 
-  // Advanced filters toggle
+  // Advanced filters toggle (on mobile, open filter tray — inline panel is hidden via CSS)
   on(els.showAdvanced, "click", () => {
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      const trayBtn = document.getElementById("openFilterTray");
+      if (trayBtn) {
+        trayBtn.click();
+        return;
+      }
+    }
     const isHidden = els.advancedFilters.style.display === "none";
     els.advancedFilters.style.display = isHidden ? "block" : "none";
     els.showAdvanced.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
@@ -454,16 +461,26 @@ function setupEventHandlers(options) {
     els.showCrisis.checked = true;
     callbacks.syncTopToggles();
     callbacks.render();
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
+    if (t) t.scrollIntoView({ behavior: motion, block: "start" });
   });
 
   on(els.viewTreatmentOptions, "click", () => {
     els.showCrisis.checked = false;
     callbacks.syncTopToggles();
     callbacks.render();
-    const t = document.getElementById("treatmentSection");
-    window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
+    if (typeof window.revealViableSearch === "function") {
+      window.revealViableSearch();
+      return;
+    }
+    const search = document.getElementById("searchSection");
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    if (search) {
+      search.classList.add("is-revealed");
+      search.scrollIntoView({ behavior: motion, block: "start" });
+      if (els.q) els.q.focus({ preventScroll: true });
+    }
   });
 
   // Global keyboard shortcuts

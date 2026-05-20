@@ -3,7 +3,8 @@
 
 # Note: This is a multi-page app (index.html, program.html, submit.html, admin.html)
 # SPA routing redirect is not needed. If you add client-side routing later, use:
-# /program/:id    /program.html?id=:id    200
+# /programs/:id    /program.html?id=:id    200
+# Prefer static files: dist/programs/{program_id}.html (generated at build) for shareable URLs.
 
 # Ensure admin.html is served correctly (not redirected)
 /admin.html    /admin.html    200

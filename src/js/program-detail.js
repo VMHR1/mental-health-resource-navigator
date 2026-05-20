@@ -5,7 +5,11 @@ let currentProgram = null;
 
 async function loadPrograms() {
   try {
-    const res = await fetch('programs.json', { cache: 'no-store' });
+    let jsonUrl = '/programs.json';
+    if (window.location.protocol === 'file:') {
+      jsonUrl = new URL('../programs.json', window.location.href).href;
+    }
+    const res = await fetch(jsonUrl, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load programs');
     const data = await res.json();
     programs = data.programs || [];
@@ -14,6 +18,79 @@ async function loadPrograms() {
     console.error('Error loading programs:', error);
     return [];
   }
+}
+
+function getProgramIdFromLocation() {
+  if (typeof window.__ViableMHRProgramId === 'string' && window.__ViableMHRProgramId.trim()) {
+    return window.__ViableMHRProgramId.trim();
+  }
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('id');
+  if (q) return q.trim();
+  const path = window.location.pathname || '';
+  const m = path.match(/\/programs\/([^/]+)\.html$/i);
+  if (m) return decodeURIComponent(m[1]);
+  return '';
+}
+
+function injectSeoMeta(program) {
+  const safeStr = window.safeStr || ((x) => (x ?? '').toString().trim());
+  const pid = safeStr(program.program_id);
+  if (!pid) return;
+  const base = 'https://viablemhr.com';
+  const pageUrl = `${base}/programs/${encodeURIComponent(pid)}.html`;
+
+  let canon = document.querySelector('link[rel="canonical"]');
+  if (!canon) {
+    canon = document.createElement('link');
+    canon.rel = 'canonical';
+    document.head.appendChild(canon);
+  }
+  canon.href = pageUrl;
+
+  const desc = safeStr(program.insurance_notes || program.notes || program.level_of_care).slice(0, 300);
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc && desc) metaDesc.setAttribute('content', `${safeStr(program.program_name)} — ${desc}`);
+
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: safeStr(program.program_name) || undefined,
+    url: pageUrl,
+  };
+  const note = safeStr(program.insurance_notes || program.notes);
+  if (note) ld.description = note.slice(0, 500);
+  const phone = safeStr(program.phone);
+  if (phone) ld.telephone = phone;
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  const addr = locs[0] || {};
+  if (addr && (safeStr(addr.address) || safeStr(addr.city))) {
+    ld.address = {
+      '@type': 'PostalAddress',
+      streetAddress: safeStr(addr.address) || undefined,
+      addressLocality: safeStr(addr.city) || undefined,
+      addressRegion: safeStr(addr.state) || undefined,
+      postalCode: safeStr(addr.zip) || undefined,
+    };
+  }
+  Object.keys(ld).forEach((k) => {
+    if (ld[k] === undefined) delete ld[k];
+  });
+  if (ld.address) {
+    Object.keys(ld.address).forEach((k) => {
+      if (ld.address[k] === undefined) delete ld.address[k];
+    });
+    if (Object.keys(ld.address).length === 0) delete ld.address;
+  }
+
+  let el = document.getElementById('program-jsonld');
+  if (!el) {
+    el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'program-jsonld';
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(ld);
 }
 
 function findProgramById(programId) {
@@ -365,7 +442,8 @@ function renderProgramDetail(program) {
 
       const idEnc = encodeURIComponent(p.program_id || '');
       const detailLink = document.createElement('a');
-      detailLink.href = `program.html?id=${idEnc}`;
+      const hrefFn = window.programPublicPath || ((id) => `/programs/${encodeURIComponent(id)}.html`);
+      detailLink.href = hrefFn(p.program_id || '');
       detailLink.className = 'linkBtn primary';
       detailLink.textContent = 'View Details';
 
@@ -384,13 +462,13 @@ function renderProgramDetail(program) {
   }
 
   document.title = `${safeStr(program.program_name)} • ViableMHR`;
+  injectSeoMeta(program);
 }
 
 (async () => {
   await loadPrograms();
 
-  const params = new URLSearchParams(window.location.search);
-  const programId = params.get('id');
+  const programId = getProgramIdFromLocation();
 
   const root = document.getElementById('programDetail');
   if (!root) return;

@@ -1,15 +1,18 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { openAdvancedFilters, waitForPrograms } from './helpers/ui.js';
 
 test.describe('Filter behavior and routing', () => {
   test('eating disorder preset returns eating disorder programs', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.locator('[data-preset="eating-disorders-all"]').click();
-    await page.waitForTimeout(600);
+    await waitForPrograms(page);
+    const btn = page.locator('[data-preset="eating-disorders-all"]').first();
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
     const cards = page.locator('.card:has(.pname)');
-    await expect(cards.first()).toBeVisible();
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
     const count = await cards.count();
     expect(count).toBeGreaterThan(0);
   });
@@ -17,17 +20,19 @@ test.describe('Filter behavior and routing', () => {
   test('substance use preset returns substance use programs', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.locator('[data-preset="substance-use-all"]').click();
-    await page.waitForTimeout(600);
+    await waitForPrograms(page);
+    const btn = page.locator('[data-preset="substance-use-all"]').first();
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
     const cards = page.locator('.card:has(.pname)');
-    await expect(cards.first()).toBeVisible();
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
     expect(await cards.count()).toBeGreaterThan(0);
   });
 
   test('OSAR referral enables crisis results', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.locator('#statewideFiltersSection').evaluate((el) => {
       el.style.display = 'block';
     });
@@ -49,7 +54,7 @@ test.describe('Filter behavior and routing', () => {
   test('Outpatient and Residential care filters return results', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#care', 'Outpatient', { force: true });
     await page.waitForTimeout(600);
     expect(await page.locator('.card:has(.pname)').count()).toBeGreaterThan(0);
@@ -82,6 +87,9 @@ test.describe('Filter behavior and routing', () => {
     expect(validId).toBeTruthy();
 
     await page.goto(`/program.html?id=${encodeURIComponent(validId)}`);
+    await expect(page.locator('#programDetail .program-detail-title')).toBeVisible();
+
+    await page.goto(`/programs/${encodeURIComponent(validId)}.html`);
     await expect(page.locator('#programDetail .program-detail-title')).toBeVisible();
 
     await page.goto('/program.html?id=does-not-exist');

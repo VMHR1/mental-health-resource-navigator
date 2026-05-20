@@ -27,9 +27,9 @@ const LEVELS_OF_CARE = [
 ];
 
 const FILTER_PRESETS = {
-  'teens-dallas': {
-    location: 'Dallas',
-    age: '13',
+  /** Quick start — broad (no single city) */
+  'youth-teens': {
+    age: '15',
     query: '',
   },
   'crisis-support': {
@@ -38,6 +38,20 @@ const FILTER_PRESETS = {
   },
   'virtual-therapy': {
     onlyVirtual: true,
+    query: '',
+  },
+  'iop-programs': {
+    care: 'Intensive Outpatient (IOP)',
+    query: '',
+  },
+  'outpatient-programs': {
+    care: 'Outpatient',
+    query: '',
+  },
+  /** Legacy / examples — city + filter combos */
+  'teens-dallas': {
+    location: 'Dallas',
+    age: '13',
     query: '',
   },
   'iop-plano': {

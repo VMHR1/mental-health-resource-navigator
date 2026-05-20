@@ -439,6 +439,11 @@ header{
   box-sizing: border-box;
 }
 
+.hero-gateway .trust-strip {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .trust-grid{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -4851,12 +4856,14 @@ body.high-contrast textarea {
     padding: 20px;
   }
   
-  /* Fix trust strip */
+  /* Fix trust strip — keep aligned with container padding */
   .trust-strip {
     padding: 16px;
-    margin-left: -12px;
-    margin-right: -12px;
-    width: calc(100% + 24px);
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* Fix hero section */

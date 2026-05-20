@@ -296,9 +296,9 @@ document.addEventListener('click', (e) => {
   
   // Handle expand button clicks - check if click is on the button or its child (chev icon)
   // Check both the target and if it's inside an expandBtn
-  let expandBtn = e.target.closest('.expandBtn');
+  let expandBtn = e.target.closest('.expandBtn, .expand-details-btn');
   // Also check if clicking directly on the button
-  if (!expandBtn && e.target.classList && e.target.classList.contains('expandBtn')) {
+  if (!expandBtn && e.target.classList && (e.target.classList.contains('expandBtn') || e.target.classList.contains('expand-details-btn'))) {
     expandBtn = e.target;
   }
   
@@ -4069,18 +4069,6 @@ document.addEventListener('click', (e) => {
   } else if (action === 'broaden-search') {
     broadenSearchOneStep();
     render();
-  } else if (action === 'open-what-to-ask') {
-    // Scroll to and open the "What to ask" guide
-    const guide = document.getElementById('whatToAskGuide');
-    if (guide) {
-      guide.open = true;
-      guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Focus the summary for keyboard users
-      const summary = guide.querySelector('summary');
-      if (summary) {
-        setTimeout(() => summary.focus(), 300);
-      }
-    }
   } else if (action === 'show-virtual') {
     els.onlyVirtual.checked = true;
     els.onlyVirtualTop.checked = true;

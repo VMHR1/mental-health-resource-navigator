@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openAdvancedFilters, closeFilterTrayIfOpen } from './helpers/ui.js';
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
 
@@ -47,7 +48,7 @@ test.describe('Search & filter localhost audit', () => {
   test('advanced filter: location Plano returns expanded results', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#loc', { label: 'Plano' });
     await page.waitForTimeout(500);
     const count = await getCount(page);
@@ -127,25 +128,26 @@ test.describe('Search & filter localhost audit', () => {
     await expect(page.locator('#showCrisisTop')).toBeChecked({ timeout: 3000 });
   });
 
-  test('preset: IOP in Plano', async ({ page }) => {
+  test('preset: IOP programs (no city)', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.locator('[data-preset="iop-plano"]').click();
+    await page.locator('[data-preset="iop-programs"]').first().click();
     await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
-    await expect(page.locator('#loc')).toHaveValue('Plano');
+    await expect(page.locator('#loc')).toHaveValue('');
     await expect(page.locator('#care')).toHaveValue('Intensive Outpatient (IOP)');
   });
 
-  test('preset: Teens in Dallas', async ({ page }) => {
+  test('preset: Youth & teens (no city)', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.locator('[data-preset="teens-dallas"]').click();
+    await page.locator('[data-preset="youth-teens"]').first().click();
     await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
-    await expect(page.locator('#loc')).toHaveValue('Dallas');
+    await expect(page.locator('#loc')).toHaveValue('');
+    await expect(page.locator('#age')).toHaveValue('15');
   });
 
   test('preset: Virtual therapy', async ({ page }) => {
@@ -162,7 +164,7 @@ test.describe('Search & filter localhost audit', () => {
   test('insurance bucket: Medicaid / CHIP', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#insurance', { label: 'Medicaid / CHIP' });
     await page.waitForTimeout(500);
     const count = await getCount(page);
@@ -214,7 +216,7 @@ test.describe('Search & filter localhost audit', () => {
   test('care level PHP filter', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
     await page.waitForTimeout(500);
     const count = await getCount(page);
@@ -262,11 +264,12 @@ test.describe('Search & filter localhost audit', () => {
   test('empty state shows context and broaden increases results', async ({ page }) => {
     await waitForPrograms(page);
     await resetFilters(page);
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
     await page.selectOption('#insurance', { label: 'Beacon' });
     await page.selectOption('#loc', 'Houston');
     await page.waitForTimeout(700);
+    await closeFilterTrayIfOpen(page);
     await expect(page.getByTestId('empty-state')).toBeVisible();
     await expect(page.locator('#emptyStateBody')).toContainText(/Beacon|PHP|Houston|Location|Care|Insurance/i);
     await page.getByTestId('empty-broaden-search').click();
@@ -278,11 +281,12 @@ test.describe('Search & filter localhost audit', () => {
   test('empty state clear filters restores baseline', async ({ page }) => {
     await waitForPrograms(page);
     const baseline = await getCount(page);
-    await page.getByTestId('advanced-filters-btn').click();
+    await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
     await page.selectOption('#insurance', { label: 'Beacon' });
     await page.selectOption('#loc', 'Houston');
     await page.waitForTimeout(700);
+    await closeFilterTrayIfOpen(page);
     await expect(page.getByTestId('empty-state')).toBeVisible();
     await page.getByTestId('empty-clear-filters').click();
     await page.waitForTimeout(600);

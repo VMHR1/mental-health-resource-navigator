@@ -138,6 +138,18 @@ function createCard(program, idx, options) {
   const crisis = isCrisis(program);
   const loc = locLabel(program);
   const care = safeStr(program.level_of_care) || "Not listed";
+  const careFriendly = (() => {
+    const c = care.toLowerCase();
+    if (c.includes('intensive outpatient') || c === 'iop') return 'IOP — Intensive outpatient';
+    if (c.includes('partial hospitalization') || c.includes('php')) return 'PHP — Day program';
+    if (c.includes('residential')) return 'Residential — Live-in treatment';
+    if (c.includes('outpatient')) return 'Outpatient — Regular appointments';
+    if (c.includes('navigation')) return 'Care navigation';
+    if (c.includes('inpatient')) return 'Inpatient — Hospital-based';
+    return care;
+  })();
+  const settingLabel = hasVirtual(program) ? 'Virtual option available' : 'In-person';
+  const ages = safeStr(program.ages_served) || 'Ask program';
   const id = stableIdFor(program, idx);
   programDataMap.set(id, program);
   const isOpen = (state.getOpenId() === id);
@@ -202,18 +214,19 @@ function createCard(program, idx, options) {
   if(accepting === 'yes' && (waitlist === 'none' || waitlist === 'short')) {
     availabilityBadge = `
       <div class="availability-badge available">
-        <span class="badge-icon">✓</span>
-        <span>Currently Accepting Patients</span>
+        <span>May be accepting new patients — call to confirm</span>
       </div>
     `;
   } else if(waitlist === 'long' || waitlist === 'moderate') {
     availabilityBadge = `
       <div class="availability-badge limited">
-        <span class="badge-icon">⏱️</span>
-        <span>Limited Availability - ${waitlist.charAt(0).toUpperCase() + waitlist.slice(1)} Waitlist</span>
+        <span>Limited availability (${waitlist} waitlist) — call to confirm</span>
       </div>
     `;
   }
+
+  const verifiedShort = lastVerified ? `Last verified: ${lastVerified}` : '';
+  const callLabel = phoneLabel === 'Text Now' ? 'Text program' : 'Call program';
 
   const div = document.createElement("article");
   div.className = "card";
@@ -235,12 +248,31 @@ function createCard(program, idx, options) {
   const userLocation = state.getUserLocation();
   const currentSort = state.getCurrentSort();
 
+  const pidForUrl = safeStr(program.program_id);
+  const detailPageHref =
+    typeof window.programPublicPath === "function"
+      ? window.programPublicPath(pidForUrl)
+      : pidForUrl
+        ? `/programs/${encodeURIComponent(pidForUrl)}.html`
+        : "program.html";
+
   div.innerHTML = `
-    <div class="card-meta-header">
+    <div class="cardTop">
+      <div style="min-width:0">
+        <p class="pname">${escapeHtml(safeStr(program.program_name) || "Program")}</p>
+        ${safeStr(program.organization) ? `<p class="org">${escapeHtml(safeStr(program.organization))}</p>` : ''}
+      </div>
+      <button class="expandBtn" type="button"
+        aria-expanded="${isOpen ? "true" : "false"}"
+        aria-controls="panel_${escapeHtml(id)}"
+        title="${isOpen ? "Collapse details" : "View details"}">
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="card-summary">
       <div class="badgeRow">
-        <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(care)}</span>
-        <span class="badge ${crisis ? "crisis" : "loc"}">${escapeHtml(loc)}</span>
-        ${hasVirtual(program) ? `<span class="badge ${crisis ? "crisis" : "loc2"}">Virtual option</span>` : ``}
+        <span class="badge ${crisis ? "crisis" : ""}">${escapeHtml(careFriendly)}</span>
         ${userLocation && currentSort === 'distance' && typeof window.calculateProgramDistance === 'function' ? (() => {
           const distance = window.calculateProgramDistance(program, userLocation.lat, userLocation.lng);
           if (distance !== null && distance !== Infinity) {
@@ -248,49 +280,34 @@ function createCard(program, idx, options) {
           }
           return '';
         })() : ''}
-        ${isRecent ? `<span class="badge recent">Recently Updated</span>` : ''}
+        ${isRecent ? `<span class="badge recent">Recently verified</span>` : ''}
       </div>
-    </div>
-
-    <div class="cardTop">
-      <div style="min-width:0">
-        <p class="pname">${escapeHtml(safeStr(program.program_name) || "Program")}</p>
-        <p class="org">${escapeHtml(safeStr(program.organization) || "")}</p>
-      </div>
-
-      <button class="expandBtn" type="button"
-        aria-expanded="${isOpen ? "true" : "false"}"
-        aria-controls="panel_${escapeHtml(id)}"
-        title="${isOpen ? "Collapse details" : "Expand details"}">
-        <span class="chev" aria-hidden="true"></span>
-      </button>
-    </div>
-
-    <div class="meta">
-      <span>Age: ${escapeHtml(safeStr(program.ages_served) || "Unknown")}</span>
-      <span>Setting: ${escapeHtml(safeStr(program.service_setting) || "Unknown")}</span>
+      <p class="card-location-line">${escapeHtml(loc)} · ${escapeHtml(settingLabel)}</p>
+      <p class="card-ages-line">Ages served: ${escapeHtml(ages)}</p>
+      <p class="card-good-to-ask"><strong>Good to ask about:</strong> schedule, intake process, insurance, family involvement</p>
+      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}. Information may change. Call to confirm.</p>` : `<p class="card-verified-line">Information may change. Call to confirm.</p>`}
     </div>
 
     ${availabilityBadge}
 
     ${getRelatedListingNote(program, allPrograms, escapeHtml, safeStr)}
 
-    <div class="card-actions">
+    <div class="card-primary-actions">
+      ${phoneHref ? `<a class="linkBtn primary btn-call-program" href="${escapeHtml(phoneHref)}" data-program-id="${escapeHtml(id)}">${escapeHtml(callLabel)}</a>` : ''}
+      <button class="linkBtn expand-details-btn" type="button" data-expand-id="${escapeHtml(id)}" aria-expanded="${isOpen ? "true" : "false"}">View details</button>
       <button type="button" class="card-action-btn favorite ${isFavorite(id) ? 'active' : ''}" data-favorite="${escapeHtml(id)}" aria-label="${isFavorite(id) ? 'Remove from saved' : 'Save program'}">
-        <span class="icon">${isFavorite(id) ? '⭐' : '☆'}</span>
         <span>${isFavorite(id) ? 'Saved' : 'Save'}</span>
-      </button>
-      <button type="button" class="card-action-btn" data-share="${escapeHtml(id)}" aria-label="Share program">
-        <span class="icon">🔗</span>
-        <span>Share</span>
-      </button>
-      <button type="button" class="card-action-btn compare-btn ${comparisonSet.has(id) ? 'active' : ''}" data-compare="${escapeHtml(id)}" ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} aria-pressed="${comparisonSet.has(id) ? 'true' : 'false'}" aria-label="${comparisonSet.has(id) ? 'Remove from comparison' : 'Add to comparison'}">
-        <span class="icon">⚖️</span>
-        <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
       </button>
     </div>
 
-    <div class="accuracyStrip">${escapeHtml(accuracyLine)}</div>
+    <div class="card-actions">
+      <button type="button" class="card-action-btn compare-btn ${comparisonSet.has(id) ? 'active' : ''}" data-compare="${escapeHtml(id)}" ${comparisonSet.size >= 3 && !comparisonSet.has(id) ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} aria-pressed="${comparisonSet.has(id) ? 'true' : 'false'}" aria-label="${comparisonSet.has(id) ? 'Remove from comparison' : 'Add to comparison'}">
+        <span>${comparisonSet.has(id) ? 'Comparing' : 'Compare'}</span>
+      </button>
+      <button type="button" class="card-action-btn" data-share="${escapeHtml(id)}" aria-label="Share program">
+        <span>Share</span>
+      </button>
+    </div>
 
     <div class="panel" id="panel_${escapeHtml(id)}" aria-hidden="${isOpen ? "false" : "true"}" ${!isOpen ? "inert" : ""}>
       ${addresses.length ? `
@@ -347,7 +364,7 @@ function createCard(program, idx, options) {
 
 
       <div class="actions">
-        <a class="linkBtn" href="program.html?id=${escapeHtml(safeStr(program.program_id))}" style="margin-right: 8px;">View Details</a>
+        <a class="linkBtn" href="${detailPageHref}" style="margin-right: 8px;">View Details</a>
         ${phoneHref ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="${escapeHtml(phoneHref)}" data-program-id="${escapeHtml(id)}">${escapeHtml(phoneLabel)}</a>` : ``}
         ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
         ${(!phoneHref && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}

@@ -10,3 +10,4 @@ Disallow: /admin.html
 
 # Sitemap location
 Sitemap: https://viablemhr.com/sitemap.xml
+Sitemap: https://viablemhr.com/sitemap-programs.xml

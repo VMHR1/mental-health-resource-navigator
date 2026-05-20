@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openAdvancedFilters, openResultsAction, waitForPrograms } from './helpers/ui.js';
 
 test.describe('Smoke Tests', () => {
   test('page loads without fatal console errors', async ({ page }) => {
@@ -60,31 +61,19 @@ test.describe('Smoke Tests', () => {
   test('reset clears state', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await waitForPrograms(page);
 
-    // Apply a filter first
     const searchInput = page.getByTestId('search-input');
     await searchInput.fill('test');
     await page.getByTestId('find-programs-btn').click();
-    await page.waitForTimeout(500);
+    await expect(searchInput).toHaveValue('test');
 
-    // Check if filter chips exist or results count changed
-    const filterChips = page.getByTestId('active-filter-chips');
-    const initialChipsCount = await filterChips.locator('.filter-chip').count().catch(() => 0);
-
-    // Click reset
     const resetBtn = page.getByTestId('reset-btn');
     await expect(resetBtn).toBeVisible();
     await resetBtn.click();
 
-    // Wait for reset to take effect
-    await page.waitForTimeout(500);
-
-    // Verify state cleared: either chips disappeared OR search input cleared
-    const finalChipsCount = await filterChips.locator('.filter-chip').count().catch(() => 0);
-    const searchValue = await searchInput.inputValue();
-
-    // Reset should clear search OR remove filter chips
-    expect(finalChipsCount < initialChipsCount || searchValue === '').toBeTruthy();
+    await expect(searchInput).toHaveValue('');
+    await expect(page.getByTestId('active-filter-chips').locator('.active-filter-chip')).toHaveCount(0);
   });
 
   test('advanced filters open/close and changing one filter updates results or chips', async ({
@@ -93,15 +82,8 @@ test.describe('Smoke Tests', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Click Advanced Filters button
-    const advancedBtn = page.getByTestId('advanced-filters-btn');
-    await expect(advancedBtn).toBeVisible();
-    await advancedBtn.click();
+    await openAdvancedFilters(page);
 
-    // Wait for filters to open
-    await page.waitForTimeout(300);
-
-    // Verify filters are visible (check for advanced filters section)
     const advancedFilters = page.locator('#advancedFilters');
     const isVisible = await advancedFilters.isVisible().catch(() => false);
     expect(isVisible).toBeTruthy();
@@ -130,10 +112,7 @@ test.describe('Smoke Tests', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Click favorites button
-    const favoritesBtn = page.getByTestId('favorites-btn');
-    await expect(favoritesBtn).toBeVisible();
-    await favoritesBtn.click();
+    await openResultsAction(page, 'favorites');
 
     // Wait for modal to open
     await page.waitForTimeout(300);
@@ -159,10 +138,7 @@ test.describe('Smoke Tests', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Click history button
-    const historyBtn = page.getByTestId('history-btn');
-    await expect(historyBtn).toBeVisible();
-    await historyBtn.click();
+    await openResultsAction(page, 'history');
 
     // Wait for modal to open
     await page.waitForTimeout(300);

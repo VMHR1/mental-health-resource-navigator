@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openAdvancedFilters } from './helpers/ui.js';
 
 test.describe('Mobile Verification', () => {
   // Only run these tests on mobile projects
@@ -93,12 +94,7 @@ test.describe('Mobile Verification', () => {
   });
 
   test('advanced filters open and dropdown can be used on mobile', async ({ page }) => {
-    // Open advanced filters
-    const advancedBtn = page.getByTestId('advanced-filters-btn');
-    await advancedBtn.click();
-    await page.waitForTimeout(300);
-
-    // Verify filters section is visible
+    await openAdvancedFilters(page);
     const advancedFilters = page.locator('#advancedFilters');
     await expect(advancedFilters).toBeVisible();
 

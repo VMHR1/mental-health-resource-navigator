@@ -10,7 +10,10 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=self, microphone=(), camera=()">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -26,11 +29,12 @@
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=8">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
   <script defer src="js/data-validator.js?v=3"></script>
-  <script defer src="js/config/constants.js?v=4"></script>
+  <script defer src="js/config/constants.js?v=5"></script>
   <script defer src="js/utils/location-match.js?v=1"></script>
   <script defer src="js/utils/helpers.js?v=4"></script>
   <script defer src="js/modules/storage.js?v=3"></script>
@@ -41,7 +45,8 @@
   <script defer src="js/modules/distance.js?v=2"></script>
   <script defer src="js/modules/performance.js?v=3"></script>
   <script defer src="js/modules/render.js?v=3"></script>
-  <script defer src="js/modules/events.js?v=7"></script>
+  <script defer src="js/modules/events.js?v=8"></script>
+  <script defer src="js/modules/home-phase1.js?v=2"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -52,14 +57,19 @@
 
   <div class="crisis-banner" role="region" aria-label="Crisis information">
     <div class="inner">
-      If someone is in immediate physical danger, call 911.
-      <a href="tel:988">988 Lifeline</a>
-      <a href="https://www.samhsa.gov/find-help/988" target="_blank" rel="noopener">What is 988?</a>
+      <p class="crisis-banner__text">
+        If someone is in <strong>immediate physical danger</strong>, call <strong>911</strong>.
+        For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text <strong>988</strong>.
+      </p>
+      <div class="crisis-banner__actions">
+        <a href="tel:988">Call/Text 988</a>
+        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener">What happens when I contact 988?</a>
+      </div>
     </div>
   </div>
 
   <div class="container">
-    <header>
+    <header class="vm-header">
       <div class="header-content">
         <div class="brand">
           <div class="mark" aria-hidden="true"></div>
@@ -68,178 +78,136 @@
             <p class="title">Texas youth mental health resources</p>
           </div>
         </div>
-
         <div class="header-actions">
-     <div class="pill" title="Neutral directory principles">
-            <span class="dot" aria-hidden="true"></span>
-            <span>Informational • Not ranked • Verify details</span>
-          </div>
-          <a class="btnlike btn-primary" href="submit.html" aria-label="Submit a program for review">Submit a program</a>
+          <a class="btnlike" href="guides.html">Guides</a>
+          <a class="btnlike btn-primary" href="submit.html" aria-label="Submit or update a program">Submit or update a program</a>
         </div>
       </div>
 
-      <!-- Triage Split -->
-      <div class="triage-split">
-        <div class="triage-grid">
-          <div class="triage-card emergency">
-            <div class="triage-icon">🚨</div>
-            <h2>Mental Health Crisis Support (988)</h2>
-            <p>Suicidal thoughts, emotional distress, or mental health crisis - when there is no immediate physical danger</p>
-            <a href="tel:988" class="btn-emergency">Call 988 Now</a>
-            <button class="btn-secondary" id="viewCrisisResources">View All Crisis Resources</button>
-          </div>
-          
-          <div class="triage-card planning">
-            <div class="triage-icon">🗓️</div>
-            <h2>Ongoing Care & Treatment</h2>
-            <p>Looking for ongoing treatment, assessments, or therapy</p>
-            <button class="btn-primary btn-secondary" id="viewTreatmentOptions">Find Treatment Programs</button>
-          </div>
+      <section class="hero-gateway" aria-labelledby="heroHeading">
+        <div class="hero-gateway__head vm-fade-up">
+          <h1 id="heroHeading">Find youth mental health support in North Texas.</h1>
+          <p class="hero-gateway__sub">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="guides.html">Levels of care and calling programs</a>.</p>
+          <p class="hero-gateway__prompt">What kind of help are you looking for today?</p>
         </div>
-      </div>
 
-      <!-- Trust Strip -->
-      <div class="trust-strip">
-        <div class="trust-grid">
+        <div class="decision-cards vm-stagger" role="list">
+          <article class="decision-card decision-card--crisis" role="listitem">
+            <div class="decision-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3v4M12 17v4M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M17.7 6.3l1.4-1.4M6.3 17.7l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <h2>I need help now</h2>
+            <p>For crisis support, safety concerns, or urgent emotional distress.</p>
+            <div class="decision-card__actions">
+              <a href="tel:988" class="btn-vm-primary btn-vm-crisis">Call/Text 988</a>
+              <button type="button" class="btn-vm-secondary" id="viewCrisisResources">View crisis resources</button>
+            </div>
+          </article>
+
+          <article class="decision-card" role="listitem">
+            <div class="decision-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg>
+            </div>
+            <h2>Find treatment programs</h2>
+            <p>Search outpatient, IOP, PHP/day program, inpatient, residential, and virtual support.</p>
+            <div class="decision-card__actions">
+              <button type="button" class="btn-vm-primary" id="viewTreatmentOptions">Search programs</button>
+            </div>
+          </article>
+
+          <article class="decision-card" role="listitem">
+            <div class="decision-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg>
+            </div>
+            <h2>I'm not sure what care level fits</h2>
+            <p>Opens a short questionnaire. You can also read care types on the <a href="guides.html">guides page</a>.</p>
+            <div class="decision-card__actions">
+              <button type="button" class="btn-vm-secondary" id="heroHelpChoose">Help me choose</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="trust-strip" aria-label="Trust principles">
+          <div class="trust-row-compact">
           <div class="trust-item">
-            <div class="trust-icon">✓</div>
+            <div class="trust-icon" aria-hidden="true">i</div>
             <div class="trust-text">
-              <strong><span id="programCount">—</span> programs</strong>
-              <span>Information may change—please call to confirm</span>
+              <strong>Informational only</strong>
+              <span>Not medical advice or emergency care</span>
             </div>
           </div>
           <div class="trust-item">
-            <div class="trust-icon">🔒</div>
+            <div class="trust-icon" aria-hidden="true">—</div>
             <div class="trust-text">
-              <strong>Privacy First</strong>
+              <strong>No paid rankings</strong>
+              <span>Programs do not pay to appear higher</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon" aria-hidden="true">✓</div>
+            <div class="trust-text">
+              <strong><span id="programCount">—</span> programs listed</strong>
+              <span>Verify details directly with each program</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon" aria-hidden="true">◇</div>
+            <div class="trust-text">
+              <strong>Privacy-first</strong>
               <span>No ads or third-party tracking</span>
             </div>
           </div>
-          <div class="trust-item">
-            <div class="trust-icon">⚖️</div>
-            <div class="trust-text">
-              <strong>100% Neutral</strong>
-              <span>No paid placements or rankings</span>
-            </div>
-          </div>
-          <div class="trust-item">
-            <div class="trust-icon">📞</div>
-            <div class="trust-text">
-              <strong>Direct Contact</strong>
-              <span>Call programs directly, not us</span>
-            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Specialized Resources Section -->
-      <section class="specialized-resources-section" aria-label="Specialized resources">
-        <h2>Specialized resources</h2>
-        <p>Some mental health needs require specialized programs. These resources focus on specific conditions and treatment approaches.</p>
-        
-        <div class="specialized-resources-grid">
-          <!-- Eating Disorders Card -->
-          <div class="specialized-resource-card">
-            <h3>Eating Disorders</h3>
-            <p class="specialized-subtitle">anorexia, bulimia, binge eating</p>
-            <div class="specialized-buttons">
-              <button type="button" class="filter-preset-btn" data-preset="eating-disorders-all">View all</button>
-              <button type="button" class="filter-preset-btn" data-preset="eating-disorders-php">PHP</button>
-              <button type="button" class="filter-preset-btn" data-preset="eating-disorders-iop">IOP</button>
-              <button type="button" class="filter-preset-btn" data-preset="eating-disorders-outpatient">Outpatient</button>
-            </div>
-          </div>
-          
-          <!-- Substance Use Card -->
-          <div class="specialized-resource-card">
-            <h3>Substance Use</h3>
-            <p class="specialized-subtitle">alcohol, drugs, vaping, co-occurring</p>
-            <div class="specialized-buttons">
-              <button type="button" class="filter-preset-btn" data-preset="substance-use-all">View all</button>
-              <button type="button" class="filter-preset-btn" data-preset="substance-use-php">PHP</button>
-              <button type="button" class="filter-preset-btn" data-preset="substance-use-iop">IOP</button>
-              <button type="button" class="filter-preset-btn" data-preset="substance-use-outpatient">Outpatient</button>
-            </div>
-          </div>
-        </div>
+        <div id="loadWarn" class="warnBox" role="status" aria-live="polite"></div>
       </section>
-
-      <div class="hero">
-        <div class="hero-copy">
-          <h1>Find the right level of support—clearly, calmly, and without judgment.</h1>
-          <p class="sub">
-            Search programs by level of care (PHP, IOP, outpatient) and location across the Dallas–Fort Worth metro and surrounding North Texas. Treatment programs load below; crisis resources stay separate unless you turn them on.
-          </p>
-
-          <div class="hero-bullets">
-            <label class="chip" title="Show crisis services (hotlines, mobile crisis, walk-in urgent care)">
-              <input id="showCrisisTop" type="checkbox" />
-              <span>Show crisis resources</span>
-            </label>
-
-            <label class="chip" title="Show virtual/telehealth offerings when noted">
-              <input id="onlyVirtualTop" type="checkbox" />
-              <span>Virtual only</span>
-            </label>
-          </div>
-
-          <div id="loadWarn" class="warnBox" role="status" aria-live="polite"></div>
-        </div>
-
-        <div class="hero-visual" aria-label="Summary cards">
-          <div class="floating-card">
-            <strong>Level of care</strong>
-            <span>PHP • IOP • Outpatient • Navigation</span>
-          </div>
-          <div class="floating-card">
-            <strong>Family-friendly filters</strong>
-            <span>Location, virtual, crisis toggle</span>
-          </div>
-          <div class="floating-card">
-            <strong>Accuracy cue</strong>
-            <span>Verification source + last verified date (when provided)</span>
-          </div>
-        </div>
-      </div>
     </header>
 
-    <section class="search-section" aria-label="Search and filters">
-      <div class="search-header">
-        <h3>Search programs in North Texas</h3>
-        <p class="search-header-lead">DFW-area treatment programs. Confirm details with each program.</p>
-        <div class="filter-presets filter-presets--quickstart" role="group" aria-label="Quick start searches">
-          <span class="filter-presets-label">Quick start</span>
-          <div class="filter-presets-buttons">
-            <button type="button" class="filter-preset-btn" data-preset="teens-dallas">Teens in Dallas</button>
-            <button type="button" class="filter-preset-btn" data-preset="crisis-support">Crisis Support</button>
-            <button type="button" class="filter-preset-btn" data-preset="virtual-therapy">Virtual Therapy</button>
-            <button type="button" class="filter-preset-btn" data-preset="iop-plano">IOP in Plano</button>
-          </div>
+    <section class="search-section is-revealed" id="searchSection" aria-label="Search and filters">
+      <div class="search-hero-intro">
+        <h2 class="search-hero-title">Search programs in North Texas</h2>
+        <p class="search-hero-lead">DFW-area treatment programs. Confirm details with each program.</p>
+        <p class="search-hero-note">Crisis listings stay off until you use <strong>Crisis support</strong> in Quick start or turn on <strong>Show crisis resources</strong> below.</p>
+      </div>
+
+      <div class="search-quick-start" role="group" aria-labelledby="quickStartLabel">
+        <p id="quickStartLabel" class="search-quick-start__kicker">Quick start</p>
+        <div class="search-quick-start__chips">
+          <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="youth-teens">Youth &amp; teens</button>
+          <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="outpatient-programs">Outpatient</button>
+          <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="iop-programs">IOP programs</button>
+          <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="virtual-therapy">Virtual / telehealth</button>
+          <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="crisis-support">Crisis support</button>
         </div>
+      </div>
+
+      <div class="search-inline-toggles search-toggles-row" role="group" aria-label="Search options">
+        <label class="toggle-chip">
+          <input id="showCrisisTop" type="checkbox" />
+          <span>Show crisis resources</span>
+        </label>
+        <label class="toggle-chip">
+          <input id="onlyVirtualTop" type="checkbox" />
+          <span>Virtual only</span>
+        </label>
       </div>
 
       <div class="search-simple">
         <div class="input-group-primary">
           <label for="q">What are you looking for?</label>
           <div class="input-wrapper" style="position: relative;">
-            <span class="input-icon" aria-hidden="true">🔍</span>
+            <span class="input-icon" aria-hidden="true"></span>
             <input id="q" type="search" data-testid="search-input" placeholder="City, level of care (PHP, IOP), age — e.g. IOP in Plano for 14" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" aria-describedby="searchTipsText" />
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="Search suggestions" style="display: none;"></div>
           </div>
           <div class="recent-searches" id="recentSearchesContainer" style="display:none;" aria-live="polite"></div>
         </div>
 
-        <details class="search-tips" id="searchTips">
+        <details class="search-tips search-tips--compact" id="searchTips">
           <summary>How to search</summary>
           <div class="search-tips-body" id="searchTipsText">
-            <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Open <strong>More filters</strong> for insurance and other options.</p>
-            <ul class="search-tips-list">
-              <li><strong>Location:</strong> Plano, Dallas, Frisco (includes nearby counties &amp; telehealth when listed)</li>
-              <li><strong>Care level:</strong> PHP, IOP, outpatient, partial hospitalization, day treatment, residential</li>
-              <li><strong>Age:</strong> <code>14</code>, <code>13 and up</code>, <code>16 year old</code></li>
-              <li><strong>Insurance:</strong> any listed plan — <code>accepts Cigna</code>, <code>BCBS</code>, <code>UHC</code>, <code>BHS</code>, <code>Medicaid</code>, <code>sliding scale</code></li>
-              <li><strong>Crisis:</strong> type <em>crisis support</em> or use the preset / “Show crisis resources” chip</li>
-            </ul>
+            <p>We read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from natural language; open <strong>More filters</strong> for insurance and more. <a href="guides.html#how-to-search">Full how-to guide</a>.</p>
             <p class="search-tips-examples-label">Try an example:</p>
             <div class="search-examples" data-testid="search-examples">
               <button type="button" class="search-example-chip" data-search-example="IOP in Plano">IOP in Plano</button>
@@ -250,16 +218,17 @@
             </div>
           </div>
         </details>
-        
-        <div class="search-toolbar">
-          <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">
-            Find Programs →
-          </button>
-          <button class="btn-advanced" id="showAdvanced" type="button" data-testid="advanced-filters-btn" aria-expanded="false" aria-controls="advancedFilters">
-            <span class="icon" aria-hidden="true">⚙️</span>
-            <span class="btn-advanced-label">More filters</span>
-          </button>
-          <button type="button" class="btn-reset-link" id="resetTop" data-testid="reset-btn">Reset</button>
+
+        <div class="search-toolbar search-toolbar--clean">
+          <button class="btn-smart-search" type="button" id="smartSearchBtn" data-testid="find-programs-btn">Find programs →</button>
+          <div class="search-toolbar-secondary">
+            <button type="button" class="btn-use-location" id="searchUseLocationBtn">Use my location</button>
+            <button type="button" class="filter-tray-open" id="openFilterTray" aria-expanded="false" aria-controls="filterTrayPanel">Filters</button>
+            <button class="btn-advanced" id="showAdvanced" type="button" data-testid="advanced-filters-btn" aria-expanded="false" aria-controls="advancedFilters">
+              <span class="btn-advanced-label">More filters</span>
+            </button>
+            <button type="button" class="btn-reset-link" id="resetTop" data-testid="reset-btn">Reset</button>
+          </div>
         </div>
       </div>
 
@@ -421,6 +390,16 @@
       </div>
     </section>
 
+    <div class="filter-tray-overlay" id="filterTrayOverlay" hidden>
+      <div class="filter-tray-panel" id="filterTrayPanel" role="dialog" aria-modal="true" aria-labelledby="filterTrayTitle">
+        <div class="filter-tray-panel__head">
+          <h2 id="filterTrayTitle">Filters</h2>
+          <button type="button" class="filter-tray-close" id="closeFilterTray" aria-label="Close filters">×</button>
+        </div>
+        <div id="filterTrayMount"></div>
+      </div>
+    </div>
+
     <div class="results-header" aria-label="Results summary">
       <div class="results-info">
         <div class="results-count" id="totalCount">0</div>
@@ -489,64 +468,6 @@
       <div class="active-filters-chips" id="activeFiltersChips" data-testid="active-filter-chips" role="list"></div>
     </div>
 
-    <!-- Care levels explained accordion -->
-    <details class="care-levels-guide">
-      <summary class="care-levels-summary">
-        <span class="care-levels-summary-text">Care levels explained</span>
-        <span class="care-levels-summary-icon" aria-hidden="true">▾</span>
-      </summary>
-      <div class="care-levels-body">
-        <div class="care-levels-grid">
-          <div class="care-levels-section">
-            <h4 class="care-levels-heading">PHP (Partial Hospitalization Program / "Day Program")</h4>
-            <ul class="care-levels-list">
-              <li>A structured mental health treatment program during the day, where the person returns home in the evening (no overnight stay).</li>
-              <li>Provides more support than standard outpatient therapy (like once-weekly sessions).</li>
-              <li>Often includes group therapy and may include individual/family sessions and medication management (varies by program).</li>
-              <li>Many programs run most weekdays for several hours per day. Schedules vary by provider and age group.</li>
-            </ul>
-          </div>
-          <div class="care-levels-section">
-            <h4 class="care-levels-heading">IOP (Intensive Outpatient Program / "Several Days per Week")</h4>
-            <ul class="care-levels-list">
-              <li>A structured level of care that provides more support than standard outpatient therapy, while allowing the person to live at home.</li>
-              <li>Often includes group therapy and may include individual/family sessions and medication management (varies by program).</li>
-              <li>Commonly meets multiple days per week for a few hours per session (often after school or in the evening). Schedules vary by program.</li>
-            </ul>
-          </div>
-          <div class="care-levels-section">
-            <h4 class="care-levels-heading">Crisis: 988 vs 911</h4>
-            <ul class="care-levels-list">
-              <li><strong>988:</strong> Free, confidential, 24/7 emotional support for people in suicidal crisis or emotional distress when there is no immediate physical danger.</li>
-              <li><strong>911:</strong> For immediate physical danger or emergencies.</li>
-              <li>If someone is about to act on a suicide or self-harm plan and has means, treat as emergency/911. If distressed or having suicidal thoughts without immediate danger, 988 may be helpful. Emergency rooms are an option for urgent evaluation.</li>
-            </ul>
-          </div>
-        </div>
-        <p class="care-levels-disclaimer">Schedules and services vary by program. This site provides information, not medical advice. If there is an immediate safety concern, call 988 or 911.</p>
-      </div>
-    </details>
-
-    <!-- What to ask when you call guide -->
-    <details class="care-levels-guide" id="whatToAskGuide">
-      <summary class="care-levels-summary">
-        <span class="care-levels-summary-text">What to ask when you call a program</span>
-        <span class="care-levels-summary-icon" aria-hidden="true">▾</span>
-      </summary>
-      <div class="care-levels-body">
-        <ul class="care-levels-list">
-          <li>Are you currently accepting new adolescents? Is there a waitlist?</li>
-          <li>What ages do you serve?</li>
-          <li>Do you accept my insurance? Is prior authorization required?</li>
-          <li>What is the schedule (after school vs daytime)? How long is the program?</li>
-          <li>What is the intake process and what documents are needed?</li>
-          <li>Do you offer family sessions or caregiver involvement?</li>
-          <li>What happens after hours if symptoms worsen?</li>
-          <li>What costs should we expect (copays, self-pay, financial assistance)?</li>
-        </ul>
-      </div>
-    </details>
-
     <section class="section" id="treatmentSection">
       <div class="sectionHead sectionHead--with-intro">
         <div class="sectionHead-top">
@@ -558,8 +479,8 @@
       <div class="grid" id="treatmentGrid" data-testid="results-grid" aria-live="polite"></div>
       <div class="empty-state" id="treatmentEmpty" data-testid="empty-state" style="display:none;" role="status">
         <div class="empty-icon">🔍</div>
-        <h3 id="emptyStateTitle">No programs match these filters</h3>
-        <p id="emptyStateBody">Try one of the options below.</p>
+        <h3 id="emptyStateTitle">No programs match all selected filters</h3>
+        <p id="emptyStateBody">Try removing one filter, expanding distance, searching nearby cities, or trying a broader care level. If safety is urgent, call 911 or call/text 988.</p>
         <div class="empty-actions">
           <button data-action="clear-filters" class="btn-primary" type="button" data-testid="empty-clear-filters">
             Clear filters
@@ -567,22 +488,139 @@
           <button data-action="broaden-search" class="btn-primary" type="button" data-testid="empty-broaden-search">
             Broaden search
           </button>
-          <a href="#whatToAskGuide" class="empty-state-link" data-action="open-what-to-ask">Not sure what to ask? See questions for programs.</a>
+          <a href="guides.html#what-to-ask" class="empty-state-link">Not sure what to ask? See questions for programs.</a>
         </div>
         <p class="empty-state-tip" id="emptyStateTip">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
       </div>
     </section>
 
+    <section class="home-guide-cta specialized-resources-section" aria-labelledby="homeGuideCtaHeading">
+      <h2 id="homeGuideCtaHeading">Guides for families</h2>
+      <p>Orientation and call checklists live on a separate page so you can focus on search and results here.</p>
+      <ul class="home-guide-cta-list">
+        <li><a href="guides.html#how-to-search">How to search this directory</a></li>
+        <li><a href="guides.html#levels-of-care">Understanding levels of care</a></li>
+        <li><a href="guides.html#what-to-ask">What to ask when you call</a> (copyable checklist)</li>
+      </ul>
+    </section>
+
+    <section class="specialized-below specialized-resources-section" aria-label="Specialized program types">
+      <h2>Specialized program types</h2>
+      <p>Some needs focus on specific conditions. These shortcuts search programs in our directory.</p>
+      <div class="specialized-resources-grid">
+        <div class="specialized-resource-card">
+          <h3>Eating disorder support</h3>
+          <div class="specialized-buttons">
+            <button type="button" class="filter-preset-btn" data-preset="eating-disorders-all">View all</button>
+            <button type="button" class="filter-preset-btn" data-preset="eating-disorders-php">PHP</button>
+            <button type="button" class="filter-preset-btn" data-preset="eating-disorders-iop">IOP</button>
+            <button type="button" class="filter-preset-btn" data-preset="eating-disorders-outpatient">Outpatient</button>
+          </div>
+        </div>
+        <div class="specialized-resource-card">
+          <h3>Substance use support</h3>
+          <div class="specialized-buttons">
+            <button type="button" class="filter-preset-btn" data-preset="substance-use-all">View all</button>
+            <button type="button" class="filter-preset-btn" data-preset="substance-use-php">PHP</button>
+            <button type="button" class="filter-preset-btn" data-preset="substance-use-iop">IOP</button>
+            <button type="button" class="filter-preset-btn" data-preset="substance-use-outpatient">Outpatient</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="directory-explainer" aria-labelledby="directoryExplainerHeading">
+      <h2 id="directoryExplainerHeading">How this directory works</h2>
+      <ul>
+        <li>Programs do not pay to appear higher.</li>
+        <li>This site does not rank or recommend one program as best.</li>
+        <li>Information may change. Call programs directly to confirm details.</li>
+        <li>Saved programs and search history are stored with privacy in mind on your device.</li>
+        <li>This site is informational and is not medical advice, diagnosis, treatment, or emergency service.</li>
+      </ul>
+      <p class="footer-submit-cta">Know a program we should add or update? <a href="submit.html">Submit or update a program</a> · <a href="guides.html">Guides for families</a></p>
+    </section>
+
     <footer>
-      <p>This directory is informational and does not provide clinical advice. If you or someone is in immediate danger, call 911.</p>
+      <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: We don't require an account. If you use location features, your location is used only to sort nearby programs and is not stored.</p>
       <p style="margin-top: 12px; font-size: 13px;">
+        <a href="guides.html">Guides</a>
+        <span aria-hidden="true"> • </span>
         <a href="privacy.html">Privacy Policy</a>
         <span aria-hidden="true"> • </span>
         <a href="terms.html">Terms of Service</a>
       </p>
       <p id="lastUpdated" style="margin-top: 8px; font-size: 12px; color: var(--muted2);"></p>
     </footer>
+  </div>
+
+  <!-- Help me choose — care helper (opened from hero only) -->
+  <div id="careHelperModal" class="modal care-helper-modal" role="dialog" aria-modal="true" aria-labelledby="careHelperModalTitle" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="careHelperModalTitle">Not sure where to start?</h2>
+        <button type="button" class="modal-close" id="careHelperModalClose" aria-label="Close questionnaire">&times;</button>
+      </div>
+      <div class="modal-body care-helper-modal-body">
+        <p class="care-helper-modal-intro">Answer a few questions to think about what to ask programs. This does not diagnose or determine the right level of care.</p>
+        <form class="care-helper-form" id="careHelperForm">
+          <div>
+            <label for="helperDanger">Is someone in immediate physical danger?</label>
+            <select id="helperDanger" name="helperDanger">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div>
+            <label for="helperSafeTonight">Is the child safe at home tonight?</label>
+            <select id="helperSafeTonight" name="helperSafeTonight">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="unsure">Not sure</option>
+            </select>
+          </div>
+          <div>
+            <label for="helperDisruption">Are symptoms disrupting school, home, relationships, or daily life most days?</label>
+            <select id="helperDisruption" name="helperDisruption">
+              <option value="unsure">Not sure</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div>
+            <label for="helperSetting">What type of support are you exploring?</label>
+            <select id="helperSetting" name="helperSetting">
+              <option value="">Not sure yet</option>
+              <option value="outpatient">Regular appointments (outpatient)</option>
+              <option value="iop">Several days per week (IOP)</option>
+              <option value="php">Daytime structured care (PHP)</option>
+              <option value="inpatient">Hospital-based stabilization (inpatient)</option>
+              <option value="residential">Live-in treatment (residential)</option>
+              <option value="navigation">Help finding care (navigation)</option>
+            </select>
+          </div>
+          <div>
+            <label for="helperFormat">Do you need virtual, in-person, or either?</label>
+            <select id="helperFormat" name="helperFormat">
+              <option value="either">Either</option>
+              <option value="virtual">Virtual</option>
+              <option value="in-person">In-person</option>
+            </select>
+          </div>
+          <div>
+            <label for="helperConcerns">Are there concerns like self-harm, substance use, eating disorder symptoms, aggression, psychosis, or inability to stay safe?</label>
+            <select id="helperConcerns" name="helperConcerns">
+              <option value="none">None of these / not sure</option>
+              <option value="some">Yes, one or more of these</option>
+            </select>
+          </div>
+          <button type="button" class="btn-vm-primary" id="careHelperSubmit">See what to ask programs</button>
+        </form>
+        <div class="care-helper-output" id="careHelperOutput" role="status" aria-live="polite"></div>
+        <p class="care-helper-disclaimer">This is not medical advice or a diagnosis. Programs can help determine fit during intake. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Favorites Modal -->

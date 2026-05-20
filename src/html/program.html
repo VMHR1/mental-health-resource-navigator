@@ -4,13 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Program Details • ViableMHR</title>
+  <!--viablemhr-program-base-->
   <meta name="description" content="Detailed information about a Texas youth mental health program on ViableMHR." />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-  <meta name="theme-color" content="#ffffff">
-  
-  <!-- Open Graph / Facebook -->
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="phase1-design.css?v=2">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Program Details • ViableMHR">
   <meta property="og:description" content="Detailed information about a Texas youth mental health program on ViableMHR.">
@@ -24,14 +29,13 @@
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css">
-  <script src="security.js?v=2"></script>
-  <script src="js/data-validator.js"></script>
-  <script src="js/config/constants.js"></script>
-  <script src="js/utils/helpers.js"></script>
-  <script src="js/modules/storage.js"></script>
-  <script src="js/modules/search.js"></script>
-  <script src="js/state-manager.js"></script>
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/data-validator.js?v=3"></script>
+  <script defer src="js/config/constants.js?v=4"></script>
+  <script defer src="js/utils/helpers.js?v=4"></script>
+  <script defer src="js/modules/storage.js?v=3"></script>
+  <script defer src="js/modules/search.js?v=14"></script>
+  <script defer src="js/state-manager.js?v=3"></script>
   <style>
     .program-detail-header {
       background: linear-gradient(135deg, rgba(79,209,197,.12), rgba(122,167,255,.12));
@@ -111,14 +115,19 @@
   
   <div class="crisis-banner" role="region" aria-label="Crisis information">
     <div class="inner">
-      If someone is in immediate physical danger, call 911.
-      <a href="tel:988">988 Lifeline</a>
-      <a href="https://www.samhsa.gov/find-help/988" target="_blank" rel="noopener">What is 988?</a>
+      <p class="crisis-banner__text">
+        If someone is in <strong>immediate physical danger</strong>, call <strong>911</strong>.
+        For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text <strong>988</strong>.
+      </p>
+      <div class="crisis-banner__actions">
+        <a href="tel:988">Call/Text 988</a>
+        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener">What happens when I contact 988?</a>
+      </div>
     </div>
   </div>
 
   <div class="container">
-    <header style="padding: 20px 0;">
+    <header class="vm-header" style="padding: 20px 0;">
       <div class="header-content">
         <div class="brand">
           <div class="mark" aria-hidden="true"></div>
@@ -141,7 +150,7 @@
     </div>
   </div>
 
-  <script src="js/program-detail.js"></script>
+  <script defer src="js/program-detail.js?v=2"></script>
   
   <footer>
     <p style="margin: 0;">This directory is informational and does not provide clinical advice.</p>
