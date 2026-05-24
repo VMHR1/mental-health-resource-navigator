@@ -176,30 +176,28 @@ function initPerformanceOptimizations(options = {}) {
   let __isScrollingT = null;
   let __isScrollingActive = false; // Use flag instead of classList.contains() to avoid style recalculation
 
-  // CRITICAL FIX: Disable scroll listener on mobile - it was part of the stutter issue
-  // The listener itself wasn't the root cause, but contributed to the problem
-  if (false) { // DISABLED FOR MOBILE
-    window.addEventListener('scroll', () => {
-      const now = Date.now();
-      lastScrollTs = now;
-      
-      // CRITICAL FIX: Use flag instead of classList.contains() to avoid forcing style recalculation
-      // classList.contains() forces the browser to recalculate styles on every scroll event
-      if (!__isScrollingActive && isCoarsePointer) {
+  // Re-enable scroll class with rAF throttling — pauses decorative animations during scroll
+  let __scrollRaf = null;
+  window.addEventListener('scroll', () => {
+    if (__scrollRaf) return;
+    __scrollRaf = requestAnimationFrame(() => {
+      __scrollRaf = null;
+      lastScrollTs = Date.now();
+
+      if (!__isScrollingActive) {
         __isScrollingActive = true;
         document.documentElement.classList.add('is-scrolling');
       }
-      
-      // Clear class after scrolling stops (throttled)
+
       if (__isScrollingT) clearTimeout(__isScrollingT);
       __isScrollingT = setTimeout(() => {
         if (__isScrollingActive) {
           __isScrollingActive = false;
           document.documentElement.classList.remove('is-scrolling');
         }
-      }, 200);
-    }, { passive: true });
-  }
+      }, 150);
+    });
+  }, { passive: true });
 
   // Update crisis banner height CSS variable for sticky positioning
   // Cached to avoid repeated getBoundingClientRect calls during viewport changes

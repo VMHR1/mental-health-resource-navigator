@@ -116,6 +116,8 @@ function copyStaticAssets() {
       'src/js/modules/render.js',
       'src/js/modules/events.js',
       'src/js/modules/home-phase1.js',
+      'src/js/modules/flow-motion.js',
+      'src/js/modules/flow-scroll.js',
       'src/js/utils/location-match.js'
     ];
     

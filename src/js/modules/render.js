@@ -310,6 +310,7 @@ function createCard(program, idx, options) {
     </div>
 
     <div class="panel" id="panel_${escapeHtml(id)}" aria-hidden="${isOpen ? "false" : "true"}" ${!isOpen ? "inert" : ""}>
+      <div class="panel__inner">
       ${addresses.length ? `
         <div class="kv">
           <div class="k">Address</div>
@@ -368,6 +369,7 @@ function createCard(program, idx, options) {
         ${phoneHref ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="${escapeHtml(phoneHref)}" data-program-id="${escapeHtml(id)}">${escapeHtml(phoneLabel)}</a>` : ``}
         ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
         ${(!phoneHref && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
+      </div>
       </div>
     </div>
   `;

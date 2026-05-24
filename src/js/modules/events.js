@@ -268,6 +268,7 @@ function setupEventHandlers(options) {
     els.showCrisis.checked = els.showCrisisTop.checked;
     scheduleRender();
     callbacks.syncTopToggles();
+    window.flowMotion?.updateResultsStatusBadge();
     const t = document.getElementById("treatmentSection");
     window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
   });
@@ -311,6 +312,8 @@ function setupEventHandlers(options) {
     state.setOpenId(null);
     callbacks.syncTopToggles();
     callbacks.updateURLState();
+    window.flowMotion?.renderSearchQueryChips();
+    window.flowMotion?.updateResultsStatusBadge();
     callbacks.render();
   }
 
@@ -486,7 +489,7 @@ function setupEventHandlers(options) {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     if (search) {
       search.classList.add("is-revealed");
-      search.scrollIntoView({ behavior: motion, block: "start" });
+      search.scrollIntoView({ behavior: motion, block: "center" });
       if (els.q) els.q.focus({ preventScroll: true });
     }
   });
@@ -591,6 +594,7 @@ function setupEventHandlers(options) {
         delete els.q.dataset.exactMatch;
         delete els.q.dataset.matchType;
       }
+      window.flowMotion?.renderSearchQueryChips();
       callbacks.hideAutocomplete();
 
       const parsed =

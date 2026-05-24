@@ -19,19 +19,21 @@
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  function smoothScrollTo(el) {
+  function smoothScrollTo(el, options = {}) {
     if (!el) return;
+    const { block = 'center' } = options;
     el.scrollIntoView({
       behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-      block: 'start',
+      block,
     });
   }
 
   function revealSearchSection(options = {}) {
-    const { focusSearch = true } = options;
+    const { focusSearch = true, scrollTargetId = null } = options;
     const section = document.getElementById('searchSection');
     if (section) section.classList.add('is-revealed');
-    smoothScrollTo(section);
+    const scrollEl = (scrollTargetId && document.getElementById(scrollTargetId)) || section;
+    smoothScrollTo(scrollEl, { block: 'center' });
     const q = document.getElementById('q');
     if (focusSearch && q) {
       setTimeout(() => q.focus({ preventScroll: true }), prefersReducedMotion() ? 0 : 400);
@@ -152,6 +154,7 @@
     updateGuidedStripVisibility(intent);
     updateGuidedUnsureHint();
     updateGuidedStep();
+    window.flowScroll?.updateFlowContextBar?.();
   }
 
   function scheduleRender() {
@@ -241,17 +244,10 @@
     helpBtn.addEventListener('click', () => {
       const card = helpBtn.closest('.decision-card');
       setFlowIntent('guidance', card || null);
-      revealSearchSection({ focusSearch: false });
+      revealSearchSection({ focusSearch: false, scrollTargetId: 'guidedSearchStrip' });
 
-      const strip = document.getElementById('guidedSearchStrip');
       const delay = prefersReducedMotion() ? 0 : 420;
       window.setTimeout(() => {
-        if (strip) {
-          strip.scrollIntoView({
-            behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-            block: 'nearest',
-          });
-        }
         const first = document.getElementById('guidedDanger');
         if (first && typeof first.focus === 'function') first.focus({ preventScroll: true });
       }, delay);
@@ -339,7 +335,7 @@
         if (advancedFiltersParent && advanced.parentElement !== advancedFiltersParent) {
           advancedFiltersParent.appendChild(advanced);
         }
-        if (!document.getElementById('showAdvanced')?.getAttribute('aria-expanded') === 'true') {
+        if (document.getElementById('showAdvanced')?.getAttribute('aria-expanded') !== 'true') {
           advanced.style.display = 'none';
         }
       }, prefersReducedMotion() ? 0 : 280);
@@ -362,7 +358,7 @@
     const markUpdating = () => {
       if (prefersReducedMotion()) return;
       grid.classList.add('is-updating');
-      window.setTimeout(() => grid.classList.remove('is-updating'), 400);
+      window.setTimeout(() => grid.classList.remove('is-updating'), 450);
     };
 
     const observer = new MutationObserver((mutations) => {

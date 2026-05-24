@@ -210,6 +210,7 @@ function readSearchQuery() {
 if (typeof window !== 'undefined') {
   window.refreshEls = refreshEls;
   window.readSearchQuery = readSearchQuery;
+  window.getAppReady = () => ready;
 }
 
 const els = {
@@ -2009,6 +2010,7 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
 
 function render(){
   if (!ready) {
+    if (els.treatmentGrid) els.treatmentGrid.dataset.state = 'loading';
     return;
   }
   const generation = ++renderGeneration;
@@ -2200,6 +2202,10 @@ function render(){
   announceToScreenReader(`${count} ${label} found${count === 0 ? '. Try adjusting your filters.' : ''}`);
   updateComparisonCount();
 
+  if (window.flowMotion) {
+    window.flowMotion.setTreatmentGridState(activeList.length);
+    window.flowMotion.flashResultsCount();
+  }
 }
 
 function syncTopToggles(){
@@ -3147,15 +3153,15 @@ function updateActiveFilterChips() {
     });
   }
   
-  // Show/hide container based on active filters
-  if (activeFilters.length > 0) {
-    container.style.display = 'flex';
-    
-    // Render chips
-    chipsContainer.innerHTML = activeFilters.map((filter, idx) => {
-      const chipId = `filter-chip-${filter.type}-${idx}`;
-      return `
-        <div class="active-filter-chip" role="listitem" id="${chipId}">
+  // Show/hide container and render chips (with optional exit animation)
+  const renderChipDom = () => {
+    if (activeFilters.length > 0) {
+      container.style.display = 'flex';
+
+      chipsContainer.innerHTML = activeFilters.map((filter, idx) => {
+        const chipId = `filter-chip-${filter.type}-${idx}`;
+        return `
+        <div class="active-filter-chip" role="listitem" id="${chipId}" style="--chip-i: ${idx}">
           <span class="active-filter-chip-label">${escapeHtml(filter.label)}</span>
           <button 
             type="button" 
@@ -3169,27 +3175,35 @@ function updateActiveFilterChips() {
           </button>
         </div>
       `;
-    }).join('');
-    
-    // Bind each remove button to its filter type (fresh nodes each render — no duplicate listeners)
-    activeFilters.forEach((filter, idx) => {
-      const btn = chipsContainer.querySelector(
-        `.active-filter-chip-remove[data-filter-index="${idx}"]`
-      );
-      if (!btn) return;
-      const chipType = filter.type;
-      btn.addEventListener('click', () => clearActiveFilterChip(chipType));
-      btn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          clearActiveFilterChip(chipType);
-        }
+      }).join('');
+
+      activeFilters.forEach((filter, idx) => {
+        const btn = chipsContainer.querySelector(
+          `.active-filter-chip-remove[data-filter-index="${idx}"]`
+        );
+        if (!btn) return;
+        const chipType = filter.type;
+        btn.addEventListener('click', () => clearActiveFilterChip(chipType));
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            clearActiveFilterChip(chipType);
+          }
+        });
       });
-    });
+    } else {
+      container.style.display = 'none';
+      chipsContainer.innerHTML = '';
+    }
+  };
+
+  if (window.flowMotion?.updateActiveFilterChipsWithMotion) {
+    window.flowMotion.updateActiveFilterChipsWithMotion(chipsContainer, activeFilters, renderChipDom);
   } else {
-    container.style.display = 'none';
-    chipsContainer.innerHTML = '';
+    renderChipDom();
   }
+
+  window.flowScroll?.updateFlowContextBar?.();
 }
 
 function clearActiveFilterChip(chipType) {
@@ -3197,16 +3211,6 @@ function clearActiveFilterChip(chipType) {
 
   if (els.q) {
     let next = els.q.value;
-    if (chipType === 'location' || chipType === 'parsedLocation') {
-      const locVal = (els.loc?.value || '').trim();
-      if (locVal) {
-        const re = new RegExp(
-          `(^|\\s)${locVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')}(\\s|$)`,
-          'gi'
-        );
-        next = next.replace(re, ' ').replace(/\s+/g, ' ').trim();
-      }
-    }
     if (typeof window.stripFilterFromQuery === 'function') {
       next = window.stripFilterFromQuery(next, chipType);
     } else if (chipType === 'query') {
@@ -3215,6 +3219,7 @@ function clearActiveFilterChip(chipType) {
     els.q.value = next;
     delete els.q.dataset.exactMatch;
     delete els.q.dataset.matchType;
+    window.flowMotion?.renderSearchQueryChips();
   }
 
   switch (chipType) {
