@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAdvancedFilters } from './helpers/ui.js';
+import { openAdvancedFilters, revealSearchForTest, showAllResults, waitForPrograms } from './helpers/ui.js';
 
 test.describe('Mobile Verification', () => {
   // Only run these tests on mobile projects
@@ -12,6 +12,8 @@ test.describe('Mobile Verification', () => {
     test.skip(testInfo.project.name === 'desktop', 'Mobile-only test suite');
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await waitForPrograms(page);
+    await revealSearchForTest(page);
   });
 
   test('no horizontal overflow on mobile', async ({ page }) => {
@@ -124,6 +126,34 @@ test.describe('Mobile Verification', () => {
       await page.waitForTimeout(400);
       await expect(ageSelect).toHaveValue('14');
     }
+  });
+
+  test('filter tray opens, closes, and returns focus', async ({ page }) => {
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width > 768) {
+      test.skip();
+    }
+
+    const trayBtn = page.locator('#openFilterTray');
+    await expect(trayBtn).toBeVisible();
+    await trayBtn.click();
+    await expect(page.locator('#filterTrayOverlay.is-open')).toBeVisible();
+
+    await page.locator('#closeFilterTray').click();
+    await page.waitForTimeout(400);
+    await expect(page.locator('#filterTrayOverlay.is-open')).toHaveCount(0);
+    await expect(trayBtn).toBeFocused();
+  });
+
+  test('program card primary actions meet tap target size', async ({ page }) => {
+    await showAllResults(page);
+    await page.waitForSelector('.card', { timeout: 10000 });
+
+    const primaryBtn = page.locator('.card-primary-actions .linkBtn, .card-primary-actions .btn-call-program').first();
+    await expect(primaryBtn).toBeVisible();
+    const box = await primaryBtn.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.height).toBeGreaterThanOrEqual(44);
   });
 
   test('results section renders after search OR empty-state renders', async ({ page }) => {
@@ -266,6 +296,9 @@ test.describe('Mobile Verification', () => {
     }
 
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await waitForPrograms(page);
+    await revealSearchForTest(page);
     
     // Perform a search to get results
     const searchInput = page.locator('#q');

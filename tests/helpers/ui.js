@@ -35,7 +35,17 @@ export async function revealSearchForTest(page) {
   const searchPrograms = page.getByRole('button', { name: 'Search programs' });
   if (await searchPrograms.isVisible().catch(() => false)) {
     await searchPrograms.click();
-    await page.waitForTimeout(500);
+    await page.waitForFunction(
+      () => {
+        const section = document.getElementById('searchSection');
+        if (!section?.classList.contains('is-revealed')) return false;
+        const opacity = parseFloat(getComputedStyle(section).opacity);
+        return opacity >= 0.99;
+      },
+      { timeout: 5000 },
+    );
+    // Staggered .fade-in children finish after section reveal
+    await page.waitForTimeout(900);
   }
 }
 

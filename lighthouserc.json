@@ -1,16 +1,23 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:4173/"],
-      "numberOfRuns": 3,
+      "url": [
+        "http://localhost:4173/",
+        "http://localhost:4173/guides.html",
+        "http://localhost:4173/submit.html",
+        "http://localhost:4173/about.html",
+        "http://localhost:4173/privacy.html",
+        "http://localhost:4173/programs/crisis-988.html"
+      ],
+      "numberOfRuns": 1,
       "startServerCommand": "npx http-server dist -p 4173 -c-1",
       "startServerReadyPattern": "Available on",
-      "startServerReadyTimeout": 10000
+      "startServerReadyTimeout": 30000
     },
     "assert": {
       "assertions": {
         "categories:performance": ["warn", { "minScore": 0.70 }, "error", { "minScore": 0.55 }],
-        "categories:accessibility": ["warn", { "minScore": 0.90 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
         "categories:best-practices": ["warn", { "minScore": 0.85 }],
         "categories:seo": ["warn", { "minScore": 0.85 }]
       }
@@ -20,5 +27,3 @@
     }
   }
 }
-
-

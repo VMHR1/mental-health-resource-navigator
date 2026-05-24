@@ -33,6 +33,7 @@
     "push:deploy": "git push origin HEAD:updated-main"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.40.0",
     "esbuild": "^0.27.2",
@@ -50,5 +51,3 @@
   "author": "",
   "license": "MIT"
 }
-
-
