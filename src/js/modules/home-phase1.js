@@ -35,8 +35,9 @@
     const scrollEl = (scrollTargetId && document.getElementById(scrollTargetId)) || section;
     smoothScrollTo(scrollEl, { block: 'center' });
     const q = document.getElementById('q');
+    const focusDelay = prefersReducedMotion() ? 0 : 1250;
     if (focusSearch && q) {
-      setTimeout(() => q.focus({ preventScroll: true }), prefersReducedMotion() ? 0 : 400);
+      setTimeout(() => q.focus({ preventScroll: true }), focusDelay);
     }
   }
 
@@ -155,6 +156,9 @@
     updateGuidedUnsureHint();
     updateGuidedStep();
     window.flowScroll?.updateFlowContextBar?.();
+    if (typeof window.updateResultsAwaitingCopy === 'function') {
+      window.updateResultsAwaitingCopy();
+    }
   }
 
   function scheduleRender() {
@@ -217,7 +221,6 @@
       return;
     }
 
-    scheduleRender();
     updateGuidedUnsureHint();
     updateGuidedHelperOutput();
     updateGuidedStep();

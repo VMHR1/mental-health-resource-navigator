@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAdvancedFilters, closeFilterTrayIfOpen } from './helpers/ui.js';
+import { openAdvancedFilters, closeFilterTrayIfOpen, showAllResults } from './helpers/ui.js';
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
 
@@ -9,6 +9,10 @@ async function waitForPrograms(page) {
   await expect(page.locator('#loadWarn')).not.toContainText(/unable to load/i, { timeout: 15000 });
   await page.waitForFunction(
     () => {
+      const awaiting = document.getElementById('awaitingProgramCount')?.textContent?.trim();
+      if (awaiting && awaiting !== '…' && awaiting !== '—' && !Number.isNaN(Number(awaiting))) {
+        return true;
+      }
       const n = document.getElementById('totalCount')?.textContent?.trim();
       return n && n !== '…' && n !== '0' && !Number.isNaN(Number(n));
     },
@@ -16,8 +20,21 @@ async function waitForPrograms(page) {
   );
 }
 
+async function ensureResultsUnlocked(page) {
+  const unlocked = await page.evaluate(() => document.body.classList.contains('is-results-unlocked'));
+  if (!unlocked) {
+    await page.getByTestId('browse-all-btn').click();
+    await page.waitForTimeout(500);
+  }
+}
+
 async function getCount(page) {
+  await ensureResultsUnlocked(page);
   return Number(await page.locator('#totalCount').textContent());
+}
+
+async function getAwaitingCount(page) {
+  return Number(await page.locator('#awaitingProgramCount').textContent());
 }
 
 async function getProgramNames(page) {
@@ -32,14 +49,17 @@ async function resetFilters(page) {
 test.describe('Search & filter localhost audit', () => {
   test('page loads program data without error', async ({ page }) => {
     await waitForPrograms(page);
-    const count = await getCount(page);
+    const count = await getAwaitingCount(page);
     expect(count).toBeGreaterThan(80);
     await expect(page.locator('#loadWarn')).toHaveText('');
+    await expect(page.getByTestId('results-awaiting')).toBeVisible();
   });
 
   test('baseline shows all treatment programs', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     const count = await getCount(page);
     expect(count).toBeGreaterThanOrEqual(90);
     expect(count).toBeLessThanOrEqual(100);
@@ -47,7 +67,9 @@ test.describe('Search & filter localhost audit', () => {
 
   test('advanced filter: location Plano returns expanded results', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     await openAdvancedFilters(page);
     await page.selectOption('#loc', { label: 'Plano' });
     await page.waitForTimeout(500);
@@ -59,9 +81,11 @@ test.describe('Search & filter localhost audit', () => {
 
   test('example: IOP in Frisco age 14 returns results', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.locator('#searchTips summary').click();
     await page.locator('[data-search-example="IOP in Frisco for 14"]').click();
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
@@ -100,6 +124,8 @@ test.describe('Search & filter localhost audit', () => {
     await page.locator('[data-search-example="IOP in Plano"]').click();
     await page.waitForTimeout(600);
     await expect(page.getByTestId('search-input')).toHaveValue('IOP in Plano');
+    await page.getByTestId('find-programs-btn').click();
+    await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
     expect(count).toBeLessThan(50);
@@ -130,8 +156,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('preset: IOP programs (no city)', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.locator('[data-preset="iop-programs"]').first().click();
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
@@ -141,8 +169,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('preset: Youth & teens (no city)', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.locator('[data-preset="youth-teens"]').first().click();
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
@@ -152,8 +182,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('preset: Virtual therapy', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.locator('[data-preset="virtual-therapy"]').click();
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     await expect(page.locator('#onlyVirtual')).toBeChecked();
     const count = await getCount(page);
@@ -163,7 +195,9 @@ test.describe('Search & filter localhost audit', () => {
 
   test('insurance bucket: Medicaid / CHIP', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     await openAdvancedFilters(page);
     await page.selectOption('#insurance', { label: 'Medicaid / CHIP' });
     await page.waitForTimeout(500);
@@ -174,8 +208,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('smart search: accepts Medicaid', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.getByTestId('search-input').fill('accepts Medicaid');
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(700);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(10);
@@ -185,8 +221,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('smart search: accepts Cigna', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.getByTestId('search-input').fill('accepts Cigna');
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(700);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(20);
@@ -195,8 +233,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('smart search: BCBS shorthand', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.getByTestId('search-input').fill('accepts BCBS');
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(700);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(20);
@@ -205,8 +245,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('smart search: BHS shorthand', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.getByTestId('search-input').fill('accepts BHS');
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(700);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(5);
@@ -215,7 +257,9 @@ test.describe('Search & filter localhost audit', () => {
 
   test('care level PHP filter', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
     await page.waitForTimeout(500);
@@ -227,8 +271,10 @@ test.describe('Search & filter localhost audit', () => {
 
   test('org search: Children\'s Health', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
     await page.getByTestId('search-input').fill("Children's Health");
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(500);
     const count = await getCount(page);
     expect(count).toBeGreaterThan(0);
@@ -251,19 +297,25 @@ test.describe('Search & filter localhost audit', () => {
 
   test('reset returns to full baseline count', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     const baseline = await getCount(page);
     await page.getByTestId('search-input').fill('IOP in Plano');
+    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(700);
     expect(await getCount(page)).toBeLessThan(baseline);
     await page.getByTestId('reset-btn').click();
     await page.waitForTimeout(600);
+    await expect(page.getByTestId('results-awaiting')).toBeVisible();
+    await showAllResults(page);
     expect(await getCount(page)).toBe(baseline);
     await expect(page.getByTestId('active-filter-chips')).toBeHidden();
   });
 
   test('empty state shows context and broaden increases results', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
     await page.selectOption('#insurance', { label: 'Beacon' });
@@ -280,6 +332,7 @@ test.describe('Search & filter localhost audit', () => {
 
   test('empty state clear filters restores baseline', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     const baseline = await getCount(page);
     await openAdvancedFilters(page);
     await page.selectOption('#care', 'Partial Hospitalization (PHP)');
@@ -290,12 +343,16 @@ test.describe('Search & filter localhost audit', () => {
     await expect(page.getByTestId('empty-state')).toBeVisible();
     await page.getByTestId('empty-clear-filters').click();
     await page.waitForTimeout(600);
+    await expect(page.getByTestId('results-awaiting')).toBeVisible();
+    await showAllResults(page);
     expect(await getCount(page)).toBe(baseline);
   });
 
   test('crisis toggle shows crisis programs', async ({ page }) => {
     await waitForPrograms(page);
+    await showAllResults(page);
     await resetFilters(page);
+    await showAllResults(page);
     await page.locator('#showCrisisTop').check();
     await page.waitForTimeout(500);
     await expect(page.locator('#sectionTitle')).toContainText(/crisis/i);

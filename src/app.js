@@ -18,6 +18,129 @@ if (typeof window.getStateManager === 'function') {
 // These will be gradually replaced with stateManager.getState() / stateManager.setState()
 let programs = [];
 let ready = false;
+/** When false, treatment cards and results chrome stay hidden until Find Programs or Browse all. */
+let resultsUnlocked = false;
+
+const URL_FILTER_PARAM_KEYS = ['q', 'loc', 'care', 'age', 'insurance', 'crisis', 'virtual', 'sort'];
+
+function hasURLFilterParams() {
+  const params = new URLSearchParams(window.location.search);
+  return URL_FILTER_PARAM_KEYS.some((key) => params.has(key));
+}
+
+function isResultsUnlocked() {
+  return resultsUnlocked;
+}
+
+function unlockResults() {
+  if (resultsUnlocked) return;
+  resultsUnlocked = true;
+  updateResultsVisibility();
+}
+
+function lockResults() {
+  if (!resultsUnlocked) return;
+  resultsUnlocked = false;
+  updateResultsVisibility();
+}
+
+function updateResultsVisibility() {
+  document.body.classList.toggle('is-results-unlocked', resultsUnlocked);
+  const awaiting = document.getElementById('resultsAwaiting');
+  if (awaiting) awaiting.hidden = resultsUnlocked;
+}
+
+function getDirectoryProgramCount() {
+  if (!ready || !programs.length) return null;
+  return programs.filter((p) => !isCrisis(p)).length;
+}
+
+function updateResultsAwaitingCopy() {
+  const title = document.getElementById('awaitingTitle');
+  const lead = document.getElementById('awaitingLead');
+  if (!title || !lead) return;
+
+  const intent = document.body.dataset.intent || '';
+  const copyByIntent = {
+    treatment: {
+      title: 'Search to see programs that fit',
+      lead: 'Use the search box above with a city, care level, or age. Click Find Programs when you are ready.',
+    },
+    guidance: {
+      title: 'Answer a few questions, then search',
+      lead: 'Complete the guided questions in search, then click Find Programs to see matching programs.',
+    },
+    crisis: {
+      title: 'Search crisis resources when you are ready',
+      lead: 'For immediate help, use 911 or 988 above. To browse crisis programs in this directory, search and click Find Programs.',
+    },
+  };
+
+  const copy = copyByIntent[intent] || {
+    title: 'Programs appear after you search',
+    lead: 'Choose an option above, refine your search, and click Find Programs — or browse the full directory without filters.',
+  };
+
+  title.textContent = copy.title;
+  lead.textContent = copy.lead;
+}
+
+function updateResultsAwaitingPanel() {
+  updateResultsAwaitingCopy();
+  const countEl = document.getElementById('awaitingProgramCount');
+  if (!countEl) return;
+
+  if (!ready) {
+    countEl.textContent = '…';
+    return;
+  }
+
+  const count = getDirectoryProgramCount();
+  countEl.textContent = count != null ? String(count) : '—';
+}
+
+function renderResultsLocked() {
+  refreshEls();
+  updateResultsAwaitingPanel();
+  updateActiveFilterChips();
+
+  if (els.treatmentGrid) {
+    els.treatmentGrid.innerHTML = '';
+    els.treatmentGrid.dataset.state = ready ? 'idle' : 'loading';
+    els.treatmentGrid.style.display = '';
+  }
+
+  if (els.treatmentEmpty) {
+    els.treatmentEmpty.style.display = 'none';
+  }
+
+  if (els.treatmentCount) {
+    els.treatmentCount.textContent = '—';
+  }
+
+  const resultsIntro = document.getElementById('resultsIntro');
+  if (resultsIntro) {
+    resultsIntro.textContent = ready
+      ? 'Search or browse all to see program matches.'
+      : 'Loading programs…';
+  }
+
+  if (window.flowMotion) {
+    window.flowMotion.setTreatmentGridState(0);
+  }
+}
+
+function browseAllPrograms() {
+  clearAllFilters({ updateUrl: true, closeCards: true });
+  unlockResults();
+  render();
+  const grid = document.getElementById('treatmentGrid');
+  if (grid) {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    grid.scrollIntoView({ behavior: motion, block: 'start' });
+  }
+}
+
 let openId = null;
 let currentSort = window.DEFAULT_SORT || 'relevance';
 let userLocation = null; // { lat, lng } - kept in memory only, never stored
@@ -211,6 +334,11 @@ if (typeof window !== 'undefined') {
   window.refreshEls = refreshEls;
   window.readSearchQuery = readSearchQuery;
   window.getAppReady = () => ready;
+  window.isResultsUnlocked = isResultsUnlocked;
+  window.unlockResults = unlockResults;
+  window.lockResults = lockResults;
+  window.browseAllPrograms = browseAllPrograms;
+  window.updateResultsAwaitingCopy = updateResultsAwaitingCopy;
 }
 
 const els = {
@@ -1562,12 +1690,19 @@ function applyFilterPreset(preset) {
     syncChipsToSelect('sudServices');
   }
   
-  render();
   updateURLState();
   updateActiveFilterChips();
-  
-  const t = document.getElementById("treatmentSection");
-  if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
+  window.flowMotion?.renderSearchQueryChips();
+
+  if (typeof window.revealViableSearch === 'function') {
+    window.revealViableSearch({ focusSearch: false });
+  } else {
+    const search = document.getElementById('searchSection');
+    if (search) {
+      search.classList.add('is-revealed');
+      search.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
 }
 
 // Make functions globally available for onclick handlers
@@ -2011,8 +2146,16 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
 function render(){
   if (!ready) {
     if (els.treatmentGrid) els.treatmentGrid.dataset.state = 'loading';
+    updateResultsAwaitingPanel();
+    if (!resultsUnlocked) renderResultsLocked();
     return;
   }
+
+  if (!resultsUnlocked) {
+    renderResultsLocked();
+    return;
+  }
+
   const generation = ++renderGeneration;
   refreshEls();
   const showCrisis = els.showCrisis?.checked || false;
@@ -2674,8 +2817,12 @@ function bind(){
     applyFilterPreset,
     clearAllFilters: () => {
       clearAllFilters({ updateUrl: true, closeCards: true });
+      lockResults();
       render();
     },
+    unlockResults,
+    lockResults,
+    browseAllPrograms,
     broadenSearchOneStep: () => {
       broadenSearchOneStep();
       render();
@@ -4298,6 +4445,11 @@ loadPrograms().then(() => {
     delete els.q.dataset.matchType;
   }
   handleURLParams();
+  if (hasURLFilterParams()) {
+    unlockResults();
+  }
+  updateResultsVisibility();
+  render();
   renderRecentSearches();
   updateFavoritesCount();
 }).catch(err => {

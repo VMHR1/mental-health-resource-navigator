@@ -26,6 +26,8 @@
   --vm-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --vm-motion-sm: 220ms;
   --vm-motion-md: 360ms;
+  --vm-motion-reveal: 800ms;
+  --vm-motion-reveal-delay: 0ms;
   --vm-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --vm-display: "DM Sans", var(--vm-font);
   --flow-accent: var(--vm-accent);
@@ -73,6 +75,45 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.delay-2 {
+  animation-delay: 0.25s;
+}
+
+.delay-3 {
+  animation-delay: 0.4s;
+}
+
+/* Search panels reveal on intent — hold stagger until section opens */
+.search-section .fade-in {
+  animation: none;
+}
+
+.search-section.is-revealed .fade-in {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
 /* ——— Motion utilities ——— */
 @media (prefers-reduced-motion: no-preference) {
   .vm-fade-up {
@@ -92,10 +133,6 @@ body {
   .vm-stagger > *:nth-child(3) { animation-delay: 160ms; }
   .vm-stagger > *:nth-child(4) { animation-delay: 240ms; }
 
-  .search-section.is-revealed {
-    animation: vmReveal var(--vm-motion-md) var(--vm-ease) forwards;
-  }
-
   #treatmentGrid.is-updating .card {
     animation: vmCardIn var(--vm-motion-sm) var(--vm-ease) forwards;
   }
@@ -104,7 +141,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .vm-fade-up,
   .vm-stagger > *,
-  .search-section.is-revealed,
+  .fade-in,
+  .search-section.is-revealed .fade-in,
   #treatmentGrid.is-updating .card {
     opacity: 1 !important;
     transform: none !important;
@@ -560,24 +598,23 @@ body.flow-intent-chosen .hero-gateway .trust-strip {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transform: translateY(10px);
   pointer-events: none;
   transition:
-    max-height var(--vm-motion-md) var(--vm-ease),
-    opacity var(--vm-motion-md) var(--vm-ease),
-    transform var(--vm-motion-md) var(--vm-ease),
-    margin var(--vm-motion-md) var(--vm-ease),
-    padding var(--vm-motion-md) var(--vm-ease),
+    max-height 0.8s ease-out,
+    opacity 0.8s ease-out,
+    margin 0.8s ease-out,
+    padding 0.8s ease-out,
     border-color var(--vm-motion-md) var(--vm-ease),
-    box-shadow var(--vm-motion-md) var(--vm-ease);
+    box-shadow 0.8s ease-out;
 }
 
 .search-section.is-revealed {
   max-height: 4200px;
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
   border-top: 3px solid var(--flow-accent) !important;
+  position: relative;
+  z-index: 2;
 }
 
 .search-section:not(.is-revealed) {
@@ -598,10 +635,6 @@ body.flow-intent-chosen .hero-gateway .trust-strip {
 
 .guided-search-strip[hidden] {
   display: none !important;
-}
-
-.guided-search-strip.is-visible {
-  animation: vmReveal var(--vm-motion-md) var(--vm-ease) forwards;
 }
 
 .guided-search-strip__title {
@@ -1746,5 +1779,96 @@ html.is-scrolling .flow-context-bar {
     min-height: 34px;
     padding: 6px 11px;
     font-size: 11px;
+  }
+}
+
+/* ——— Pre-search awaiting panel (results locked) ——— */
+.results-awaiting {
+  margin: 0 0 24px;
+  padding: 28px 24px;
+  background: var(--vm-bg-elevated);
+  border: 1px solid var(--vm-border-soft);
+  border-radius: var(--vm-radius-lg);
+  box-shadow: var(--vm-shadow-sm);
+  text-align: center;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.results-awaiting[hidden] {
+  display: none !important;
+}
+
+.results-awaiting__title {
+  font-family: var(--vm-display);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+  color: var(--vm-ink);
+}
+
+.results-awaiting__lead {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--vm-muted);
+}
+
+.results-awaiting__stat {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--vm-muted-2);
+}
+
+.results-awaiting__stat strong {
+  font-family: var(--vm-display);
+  font-size: 1.375rem;
+  color: var(--flow-accent, var(--vm-accent-deep));
+  font-weight: 700;
+}
+
+.results-awaiting__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.results-awaiting__hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--vm-muted-2);
+}
+
+body:not(.is-results-unlocked) .results-header,
+body:not(.is-results-unlocked) #treatmentSection {
+  display: none !important;
+}
+
+body.is-results-unlocked #resultsAwaiting {
+  display: none !important;
+}
+
+#treatmentGrid[data-state="idle"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .results-awaiting {
+    animation: vmReveal var(--vm-motion-reveal) var(--vm-ease) forwards;
+  }
+}
+
+@media (max-width: 640px) {
+  .results-awaiting__actions {
+    flex-direction: column;
+  }
+
+  .results-awaiting__actions .btn-vm-primary,
+  .results-awaiting__actions .btn-vm-secondary {
+    width: 100%;
   }
 }

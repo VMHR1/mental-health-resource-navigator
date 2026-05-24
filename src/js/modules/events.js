@@ -27,7 +27,9 @@ function setupEventHandlers(options) {
       if (typeof window.refreshEls === 'function') window.refreshEls();
       state.setOpenId(null);
       callbacks.render();
-      callbacks.updateURLState();
+      if (typeof window.isResultsUnlocked === 'function' && window.isResultsUnlocked()) {
+        callbacks.updateURLState();
+      }
     });
   }
   
@@ -323,9 +325,34 @@ function setupEventHandlers(options) {
   }
 
   on(els.viewAll, 'click', () => {
+    if (typeof callbacks.browseAllPrograms === 'function') {
+      callbacks.browseAllPrograms();
+      return;
+    }
     resetFilters();
     const t = document.getElementById('treatmentSection');
     if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: 'smooth' });
+  });
+
+  const browseAllBtn = document.getElementById('browseAllPrograms');
+  on(browseAllBtn, 'click', () => {
+    if (typeof callbacks.browseAllPrograms === 'function') {
+      callbacks.browseAllPrograms();
+    }
+  });
+
+  const startSearchingBtn = document.getElementById('startSearchingBtn');
+  on(startSearchingBtn, 'click', () => {
+    if (typeof window.revealViableSearch === 'function') {
+      window.revealViableSearch();
+      return;
+    }
+    const search = document.getElementById('searchSection');
+    if (search) {
+      search.classList.add('is-revealed');
+      search.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (els.q) els.q.focus({ preventScroll: true });
+    }
   });
 
   // Smart search
@@ -363,8 +390,11 @@ function setupEventHandlers(options) {
     }
     
     callbacks.syncTopToggles();
+    if (typeof callbacks.unlockResults === 'function') {
+      callbacks.unlockResults();
+    }
     callbacks.render();
-    
+
     const t = document.getElementById("treatmentSection");
     window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
   });
@@ -467,10 +497,17 @@ function setupEventHandlers(options) {
     }
     els.showCrisis.checked = true;
     callbacks.syncTopToggles();
-    callbacks.render();
+    window.flowMotion?.updateResultsStatusBadge();
+    if (typeof window.revealViableSearch === "function") {
+      window.revealViableSearch({ focusSearch: false });
+      return;
+    }
+    const search = document.getElementById("searchSection");
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    const t = document.getElementById("treatmentSection");
-    if (t) t.scrollIntoView({ behavior: motion, block: "start" });
+    if (search) {
+      search.classList.add("is-revealed");
+      search.scrollIntoView({ behavior: motion, block: "center" });
+    }
   });
 
   on(els.viewTreatmentOptions, "click", () => {
@@ -480,7 +517,7 @@ function setupEventHandlers(options) {
     }
     els.showCrisis.checked = false;
     callbacks.syncTopToggles();
-    callbacks.render();
+    window.flowMotion?.updateResultsStatusBadge();
     if (typeof window.revealViableSearch === "function") {
       window.revealViableSearch();
       return;
@@ -610,11 +647,17 @@ function setupEventHandlers(options) {
         els.serviceDomain.value = parsed.serviceDomain;
       }
       callbacks.syncTopToggles();
-      scheduleRender();
+      window.flowMotion?.renderSearchQueryChips();
+      callbacks.render();
 
-      const section = document.getElementById('treatmentSection');
-      if (section) {
-        window.scrollTo({ top: section.offsetTop - 10, behavior: 'smooth' });
+      if (typeof window.revealViableSearch === 'function') {
+        window.revealViableSearch({ focusSearch: false });
+      } else {
+        const search = document.getElementById('searchSection');
+        if (search) {
+          search.classList.add('is-revealed');
+          search.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     });
   });

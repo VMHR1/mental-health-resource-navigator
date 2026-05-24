@@ -94,10 +94,10 @@
       </div>
 
       <section class="hero-gateway" aria-labelledby="heroHeading">
-        <div class="hero-gateway__head vm-fade-up">
-          <h1 id="heroHeading">Find youth mental health support in North Texas.</h1>
-          <p class="hero-gateway__sub">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="guides.html">Levels of care and calling programs</a>.</p>
-          <p class="hero-gateway__prompt">What kind of help are you looking for today?</p>
+        <div class="hero-gateway__head">
+          <h1 id="heroHeading" class="fade-in delay-1">Find youth mental health support in North Texas.</h1>
+          <p class="hero-gateway__sub fade-in delay-2">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="guides.html">Levels of care and calling programs</a>.</p>
+          <p class="hero-gateway__prompt fade-in delay-3">What kind of help are you looking for today?</p>
         </div>
 
         <div class="decision-cards vm-stagger" role="list">
@@ -174,16 +174,10 @@
     </header>
 
     <section class="search-section" id="searchSection" aria-label="Search and filters">
-      <div class="search-hero-intro">
-        <h2 class="search-hero-title">Search programs in North Texas</h2>
-        <p class="search-hero-lead">DFW-area treatment programs. Confirm details with each program.</p>
-        <p class="search-hero-note">Crisis listings stay off until you use <strong>Crisis support</strong> in Quick start or turn on <strong>Show crisis resources</strong> below.</p>
-      </div>
-
       <div class="guided-search-strip" id="guidedSearchStrip" aria-labelledby="guidedSearchLabel" hidden>
-        <h3 id="guidedSearchLabel" class="guided-search-strip__title">Not sure where to start?</h3>
-        <p class="guided-search-strip__lead">Answer a few questions to pre-fill search and think about what to ask programs. This does not diagnose or determine the right level of care.</p>
-        <div class="guided-search-strip__grid">
+        <h3 id="guidedSearchLabel" class="guided-search-strip__title fade-in delay-1">Not sure where to start?</h3>
+        <p class="guided-search-strip__lead fade-in delay-2">Answer a few questions to pre-fill search and think about what to ask programs. This does not diagnose or determine the right level of care.</p>
+        <div class="guided-search-strip__grid fade-in delay-3">
           <label class="guided-search-field guided-search-field--wide">
             <span>Is someone in immediate physical danger?</span>
             <select id="guidedDanger">
@@ -246,7 +240,14 @@
         <p class="care-helper-disclaimer">This is not medical advice or a diagnosis. Programs can help determine fit during intake. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
       </div>
 
-      <div class="search-quick-start" role="group" aria-labelledby="quickStartLabel">
+      <div class="search-section__panel">
+      <div class="search-hero-intro">
+        <h2 class="search-hero-title fade-in delay-1">Search programs in North Texas</h2>
+        <p class="search-hero-lead fade-in delay-2">DFW-area treatment programs. Confirm details with each program.</p>
+        <p class="search-hero-note">Crisis listings stay off until you use <strong>Crisis support</strong> in Quick start or turn on <strong>Show crisis resources</strong> below.</p>
+      </div>
+
+      <div class="search-quick-start fade-in delay-3" role="group" aria-labelledby="quickStartLabel">
         <p id="quickStartLabel" class="search-quick-start__kicker">Quick start</p>
         <div class="search-quick-start__chips">
           <button type="button" class="search-quick-start-btn filter-preset-btn" data-preset="youth-teens">Youth &amp; teens</button>
@@ -268,7 +269,7 @@
         </label>
       </div>
 
-      <div class="search-simple">
+      <div class="search-simple fade-in delay-3">
         <div class="input-group-primary">
           <label for="q">What are you looking for?</label>
           <div class="search-query-chips" id="searchQueryChips" aria-live="polite" hidden></div>
@@ -464,6 +465,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
 
     <div class="filter-tray-overlay" id="filterTrayOverlay" hidden>
@@ -543,6 +545,17 @@
     <div class="active-filters-container" id="activeFiltersContainer" style="display: none;" role="region" aria-label="Active filters">
       <div class="active-filters-label">Active filters:</div>
       <div class="active-filters-chips" id="activeFiltersChips" data-testid="active-filter-chips" role="list"></div>
+    </div>
+
+    <div id="resultsAwaiting" data-testid="results-awaiting" role="region" aria-labelledby="awaitingTitle" class="results-awaiting">
+      <h2 id="awaitingTitle" class="results-awaiting__title">Programs appear after you search</h2>
+      <p id="awaitingLead" class="results-awaiting__lead">Choose an option above, refine your search, and click Find Programs — or browse the full directory without filters.</p>
+      <p class="results-awaiting__stat"><strong id="awaitingProgramCount">…</strong> treatment programs listed in this directory</p>
+      <div class="results-awaiting__actions">
+        <button type="button" class="btn-vm-primary" id="startSearchingBtn" data-testid="start-searching-btn">Start searching</button>
+        <button type="button" class="btn-vm-secondary" id="browseAllPrograms" data-testid="browse-all-btn">Browse all programs</button>
+      </div>
+      <p class="results-awaiting__hint">Quick-start chips and filters fill your search — then click <strong>Find Programs</strong>.</p>
     </div>
 
     <section class="section" id="treatmentSection">

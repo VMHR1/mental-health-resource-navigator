@@ -160,6 +160,12 @@
       return;
     }
 
+    const unlocked = typeof window.isResultsUnlocked === 'function' ? window.isResultsUnlocked() : true;
+    if (!unlocked) {
+      grid.dataset.state = 'idle';
+      return;
+    }
+
     grid.dataset.state = resultCount > 0 ? 'results' : 'empty';
   }
 

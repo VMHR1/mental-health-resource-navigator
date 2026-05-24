@@ -4,16 +4,39 @@
 
 import { expect } from '@playwright/test';
 
-/** Wait until program data is loaded and the results count is populated. */
+/** Wait until program data is loaded (awaiting panel stat or unlocked results count). */
 export async function waitForPrograms(page) {
   await expect(page.locator('#loadWarn')).not.toContainText(/unable to load/i, { timeout: 15000 });
   await page.waitForFunction(
     () => {
+      const awaiting = document.getElementById('awaitingProgramCount')?.textContent?.trim();
+      if (awaiting && awaiting !== '…' && awaiting !== '—' && !Number.isNaN(Number(awaiting))) {
+        return true;
+      }
       const n = document.getElementById('totalCount')?.textContent?.trim();
       return n && n !== '…' && n !== '0' && !Number.isNaN(Number(n));
     },
     { timeout: 15000 }
   );
+}
+
+/** Unlock and show the full program list (pre-search gate). */
+export async function showAllResults(page) {
+  const browseAll = page.getByTestId('browse-all-btn');
+  if (await browseAll.isVisible().catch(() => false)) {
+    await browseAll.scrollIntoViewIfNeeded();
+    await browseAll.click();
+    await page.waitForTimeout(400);
+  }
+}
+
+/** Reveal search section via intent card (needed before Find Programs on fresh load). */
+export async function revealSearchForTest(page) {
+  const searchPrograms = page.getByRole('button', { name: 'Search programs' });
+  if (await searchPrograms.isVisible().catch(() => false)) {
+    await searchPrograms.click();
+    await page.waitForTimeout(500);
+  }
 }
 
 export async function openAdvancedFilters(page) {
@@ -30,7 +53,7 @@ export async function openAdvancedFilters(page) {
     return;
   }
 
-  await page.getByTestId('advanced-filters-btn').click();
+  await page.getByTestId('advanced-filters-btn').click({ force: true });
   await page.waitForTimeout(300);
   await page.locator('#advancedFilters').waitFor({ state: 'visible', timeout: 5000 });
 }
@@ -44,6 +67,7 @@ export async function closeFilterTrayIfOpen(page) {
 }
 
 export async function openResultsAction(page, action) {
+  await showAllResults(page);
   const testId = action === 'favorites' ? 'favorites-btn' : 'history-btn';
   const direct = page.getByTestId(testId);
   if (await direct.isVisible().catch(() => false)) {

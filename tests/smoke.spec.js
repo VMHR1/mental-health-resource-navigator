@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAdvancedFilters, openResultsAction, waitForPrograms } from './helpers/ui.js';
+import { openAdvancedFilters, openResultsAction, waitForPrograms, revealSearchForTest } from './helpers/ui.js';
 
 test.describe('Smoke Tests', () => {
   test('page loads without fatal console errors', async ({ page }) => {
@@ -30,6 +30,7 @@ test.describe('Smoke Tests', () => {
   test('search input accepts typing; Find Programs triggers results update', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await revealSearchForTest(page);
 
     // Find search input
     const searchInput = page.getByTestId('search-input');
@@ -62,6 +63,7 @@ test.describe('Smoke Tests', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await waitForPrograms(page);
+    await revealSearchForTest(page);
 
     const searchInput = page.getByTestId('search-input');
     await searchInput.fill('test');
@@ -81,6 +83,7 @@ test.describe('Smoke Tests', () => {
   }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+    await revealSearchForTest(page);
 
     await openAdvancedFilters(page);
 
