@@ -224,6 +224,13 @@ if (typeof window !== 'undefined') {
     if (!id) return '/program.html';
     return `/programs/${encodeURIComponent(id)}.html`;
   };
+  window.newTabSrHtml = function newTabSrHtml() {
+    return '<span class="sr-only"> (opens in new tab)</span>';
+  };
+  window.newTabAccessibleLabel = function newTabAccessibleLabel(visibleLabel) {
+    const label = safeStr(visibleLabel);
+    return label ? `${label} (opens in new tab)` : 'Opens in new tab';
+  };
 }
 
 

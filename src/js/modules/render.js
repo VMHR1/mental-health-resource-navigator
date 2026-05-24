@@ -291,7 +291,7 @@ function createCard(program, idx, options) {
       <p class="card-location-line">${escapeHtml(loc)} · ${escapeHtml(settingLabel)}</p>
       <p class="card-ages-line">Ages served: ${escapeHtml(ages)}</p>
       <p class="card-good-to-ask"><strong>Good to ask about:</strong> schedule, intake process, insurance, family involvement</p>
-      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}. Information may change. Call to confirm.</p>` : `<p class="card-verified-line">Information may change. Call to confirm.</p>`}
+      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}. <a href="about.html#verification">What verified means</a>. Information may change—call to confirm.</p>` : `<p class="card-verified-line">Verification date not listed. <a href="about.html#verification">What verified means</a>. Call to confirm details.</p>`}
     </div>
 
     ${availabilityBadge}
@@ -337,7 +337,7 @@ function createCard(program, idx, options) {
         <div class="kv">
           <div class="k">Website</div>
           <div class="v">
-            <a class="siteLink" href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">
+            <a class="siteLink" href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(typeof window.newTabAccessibleLabel === 'function' ? window.newTabAccessibleLabel('Visit website') : 'Visit website (opens in new tab)')}">
               Visit website <span aria-hidden="true">↗</span>
             </a>
             ${websiteDomain ? `<span class="siteDomain">${escapeHtml(websiteDomain)}</span>` : ``}
@@ -348,7 +348,7 @@ function createCard(program, idx, options) {
         <div class="kv">
           <div class="k"></div>
           <div class="v">
-            <a class="verified-source" href="${escapeHtml(verificationUrl)}" target="_blank" rel="noopener noreferrer">Verified source</a>
+            <a class="verified-source" href="${escapeHtml(verificationUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(typeof window.newTabAccessibleLabel === 'function' ? window.newTabAccessibleLabel('Verified source') : 'Verified source (opens in new tab)')}">Verified source</a>
             ${lastVerified ? `<span class="last-verified"> • Last verified: ${escapeHtml(lastVerified)}</span>` : ``}
           </div>
         </div>
@@ -373,7 +373,7 @@ function createCard(program, idx, options) {
       <div class="actions">
         <a class="linkBtn" href="${detailPageHref}" style="margin-right: 8px;">View Details</a>
         ${phoneHref ? `<a class="linkBtn ${crisis ? "danger" : "primary"}" href="${escapeHtml(phoneHref)}" data-program-id="${escapeHtml(id)}">${escapeHtml(phoneLabel)}</a>` : ``}
-        ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener">Directions</a>` : ``}
+        ${maps ? `<a class="linkBtn" href="${escapeHtml(maps)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(typeof window.newTabAccessibleLabel === 'function' ? window.newTabAccessibleLabel('Directions') : 'Directions (opens in new tab)')}">Directions</a>` : ``}
         ${(!phoneHref && !maps) ? `<span style="color:var(--muted);font-size:13px;font-weight:700;">No quick actions available for this listing.</span>` : ``}
       </div>
       </div>
@@ -511,7 +511,7 @@ function renderComparison(options) {
       const url = safeUrl(p.website_url || p.website || '');
       if (!url) return '—';
       const domain = domainFromUrl(url) || url;
-      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="comparison-link">${escapeHtml(domain)} <span aria-hidden="true">↗</span></a>`;
+      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="comparison-link" aria-label="${escapeHtml(typeof window.newTabAccessibleLabel === 'function' ? window.newTabAccessibleLabel(domain) : domain + ' (opens in new tab)')}">${escapeHtml(domain)} <span aria-hidden="true">↗</span></a>`;
     }, isHtml: true },
     { label: 'Insurance', getValue: (p) => {
       const ins = p.accepted_insurance || {};

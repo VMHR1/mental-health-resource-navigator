@@ -344,7 +344,7 @@
         if (showAdv) showAdv.click();
         return;
       }
-      trayTrigger = document.activeElement;
+      trayTrigger = openBtn;
       if (mount && advanced.parentElement !== mount) {
         mount.appendChild(advanced);
       }
@@ -376,6 +376,8 @@
         }
         if (trigger && typeof trigger.focus === 'function') {
           trigger.focus();
+        } else {
+          openBtn.focus();
         }
       }, prefersReducedMotion() ? 0 : 280);
     }

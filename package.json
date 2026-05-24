@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
+    "build:admin": "INCLUDE_ADMIN=1 node scripts/build.js",
     "dev": "node scripts/build.js --watch",
     "preview": "npm run build && npx http-server dist -p 4173 -c-1",
     "preview:serve": "npx http-server dist -p 4173 -c-1",

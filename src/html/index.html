@@ -65,7 +65,7 @@
       </p>
       <div class="crisis-banner__actions">
         <a href="tel:988">Call/Text 988</a>
-        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener">What happens when I contact 988?</a>
+        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener noreferrer">What happens when I contact 988?<span class="sr-only"> (opens in new tab)</span></a>
       </div>
     </div>
   </div>
@@ -148,7 +148,7 @@
           <div class="trust-item">
             <div class="trust-icon" aria-hidden="true">—</div>
             <div class="trust-text">
-              <strong>No paid rankings</strong>
+              <strong><a href="about.html#neutrality" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">No paid rankings</a></strong>
               <span>Programs do not pay to appear higher</span>
             </div>
           </div>
@@ -162,8 +162,8 @@
           <div class="trust-item">
             <div class="trust-icon" aria-hidden="true">◇</div>
             <div class="trust-text">
-              <strong>Privacy-first</strong>
-              <span>No ads or third-party tracking</span>
+              <strong>Privacy-conscious</strong>
+              <span>No ads or marketing trackers; <a href="privacy.html#analytics" style="color: inherit; font-weight: 600;">minimal aggregate analytics</a></span>
             </div>
           </div>
           </div>
@@ -551,13 +551,13 @@
 
     <div id="resultsAwaiting" data-testid="results-awaiting" role="region" aria-labelledby="awaitingTitle" class="results-awaiting">
       <h2 id="awaitingTitle" class="results-awaiting__title">Programs appear after you search</h2>
-      <p id="awaitingLead" class="results-awaiting__lead">Choose an option above, refine your search, and click Find Programs — or browse the full directory without filters.</p>
+      <p id="awaitingLead" class="results-awaiting__lead">Click Find Programs after you set filters, use Browse all for the full list, or pick a specialized program type below to see matches right away.</p>
       <p class="results-awaiting__stat"><strong id="awaitingProgramCount">…</strong> treatment programs listed in this directory</p>
       <div class="results-awaiting__actions">
         <button type="button" class="btn-vm-primary" id="startSearchingBtn" data-testid="start-searching-btn">Start searching</button>
         <button type="button" class="btn-vm-secondary" id="browseAllPrograms" data-testid="browse-all-btn">Browse all programs</button>
       </div>
-      <p class="results-awaiting__hint">Quick-start chips and filters fill your search — then click <strong>Find Programs</strong>.</p>
+      <p class="results-awaiting__hint">Quick-start chips fill your search, then click <strong>Find Programs</strong>. Specialized program types at the bottom of the page show results immediately.</p>
     </div>
 
     <section class="section" id="treatmentSection">
@@ -628,7 +628,7 @@
         <li>Programs do not pay to appear higher.</li>
         <li>This site does not rank or recommend one program as best.</li>
         <li>Information may change. Call programs directly to confirm details.</li>
-        <li>Saved programs and search history are stored with privacy in mind on your device.</li>
+        <li>Saved programs and search history stay on your device; we use minimal aggregate analytics (no ad tracking). <a href="privacy.html#analytics">Learn more</a></li>
         <li>This site is informational and is not medical advice, diagnosis, treatment, or emergency service.</li>
       </ul>
       <p class="footer-submit-cta">Know a program we should add or update? <a href="submit.html">Submit or update a program</a> · <a href="guides.html">Guides for families</a></p>
@@ -638,8 +638,10 @@
 
     <footer>
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
-      <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: We don't require an account. If you use location features, your location is used only to sort nearby programs and is not stored.</p>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: No account required. Optional location is used only to sort results and is not stored. We use minimal aggregate page analytics—not ad or marketing trackers.</p>
       <p style="margin-top: 12px; font-size: 13px;">
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
         <a href="guides.html">Guides</a>
         <span aria-hidden="true"> • </span>
         <a href="privacy.html">Privacy Policy</a>

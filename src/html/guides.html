@@ -42,7 +42,7 @@
       </p>
       <div class="crisis-banner__actions">
         <a href="tel:988">Call/Text 988</a>
-        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener">What happens when I contact 988?</a>
+        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener noreferrer">What happens when I contact 988?<span class="sr-only"> (opens in new tab)</span></a>
       </div>
     </div>
   </div>
@@ -157,10 +157,13 @@
           <li>What should we bring or prepare before intake?</li>
         </ul>
         <button type="button" class="btn-copy-checklist" id="copyCallChecklist">Copy checklist</button>
+        <div id="copyChecklistStatus" class="sr-only" aria-live="polite" aria-atomic="true"></div>
       </section>
 
       <p style="margin-top: 32px; font-size: 14px; color: var(--muted);">
         <a href="index.html">Return to program search</a>
+        <span aria-hidden="true"> · </span>
+        <a href="about.html">About</a>
         <span aria-hidden="true"> · </span>
         <a href="privacy.html">Privacy</a>
         <span aria-hidden="true"> · </span>
@@ -173,7 +176,11 @@
     (function () {
       var btn = document.getElementById('copyCallChecklist');
       var list = document.getElementById('callChecklist');
+      var status = document.getElementById('copyChecklistStatus');
       if (!btn || !list) return;
+      function announce(msg) {
+        if (status) status.textContent = msg;
+      }
       btn.addEventListener('click', function () {
         var text = Array.prototype.map.call(list.querySelectorAll('li'), function (li) {
           return '• ' + li.textContent.trim();
@@ -181,12 +188,18 @@
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(text).then(function () {
             btn.textContent = 'Copied';
-            setTimeout(function () { btn.textContent = 'Copy checklist'; }, 2000);
+            announce('Checklist copied to clipboard.');
+            setTimeout(function () {
+              btn.textContent = 'Copy checklist';
+              if (status) status.textContent = '';
+            }, 2000);
           }).catch(function () {
             btn.textContent = 'Copy not available';
+            announce('Could not copy checklist.');
           });
         } else {
           btn.textContent = 'Copy not available';
+          announce('Copy is not available in this browser.');
         }
       });
     })();

@@ -308,8 +308,11 @@ function renderProgramDetail(program) {
         const dir = document.createElement('a');
         dir.href = mapsHref;
         dir.target = '_blank';
-        dir.rel = 'noopener';
+        dir.rel = 'noopener noreferrer';
         dir.className = 'linkBtn';
+        dir.setAttribute('aria-label', typeof window.newTabAccessibleLabel === 'function'
+          ? window.newTabAccessibleLabel('Get Directions')
+          : 'Get Directions (opens in new tab)');
         dir.style.marginTop = '8px';
         dir.style.display = 'inline-block';
         dir.textContent = 'Get Directions';
@@ -340,8 +343,11 @@ function renderProgramDetail(program) {
     const siteWrap = document.createElement('a');
     siteWrap.href = website;
     siteWrap.target = '_blank';
-    siteWrap.rel = 'noopener';
+    siteWrap.rel = 'noopener noreferrer';
     siteWrap.className = 'siteLink';
+    siteWrap.setAttribute('aria-label', typeof window.newTabAccessibleLabel === 'function'
+      ? window.newTabAccessibleLabel('Visit website')
+      : 'Visit website (opens in new tab)');
     siteWrap.textContent = 'Visit website ';
     const arrow = document.createElement('span');
     arrow.setAttribute('aria-hidden', 'true');
@@ -393,6 +399,19 @@ function renderProgramDetail(program) {
     }
     verVal.textContent = verText;
     verSection.appendChild(verVal);
+
+    const verNote = document.createElement('p');
+    verNote.style.fontSize = '13px';
+    verNote.style.marginTop = '10px';
+    verNote.style.lineHeight = '1.55';
+    verNote.style.color = 'var(--muted)';
+    const verLink = document.createElement('a');
+    verLink.href = '../about.html#verification';
+    verLink.textContent = 'What verified means';
+    verNote.appendChild(document.createTextNode('Verified means we confirmed listing details against a source on the date shown—not a quality rating or clinical endorsement. '));
+    verNote.appendChild(verLink);
+    verNote.appendChild(document.createTextNode('. Always call the program to confirm current availability.'));
+    verSection.appendChild(verNote);
   }
 
   if (relatedPrograms.length > 0) {

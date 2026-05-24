@@ -13,6 +13,13 @@ This folder is the primary index for understanding how the repository is organiz
 ## Performance
 See `performance/` for mobile performance and stutter investigations.
 
+## Product (launch)
+- Launch scope: `product/LAUNCH_SCOPE.md`
+- Phased build plan: `product/ViableMHR-Phased-Launch-Build-Plan.md`
+- Program URL strategy: `product/PROGRAM_URL_STRATEGY.md`
+
 ## Security & Operations
 - Security: `security/`
 - Operations/admin: `operations/`
+- Submit-to-publish runbook: `operations/SUBMIT_TO_PUBLISH_RUNBOOK.md`
+- Deploy & admin verification: `operations/DEPLOY_AND_ADMIN_VERIFICATION.md`

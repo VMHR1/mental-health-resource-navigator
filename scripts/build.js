@@ -3,7 +3,7 @@
 // Simple build process for code splitting, minification, and optimization
 
 import * as esbuild from 'esbuild';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -39,16 +39,25 @@ const buildOptions = {
 function copyStaticAssets() {
   try {
     // HTML files from src/html
+    const includeAdmin = process.env.INCLUDE_ADMIN === '1';
     const htmlFiles = [
       { src: 'src/html/index.html', dest: 'index.html' },
-      { src: 'src/html/admin.html', dest: 'admin.html' },
+      ...(includeAdmin ? [{ src: 'src/html/admin.html', dest: 'admin.html' }] : []),
       { src: 'src/html/program.html', dest: 'program.html' },
       { src: 'src/html/submit.html', dest: 'submit.html' },
       { src: 'src/html/guides.html', dest: 'guides.html' },
+      { src: 'src/html/about.html', dest: 'about.html' },
       { src: 'src/html/privacy.html', dest: 'privacy.html' },
       { src: 'src/html/terms.html', dest: 'terms.html' },
       { src: 'src/html/404.html', dest: '404.html' }
     ];
+    if (!includeAdmin) {
+      const adminDist = join('dist', 'admin.html');
+      if (existsSync(adminDist)) {
+        unlinkSync(adminDist);
+      }
+      console.log('Note: admin.html excluded from build (set INCLUDE_ADMIN=1 to include)');
+    }
     
     // Static assets from public
     const staticFiles = [

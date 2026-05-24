@@ -64,21 +64,21 @@ function updateResultsAwaitingCopy() {
   const copyByIntent = {
     treatment: {
       title: 'Search to see programs that fit',
-      lead: 'Use the search box above with a city, care level, or age. Click Find Programs when you are ready.',
+      lead: 'Enter a city, care level, or age in the search box, then click Find Programs. Or use Browse all to see every listing.',
     },
     guidance: {
       title: 'Answer a few questions, then search',
-      lead: 'Complete the guided questions in search, then click Find Programs to see matching programs.',
+      lead: 'Use the guided fields in search, then click Find Programs. Browse all shows the full directory without filters.',
     },
     crisis: {
       title: 'Search crisis resources when you are ready',
-      lead: 'For immediate help, use 911 or 988 above. To browse crisis programs in this directory, search and click Find Programs.',
+      lead: 'For immediate help, use 911 or 988 above. To browse crisis programs here, search and click Find Programs, or browse all.',
     },
   };
 
   const copy = copyByIntent[intent] || {
     title: 'Programs appear after you search',
-    lead: 'Choose an option above, refine your search, and click Find Programs — or browse the full directory without filters.',
+    lead: 'Click Find Programs after you set filters, use Browse all for the full list, or pick a specialized program type below to see matches right away.',
   };
 
   title.textContent = copy.title;
@@ -1283,9 +1283,11 @@ function shareProgram(programId) {
     return;
   }
   
-  const pathname = window.location.pathname.split('?')[0];
-  const url = `${window.location.origin}${pathname}?program=${encodeURIComponent(sanitizedId)}`;
-  
+  const pathFn = typeof window.programPublicPath === 'function'
+    ? window.programPublicPath
+    : (id) => `/programs/${encodeURIComponent(id)}.html`;
+  const url = `${window.location.origin}${pathFn(sanitizedId)}`;
+
   // Show share options modal
   showShareModal(url, `${safeStr(program.program_name)} - ${safeStr(program.organization)}`);
 }
@@ -3633,34 +3635,44 @@ function updateLocationButtonVisibility() {
 }
 
 // Display last updated date from metadata
+function parseMetadataDate(dateStr) {
+  if (!dateStr) return null;
+  const raw = String(dateStr).trim();
+  try {
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+      ? new Date(`${raw}T12:00:00`)
+      : new Date(raw);
+    return !isNaN(date.getTime()) ? date : null;
+  } catch (_) {
+    return null;
+  }
+}
+
 function updateLastUpdatedDisplay() {
   const lastUpdatedEl = document.getElementById('lastUpdated');
-  if (!lastUpdatedEl || !programsMetadata) return;
-  
-  // Prefer explicit full-verification date, then generatedAt (ISO), then generated_at
+  if (!lastUpdatedEl) return;
+
+  if (!programsMetadata) {
+    lastUpdatedEl.textContent = '';
+    return;
+  }
+
   const dateStr =
     programsMetadata.last_full_verification ||
     programsMetadata.generatedAt ||
     programsMetadata.generated_at;
-  if (dateStr) {
-    try {
-      const date = new Date(dateStr);
-      if (!isNaN(date.getTime())) {
-        const formatted = date.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        });
-        lastUpdatedEl.textContent = `Program list updated: ${formatted}`;
-        return;
-      }
-    } catch (e) {
-      // Invalid date, fall through to omit
-    }
+  const date = parseMetadataDate(dateStr);
+  if (date) {
+    const formatted = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    lastUpdatedEl.textContent = `Program list updated: ${formatted}`;
+    return;
   }
-  
-  // No valid date found - omit display rather than fabricating
-  lastUpdatedEl.textContent = '';
+
+  lastUpdatedEl.textContent = 'Verification dates are shown on each program listing.';
 }
 
 // Store metadata for display
