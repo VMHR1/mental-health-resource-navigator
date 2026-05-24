@@ -458,6 +458,10 @@ function setupEventHandlers(options) {
 
   // Triage buttons
   on(els.viewCrisisResources, "click", () => {
+    const card = els.viewCrisisResources?.closest(".decision-card");
+    if (typeof window.setFlowIntent === "function") {
+      window.setFlowIntent("crisis", card);
+    }
     els.showCrisis.checked = true;
     callbacks.syncTopToggles();
     callbacks.render();
@@ -467,6 +471,10 @@ function setupEventHandlers(options) {
   });
 
   on(els.viewTreatmentOptions, "click", () => {
+    const card = els.viewTreatmentOptions?.closest(".decision-card");
+    if (typeof window.setFlowIntent === "function") {
+      window.setFlowIntent("treatment", card);
+    }
     els.showCrisis.checked = false;
     callbacks.syncTopToggles();
     callbacks.render();

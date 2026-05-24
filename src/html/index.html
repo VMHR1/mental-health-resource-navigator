@@ -30,7 +30,7 @@
   <link rel="manifest" href="/site.webmanifest">
   
   <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="phase1-design.css?v=9">
+  <link rel="stylesheet" href="phase1-design.css?v=14">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
   <script defer src="js/data-validator.js?v=3"></script>
@@ -46,7 +46,7 @@
   <script defer src="js/modules/performance.js?v=3"></script>
   <script defer src="js/modules/render.js?v=3"></script>
   <script defer src="js/modules/events.js?v=8"></script>
-  <script defer src="js/modules/home-phase1.js?v=2"></script>
+  <script defer src="js/modules/home-phase1.js?v=5"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -92,7 +92,7 @@
         </div>
 
         <div class="decision-cards vm-stagger" role="list">
-          <article class="decision-card decision-card--crisis" role="listitem">
+          <article class="decision-card decision-card--crisis" role="listitem" data-intent="crisis">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3v4M12 17v4M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M17.7 6.3l1.4-1.4M6.3 17.7l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg>
             </div>
@@ -104,7 +104,7 @@
             </div>
           </article>
 
-          <article class="decision-card" role="listitem">
+          <article class="decision-card" role="listitem" data-intent="treatment">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg>
             </div>
@@ -115,12 +115,12 @@
             </div>
           </article>
 
-          <article class="decision-card" role="listitem">
+          <article class="decision-card" role="listitem" data-intent="guidance">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg>
             </div>
             <h2>I'm not sure what care level fits</h2>
-            <p>Opens a short questionnaire. You can also read care types on the <a href="guides.html">guides page</a>.</p>
+            <p>Answer a few quick questions in search to pre-fill programs and see what to ask.</p>
             <div class="decision-card__actions">
               <button type="button" class="btn-vm-secondary" id="heroHelpChoose">Help me choose</button>
             </div>
@@ -164,11 +164,77 @@
       </section>
     </header>
 
-    <section class="search-section is-revealed" id="searchSection" aria-label="Search and filters">
+    <section class="search-section" id="searchSection" aria-label="Search and filters">
       <div class="search-hero-intro">
         <h2 class="search-hero-title">Search programs in North Texas</h2>
         <p class="search-hero-lead">DFW-area treatment programs. Confirm details with each program.</p>
         <p class="search-hero-note">Crisis listings stay off until you use <strong>Crisis support</strong> in Quick start or turn on <strong>Show crisis resources</strong> below.</p>
+      </div>
+
+      <div class="guided-search-strip" id="guidedSearchStrip" aria-labelledby="guidedSearchLabel" hidden>
+        <h3 id="guidedSearchLabel" class="guided-search-strip__title">Not sure where to start?</h3>
+        <p class="guided-search-strip__lead">Answer a few questions to pre-fill search and think about what to ask programs. This does not diagnose or determine the right level of care.</p>
+        <div class="guided-search-strip__grid">
+          <label class="guided-search-field guided-search-field--wide">
+            <span>Is someone in immediate physical danger?</span>
+            <select id="guidedDanger">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+          <label class="guided-search-field guided-search-field--wide">
+            <span>Is the child safe at home tonight?</span>
+            <select id="guidedSafeTonight">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="unsure">Not sure</option>
+            </select>
+          </label>
+          <label class="guided-search-field">
+            <span>Who needs support?</span>
+            <select id="guidedWho">
+              <option value="">Choose…</option>
+              <option value="child">Child (under 13)</option>
+              <option value="teen">Teen (13–17)</option>
+              <option value="young-adult">Young adult (18+)</option>
+            </select>
+          </label>
+          <label class="guided-search-field">
+            <span>Where?</span>
+            <select id="guidedWhere">
+              <option value="">Choose…</option>
+              <option value="near-me">Near me</option>
+              <option value="virtual">Virtual / telehealth</option>
+              <option value="in-person">In-person</option>
+            </select>
+          </label>
+          <label class="guided-search-field">
+            <span>Main concern</span>
+            <select id="guidedConcern">
+              <option value="">Choose…</option>
+              <option value="anxiety">Anxiety or depression</option>
+              <option value="substance use">Substance use</option>
+              <option value="eating disorder">Eating disorder</option>
+              <option value="behavior">Behavior or mood</option>
+            </select>
+          </label>
+          <label class="guided-search-field guided-search-field--optional">
+            <span>Program type <em class="guided-field-optional">(optional)</em></span>
+            <select id="guidedSupport">
+              <option value="unsure" selected>I'm not sure yet</option>
+              <option value="outpatient">Outpatient (regular appointments)</option>
+              <option value="iop">Intensive outpatient (IOP)</option>
+              <option value="php">Partial hospitalization / day program (PHP)</option>
+              <option value="navigation">Care navigation</option>
+            </select>
+          </label>
+        </div>
+        <p class="guided-unsure-hint" id="guidedUnsureHint" hidden>
+          Not sure about program type? That's okay—search will show all levels. Programs can help determine fit during intake.
+          <a href="guides.html#levels-of-care">Learn about levels of care</a>
+        </p>
+        <div id="guidedHelperOutput" class="care-helper-output" role="status" aria-live="polite"></div>
+        <p class="care-helper-disclaimer">This is not medical advice or a diagnosis. Programs can help determine fit during intake. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
       </div>
 
       <div class="search-quick-start" role="group" aria-labelledby="quickStartLabel">
@@ -494,6 +560,7 @@
       </div>
     </section>
 
+
     <section class="home-guide-cta specialized-resources-section" aria-labelledby="homeGuideCtaHeading">
       <h2 id="homeGuideCtaHeading">Guides for families</h2>
       <p>Orientation and call checklists live on a separate page so you can focus on search and results here.</p>
@@ -555,73 +622,6 @@
     </footer>
   </div>
 
-  <!-- Help me choose — care helper (opened from hero only) -->
-  <div id="careHelperModal" class="modal care-helper-modal" role="dialog" aria-modal="true" aria-labelledby="careHelperModalTitle" aria-hidden="true">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="careHelperModalTitle">Not sure where to start?</h2>
-        <button type="button" class="modal-close" id="careHelperModalClose" aria-label="Close questionnaire">&times;</button>
-      </div>
-      <div class="modal-body care-helper-modal-body">
-        <p class="care-helper-modal-intro">Answer a few questions to think about what to ask programs. This does not diagnose or determine the right level of care.</p>
-        <form class="care-helper-form" id="careHelperForm">
-          <div>
-            <label for="helperDanger">Is someone in immediate physical danger?</label>
-            <select id="helperDanger" name="helperDanger">
-              <option value="no">No</option>
-              <option value="yes">Yes</option>
-            </select>
-          </div>
-          <div>
-            <label for="helperSafeTonight">Is the child safe at home tonight?</label>
-            <select id="helperSafeTonight" name="helperSafeTonight">
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-              <option value="unsure">Not sure</option>
-            </select>
-          </div>
-          <div>
-            <label for="helperDisruption">Are symptoms disrupting school, home, relationships, or daily life most days?</label>
-            <select id="helperDisruption" name="helperDisruption">
-              <option value="unsure">Not sure</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-          <div>
-            <label for="helperSetting">What type of support are you exploring?</label>
-            <select id="helperSetting" name="helperSetting">
-              <option value="">Not sure yet</option>
-              <option value="outpatient">Regular appointments (outpatient)</option>
-              <option value="iop">Several days per week (IOP)</option>
-              <option value="php">Daytime structured care (PHP)</option>
-              <option value="inpatient">Hospital-based stabilization (inpatient)</option>
-              <option value="residential">Live-in treatment (residential)</option>
-              <option value="navigation">Help finding care (navigation)</option>
-            </select>
-          </div>
-          <div>
-            <label for="helperFormat">Do you need virtual, in-person, or either?</label>
-            <select id="helperFormat" name="helperFormat">
-              <option value="either">Either</option>
-              <option value="virtual">Virtual</option>
-              <option value="in-person">In-person</option>
-            </select>
-          </div>
-          <div>
-            <label for="helperConcerns">Are there concerns like self-harm, substance use, eating disorder symptoms, aggression, psychosis, or inability to stay safe?</label>
-            <select id="helperConcerns" name="helperConcerns">
-              <option value="none">None of these / not sure</option>
-              <option value="some">Yes, one or more of these</option>
-            </select>
-          </div>
-          <button type="button" class="btn-vm-primary" id="careHelperSubmit">See what to ask programs</button>
-        </form>
-        <div class="care-helper-output" id="careHelperOutput" role="status" aria-live="polite"></div>
-        <p class="care-helper-disclaimer">This is not medical advice or a diagnosis. Programs can help determine fit during intake. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
-      </div>
-    </div>
-  </div>
 
   <!-- Favorites Modal -->
   <div id="favoritesModal" class="modal" data-testid="favorites-modal" role="dialog" aria-labelledby="favoritesModalTitle" aria-hidden="true">

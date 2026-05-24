@@ -6,6 +6,15 @@
 (function () {
   'use strict';
 
+  /** Maps guided program-type values to #care filter option values. */
+  const GUIDED_CARE_TO_FILTER = {
+    unsure: '',
+    outpatient: 'Outpatient',
+    iop: 'Intensive Outpatient (IOP)',
+    php: 'Partial Hospitalization (PHP)',
+    navigation: 'Navigation',
+  };
+
   function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
@@ -18,12 +27,131 @@
     });
   }
 
-  function revealSearchSection() {
+  function revealSearchSection(options = {}) {
+    const { focusSearch = true } = options;
     const section = document.getElementById('searchSection');
     if (section) section.classList.add('is-revealed');
     smoothScrollTo(section);
     const q = document.getElementById('q');
-    if (q) setTimeout(() => q.focus({ preventScroll: true }), prefersReducedMotion() ? 0 : 400);
+    if (focusSearch && q) {
+      setTimeout(() => q.focus({ preventScroll: true }), prefersReducedMotion() ? 0 : 400);
+    }
+  }
+
+  function updateGuidedStripVisibility(intent) {
+    const strip = document.getElementById('guidedSearchStrip');
+    if (!strip) return;
+    const show = intent === 'guidance';
+    strip.hidden = !show;
+    strip.classList.toggle('is-visible', show);
+  }
+
+  function updateGuidedUnsureHint() {
+    const hint = document.getElementById('guidedUnsureHint');
+    const support = document.getElementById('guidedSupport');
+    if (!hint || !support) return;
+    const show = support.value === 'unsure' || !support.value;
+    hint.hidden = !show;
+    hint.classList.toggle('is-visible', show);
+  }
+
+  function updateGuidedStep() {
+    const ids = [
+      'guidedDanger',
+      'guidedSafeTonight',
+      'guidedWho',
+      'guidedWhere',
+      'guidedConcern',
+      'guidedSupport',
+    ];
+    let completed = 0;
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (id === 'guidedDanger' && el.value === 'no') return;
+      if (id === 'guidedSafeTonight' && el.value === 'yes') return;
+      if (id === 'guidedSupport' && (el.value === 'unsure' || !el.value)) return;
+      if (el.value) completed += 1;
+    });
+    document.body.dataset.guidedStep = String(completed);
+  }
+
+  function updateGuidedHelperOutput() {
+    const output = document.getElementById('guidedHelperOutput');
+    if (!output) return;
+
+    const danger = document.getElementById('guidedDanger')?.value;
+    const safe = document.getElementById('guidedSafeTonight')?.value;
+    const setting = document.getElementById('guidedSupport')?.value;
+    const format = document.getElementById('guidedWhere')?.value;
+    const concern = document.getElementById('guidedConcern')?.value;
+
+    let html = '';
+
+    if (danger === 'yes') {
+      html += '<div class="care-helper-crisis-box"><strong>Immediate physical danger:</strong> Call <strong>911</strong> now. This directory does not provide emergency services.</div>';
+      output.innerHTML = html;
+      output.classList.add('is-visible');
+      return;
+    }
+
+    if (safe === 'no' || safe === 'unsure') {
+      html += '<div class="care-helper-crisis-box"><strong>Safety concern tonight:</strong> Consider calling or texting <strong>988</strong> and seeking immediate professional support. Call <strong>911</strong> if there is immediate physical danger.</div>';
+    }
+
+    const hasSearchInput = (setting && setting !== 'unsure') || format || concern;
+    if (!hasSearchInput) {
+      output.innerHTML = html;
+      output.classList.toggle('is-visible', html.length > 0);
+      return;
+    }
+
+    const suggestions = [];
+    const settingMap = {
+      outpatient: 'outpatient (regular appointments)',
+      iop: 'intensive outpatient (IOP)',
+      php: 'partial hospitalization / day program (PHP)',
+      navigation: 'care navigation',
+    };
+
+    if (setting && setting !== 'unsure' && settingMap[setting]) {
+      suggestions.push(settingMap[setting]);
+    } else if (setting === 'unsure' || !setting) {
+      suggestions.push('outpatient, IOP, PHP, or other levels—programs can help determine fit');
+    }
+
+    const higherAcuityConcerns = ['substance use', 'eating disorder', 'behavior'];
+    if (concern && higherAcuityConcerns.includes(concern)) {
+      suggestions.push('programs experienced with higher-acuity concerns (confirm fit at intake)');
+    }
+
+    if (format === 'virtual') {
+      suggestions.push('virtual or telehealth options');
+    } else if (format === 'in-person') {
+      suggestions.push('in-person programs near you');
+    }
+
+    const unique = [...new Set(suggestions)];
+    html += `<h3>You may want to ask programs about</h3><p>${unique.map((s) => `• ${s}`).join('<br>')}</p>`;
+    html += '<p>A trained professional can help determine fit during intake. Program structure varies—confirm details directly.</p>';
+
+    output.innerHTML = html;
+    output.classList.add('is-visible');
+  }
+
+  function setFlowIntent(intent, cardEl) {
+    if (!intent) return;
+    document.body.dataset.intent = intent;
+    document.body.classList.add('flow-intent-chosen');
+
+    document.querySelectorAll('.decision-card').forEach((card) => {
+      const matches = card === cardEl || card.dataset.intent === intent;
+      card.classList.toggle('is-selected', matches);
+    });
+
+    updateGuidedStripVisibility(intent);
+    updateGuidedUnsureHint();
+    updateGuidedStep();
   }
 
   function scheduleRender() {
@@ -52,14 +180,18 @@
       if (map[who.value]) age.value = map[who.value];
     }
 
-    if (support && care && support.value) {
-      care.value = support.value;
+    if (support && care) {
+      const filterValue = GUIDED_CARE_TO_FILTER[support.value] ?? '';
+      care.value = filterValue;
     }
 
     if (where) {
       if (where.value === 'virtual') {
         if (onlyVirtual) onlyVirtual.checked = true;
         if (onlyVirtualTop) onlyVirtualTop.checked = true;
+      } else if (where.value === 'in-person') {
+        if (onlyVirtual) onlyVirtual.checked = false;
+        if (onlyVirtualTop) onlyVirtualTop.checked = false;
       } else if (where.value === 'near-me') {
         const nearBtn = document.getElementById('nearMeBtn');
         if (nearBtn) nearBtn.click();
@@ -74,69 +206,60 @@
       }
     }
 
+    const danger = document.getElementById('guidedDanger');
+    if (danger?.value === 'yes') {
+      updateGuidedUnsureHint();
+      updateGuidedHelperOutput();
+      updateGuidedStep();
+      return;
+    }
+
     scheduleRender();
+    updateGuidedUnsureHint();
+    updateGuidedHelperOutput();
+    updateGuidedStep();
   }
 
   function setupGuidedSearch() {
-    ['guidedWho', 'guidedWhere', 'guidedSupport', 'guidedConcern'].forEach((id) => {
+    [
+      'guidedDanger',
+      'guidedSafeTonight',
+      'guidedWho',
+      'guidedWhere',
+      'guidedConcern',
+      'guidedSupport',
+    ].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('change', applyGuidedSearch);
     });
   }
 
-  function setupCareHelperModal() {
-    const modal = document.getElementById('careHelperModal');
+  function setupHelpChooseInline() {
     const helpBtn = document.getElementById('heroHelpChoose');
-    const closeBtn = document.getElementById('careHelperModalClose');
-    if (!modal) return;
+    if (!helpBtn) return;
 
-    function closeCareHelperModal() {
-      if (typeof window.hideModal === 'function') window.hideModal(modal);
-    }
+    helpBtn.addEventListener('click', () => {
+      const card = helpBtn.closest('.decision-card');
+      setFlowIntent('guidance', card || null);
+      revealSearchSection({ focusSearch: false });
 
-    function resetCareHelperOutput() {
-      const output = document.getElementById('careHelperOutput');
-      if (!output) return;
-      output.innerHTML = '';
-      output.classList.remove('is-visible');
-    }
-
-    function openCareHelperModal() {
-      if (typeof window.showModal !== 'function') return;
-      resetCareHelperOutput();
-      window.showModal(modal);
-      const delay = prefersReducedMotion() ? 0 : 400;
+      const strip = document.getElementById('guidedSearchStrip');
+      const delay = prefersReducedMotion() ? 0 : 420;
       window.setTimeout(() => {
-        const first = document.getElementById('helperDanger');
-        if (first && typeof first.focus === 'function') first.focus();
+        if (strip) {
+          strip.scrollIntoView({
+            behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+            block: 'nearest',
+          });
+        }
+        const first = document.getElementById('guidedDanger');
+        if (first && typeof first.focus === 'function') first.focus({ preventScroll: true });
       }, delay);
-    }
-
-    if (helpBtn) {
-      helpBtn.addEventListener('click', openCareHelperModal);
-    }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeCareHelperModal);
-    }
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeCareHelperModal();
     });
-
-    document.addEventListener(
-      'keydown',
-      (e) => {
-        if (e.key !== 'Escape') return;
-        if (modal.getAttribute('aria-hidden') !== 'false') return;
-        e.preventDefault();
-        e.stopPropagation();
-        closeCareHelperModal();
-      },
-      true
-    );
   }
 
   function setupDecisionCards() {
-    setupCareHelperModal();
+    setupHelpChooseInline();
 
     const useLoc = document.getElementById('searchUseLocationBtn');
     if (useLoc) {
@@ -146,94 +269,6 @@
         else {
           const modal = document.getElementById('locationConsentModal');
           if (modal && typeof window.showModal === 'function') window.showModal(modal);
-        }
-      });
-    }
-  }
-
-  function buildCareHelperOutput() {
-    const danger = document.getElementById('helperDanger')?.value;
-    const safe = document.getElementById('helperSafeTonight')?.value;
-    const disruption = document.getElementById('helperDisruption')?.value;
-    const setting = document.getElementById('helperSetting')?.value;
-    const format = document.getElementById('helperFormat')?.value;
-    const concerns = document.getElementById('helperConcerns')?.value;
-
-    const output = document.getElementById('careHelperOutput');
-    if (!output) return;
-
-    let html = '';
-
-    if (danger === 'yes') {
-      html += `<div class="care-helper-crisis-box"><strong>Immediate physical danger:</strong> Call <strong>911</strong> now. This directory does not provide emergency services.</div>`;
-      output.innerHTML = html;
-      output.classList.add('is-visible');
-      output.scrollIntoView({
-        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-        block: 'nearest',
-      });
-      return;
-    }
-
-    if (safe === 'no' || safe === 'unsure') {
-      html += `<div class="care-helper-crisis-box"><strong>Safety concern tonight:</strong> Consider calling or texting <strong>988</strong> and seeking immediate professional support. Call <strong>911</strong> if there is immediate physical danger.</div>`;
-    }
-
-    const suggestions = [];
-    const settingMap = {
-      outpatient: 'outpatient (regular appointments)',
-      iop: 'intensive outpatient (IOP)',
-      php: 'partial hospitalization / day program (PHP)',
-      inpatient: 'inpatient hospital-based stabilization',
-      residential: 'residential (live-in) treatment',
-      navigation: 'care navigation',
-    };
-
-    if (setting && settingMap[setting]) {
-      suggestions.push(settingMap[setting]);
-    } else if (disruption === 'yes') {
-      suggestions.push('structured programs such as IOP or PHP');
-      suggestions.push('whether hospital-based stabilization is needed');
-    } else {
-      suggestions.push('outpatient care');
-      suggestions.push('whether a structured IOP or PHP may be worth discussing');
-    }
-
-    if (concerns === 'some') {
-      suggestions.push('programs experienced with higher-acuity concerns (confirm fit at intake)');
-    }
-
-    if (format === 'virtual') {
-      suggestions.push('virtual or telehealth options');
-    } else if (format === 'in-person') {
-      suggestions.push('in-person programs near you');
-    }
-
-    const unique = [...new Set(suggestions)];
-    html += `<h3>You may want to ask programs about</h3><p>${unique.map((s) => `• ${s}`).join('<br>')}</p>`;
-    html += `<p>A trained professional can help determine fit during intake. Program structure varies—confirm details directly.</p>`;
-
-    output.innerHTML = html;
-    output.classList.add('is-visible');
-    output.scrollIntoView({
-      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-      block: 'nearest',
-    });
-  }
-
-  function setupCareHelper() {
-    const btn = document.getElementById('careHelperSubmit');
-    if (btn) btn.addEventListener('click', buildCareHelperOutput);
-
-    const danger = document.getElementById('helperDanger');
-    if (danger) {
-      danger.addEventListener('change', () => {
-        if (danger.value === 'yes') {
-          const output = document.getElementById('careHelperOutput');
-          if (!output) return;
-          output.innerHTML =
-            '<div class="care-helper-crisis-box"><strong>Immediate physical danger:</strong> Call <strong>911</strong> now. This directory does not provide emergency services.</div>';
-          output.classList.add('is-visible');
         }
       });
     }
@@ -344,12 +379,10 @@
   function init() {
     setupGuidedSearch();
     setupDecisionCards();
-    setupCareHelper();
     setupCopyChecklist();
     setupFilterTray();
     observeResultsAnimation();
-
-    document.getElementById('searchSection')?.classList.add('is-revealed');
+    updateGuidedUnsureHint();
   }
 
   if (document.readyState === 'loading') {
@@ -360,4 +393,5 @@
 
   window.initPhase1Home = init;
   window.revealViableSearch = revealSearchSection;
+  window.setFlowIntent = setFlowIntent;
 })();
