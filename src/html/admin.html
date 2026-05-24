@@ -105,7 +105,7 @@
       word-break: break-word;
     }
     .btn {
-      background: #3b82f6;
+      background: #1d4ed8;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -115,7 +115,7 @@
       transition: background 0.2s;
     }
     .btn:hover {
-      background: #2563eb;
+      background: #1e40af;
     }
     .btn-secondary {
       background: #64748b;
@@ -157,9 +157,39 @@
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-success { background: #d1fae5; color: #065f46; }
     .badge-info { background: #dbeafe; color: #1e40af; }
+    .skip-link {
+      position: fixed;
+      top: -50px;
+      left: 10px;
+      background: #1e40af;
+      color: #fff;
+      padding: 12px 16px;
+      z-index: 9999;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 0 0 8px 8px;
+    }
+    .skip-link:focus {
+      top: 0;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    #main { scroll-margin-top: 12px; }
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
   <div class="container" id="dashboardContent" style="display: none;">
     <header>
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -171,6 +201,7 @@
       </div>
     </header>
 
+    <main id="main">
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" id="totalEvents">0</div>
@@ -201,6 +232,7 @@
       </div>
       
       <div class="filter-controls">
+        <label for="filterType" class="sr-only">Filter log type</label>
         <select id="filterType" onchange="filterLogs()">
           <option value="">All Types</option>
           <option value="suspicious">Suspicious</option>
@@ -209,6 +241,7 @@
           <option value="data_integrity">Data Integrity</option>
           <option value="invalid">Invalid Inputs</option>
         </select>
+        <label for="searchLogs" class="sr-only">Search logs</label>
         <input type="text" id="searchLogs" placeholder="Search logs..." oninput="filterLogs()" style="flex: 1; min-width: 200px;">
       </div>
 
@@ -234,6 +267,7 @@
         </div>
       </div>
     </div>
+    </main>
   </div>
 
   <script src="security.js"></script>

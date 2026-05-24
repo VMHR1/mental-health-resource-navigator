@@ -179,7 +179,16 @@ async function submitToFormspree(payload){
     const stepperEl = document.getElementById("stepper");
 
     // --- Helpers ---
+    function markRequired(el) {
+      if (!el) return;
+      el.dataset.required = "true";
+      el.required = true;
+      el.setAttribute("aria-required", "true");
+    }
+
     function showAlert(msg, type="warn"){
+      alertEl.setAttribute("role", "alert");
+      alertEl.setAttribute("aria-live", "assertive");
       alertEl.className = "alert show" + (type==="success" ? " success" : "");
       alertEl.textContent = msg;
     }
@@ -202,9 +211,29 @@ async function submitToFormspree(payload){
       });
     }
 
-    function fieldWrapper(field, inner){
+    function fieldWrapper(field, inner, options = {}){
       const wrap = document.createElement("div");
       wrap.className = "row";
+      if (options.useFieldset) {
+        const fieldset = document.createElement("fieldset");
+        const legend = document.createElement("legend");
+        legend.textContent = field.label;
+        fieldset.appendChild(legend);
+        fieldset.appendChild(inner);
+        if (field.help) {
+          const help = document.createElement("p");
+          help.className = "help";
+          help.id = `${field.id}-help`;
+          help.textContent = field.help;
+          fieldset.setAttribute("aria-describedby", help.id);
+          wrap.appendChild(fieldset);
+          wrap.appendChild(help);
+        } else {
+          wrap.appendChild(fieldset);
+        }
+        return wrap;
+      }
+
       const label = document.createElement("label");
       label.setAttribute("for", field.id);
       label.textContent = field.label;
@@ -224,7 +253,7 @@ async function submitToFormspree(payload){
         const sel = document.createElement("select");
         sel.id = field.id;
         sel.name = field.id;
-        if(field.required) sel.dataset.required = "true";
+        if(field.required) markRequired(sel);
         (field.options || []).forEach(opt => {
           const o = document.createElement("option");
           o.value = opt;
@@ -239,7 +268,7 @@ async function submitToFormspree(payload){
         ta.id = field.id;
         ta.name = field.id;
         ta.placeholder = field.ph || "";
-        if(field.required) ta.dataset.required = "true";
+        if(field.required) markRequired(ta);
         ta.dataset.neutralCheck = "true";
         return fieldWrapper(field, ta);
       }
@@ -266,7 +295,7 @@ async function submitToFormspree(payload){
           lbl.appendChild(span);
           div.appendChild(lbl);
         });
-        return fieldWrapper(field, div);
+        return fieldWrapper(field, div, { useFieldset: true });
       }
 
       if(field.type === "checkbox"){
@@ -277,19 +306,20 @@ async function submitToFormspree(payload){
         cb.type = "checkbox";
         cb.id = field.id;
         cb.name = field.id;
-        if(field.required) cb.dataset.required = "true";
+        if(field.required) markRequired(cb);
         const span = document.createElement("span");
         span.textContent = field.help || "I agree";
         lbl.appendChild(cb);
         lbl.appendChild(span);
 
-        // wrap without duplicating help text
         const wrap = document.createElement("div");
         wrap.className = "row";
-        const title = document.createElement("label");
-        title.textContent = field.label;
-        wrap.appendChild(title);
-        wrap.appendChild(lbl);
+        const fieldset = document.createElement("fieldset");
+        const legend = document.createElement("legend");
+        legend.textContent = field.label;
+        fieldset.appendChild(legend);
+        fieldset.appendChild(lbl);
+        wrap.appendChild(fieldset);
         return wrap;
       }
 
@@ -299,7 +329,7 @@ async function submitToFormspree(payload){
       input.id = field.id;
       input.name = field.id;
       input.placeholder = field.ph || "";
-      if(field.required) input.dataset.required = "true";
+      if(field.required) markRequired(input);
       if(field.type === "number") input.min = "0";
       return fieldWrapper(field, input);
     }
@@ -314,6 +344,10 @@ async function submitToFormspree(payload){
 
       progressLabel.textContent = `Step ${stepIndex+1} of ${steps.length}`;
       barEl.style.width = percent() + "%";
+      const progressBar = document.getElementById("formProgress");
+      if (progressBar) {
+        progressBar.setAttribute("aria-valuenow", String(percent()));
+      }
 
       formEl.classList.remove("fade-enter");
       formEl.innerHTML = "";

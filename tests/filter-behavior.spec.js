@@ -8,12 +8,9 @@ test.describe('Filter behavior and routing', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await waitForPrograms(page);
-    await revealSearchForTest(page);
     const btn = page.locator('[data-preset="eating-disorders-all"]').first();
     await btn.scrollIntoViewIfNeeded();
     await btn.click();
-    await page.getByTestId('find-programs-btn').scrollIntoViewIfNeeded();
-    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     const cards = page.locator('.card:has(.pname)');
     await expect(cards.first()).toBeVisible({ timeout: 10000 });
@@ -25,12 +22,9 @@ test.describe('Filter behavior and routing', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await waitForPrograms(page);
-    await revealSearchForTest(page);
     const btn = page.locator('[data-preset="substance-use-all"]').first();
     await btn.scrollIntoViewIfNeeded();
     await btn.click();
-    await page.getByTestId('find-programs-btn').scrollIntoViewIfNeeded();
-    await page.getByTestId('find-programs-btn').click();
     await page.waitForTimeout(600);
     const cards = page.locator('.card:has(.pname)');
     await expect(cards.first()).toBeVisible({ timeout: 10000 });

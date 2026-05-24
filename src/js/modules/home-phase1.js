@@ -310,12 +310,41 @@
       return window.matchMedia('(max-width: 768px)').matches;
     }
 
+    function getTrayFocusables(root) {
+      const selector =
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      return [...root.querySelectorAll(selector)].filter((el) => !el.closest('[hidden]'));
+    }
+
+    let trayTrigger = null;
+
+    function onTrayKeyDown(e) {
+      if (e.key !== 'Tab') return;
+      const panel = document.getElementById('filterTrayPanel');
+      if (!panel) return;
+      const focusables = getTrayFocusables(panel);
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
     function openTray() {
       if (!isMobileTray()) {
         const showAdv = document.getElementById('showAdvanced');
         if (showAdv) showAdv.click();
         return;
       }
+      trayTrigger = document.activeElement;
       if (mount && advanced.parentElement !== mount) {
         mount.appendChild(advanced);
       }
@@ -325,6 +354,7 @@
       requestAnimationFrame(() => overlay.classList.add('is-open'));
       openBtn.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', onTrayKeyDown);
       closeBtn?.focus();
     }
 
@@ -332,6 +362,9 @@
       overlay.classList.remove('is-open');
       openBtn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      document.removeEventListener('keydown', onTrayKeyDown);
+      const trigger = trayTrigger;
+      trayTrigger = null;
       setTimeout(() => {
         overlay.hidden = true;
         advanced.classList.remove('is-tray-open');
@@ -340,6 +373,9 @@
         }
         if (document.getElementById('showAdvanced')?.getAttribute('aria-expanded') !== 'true') {
           advanced.style.display = 'none';
+        }
+        if (trigger && typeof trigger.focus === 'function') {
+          trigger.focus();
         }
       }, prefersReducedMotion() ? 0 : 280);
     }

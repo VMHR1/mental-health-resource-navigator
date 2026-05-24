@@ -458,7 +458,12 @@ function parseSmartSearch(query, cities) {
 const SEARCH_STOPWORDS = new Set([
   'a', 'an', 'the', 'and', 'or', 'in', 'at', 'for', 'to', 'of', 'on', 'near',
   'around', 'my', 'me', 'with', 'from', 'by', 'up', 'is', 'are', 'be',
+  'old', 'year', 'years', 'yr', 'yo',
 ]);
+
+/** Age phrases stripped from residual text search (after numeric age is parsed). */
+const AGE_QUERY_STRIP_RE =
+  /\b\d{1,2}\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|(?:years?|yrs?|y\.o\.|yo)\s*old|years?|yrs?|y\.o\.|yo)\b/gi;
 
 /** Never treat these as city names when parsing or stripping queries. */
 const CITY_QUERY_STOPWORDS = new Set([
@@ -512,7 +517,7 @@ function stripParsedQueryTokens(query, cities) {
       /\b(php|partial\s+hospital(?:ization)?|day\s+(?:hospital|treatment|program)|iop|intensive\s+outpatient|outpatient|residential|inpatient|rtc|navigation|care\s+navigation)\b/gi,
       ''
     )
-    .replace(/\b\d+\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi, '')
+    .replace(AGE_QUERY_STRIP_RE, '')
     .replace(
       /\b(crisis|emergency|urgent|eating disorder|anorexia|bulimia|binge eating|substance use|substance abuse|drug treatment|alcohol treatment|addiction)\b/gi,
       ''
@@ -626,10 +631,7 @@ function stripFilterFromQuery(query, chipType, cities = []) {
       break;
     case 'parsedAge':
     case 'age':
-      q = q.replace(
-        /\b\d{1,2}\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older|year|yr|y\.o\.|yo|old)\b/gi,
-        ' '
-      );
+      q = q.replace(AGE_QUERY_STRIP_RE, ' ');
       if (parsed.age) {
         q = q.replace(new RegExp(`\\b${parsed.age}\\b`, 'g'), ' ');
       }

@@ -67,7 +67,7 @@
       padding: 20px;
       margin-bottom: 16px;
     }
-    .program-detail-section h3 {
+    .program-detail-section h2 {
       margin: 0 0 12px;
       font-size: 18px;
       font-weight: 900;
@@ -111,6 +111,7 @@
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
   <div class="bg-gradient" aria-hidden="true"></div>
   
   <div class="crisis-banner" role="region" aria-label="Crisis information">
@@ -142,12 +143,14 @@
       </div>
     </header>
 
+    <main id="main">
     <div id="programDetail" class="program-detail-container">
       <div class="empty-state">
-        <div class="empty-icon">⏳</div>
-        <h3>Loading program details...</h3>
+        <div class="empty-icon" aria-hidden="true">⏳</div>
+        <h1>Loading program details...</h1>
       </div>
     </div>
+    </main>
   </div>
 
   <script defer src="js/program-detail.js?v=2"></script>

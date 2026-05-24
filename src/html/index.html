@@ -54,7 +54,7 @@
 </head>
 
 <body>
-  <a href="#treatmentSection" class="skip-link">Skip to search results</a>
+  <a href="#main" class="skip-link">Skip to main content</a>
   <div class="bg-gradient" aria-hidden="true"></div>
 
   <div class="crisis-banner" role="region" aria-label="Crisis information">
@@ -100,8 +100,8 @@
           <p class="hero-gateway__prompt fade-in delay-3">What kind of help are you looking for today?</p>
         </div>
 
-        <div class="decision-cards vm-stagger" role="list">
-          <article class="decision-card decision-card--crisis" role="listitem" data-intent="crisis">
+        <ul class="decision-cards vm-stagger">
+          <li class="decision-card decision-card--crisis" data-intent="crisis">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3v4M12 17v4M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M17.7 6.3l1.4-1.4M6.3 17.7l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg>
             </div>
@@ -111,9 +111,9 @@
               <a href="tel:988" class="btn-vm-primary btn-vm-crisis">Call/Text 988</a>
               <button type="button" class="btn-vm-secondary" id="viewCrisisResources">View crisis resources</button>
             </div>
-          </article>
+          </li>
 
-          <article class="decision-card" role="listitem" data-intent="treatment">
+          <li class="decision-card" data-intent="treatment">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg>
             </div>
@@ -122,9 +122,9 @@
             <div class="decision-card__actions">
               <button type="button" class="btn-vm-primary" id="viewTreatmentOptions">Search programs</button>
             </div>
-          </article>
+          </li>
 
-          <article class="decision-card" role="listitem" data-intent="guidance">
+          <li class="decision-card" data-intent="guidance">
             <div class="decision-card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg>
             </div>
@@ -133,8 +133,8 @@
             <div class="decision-card__actions">
               <button type="button" class="btn-vm-secondary" id="heroHelpChoose">Help me choose</button>
             </div>
-          </article>
-        </div>
+          </li>
+        </ul>
 
         <div class="trust-strip" aria-label="Trust principles">
           <div class="trust-row-compact">
@@ -172,6 +172,8 @@
         <div id="loadWarn" class="warnBox" role="status" aria-live="polite"></div>
       </section>
     </header>
+
+    <main id="main">
 
     <section class="search-section" id="searchSection" aria-label="Search and filters">
       <div class="guided-search-strip" id="guidedSearchStrip" aria-labelledby="guidedSearchLabel" hidden>
@@ -275,7 +277,7 @@
           <div class="search-query-chips" id="searchQueryChips" aria-live="polite" hidden></div>
           <div class="input-wrapper" style="position: relative;">
             <span class="input-icon" aria-hidden="true"></span>
-            <input id="q" type="search" data-testid="search-input" placeholder="City, level of care (PHP, IOP), age — e.g. IOP in Plano for 14" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" aria-describedby="searchTipsText" />
+            <input id="q" type="search" data-testid="search-input" role="combobox" aria-haspopup="listbox" placeholder="City, level of care (PHP, IOP), age — e.g. IOP in Plano for 14" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions" aria-describedby="searchTipsText" />
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="Search suggestions" style="display: none;"></div>
           </div>
           <div class="recent-searches" id="recentSearchesContainer" style="display:none;" aria-live="polite"></div>
@@ -497,7 +499,7 @@
           </button>
           <div class="sort-group">
             <label for="sortSelect" class="sr-only">Sort by</label>
-            <select id="sortSelect" class="sort-select" aria-label="Sort results">
+            <select id="sortSelect" class="sort-select">
               <option value="relevance">Sort by relevance</option>
               <option value="name">Sort by name</option>
               <option value="verified">Recently verified</option>
@@ -568,7 +570,7 @@
       </div>
       <div class="grid" id="treatmentGrid" data-testid="results-grid" aria-live="polite"></div>
       <div class="empty-state" id="treatmentEmpty" data-testid="empty-state" style="display:none;" role="status">
-        <div class="empty-icon">🔍</div>
+        <div class="empty-icon" aria-hidden="true">🔍</div>
         <h3 id="emptyStateTitle">No programs match all selected filters</h3>
         <p id="emptyStateBody">Try removing one filter, expanding distance, searching nearby cities, or trying a broader care level. If safety is urgent, call 911 or call/text 988.</p>
         <div class="empty-actions">
@@ -632,6 +634,8 @@
       <p class="footer-submit-cta">Know a program we should add or update? <a href="submit.html">Submit or update a program</a> · <a href="guides.html">Guides for families</a></p>
     </section>
 
+    </main>
+
     <footer>
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: We don't require an account. If you use location features, your location is used only to sort nearby programs and is not stored.</p>
@@ -642,7 +646,7 @@
         <span aria-hidden="true"> • </span>
         <a href="terms.html">Terms of Service</a>
       </p>
-      <p id="lastUpdated" style="margin-top: 8px; font-size: 12px; color: var(--muted2);"></p>
+      <p id="lastUpdated" class="footer-last-updated"></p>
     </footer>
   </div>
 

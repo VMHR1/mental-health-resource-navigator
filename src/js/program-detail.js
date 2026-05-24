@@ -135,8 +135,8 @@ function renderEmptyState(root, { icon, title, message }) {
   iconEl.className = 'empty-icon';
   iconEl.textContent = icon;
 
-  const h3 = document.createElement('h3');
-  h3.textContent = title;
+  const heading = document.createElement('h1');
+  heading.textContent = title;
 
   const p = document.createElement('p');
   p.textContent = message;
@@ -148,16 +148,16 @@ function renderEmptyState(root, { icon, title, message }) {
   back.style.marginTop = '16px';
   back.textContent = 'Back to Search';
 
-  wrap.append(iconEl, h3, p, back);
+  wrap.append(iconEl, heading, p, back);
   root.appendChild(wrap);
 }
 
 function appendSection(container, titleText) {
   const section = document.createElement('div');
   section.className = 'program-detail-section';
-  const h3 = document.createElement('h3');
-  h3.textContent = titleText;
-  section.appendChild(h3);
+  const h2 = document.createElement('h2');
+  h2.textContent = titleText;
+  section.appendChild(h2);
   container.appendChild(section);
   return section;
 }
@@ -415,7 +415,7 @@ function renderProgramDetail(program) {
       const cardTop = document.createElement('div');
       cardTop.className = 'cardTop';
       const inner = document.createElement('div');
-      const pname = document.createElement('p');
+      const pname = document.createElement('h3');
       pname.className = 'pname';
       pname.textContent = safeStr(p.program_name) || 'Program';
       const org = document.createElement('p');

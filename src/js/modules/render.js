@@ -256,15 +256,21 @@ function createCard(program, idx, options) {
         ? `/programs/${encodeURIComponent(pidForUrl)}.html`
         : "program.html";
 
+  const programName = safeStr(program.program_name) || "Program";
+  const expandLabel = isOpen
+    ? `Collapse details for ${programName}`
+    : `View details for ${programName}`;
+
   div.innerHTML = `
     <div class="cardTop">
       <div style="min-width:0">
-        <p class="pname">${escapeHtml(safeStr(program.program_name) || "Program")}</p>
+        <h3 class="pname">${escapeHtml(safeStr(program.program_name) || "Program")}</h3>
         ${safeStr(program.organization) ? `<p class="org">${escapeHtml(safeStr(program.organization))}</p>` : ''}
       </div>
       <button class="expandBtn" type="button"
         aria-expanded="${isOpen ? "true" : "false"}"
         aria-controls="panel_${escapeHtml(id)}"
+        aria-label="${escapeHtml(expandLabel)}"
         title="${isOpen ? "Collapse details" : "View details"}">
         <span class="chev" aria-hidden="true"></span>
       </button>
@@ -529,7 +535,7 @@ function renderComparison(options) {
     { label: 'Notes', getValue: (p) => safeStr(p.notes) || '—', isHtml: false }
   ];
   
-  let html = '<div class="comparison-table-wrapper"><table class="comparison-table"><thead><tr><th class="comparison-label-header">Field</th>';
+  let html = '<div class="comparison-table-wrapper"><table class="comparison-table"><caption class="sr-only">Program comparison</caption><thead><tr><th class="comparison-label-header">Field</th>';
   comparisonPrograms.forEach((p) => {
     // Find the program ID from the comparisonSet
     const programId = Array.from(comparisonSet).find(id => programDataMap.get(id) === p);
@@ -573,10 +579,59 @@ function showToast(message, type = 'success', toastEl) {
  * Show modal
  * @param {HTMLElement} modalEl - Modal element
  */
+const modalA11yState = new WeakMap();
+
+function getModalFocusables(modalEl) {
+  const selector =
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  return [...modalEl.querySelectorAll(selector)].filter((el) => {
+    if (el.getAttribute('aria-hidden') === 'true') return false;
+    return !el.closest('[hidden]');
+  });
+}
+
+function installModalFocusTrap(modalEl) {
+  const state = modalA11yState.get(modalEl) || {};
+  state.trigger = document.activeElement;
+
+  state.onKeyDown = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = getModalFocusables(modalEl);
+    if (focusables.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
+  modalEl.addEventListener('keydown', state.onKeyDown);
+  modalA11yState.set(modalEl, state);
+}
+
+function removeModalFocusTrap(modalEl) {
+  const state = modalA11yState.get(modalEl);
+  if (state?.onKeyDown) {
+    modalEl.removeEventListener('keydown', state.onKeyDown);
+  }
+  const trigger = state?.trigger || null;
+  modalA11yState.delete(modalEl);
+  return trigger;
+}
+
 function showModal(modalEl) {
   // Set aria-hidden to false FIRST to avoid accessibility violation
   // This must happen before any focusable elements can receive focus
   modalEl.setAttribute('aria-hidden', 'false');
+  modalEl.setAttribute('aria-modal', 'true');
+  installModalFocusTrap(modalEl);
   
   // Lock body scroll - use both class and inline style for maximum compatibility
   document.body.classList.add('modal-open');
@@ -587,13 +642,13 @@ function showModal(modalEl) {
   document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
   
-  // Focus management: Focus first focusable element after aria-hidden is set and CSS transition starts
-  // Use double requestAnimationFrame to ensure CSS visibility transition has started
+  // Focus management: Focus close button or first focusable after reveal
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      const firstFocusable = modalEl.querySelector('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
-      if (firstFocusable && typeof firstFocusable.focus === 'function') {
-        firstFocusable.focus();
+      const closeBtn = modalEl.querySelector('.modal-close');
+      const focusTarget = closeBtn || getModalFocusables(modalEl)[0];
+      if (focusTarget && typeof focusTarget.focus === 'function') {
+        focusTarget.focus();
       }
     });
   });
@@ -604,6 +659,8 @@ function showModal(modalEl) {
  * @param {HTMLElement} modalEl - Modal element
  */
 function hideModal(modalEl) {
+  const trigger = removeModalFocusTrap(modalEl);
+
   // Blur any focused elements inside modal FIRST to avoid accessibility violation
   // This must happen before setting aria-hidden="true"
   const focusedElement = modalEl.querySelector(':focus');
@@ -613,6 +670,7 @@ function hideModal(modalEl) {
   
   // Set aria-hidden to true to hide from assistive technology
   modalEl.setAttribute('aria-hidden', 'true');
+  modalEl.setAttribute('aria-modal', 'false');
   
   // Restore body scroll
   const scrollY = document.body.style.top;
@@ -624,6 +682,10 @@ function hideModal(modalEl) {
   // Restore scroll position
   if (scrollY) {
     window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+
+  if (trigger && typeof trigger.focus === 'function') {
+    requestAnimationFrame(() => trigger.focus());
   }
 }
 

@@ -808,10 +808,26 @@ function showCallConfirmation(program) {
 }
 
 // ========== Card Management ==========
+function getCardProgramName(cardEl) {
+  const pname = cardEl.querySelector('.pname');
+  return pname?.textContent?.trim() || 'Program';
+}
+
+function setExpandBtnA11y(expandBtn, isOpen, programName) {
+  if (!expandBtn) return;
+  const name = programName || 'Program';
+  expandBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  expandBtn.setAttribute('title', isOpen ? 'Collapse details' : 'View details');
+  expandBtn.setAttribute(
+    'aria-label',
+    isOpen ? `Collapse details for ${name}` : `View details for ${name}`
+  );
+}
+
 function setCardOpen(cardEl, isOpen){
   cardEl.dataset.open = isOpen ? "true" : "false";
   const btn = cardEl.querySelector(".expandBtn");
-  if (btn) btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  setExpandBtnA11y(btn, isOpen, getCardProgramName(cardEl));
   const panel = cardEl.querySelector('.panel');
   if (panel) {
     panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
@@ -835,16 +851,14 @@ function toggleModalCardDetails(cardEl) {
     details.setAttribute('hidden', '');
     cardEl.dataset.open = 'false';
     if (expandBtn) {
-      expandBtn.setAttribute('aria-expanded', 'false');
-      expandBtn.setAttribute('title', 'Expand details');
+      setExpandBtnA11y(expandBtn, false, getCardProgramName(cardEl));
     }
   } else {
     // Expand
     details.removeAttribute('hidden');
     cardEl.dataset.open = 'true';
     if (expandBtn) {
-      expandBtn.setAttribute('aria-expanded', 'true');
-      expandBtn.setAttribute('title', 'Collapse details');
+      setExpandBtnA11y(expandBtn, true, getCardProgramName(cardEl));
     }
   }
 }
@@ -1694,13 +1708,28 @@ function applyFilterPreset(preset) {
   updateActiveFilterChips();
   window.flowMotion?.renderSearchQueryChips();
 
+  if (typeof window.setFlowIntent === 'function' && document.body.dataset.intent !== 'treatment') {
+    window.setFlowIntent('treatment', null);
+  }
+
+  unlockResults();
+  render();
+
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  const scrollTarget = document.getElementById('treatmentGrid') || document.getElementById('treatmentSection');
+
   if (typeof window.revealViableSearch === 'function') {
-    window.revealViableSearch({ focusSearch: false });
+    window.revealViableSearch({
+      focusSearch: false,
+      scrollTargetId: scrollTarget?.id || null,
+    });
   } else {
     const search = document.getElementById('searchSection');
     if (search) {
       search.classList.add('is-revealed');
-      search.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (scrollTarget) {
+      scrollTarget.scrollIntoView({ behavior: motion, block: 'start' });
     }
   }
 }
@@ -2453,6 +2482,16 @@ function generateAutocompleteSuggestions(query) {
   return suggestions.slice(0, 10); // Limit to 10 suggestions for better coverage
 }
 
+function updateAutocompleteActiveDescendant(index) {
+  const input = els.q;
+  if (!input) return;
+  if (index >= 0) {
+    input.setAttribute('aria-activedescendant', `search-sug-${index}`);
+  } else {
+    input.removeAttribute('aria-activedescendant');
+  }
+}
+
 function renderAutocomplete(suggestions) {
   const container = document.getElementById('search-suggestions');
   const input = els.q;
@@ -2462,6 +2501,7 @@ function renderAutocomplete(suggestions) {
   if (suggestions.length === 0) {
     container.style.display = 'none';
     input.setAttribute('aria-expanded', 'false');
+    updateAutocompleteActiveDescendant(-1);
     autocompleteVisible = false;
     return;
   }
@@ -2470,6 +2510,7 @@ function renderAutocomplete(suggestions) {
   autocompleteSelectedIndex = -1;
   autocompleteVisible = true;
   input.setAttribute('aria-expanded', 'true');
+  updateAutocompleteActiveDescendant(-1);
   
   // Helper function to remove emojis from text
   const removeEmojis = (text) => {
@@ -2486,7 +2527,7 @@ function renderAutocomplete(suggestions) {
     // Remove any emojis from the suggestion text itself
     const cleanText = removeEmojis(suggestion.text);
     return `
-      <div class="suggestion-item" role="option" data-index="${index}" aria-selected="false">
+      <div class="suggestion-item" role="option" id="search-sug-${index}" data-index="${index}" aria-selected="false">
         <span class="suggestion-label">${escapeHtml(label)}</span>
         <span class="suggestion-text">${escapeHtml(cleanText)}</span>
       </div>
@@ -2540,6 +2581,7 @@ function setSelectedSuggestion(index) {
   });
   
   autocompleteSelectedIndex = index;
+  updateAutocompleteActiveDescendant(index);
 }
 
 function selectSuggestion(index) {
@@ -2572,6 +2614,7 @@ function selectSuggestion(index) {
     container.style.display = 'none';
   }
   els.q.setAttribute('aria-expanded', 'false');
+  updateAutocompleteActiveDescendant(-1);
   autocompleteVisible = false;
   
   // Clear any previous search state and trigger fresh search
@@ -2596,6 +2639,7 @@ function hideAutocomplete() {
   }
   if (els.q) {
     els.q.setAttribute('aria-expanded', 'false');
+    updateAutocompleteActiveDescendant(-1);
   }
   autocompleteVisible = false;
   autocompleteSelectedIndex = -1;

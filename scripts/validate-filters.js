@@ -470,6 +470,17 @@ function runSearchFilterTests() {
     getTextSearchTerms('IOP in Frisco for 14') === ''
   );
   assert(
+    'getTextSearchTerms: PHP in Frisco for a 14 year old has no leftover tokens',
+    getTextSearchTerms('PHP in Frisco for a 14 year old') === ''
+  );
+  const phpFrisco14 = parseSmartSearch('PHP in Frisco for a 14 year old', ['frisco', 'dallas']);
+  assert(
+    'parseSmartSearch: PHP in Frisco for a 14 year old',
+    phpFrisco14.care === 'Partial Hospitalization (PHP)' &&
+      phpFrisco14.loc === 'Frisco' &&
+      phpFrisco14.age === '14'
+  );
+  assert(
     'stripFilterFromQuery: remove location keeps care and age',
     stripFilterFromQuery('IOP in Frisco for 14', 'parsedLocation') === 'IOP 14'
   );
