@@ -9,13 +9,8 @@
 # Ensure admin.html is served correctly (not redirected)
 /admin.html    /admin.html    200
 
-# Clean URLs for new professional pages
-/professionals    /professionals.html    200
-/boards    /boards.html    200
-/report-outdated    /report-outdated.html    200
-/regional-snapshot    /regional-snapshot.html    200
-/changelog    /changelog.html    200
-/export    /export.html    200
+# Professional pages (professionals, boards, export, etc.) rely on Cloudflare Pages
+# Pretty URLs (.html → extensionless). Do NOT add 200 rewrites here — they loop with Pretty URLs.
 
 # Example: Redirect old URLs (if you have any)
 # /old-path    /new-path    301
