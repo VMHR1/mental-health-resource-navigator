@@ -1,4 +1,4 @@
-# Phase 8 — Market research (complete)
+# Phase 8 — Market-informed implementation strategy (complete)
 
 **Status:** Complete (documentation only)  
 **Completed:** 2026-05-25  
@@ -6,33 +6,24 @@
 
 ## What was delivered
 
-Full competitor and market analysis per Phase 8 of the [Phased Launch Build Plan](./ViableMHR-Phased-Launch-Build-Plan.md):
+Internal **implementation strategy** for ViableMHR post-launch work:
 
-- ViableMHR baseline and comparison matrix  
-- Profiles for SAMHSA, Psychology Today, NAMI, Texas HHSC, Children's/UTSW, ANAD, Zocdoc (light touch)  
-- Business model alignment vs neutrality principles  
-- UX, trust, SEO, and feature inventories  
-- Prioritized inspiration backlog (Phase7+ / Phase9+ / Won't do)  
-- Legal/ethics desk checklist  
+- Competitor comparison (Table 1), gap register (Table 2), monetization hard gates (Table 3)
+- Recommended features F1–F12 with full specs
+- Phased roadmap (Phases 9–12+), disclosure checklist, analytics events, example copy
+- Prioritized task table T1–T15
 
-**No product code** was changed in Phase 8.
+**Not deployed** to viablemhr.com (`docs/` is excluded from build). **No product code** changed.
 
 ## How to use the report
 
-1. **Product planning** — Start with Executive summary and Section 8.8 backlog (top 5 for next quarter).  
-2. **Neutrality guardrails** — Section 8.9 before any monetization or partnership discussion.  
-3. **SEO roadmap** — Section 8.6 + P1 city landing pages in backlog.  
-4. **Counsel** — Section 8.10 checklist for privacy/analytics changes.
-
-## Next steps (optional)
-
-| Item | Owner |
-|------|--------|
-| Review backlog priorities with stakeholders | Product |
-| Schedule legal review of 8.10 if adding analytics or forms | Legal |
-| Implement P1 items in Phase 9+ engineering cycles | Engineering |
+1. **Executive summary** — Top five Phase 9–10 moves; no paid ranking.
+2. **Monetization** — Table 3 hard gates before any revenue work.
+3. **Backlog** — Feature specs F1–F6 (Recommend Now); F7–F12 later or legal review.
+4. **Tasks** — Final prioritized table with dependencies.
 
 ## Related
 
 - [Phase 7 post-launch](./PHASE7_POST_LAUNCH.md)
 - [Launch scope](./LAUNCH_SCOPE.md)
+- [Analytics plan](./ANALYTICS_PLAN.md)

@@ -69,6 +69,7 @@ function copyStaticAssets() {
       { src: 'public/favicon.ico', dest: 'favicon.ico' },
       { src: 'public/icon.png', dest: 'icon.png' },
       { src: 'public/icon.svg', dest: 'icon.svg' },
+      { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
       { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
       { src: 'public/data/programs.json', dest: 'programs.json' },

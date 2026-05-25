@@ -1,409 +1,767 @@
-# ViableMHR Market Analysis 2026
+# ViableMHR Market-Informed Implementation Strategy (2026)
 
-**Type:** Phase 8 research deliverable (documentation only)  
-**Access date for external sites:** 2026-05-25  
-**Branch context:** `updated-main` (post-launch, Phase 7 active)  
-**Disclaimer:** Competitive UX and business-model observations only. Not legal advice. Does not recommend monetization that conflicts with [Launch scope](../product/LAUNCH_SCOPE.md).
+**Document type:** Internal analytical implementation report — not published to viablemhr.com  
+**Audience:** Product, operations, data, and leadership stakeholders  
+**Market snapshot date:** 2026-05-25 (public competitor pages)
 
----
+**Disclaimer:** Strategy and implementation planning only. Not legal advice. Not clinical advice. Claims marked **Unspecified** where evidence was not available. Revenue projections are **Unspecified** until grant or B2B pipelines are modeled.
 
-## Executive summary
-
-ViableMHR occupies a narrow but valuable niche: a **neutral, Texas-focused youth program directory** with discharge-navigation framing, explicit care-level language (PHP/IOP/outpatient), and verification transparency—without accounts, booking, or paid placement.
-
-### Strategic takeaways
-
-1. **Neutrality is a differentiator, not a handicap.** Federal (SAMHSA) and state (Texas HHSC) resources are authoritative but not optimized for “PHP in Frisco for a 14-year-old” style discovery. Commercial directories (Psychology Today, Zocdoc) optimize for individual provider appointment booking and paid visibility—not multi-program facility comparison.
-2. **Trust is won through methodology, not ratings.** Competitors lean on reviews, completeness scores, or institutional brand. VMHR’s 90-day verification model, stale badges (Phase 7), and “What verified means” copy align with navigator and caregiver mental models better than star ratings.
-3. **Crisis must stay parallel, not competitive.** SAMHSA, NAMI, and hospital sites route crisis through hotlines and system intake. VMHR’s split intent path (crisis vs treatment) matches best practice; do not merge crisis into filtered program results.
-4. **Search quality is the product.** Zero-result monitoring (Phase 7.1) matters more than map views or appointment slots. Competitors with weak freshness (FindTreatment.gov OIG findings) show the cost of scale without curation.
-5. **SEO opportunity is programmatic + educational.** Few competitors combine city+care landing pages with a neutral directory. VMHR already has guides, slug program pages, and sitemaps—city landing pages are the highest-leverage SEO addition.
-
-### Position vs market (headline)
-
-| Dimension | VMHR position |
-|-----------|----------------|
-| Trust / neutrality | **Ahead** — no paid ranking; explicit verification |
-| Smart search / presets | **Ahead** — NL queries, IOP/PHP presets, insurance parsing |
-| National scale | **Behind** — SAMHSA/Zocdoc cover US; VMHR is DFW-centric |
-| Appointment booking | **Intentionally absent** — aligns with scope |
-| Map-first discovery | **Behind** — FindTreatment.gov, Zocdoc emphasize geo/map |
-| Freshness at scale | **Parity risk** — OIG flagged federal locator; VMHR mitigates with 90-day UX |
+**Deployment note:** `docs/` is not copied to `dist/` by the build pipeline.
 
 ---
 
-## Section 0: ViableMHR baseline (comparison anchor)
+## Executive Summary
 
-### Product identity
+ViableMHR occupies a **underserved** niche: a **neutral, youth-focused, program-level** directory for PHP/IOP/outpatient navigation in North Texas, with verification freshness UX and no accounts. The broader market is **overserved** by individual-therapy directories, insurance marketplaces, and DTC teletherapy—models that conflict with VMHR launch-scope neutrality ([LAUNCH_SCOPE.md](../product/LAUNCH_SCOPE.md)).
 
-| Attribute | Current state |
-|-----------|----------------|
-| **Mission** | Neutral directory for Texas youth MH programs; post-discharge and navigation focus |
-| **Geo** | Dallas–Fort Worth metro and surrounding North Texas (`constants.js` city list) |
-| **Users** | Caregivers, discharge planners, program staff (submit), crisis-adjacent searchers |
-| **Monetization** | None — deferred indefinitely per launch scope |
+**Strategic conclusion:** Maximize **durable, trust-compatible** value before revenue. Hard gates eliminate most competitor monetization patterns (listing fees, take-rates, lead-gen, ads, opaque sponsorship, pay-per-admission). **Recommend Now** work is overwhelmingly **non-monetization**: transparency, freshness tooling, navigator UX, SEO education pages, and privacy-preserving analytics. **Recommend Later** revenue is limited to **grants/donations** and **conditional B2B/educational sponsorship** after legal/ethics review—not paid ranking or referral economics.
 
-### Discovery features (shipped)
+**Top five prioritized moves (post-launch Phases 9–10):**
 
-- **Smart search** — natural language (e.g. “IOP in Plano for a 14 year old”), insurance plan parsing (~30 plans)
-- **Filters** — care level, age, location, insurance, virtual-only, service domain (MH / SUD / eating disorders), SUD service chips, OSAR referral
-- **Presets** — youth/teens, crisis, virtual, IOP/outpatient, eating disorder and SUD variants
-- **Results model** — gated until Find Programs / Browse all / preset unlock; crisis toggle separate
-- **Detail** — static slug `/programs/{id}.html`, share/QR, legacy `program.html?id=`, home `?program=` expand
-- **Local UX** — favorites, history, compare (localStorage); no accounts
+1. **Expand methodology and ranking transparency** on About/trust surfaces (trust gap vs opaque directories).
+2. **Structured report-outdated intake** (freshness gap vs federal locator accuracy concerns and stale local program sites).
+3. **City + care-level education pages** with pre-filled search (SEO gap vs therapist-directory local pages; education only, not booking).
+4. **Intake vs crisis phone labels** on all program cards and detail pages.
+5. **Navigator compare export** (print/PDF packet for discharge handoff).
 
-### Trust and data (Phases 3 + 7)
+**Explicit non-recommendation:** Provider subscriptions, sponsored listings in core search, session take-rates, lead sale, display/retargeting ads, booking marketplaces, and clinical matching quizzes—**Do Not Recommend** per hard gates below.
 
-- Trust strip + privacy policy aligned with Statcounter (aggregate analytics)
-- About page: methodology, 90-day cycle, report-outdated mailto
-- **Verification filter enabled** (`SHOW_VERIFICATION_FILTERS: true`)
-- **Stale UI** — “Verification overdue” badge >90 days; detail page notice
-- **Metrics** — `VMHRProductMetrics` local rollup (no raw queries); see [ZERO_RESULT_MONITORING.md](../operations/ZERO_RESULT_MONITORING.md)
-
-### Technical / SEO
-
-- `sitemap.xml` + `sitemap-programs.xml` (~112 slug URLs)
-- Canonical + OG on static pages; Lighthouse CI on home, guides, submit, about, privacy, sample slug
-- Multi-script homepage load (~15 deferred JS files) — bundle spike deferred ([BUNDLE_SPIKE_PHASE7.md](../development/BUNDLE_SPIKE_PHASE7.md))
+**Revenue outlook:** **Unspecified** in provided inputs (no budget, pricing tests, or payer mix). Gate-passing options (grants, labeled educational sponsorship, B2B data services without referral fees) may yield modest, slow revenue; **trust and usage growth should be weighted above short-term earnings.**
 
 ---
 
-## Section 8.1: Competitor profiles
+## What the market shows
 
-### 1. FindTreatment.gov (SAMHSA)
+### Cluster narrative
 
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://findtreatment.gov/ |
-| **Audience** | Anyone in US seeking MH or substance use treatment facilities |
-| **Business model** | **Align** — government-funded neutral locator; facilities update via N-SUMHSS survey |
-| **Search UX** | Geography: state, county, or distance; facility type (SA/MH/both); service codes; text filters on name/address/phone; paginated API |
-| **Crisis** | Not a crisis hotline; separate SAMHSA locators (988, buprenorphine, OTP directories) |
-| **Trust** | Confidential/anonymous search; annual facility survey updates; **OIG 2025** found significant inaccurate/outdated facility data at scale |
-| **SEO** | Federal domain authority; not city+care landing strategy |
-| **VMHR contrast** | VMHR is curated youth programs with care-level language; SAMHSA is facility-level, all ages, national |
+| Cluster | Representative sites | Dominant model | Fit for VMHR users |
+|---------|---------------------|----------------|-------------------|
+| **Therapist directories** | Psychology Today, TherapyDen, Mental Health Match | Listing fees or premium visibility; individual profiles | **Poor** — no PHP/IOP program compare |
+| **Appointment / insurance marketplaces** | Zocdoc, Headway, Alma, Grow Therapy | Provider-side fees, take-rates, payer contracts | **Poor** — booking and session economics |
+| **DTC teletherapy** | BetterHelp, Talkspace | Subscriptions, payor/employer B2B2C | **Poor** — wrong care setting; quiz PHI risk |
+| **Public / nonprofit** | FindTreatment.gov, NAMI, Texas HHSC | Gov survey or donations; education/support | **Partial** — national or system entry, not youth program compare |
+| **Local program marketing** | Carrollton Springs, Connections Wellness, Reflections, Texas Health | Admission to own programs | **Partial** — care-level language good; no neutral cross-org compare |
 
-### 2. Psychology Today — Therapist Directory
+**Cross-cutting patterns:** Insurance-first discovery; geo-first search; crisis siloed on nonprofits/gov; verification = credentialing or surveys, rarely call-confirmed dates; platform-subsidized directory listings (Grow + Psychology Today) blur ranking without clear sponsorship labels.
 
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.psychologytoday.com/us/therapists |
-| **Audience** | Individuals seeking individual therapists |
-| **Business model** | **Conflict** — providers pay **$29.95/month** for listings; platform companies subsidize thousands of profiles |
-| **Search UX** | Location + filters: insurance, specialty, gender, modality, age, language, faith, etc.; ~20 results per page; ranking opaque (completeness, keywords, location—not disclosed paid rank) |
-| **Crisis** | Not primary; editorial content separate |
-| **Trust** | “Largest directory” brand; no facility verification methodology; reviews not central on listing |
-| **SEO** | Dominant for “therapist near me” queries (~96% Google overlap claimed by PT) |
-| **VMHR contrast** | VMHR lists **programs/facilities**, not individual clinicians; no monthly listing fee |
+### Competitor comparison
 
-### 3. NAMI (national + Texas affiliates)
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.nami.org/ ; https://www.nami.org/findsupport (local affiliates) |
-| **Audience** | Family members and caregivers |
-| **Business model** | **Align** — nonprofit; donations; education and support programs |
-| **Search UX** | Not a facility directory — **Find Your Local NAMI** by state; Resource Directory PDF/listings; HelpLine 1-800-950-NAMI |
-| **Programs** | Family-to-Family, Basics, Family Support Group; Family Caregiver HelpLine (press 4) |
-| **Trust** | Lived-experience framing; crisis guide; strong caregiver tone |
-| **SEO** | Content hub + affiliate pages; not program slug URLs |
-| **VMHR contrast** | VMHR complements NAMI — operational program finding vs emotional support and education |
-
-### 4. Texas HHSC — LMHA/LBHA locator
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.hhs.texas.gov/.../find-your-local-mental-health-or-behavioral-health-authority ; https://resources.hhs.texas.gov/directories |
-| **Audience** | Texans needing publicly funded MH/SUD services |
-| **Business model** | **Align** — state government; 37 LMHAs + 2 LBHAs |
-| **Search UX** | County or ZIP → authority contact; 24/7 crisis referral lines; YES Waiver county inquiry PDF |
-| **Youth** | Youth-specific intake lines at some centers; not PHP/IOP facility comparison |
-| **Trust** | Official; system-oriented (who to call), not program cards |
-| **VMHR contrast** | VMHR fills gap for **private and hybrid programs** + care-level search; HHSC is entry to public system |
-
-### 5. Children’s Health — Psychiatry & Psychology
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology |
-| **Audience** | Families seeking care within Children’s system |
-| **Business model** | **N/A** — single health system marketing |
-| **UX** | Condition/program pages (Depression Clinic, SPARC IOP, Early Childhood MH); phone trees (214-456-8899, 214-456-5937); request appointment |
-| **Care levels** | IOP named (SPARC); outpatient; multidisciplinary teams |
-| **Crisis** | 911 / emergency messaging; SPARC for suicide behaviors |
-| **Trust** | Academic affiliation (UT Southwestern faculty); institutional credibility |
-| **VMHR contrast** | VMHR lists Children’s programs **alongside** competitors neutrally |
-
-### 6. UT Southwestern — Psychiatry
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://utswmed.org/conditions-treatments/psychiatry-psychology/ |
-| **Audience** | Referrals and patients for UTSW system |
-| **Business model** | **N/A** — academic medical center |
-| **UX** | Provider profiles (`/doctors/{name}`); Multispecialty Psychiatry Clinic 214-645-8500; conditions/treatments taxonomy |
-| **Youth** | Child/adolescent psychiatry; TAY clinic; ties to Children’s programs |
-| **Trust** | Research reputation; physician credentials |
-| **VMHR contrast** | Provider-centric vs program-centric directory |
-
-### 7. SAMHSA OTP / Buprenorphine locator pattern
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.samhsa.gov/find-help/locators (OTP directory, buprenorphine locator being phased) |
-| **Audience** | OUD treatment seekers |
-| **UX** | Separate specialized locators; FindTreatment.gov includes MAT filters |
-| **Note** | Buprenorphine web locator removal planned (maintained transition ended) — points users to FindTreatment.gov |
-| **VMHR contrast** | VMHR integrates SUD in **service_domain** + chips (OSAR, etc.) in one search UX |
-
-### 8. ANAD — Eating Disorder Treatment Directory
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://anad.org/learning-library/treatment-directory/ |
-| **Audience** | ED patients and families |
-| **Business model** | **Mixed** — free peer email referrals; **paid listings** ($5–$500/mo by tier); premium placement options |
-| **Search UX** | Browse/list providers and centers; filter by disorder type; referral form (7–10 business days, peer-led) |
-| **Trust** | Disclaimer: not clinical referral; verify with provider |
-| **VMHR contrast** | VMHR has eating disorder presets + `service_domain`; no paid listing tiers |
-
-### 9. NEDA Treatment Directory (reference)
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://map.nationaleatingdisorders.org/ |
-| **UX** | Location search; filters; sponsor callouts (Equip, Fay); provider listing caps |
-| **VMHR contrast** | Similar condition-specific goal; VMHR embeds ED in unified directory |
-
-### 10. Zocdoc (light touch — patterns only)
-
-| Field | Observation |
-|-------|-------------|
-| **URL** | https://www.zocdoc.com/therapist-counselors |
-| **Audience** | Patients booking appointments |
-| **Business model** | **Conflict** — marketplace; providers pay for visibility; booking is conversion |
-| **Search UX** | Location + insurance plan required; map; availability slots; same-day filter; video visit filter |
-| **Trust** | “Verified” = credential check for platform onboarding, not listing freshness |
-| **Do not copy** | Appointment-first funnel; insurance as gate to see providers |
-
-### 11. Healthgrades (light touch)
-
-| Field | Observation |
-|-------|-------------|
-| **Pattern** | Physician ratings, hospital scores, search by specialty and location |
-| **Business model** | **Conflict** — advertising and sponsored profiles |
-| **Do not copy** | Star ratings as primary sort; pay-for-reputation |
+**Unspecified** = not observed in public research for that site.
 
 ---
 
-## Comparison matrix
+### Table 1: Competitor comparison
 
-| Criterion | ViableMHR | FindTreatment.gov | Psychology Today | NAMI | Texas HHSC | Children's / UTSW | ANAD | Zocdoc |
-|-----------|-----------|-------------------|------------------|------|------------|-------------------|------|--------|
-| **Model alignment** | Baseline | Align | Conflict | Align | Align | N/A (system) | Mixed | Conflict |
-| **NL / smart search** | Strong | Weak (codes) | Keyword | N/A | N/A | N/A | N/A | Symptom text |
-| **Faceted filters** | Strong | Strong | Strong | N/A | County only | N/A | Moderate | Strong |
-| **Care level (PHP/IOP)** | Explicit | Service codes | Modality | N/A | N/A | Program pages | Level in listing | N/A |
-| **Insurance filter** | Plans + buckets | N/A | Yes | N/A | N/A | Per system | In listing | Required |
-| **Location model** | City + service area | State/county/miles | ZIP/city | State affiliate | County/ZIP | Single system | Region | Map + ZIP |
-| **Telehealth toggle** | Yes | Via services | Yes | N/A | N/A | Some | Virtual providers | Video filter |
-| **Crisis handling** | 988 + intent path | Separate tools | Secondary | HelpLine | 24/7 LMHA line | 911 + program | Hotline | N/A |
-| **Verification UX** | Date + stale badge | Survey cycle | Profile completeness | N/A | N/A | Institutional | Self-reported | Credential verify |
-| **Accounts** | No | No | No (provider account) | No | No | Patient portal | No | Yes (booking) |
-| **Monetization visible** | None | None | $/mo listing | Donation | Public | System | Listing fees | Marketplace |
-| **Mobile filters** | Tray + advanced | Form-heavy | Responsive | N/A | Basic | Mobile site | Variable | Strong |
+| # | Site | Audience | Revenue model | UX strengths | UX weaknesses | SEO strengths | SEO weaknesses | Trust signals | A11y / performance notes | Privacy / compliance notes | Differentiators vs VMHR |
+|---|------|----------|---------------|--------------|---------------|---------------|----------------|---------------|--------------------------|----------------------------|-------------------------|
+| 1 | Psychology Today | Therapy seekers; therapists listing | ~$29.95/mo listing fee (**Conflict**) | Rich insurance/specialty filters; polished profiles | Clinician-not-program; dense mobile filters; opaque sort | Dominant local therapist SEO | No youth PHP/IOP taxonomy | Brand authority; license implied | Responsive; WCAG not audited here | Listing fee; Grow/Alma subsidized listings | National therapist depth |
+| 2 | Zocdoc | Appointment bookers | Marketplace (**Conflict**); provider-side economics | Insurance + availability + map | Booking-first; accounts; wrong for program compare | City × specialty landings | Care level weak | In-network “verified” | Strong mobile booking UX | Unspecified consumer data sale | Real-time slots |
+| 3 | Headway | Insured therapy seekers; providers | Session take-rate (**Conflict**); anti-kickback flag | Cost estimate before book | Not facility directory; take-rate opaque to users | Therapy + insurance keywords | No program cards | Payer logos; credentialing | Modern SaaS UX | Referral/payer contracting risk | Insurance admin outsourcing |
+| 4 | Alma | Therapists; in-network clients | ~$125/mo membership (**Conflict**) | Consult-before-book; calm UI | Member-only directory; mandatory insurance program for new providers | Provider recruitment SEO | Not comprehensive map | Credentialing; crisis footer | Professional marketing site | Payer contracting; minor telehealth consent | Practice OS + directory |
+| 5 | Grow Therapy | Insured clients; providers | Session cut + pays PT listings (**Conflict**) | Insurance scale; admin bundle | Dual role platform/directory operator; duplicate PT profiles | Aggressive SEO + directories | Not program-level | Employer/payer marketing | Consumer marketplace | Anti-kickback on referral paths | Subsidized external listings |
+| 6 | BetterHelp | DTC teletherapy consumers | ~$70–100/wk subscription (**Conflict**) | Low friction teletherapy access | Quiz conversion; weak crisis; wrong for youth PHP/IOP | Content marketing dominance | Not local program SEO | Brand/ad spend | Mobile-first quiz | FTC/HIPAA/COPPA flags; PHI in quiz | Subscription + messaging |
+| 7 | Talkspace | Consumers; employers; payors | Payor FFS, enterprise PMPM, DTC sub (**Conflict**) | Scales insured access | Not open directory; B2B2C opacity | Employer/payor content | Less local directory SEO | SEC disclosures; HIPAA marketing | App heritage | PHI in eligibility flows | Async + live blend |
+| 8 | FindTreatment.gov | US facility seekers | Government (**Align**) | Anonymous national search | Code-based filters; stale data (OIG 2025) | High domain authority | Weak family-friendly youth IOP copy | Federal authority | Utilitarian gov UX | Data accuracy risk, not pay-for-rank | Facility locator + API |
+| 9 | NAMI | Caregivers; peers | Donations/grants (**Align**) | Caregiver language; helpline | Not program finder | Content hub SEO | No faceted program search | Lived experience; crisis guides | Content-heavy; not audited | Nonprofit support model | Emotional support layer |
+| 10 | Mental Health Match | Therapy seekers | Consumer free; therapist monetization unclear (**Align/Mixed**) | Fit-focused; privacy-forward | Survey-first; algorithm opacity; individual only | Match keywords | No PHP/IOP | License verification stated | Long survey on mobile | Minimal ID unless email | No star ratings emphasis |
+| 11 | TherapyDen | Inclusive therapy seekers | Free tier; $30/mo premium visibility (**Mixed**) | Values-based filters | Premium visibility ambiguity; individual only | Niche long-tail filters | Not program directory | Inclusive mission; FAQ on tiers | Directory usable | Soft pay-for-rank risk | Sliding scale / identity filters |
+| 12 | Carrollton Springs | DFW outpatient seekers | Own admissions (**N/A**) | Clear PHP/IOP labels | Single-org funnel; no compare | Location program SEO | Competes with neutral dirs | Self-reported marketing | Typical healthcare site | Unspecified | Multi-location outpatient |
+| 13 | Connections Wellness | Adolescent/adult PHP/IOP | Own admissions (**N/A**) | Age bands; screening CTA | Overwhelming schedule tables | Many city pages | Mobile table pain | Testimonials; phone prominent | Dense tables | Unspecified | Multi-city IOP schedules |
+| 14 | Reflections Lifestyle | Residential seekers | Own admissions (**N/A**) | Residential tier clarity when careful | Luxury blur risk | Residential keywords | May overlap IOP queries | Accreditation when shown | Image-heavy | Unspecified | Lifestyle/residential marketing |
+| 15 | Texas Health | System patients | In-network (**N/A**) | Institutional crisis copy | Physician-centric; not neutral compare | Strong system SEO | Insurance complexity | Hospital brand | Enterprise patterns | Unspecified | Academic/system affiliation |
+| 16 | PHP/IOP microsite (category) | Post-acute families | Admissions (**N/A**) | Care-level vocabulary | No cross-org search; stale copy | City + IOP/PHP pages | Variable | Testimonials; rare last-verified | Weak mobile tables | Unspecified | Marketing-only journey |
+| — | Texas HHSC LMHA | Public system entry | Public (**Align**) | County crisis routing | Not program compare | Gov SEO | Unspecified | Public authority | Unspecified | Unspecified | LMHA finder |
+| — | ANAD directory | ED seekers | Paid tiers (**Mixed**) | ED-specific | Paid listing tiers | Unspecified | Unspecified | Nonprofit | Unspecified | Paid tiers conflict pattern | ED vertical |
+| — | Children’s Health / UTSW | Pediatric system | System (**N/A**) | Pediatric programs | Phone trees | System SEO | Unspecified | Institutional | Unspecified | Unspecified | Academic pediatric |
+| — | Healthgrades (pattern) | Provider shoppers | Sponsored listings (**Conflict**) | Ratings culture | Star manipulation; sponsored | Unspecified | Unspecified | Stars + sponsors | Unspecified | Unspecified | Ratings marketplace |
 
----
-
-## Section 8.2: Business models and VMHR neutrality
-
-| Model | Examples | vs VMHR neutrality |
-|-------|----------|-------------------|
-| Government / grant neutral | SAMHSA, HHSC | **Align** — VMHR should cite and link, not compete on authority |
-| Nonprofit education + support | NAMI, ANAD (partial) | **Align** for mission; ANAD listing fees are minor conflict |
-| Provider subscription listings | Psychology Today | **Conflict** — reject |
-| Marketplace / booking | Zocdoc, Healthgrades | **Conflict** — reject |
-| Lead gen to treatment centers | Some call-tracking directories | **Conflict** — reject |
-| Health system funnel | Children's, UTSW | **N/A** — not competitors; listing sources |
-| Paid featured placement | NEDA sponsors noted on map | **Conflict** — reject for VMHR |
-
-**VMHR rule:** Revenue must not change sort order, visibility, or verification status.
+**VMHR baseline (for matrix column):** Neutral program directory; smart search; PHP/IOP/OP; 90-day verification + stale UI; no monetization; Statcounter aggregate analytics; crisis path separate ([PHASE7_POST_LAUNCH.md](../product/PHASE7_POST_LAUNCH.md)).
 
 ---
 
-## Section 8.3: UX strengths (market patterns)
+## Market gaps and better-than-market opportunities
 
-| Source | Strength to note |
-|--------|------------------|
-| FindTreatment.gov | Anonymous search; clear SA vs MH type; API for integrators |
-| Psychology Today | Dense filters; insurance-first mental model for families |
-| NAMI | Caregiver language; helpline + local affiliate path |
-| HHSC | County-based routing to live crisis line |
-| Children's Health | Program-level pages by condition; clear phone routing |
-| Zocdoc | Availability and insurance upfront; map + list |
-| ANAD | Condition-specific directory + human referral option |
-| VMHR (self) | Presets, smart search, compare, slug share, verification honesty |
+### Table 2: Gap / opportunity register
 
----
-
-## Section 8.4: UX weaknesses (avoid)
-
-| Source | Weakness |
-|--------|----------|
-| FindTreatment.gov | Stale/inaccurate data at scale; not youth-specific |
-| Psychology Today | Listing ≠ fit; platform-managed profile flooding; referral decline |
-| Zocdoc | Account/booking friction; not program-level |
-| ANAD | Slow peer referral; paid tier confusion |
-| Healthgrades | Rating gaming; sponsored results |
-| General | Pay-to-rank opacity; PHI-heavy intake forms; account walls for phone numbers |
+| ID | Gap / opportunity | Label | Improve existing vs differentiate | VMHR implication |
+|----|-------------------|-------|-----------------------------------|------------------|
+| G1 | Neutral adolescent PHP/IOP/OP multi-program compare in one region | **Underserved** | **Differentiated** | Core product—protect neutrality |
+| G2 | Care-level-native search without booking pressure | **Underserved** | **Differentiated** | Smart search + presets |
+| G3 | Verification transparency without pay-to-list | **Underserved** | **Differentiated** | Phase 7 badges—expand About copy |
+| G4 | Post-discharge navigator UX (compare, handoff) | **Underserved** | **Differentiated** | Compare export (Phase 10) |
+| G5 | MH + SUD + ED in one neutral view | **Poorly served** | **Improve** (VMHR has tags) | Data completeness ops |
+| G6 | Freshness signaling on listings | **Poorly served** | **Differentiated** | Report-outdated + stale filter |
+| G7 | Individual therapy discovery | **Overserved** | N/A | Do not pivot |
+| G8 | Insurance-first booking marketplaces | **Overserved** | N/A | Do not copy |
+| G9 | DTC teletherapy subscriptions | **Overserved** | N/A | Do not copy |
+| G10 | Crisis commercialization in marketplaces | **Poorly served** (weak crisis UX) | **Improve** | Keep 988 + intent split |
+| G11 | City + care-level SEO education | **Underserved** for VMHR query space | **Differentiated** | City landing pages |
+| G12 | Privacy-preserving search quality metrics | **Underserved** | **Improve** | Extend VMHRProductMetrics |
+| G13 | Federal facility data accuracy | **Poorly served** nationally | **Differentiated** regional curation | Reverification ops |
+| G14 | Sponsored visibility without labels | **Overserved** (bad practice) | Avoid | Hard gate reject |
+| G15 | Medicare/Medicaid/TRICARE navigation depth | **Not enough evidence** | Unspecified | Label insurance accurately; no promises |
 
 ---
 
-## Section 8.5: Trust and credibility comparison
+## Monetization option comparison
 
-| Signal | VMHR | Federal/State | Commercial |
-|--------|------|---------------|------------|
-| Neutrality statement | About + trust strip | Implicit | Often absent or buried |
-| Verification methodology | 90-day + source + stale badge | Survey-based | Profile completeness |
-| Last updated | Footer + per listing | Varies | Often missing |
-| Reviews / stars | None | None | Common (risk) |
-| Crisis disclaimer | Banner + intent | Hotlines | Variable |
-| Paid endorsement risk | Low | Low | High |
+### Hard gates (applied first)
 
-**Recommendation:** Keep **no star ratings**. Double down on verification transparency and report-outdated flow.
+Any option failing a gate is **not** ranked for “Recommend Now.”
 
----
+| Gate | Rule |
+|------|------|
+| G-Transparency | No opaque sponsorship or paid influence on core organic ranking |
+| G-PHI | No MH/health data for ad targeting/retargeting without lawful ethical basis (**none proven**) |
+| G-Referral | Flag referral/booking/admission-linked compensation (Anti-Kickback / Stark desk review) |
+| G-HIPAA | Flag PHI-heavy features, tracking tech, BA relationships |
+| G-Crisis | No worsening crisis routing or misleading acuity claims |
+| G-A11yPerf | Reject or conditional if likely harms a11y, CWV, or core task completion |
 
-## Section 8.6: SEO observations
+### Gate outcomes
 
-| Tactic | Competitors | VMHR today | Opportunity |
-|--------|-------------|------------|-------------|
-| Program slug URLs | Some | Yes (~112) | Maintain |
-| City + care landing pages | PT, Zocdoc local SEO | No | **Phase9+** static pages with search prefill |
-| JSON-LD | Hospitals, Zocdoc | Limited | Add `MedicalOrganization` / `FAQ` where accurate |
-| Content hub | NAMI, hospital blogs | Guides page | Link guides → pre-filled searches |
-| Sitemap scale | Massive (federal) | Static + programs | Keep both sitemaps fresh on build |
-| Branded vs non-branded | PT owns “therapist” | “ViableMHR” + DFW | Target “IOP Plano adolescent” long-tail |
+| Monetization option | Gate result | Classification |
+|---------------------|-------------|----------------|
+| Provider subscriptions (Psychology Today, Alma) | Fail G-Transparency, neutrality | **Do Not Recommend** |
+| Sponsored listings / premium directory visibility (TherapyDen, Healthgrades) | Fail G-Transparency | **Do Not Recommend** |
+| Session take-rate / booking marketplace (Headway, Grow, Zocdoc) | Fail G-Referral, neutrality | **Do Not Recommend** |
+| DTC subscription / lead-gen (BetterHelp, Talkspace consumer) | Fail G-PHI, G-Crisis, distress extraction | **Do Not Recommend** |
+| Display ads / programmatic / retargeting | Fail G-PHI, G-Transparency | **Do Not Recommend** |
+| Pay-per-admission / referral fees | Fail G-Referral | **Legal/Ethics Review First** — not launch |
+| Selling search queries / lead sale to programs | Fail G-Transparency, G-PHI | **Do Not Recommend** |
+| Star ratings monetization | Fail trust, manipulation risk | **Do Not Recommend** |
+| Grants / donations / public-interest partnerships | Pass | **Score** |
+| B2B navigator / data-quality tools (no referral fee) | Pass conditional | **Legal/Ethics Review First** then score |
+| Labeled educational sponsorship (non-ranking modules) | Conditional | **Legal/Ethics Review First** |
+| Affiliate links to crisis/commercial therapy | Fail G-Crisis / neutrality | **Do Not Recommend** |
 
----
+### Scoring methodology (survivors only)
 
-## Section 8.7: Feature inventory vs VMHR
+**Scale:** 1 = poor, 5 = strong per dimension.  
+**Weights:** Trust 20%, user-safety/outcome fit 15%, privacy/compliance (inverted) 15%, UX impact 15%, strategic differentiation 10%, revenue upside 10%, feasibility 10%, time-to-value 5%.  
+**Rule:** Trust or inverted-compliance &lt; 3 ⇒ cannot be **Recommend Now**.
 
-| Feature | VMHR | SAMHSA | PT | NAMI | HHSC | Zocdoc |
-|---------|------|--------|----|----|------|--------|
-| Natural language search | Yes | No | Partial | No | No | Partial |
-| Age filter | Yes | No | Yes | N/A | N/A | No |
-| Insurance filter | Yes | No | Yes | N/A | N/A | Yes |
-| Care level PHP/IOP/OP | Yes | Codes | No | N/A | N/A | No |
-| Telehealth toggle | Yes | Services | Yes | N/A | N/A | Yes |
-| Distance sort | Yes | Miles | Location | N/A | N/A | Map |
-| Compare programs | Yes | No | No | N/A | No | No |
-| Favorites / local history | Yes | No | No | N/A | No | Account |
-| Crisis toggle | Yes | Separate | No | HelpLine | Crisis line | No |
-| SUD / ED domains | Yes | Types | Specialty | N/A | N/A | Specialty |
-| OSAR / referral chips | Yes | No | No | N/A | N/A | No |
-| Multi-location programs | Yes | Facilities | N/A | N/A | N/A | N/A |
-| Service area (county/point) | Yes | County | ZIP | County | County | ZIP |
-| Waitlist / accepting patients | Partial text | Sometimes | Sometimes | N/A | N/A | Availability |
-| Map view | No | Yes | No | No | No | Yes |
-| Book appointment | No | No | No | No | No | Yes |
-| Verification recency filter | Yes (P7) | No | No | N/A | N/A | No |
+### Table 3: Monetization option comparison (post-gate scores)
 
----
+| Option | Rev upside | Feasibility | Time-to-value | Trust | UX | Compliance (inv.) | Safety fit | A11y/perf | Ops burden | Differentiation | **Weighted** | Status |
+|--------|------------|-------------|---------------|-------|-----|-------------------|------------|-----------|------------|-----------------|--------------|--------|
+| Grants / donations | 3 | 4 | 2 | 5 | 5 | 5 | 5 | 5 | 3 | 4 | **4.15** | Recommend Later |
+| Educational sponsorship (labeled, non-ranking) | 3 | 3 | 3 | 4 | 4 | 3 | 4 | 4 | 4 | 3 | **3.55** | Legal Review First |
+| B2B data freshness / export API (no referral fee) | 4 | 2 | 2 | 4 | 4 | 3 | 4 | 5 | 4 | 5 | **3.65** | Legal Review First |
+| Institutional partnership (hospital/LMHA co-brand, no fee per referral) | 2 | 3 | 3 | 5 | 5 | 4 | 5 | 5 | 3 | 4 | **4.00** | Recommend Later |
+| Optional map layer (monetization none; product only) | 1 | 4 | 4 | 4 | 3 | 5 | 4 | 3 | 2 | 3 | **3.50** | Recommend Later (product) |
 
-## Section 8.8: Inspiration backlog (prioritized)
-
-| Priority | Item | Tag | Rationale |
-|----------|------|-----|-----------|
-| P1 | City + care landing pages (“IOP in Plano”) with search prefill | **Phase9+** | Highest SEO gap vs PT/Zocdoc local pages |
-| P1 | Structured report-outdated form (not only mailto) | **Phase9+** | ANAD/HHSC use forms; reduces moderator friction |
-| P2 | First-party zero-result dashboard (aggregate from metrics export) | **Phase7+** | Extends 7.1 local rollup for team review |
-| P2 | JSON-LD on program slug pages (validated schema) | **Phase9+** | Hospital sites use structured data |
-| P2 | Navigator printable PDF / one-page resource sheet | **Phase9+** | NAMI-style caregiver export |
-| P3 | Verification badge tiers (source documented vs phone confirmed) | **Phase9+** | Differentiate without paid badges |
-| P3 | Map view optional layer (list default) | **Phase9+** | SAMHSA/Zocdoc pattern; keep list primary |
-| P3 | Empty-state suggested presets from zero-result signatures | **Phase7+** | Uses product-metrics data |
-| P4 | School counselor bulk sheet / zip export | **Phase9+** | Institutional referrer need |
-| — | Paid featured listings | **Won't do** | Conflicts with launch scope |
-| — | Star ratings / reviews | **Won't do** | Trust and moderation risk |
-| — | Provider subscription listings | **Won't do** | Psychology Today model |
-| — | In-app appointment booking | **Won't do** | Out of scope |
-| — | Phone number account wall | **Won't do** | Zocdoc-style friction |
-
-### Top 5 for next quarter
-
-1. City + care landing pages (SEO + zero-result reduction)  
-2. Structured report-outdated intake  
-3. Zero-result dashboard from `VMHRProductMetrics` exports  
-4. JSON-LD on slug pages (with legal/schema review)  
-5. Empty-state dynamic suggestions from top zero-result signatures  
+**Inference:** Highest-scoring **revenue** paths are slow, relationship-driven (grants, partnerships)—not product-led take-rates. Product-led **trust features** outperform monetization on weighted score when trust/safety weights apply.
 
 ---
 
-## Section 8.9: Do not copy (explicit)
+## Recommended features
 
-From phased plan plus research:
+### Table 4: Recommended feature summary
 
-- Paid placement or “featured provider” slots  
-- Star ratings without moderation  
-- Provider-paid “verified” badges  
-- Lead sale to treatment centers or call-tracking arbitrage  
-- Aggressive intake forms collecting PHI  
-- Dark patterns favoring specific providers  
-- Hidden affiliate links  
-- Account requirement to view phone numbers  
-- Psychology Today–style monthly listing rank  
-- Zocdoc-style booking-first UX that hides neutral comparison  
-- NEDA-style sponsor callouts in search results  
-
-**Launch scope reinforcement:** Monetization remains deferred; Phase 8 must not be used to justify pay-to-play ranking ([LAUNCH_SCOPE.md](../product/LAUNCH_SCOPE.md) § Monetization).
-
----
-
-## Section 8.10: Legal, ethics, and compliance (desk review)
-
-*For counsel review—not legal conclusions.*
-
-| Topic | VMHR current posture | Gap / action |
-|-------|---------------------|--------------|
-| **FTC health claims** | Informational directory; no outcome claims | Review marketing copy if adding testimonials |
-| **HIPAA** | No PHI in analytics; submit warns against PHI | Keep submit review human; no auto-publish |
-| **Texas HHSC / licensing** | Lists programs; does not license | Optional: link license types in About |
-| **42 CFR Part 2 (SUD)** | Display only; no SUD patient data collection | Avoid logging SUD-specific search queries externally |
-| **Crisis liability** | 988 banner; disclaimers; not triage | Periodic copy review with clinical advisor |
-| **Minors / local storage** | Favorites/history local only | Privacy policy mentions; no child accounts |
-| **COPPA** | No under-13 accounts | Maintain no-account model |
-| **ADA / WCAG** | Target 2.2 AA; CI axe/Lighthouse | Continue manual SR checklist |
-| **“Verified” advertising** | Defined on About; stale badge | Avoid implying clinical quality |
-| **GDPR/CCPA** | Minimal collection; Statcounter | Update privacy if first-party analytics added |
+| ID | Feature | Revenue? | Gap IDs | Better-than-market? | Status | Phase |
+|----|---------|----------|---------|---------------------|--------|-------|
+| F1 | Methodology + ranking transparency expansion | No | G3, G14 | Improve + differentiate | **Recommend Now** | 9 |
+| F2 | Structured report-outdated intake | No | G6, G13 | Differentiate | **Recommend Now** | 9 |
+| F3 | City + care-level education landing pages | No | G11 | Differentiate | **Recommend Now** | 10 |
+| F4 | Intake vs crisis phone labels | No | G10 | Improve | **Recommend Now** | 9 |
+| F5 | Navigator compare export (print/PDF) | No | G4 | Differentiate | **Recommend Now** | 10 |
+| F6 | Zero-result-driven preset suggestions | No | G12 | Improve | **Recommend Now** | 10 |
+| F7 | Grant / foundation funding playbook | Yes | G1 | Align with NAMI model | **Recommend Later** | 11 |
+| F8 | Labeled educational sponsorship modules | Yes | G14 | Conditional differentiate | **Legal Review First** | 12+ |
+| F9 | B2B listing export / freshness feed (no referral fee) | Yes | G4, G6 | Differentiate | **Legal Review First** | 12+ |
+| F10 | Optional map layer (list default) | No | Unspecified | Improve | **Recommend Later** | 11 |
+| F11 | Verification tier labels (documented vs phone-confirmed) | No | G3 | Differentiate | **Recommend Now** | 10 |
+| F12 | Statcounter custom goals + privacy update | No | G12 | Improve | **Recommend Later** | 11 |
 
 ---
 
-## Sources consulted
+## Feature implementation specs
 
-| Resource | URL | Date accessed |
-|----------|-----|---------------|
-| FindTreatment.gov | https://findtreatment.gov/ | 2026-05-25 |
-| SAMHSA locators | https://www.samhsa.gov/find-help/locators | 2026-05-25 |
-| HHS OIG FindTreatment audit | https://oig.hhs.gov/reports/all/2025/samhsas-findtreatmentgov-contained-some-inaccurate-information-on-substance-use-and-mental-health-treatment-facilities/ | 2026-05-25 |
-| Psychology Today signup | https://join.psychologytoday.com/us/signup | 2026-05-25 |
-| NAMI caregivers | https://www.nami.org/family-members-and-caregivers/ | 2026-05-25 |
-| Texas HHSC LMHA finder | https://www.hhs.texas.gov/services/mental-health-substance-use/mental-health-substance-use-resources/find-your-local-mental-health-or-behavioral-health-authority | 2026-05-25 |
-| Children's Health psychiatry | https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology | 2026-05-25 |
-| UT Southwestern psychiatry | https://utswmed.org/conditions-treatments/psychiatry-psychology/ | 2026-05-25 |
-| ANAD treatment directory | https://anad.org/learning-library/treatment-directory/ | 2026-05-25 |
-| Zocdoc therapists | https://www.zocdoc.com/therapist-counselors | 2026-05-25 |
+### F1 — Methodology and ranking transparency expansion
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Competitors use opaque sort (Psychology Today) or paid visibility (TherapyDen, Grow-subsidized listings). Launch-scope trust metric #7. |
+| **Gaps** | G3, G14 |
+| **Differentiation** | **Differentiated** — public ranking rules rare in market |
+| **Description** | Expand About/trust strip: what “verified” means/does not mean; how search orders results (filters + relevance, no paid tiers); link to privacy/analytics |
+| **Who it serves** | Caregivers, navigators, skeptical users |
+| **Business value** | Indirect—reduces trust incidents; supports grant narrative |
+| **Trust / user value** | Prevents false “endorsement” or “sponsored” assumptions |
+| **Data/model** | None required |
+| **UI/UX** | About page sections; optional footer link; trust strip copy |
+| **API/backend** | None (static site) |
+| **Admin/ops** | Copy review with legal; version “last updated” |
+| **Privacy/security** | No new collection |
+| **A11y/performance** | Static text; no CWV regression |
+| **Legal/compliance** | Accuracy vs actual analytics (Statcounter)—align with privacy policy |
+| **Disclosures** | Ranking methodology; verification limits |
+| **Acceptance criteria** | About states no paid ranking; defines verification; matches `SHOW_VERIFICATION_FILTERS` behavior |
+| **Manual QA** | Read About on mobile/desktop; links work; no “zero tracking” false claim |
+| **Effort** | Low |
+| **Phase** | 9 |
+| **Dependencies** | None |
+| **Risks** | Copy drift from product behavior—mitigate with quarterly review |
+| **Legal review** | Recommended (copy accuracy) |
+| **Ethics review** | Light |
+| **Status** | **Recommend Now** |
 
 ---
 
-## Related internal documents
+### F2 — Structured report-outdated intake
 
-- [Phased Launch Build Plan](../product/ViableMHR-Phased-Launch-Build-Plan.md) — Phase 8 spec  
-- [Phase 7 post-launch](../product/PHASE7_POST_LAUNCH.md)  
-- [Analytics plan](../product/ANALYTICS_PLAN.md)  
-- [Launch scope](../product/LAUNCH_SCOPE.md)  
-- [Program URL strategy](../product/PROGRAM_URL_STRATEGY.md)
+| Field | Detail |
+|-------|--------|
+| **Why now** | HHS OIG FindTreatment.gov accuracy findings; mailto-only report path today |
+| **Gaps** | G6, G13 |
+| **Differentiation** | **Differentiated** vs federal survey-only freshness |
+| **Description** | Form (Formspree or equivalent) capturing program ID, issue type (closed, wrong phone, care level, insurance), optional contact; no PHI |
+| **Who it serves** | Users spotting stale data; data maintainers |
+| **Business value** | Lowers reputational risk; improves data quality for future B2B story |
+| **Trust** | Shows responsiveness without pay-to-update |
+| **Data/model** | Optional `reported_at` internal log; no public schema change required |
+| **UI/UX** | Link from stale badge + detail page; confirmation message |
+| **API/backend** | Formspree endpoint; spam protection |
+| **Admin/ops** | Runbook tie-in to submit-to-publish; SLA for triage |
+| **Privacy** | Warn no PHI; minimal fields |
+| **A11y** | Labeled form, error states, keyboard path |
+| **Legal** | Formspree DPA; retention policy |
+| **Disclosures** | “We review manually; no payment required to update” |
+| **Acceptance criteria** | Submissions reach moderators; listed on stale UI; privacy warning visible |
+| **Manual QA** | Submit test report; screen reader on form |
+| **Effort** | Medium |
+| **Phase** | 9 |
+| **Dependencies** | F1 copy cross-link |
+| **Risks** | Spam volume—mitigate with honeypot/rate limit |
+| **Legal review** | Yes (form + retention) |
+| **Ethics** | Light |
+| **Status** | **Recommend Now** |
 
 ---
 
-*End of report. No application code changes in Phase 8.*
+### F3 — City + care-level education landing pages
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Competitor city SEO (Zocdoc, Psychology Today); VMHR regional focus |
+| **Gaps** | G11 |
+| **Differentiation** | **Differentiated** — education + pre-filled search, not booking |
+| **Description** | Static pages e.g. “IOP programs in Plano” with plain-language care level explainer, crisis disclaimer, CTA opening search with query params or preset |
+| **Who it serves** | SEO entrants; caregivers unfamiliar with acronyms |
+| **Business value** | Organic traffic; supports grants |
+| **Trust** | Educational tone; links to guides; no program endorsement order change |
+| **Data/model** | Unspecified city list—start with top DFW cities from metrics |
+| **UI/UX** | New HTML pages; canonical URLs; sitemap entries |
+| **API/backend** | None |
+| **Admin/ops** | Content maintenance; align with guides |
+| **Privacy** | Statcounter page views only |
+| **A11y/performance** | Lighthouse ≥95 target on new pages |
+| **Legal** | No clinical claims |
+| **Disclosures** | “Directory not medical advice” |
+| **Acceptance criteria** | Pages in sitemap; preset loads correct filters; crisis link visible |
+| **Manual QA** | Lighthouse a11y; mobile layout; search handoff |
+| **Effort** | Medium |
+| **Phase** | 10 |
+| **Dependencies** | F1; guides content |
+| **Risks** | Thin content penalty—ensure unique copy per city |
+| **Legal** | Copy review |
+| **Ethics** | Light |
+| **Status** | **Recommend Now** |
+
+---
+
+### F4 — Intake vs crisis phone labels
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Local program sites often conflate intake and crisis lines |
+| **Gaps** | G10 |
+| **Differentiation** | **Improve** on market norms |
+| **Description** | Card/detail labels: “Intake / admissions” vs “Crisis line (if listed)” with 988 reminder |
+| **Who it serves** | Caregivers under stress |
+| **Business value** | Safety/trust; fewer misdials |
+| **Trust** | Clear scope of site (not crisis service) |
+| **Data/model** | Optional fields `intake_phone`, `crisis_phone` in programs.json—**Unspecified** if all use single phone; fallback label “Main line” |
+| **UI/UX** | Render module + detail template |
+| **API/backend** | None |
+| **Admin/ops** | Data entry guidelines in runbook |
+| **Privacy** | N/A |
+| **A11y** | `tel:` links with accessible names |
+| **Legal** | Do not present VMHR as crisis provider |
+| **Disclosures** | Site-wide crisis disclaimer |
+| **Acceptance criteria** | All cards show label; 988 persistent |
+| **Manual QA** | Programs with one vs two numbers; screen reader announces label |
+| **Effort** | Low–medium |
+| **Phase** | 9 |
+| **Dependencies** | Data audit |
+| **Risks** | Incomplete data—use honest fallback |
+| **Legal** | Light |
+| **Ethics** | Recommended |
+| **Status** | **Recommend Now** |
+
+---
+
+### F5 — Navigator compare export (print/PDF packet)
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Navigator handoff gap; compare already in localStorage |
+| **Gaps** | G4 |
+| **Differentiation** | **Differentiated** |
+| **Description** | Export compared programs to printable HTML/PDF: names, care level, phones, last verified, slug URLs, disclaimer |
+| **Who it serves** | Discharge planners, caregivers |
+| **Business value** | Stickiness; B2B preview for F9 |
+| **Trust** | Export states neutral listing + verification dates |
+| **Data/model** | Read compare list from localStorage |
+| **UI/UX** | Button on compare tray; print stylesheet |
+| **API/backend** | Client-side only preferred |
+| **Admin/ops** | None |
+| **Privacy** | No server storage of compare set |
+| **A11y** | Print view readable; focus management on open |
+| **Legal** | Disclaimer on printout |
+| **Disclosures** | “Confirm with program before decisions” |
+| **Acceptance criteria** | 2+ programs render; verification dates shown; works mobile print |
+| **Manual QA** | Compare 3 programs; print preview |
+| **Effort** | Medium |
+| **Phase** | 10 |
+| **Dependencies** | Compare feature stable |
+| **Risks** | Browser print quirks |
+| **Legal** | Light |
+| **Ethics** | Light |
+| **Status** | **Recommend Now** |
+
+---
+
+### F6 — Zero-result-driven preset suggestions
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Phase 7 `VMHRProductMetrics` zero-result rollups |
+| **Gaps** | G12 |
+| **Differentiation** | **Improve** |
+| **Description** | When zero results, show 2–3 preset chips derived from top local zero-result signatures (care level + city buckets), not raw queries |
+| **Who it serves** | Frustrated searchers |
+| **Business value** | Lowers bounce; ops insight |
+| **Trust** | No external data sale; local rollup only |
+| **Data/model** | Read metrics summary structure documented in ZERO_RESULT_MONITORING |
+| **UI/UX** | Empty state component |
+| **API/backend** | None |
+| **Admin/ops** | Monthly review of signatures |
+| **Privacy** | No raw query export to third parties |
+| **A11y** | Presets keyboard operable |
+| **Legal** | Align with analytics plan checklist |
+| **Disclosures** | None beyond existing privacy |
+| **Acceptance criteria** | Zero-result shows presets; metrics not sent to Statcounter raw |
+| **Manual QA** | Force zero result; verify chips |
+| **Effort** | Medium |
+| **Phase** | 10 |
+| **Dependencies** | 7.1 metrics export cadence |
+| **Risks** | Wrong suggestions—cap manual preset list |
+| **Legal** | If adding Statcounter events (F12) |
+| **Ethics** | Light |
+| **Status** | **Recommend Now** |
+
+---
+
+### F7 — Grant / foundation funding playbook
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | NAMI-aligned **Align** model; launch scope defers ads |
+| **Gaps** | G1 |
+| **Differentiation** | **Align** with nonprofit sector |
+| **Description** | Internal doc + outreach templates for foundations (youth MH, caregiver navigation); budget for hosting/data/verification labor |
+| **Who it serves** | Organization sustainability |
+| **Business value** | Primary gate-passing revenue path |
+| **Trust** | No user-facing paywall |
+| **Data/model** | N/A |
+| **UI/UX** | Optional “Supported by” footer if grant requires—labeled |
+| **API/backend** | N/A |
+| **Admin/ops** | Grant reporting KPIs from Table 8 |
+| **Privacy** | Grant reports aggregate metrics only |
+| **A11y/perf** | N/A |
+| **Legal** | Grant compliance, 501(c) status **Unspecified** |
+| **Disclosures** | Funder acknowledgment without endorsement |
+| **Acceptance criteria** | Playbook approved; 1+ application submitted |
+| **Manual QA** | N/A |
+| **Effort** | Medium (non-engineering) |
+| **Phase** | 11 |
+| **Dependencies** | F1 trust narrative |
+| **Risks** | Funding timeline **Unspecified** |
+| **Legal** | Yes |
+| **Ethics** | Yes |
+| **Status** | **Recommend Later** |
+
+---
+
+### F8 — Labeled educational sponsorship modules
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Only conditional revenue near directories without ranking influence |
+| **Gaps** | G14 |
+| **Differentiation** | **Conditional** |
+| **Description** | Fixed “Sponsored educational content” blocks on guides/city pages—not in search results; flat fee; written contract prohibiting ranking influence |
+| **Who it serves** | Sponsors (hospitals, nonprofits); users see labeled content |
+| **Business value** | Modest revenue |
+| **Trust** | Segregation from organic results |
+| **Data/model** | CMS or static include flag |
+| **UI/UX** | Distinct visual treatment + “Sponsored” label |
+| **API/backend** | Unspecified |
+| **Admin/ops** | Contract registry; annual disclosure page |
+| **Privacy** | No user targeting from sponsorship |
+| **A11y** | Sponsor modules meet contrast; not blocking search |
+| **Legal** | Anti-kickback if sponsor is referral source—**review required** |
+| **Disclosures** | FTC-style sponsorship disclosure |
+| **Acceptance criteria** | Zero sponsored items in search results; label on every module |
+| **Manual QA** | Search with sponsor active—order unchanged |
+| **Effort** | Medium–high |
+| **Phase** | 12+ |
+| **Dependencies** | F1, legal approval |
+| **Risks** | Perceived pay-for-rank—mitigate with physical separation |
+| **Legal** | **Required** |
+| **Ethics** | **Required** |
+| **Status** | **Legal Review First** |
+
+---
+
+### F9 — B2B listing export / freshness feed (no referral fee)
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Navigator gap; differentiated data asset |
+| **Gaps** | G4, G6 |
+| **Differentiation** | **Differentiated** if fee is subscription for data not referrals |
+| **Description** | Hospital/LMHA subscription to CSV/JSON export or periodic freshness report—same public fields; no exclusive listings |
+| **Who it serves** | Discharge planners (B2B) |
+| **Business value** | Highest revenue upside among gate-passing options |
+| **Trust** | Public site unchanged; no ranking influence |
+| **Data/model** | Export pipeline from `programs.json` + verification metadata |
+| **UI/UX** | None on consumer site |
+| **API/backend** | **Unspecified**—requires auth, rate limits, DPA |
+| **Admin/ops** | SLA; change logs |
+| **Privacy** | BAA may be required if client shares PHI with VMHR—**VMHR should not receive PHI** |
+| **A11y** | N/A consumer |
+| **Legal** | Contract; anti-kickback if tied to admissions |
+| **Disclosures** | B2B agreement: not a referral service |
+| **Acceptance criteria** | Export matches public data; no private pay-to-list fields |
+| **Manual QA** | Contract test export |
+| **Effort** | High |
+| **Phase** | 12+ |
+| **Dependencies** | F5, F2, data quality |
+| **Risks** | HIPAA if mishandled |
+| **Legal** | **Required** |
+| **Ethics** | **Required** |
+| **Status** | **Legal Review First** |
+
+---
+
+### F10 — Optional map layer (list default)
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Optional geo view (federal locator / Zocdoc patterns)—list remains default |
+| **Gaps** | Unspecified user demand |
+| **Differentiation** | **Improve** |
+| **Description** | Toggle map behind list; no map-first; lazy-load tiles |
+| **Who it serves** | Geo-oriented users |
+| **Business value** | None direct |
+| **Trust** | List remains canonical |
+| **Data/model** | Lat/long on programs—**Unspecified** coverage |
+| **UI/UX** | Toggle; performance budget |
+| **API/backend** | Map provider ToS |
+| **Admin/ops** | Coordinate accuracy |
+| **Privacy** | Map provider policy |
+| **A11y** | List-only path always available; map not sole access |
+| **Legal** | Map license |
+| **Disclosures** | Third-party map attribution |
+| **Acceptance criteria** | LCP not regressed; keyboard list browse works |
+| **Manual QA** | Lighthouse perf; a11y skip map |
+| **Effort** | Medium–high |
+| **Phase** | 11 |
+| **Dependencies** | Geo data completeness |
+| **Risks** | CWV regression |
+| **Legal** | Light |
+| **Ethics** | Light |
+| **Status** | **Recommend Later** |
+
+---
+
+### F11 — Verification tier labels
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | Market “verified” often means credentialing, not freshness |
+| **Gaps** | G3 |
+| **Differentiation** | **Differentiated** |
+| **Description** | Badges: e.g. “Documented source” vs “Phone-confirmed (date)” from admin fields |
+| **Who it serves** | Navigators assessing reliability |
+| **Business value** | Trust; supports F9 |
+| **Trust** | Honest gradation |
+| **Data/model** | `verification_source` enum in programs.json |
+| **UI/UX** | Card + detail badge legend on About |
+| **API/backend** | None |
+| **Admin/ops** | Runbook for source types |
+| **Privacy** | N/A |
+| **A11y** | Text + icon with label |
+| **Legal** | No outcome claims |
+| **Disclosures** | Legend on About |
+| **Acceptance criteria** | Each program shows tier; legend linked |
+| **Manual QA** | Mixed tiers display |
+| **Effort** | Medium |
+| **Phase** | 10 |
+| **Dependencies** | F1 |
+| **Risks** | Operator burden |
+| **Legal** | Light |
+| **Ethics** | Light |
+| **Status** | **Recommend Now** |
+
+---
+
+### F12 — Statcounter custom goals + privacy policy update
+
+| Field | Detail |
+|-------|--------|
+| **Why now** | [ANALYTICS_PLAN.md](../product/ANALYTICS_PLAN.md) deferred events |
+| **Gaps** | G12 |
+| **Differentiation** | **Improve** |
+| **Description** | Implement bucketed events (Table 8) via Statcounter goals after privacy checklist |
+| **Who it serves** | Product/ops |
+| **Business value** | Measures funnel without surveillance |
+| **Trust** | No raw queries to third parties |
+| **Data/model** | Event catalog only |
+| **UI/UX** | None visible |
+| **API/backend** | Statcounter JS |
+| **Admin/ops** | Monthly dashboard review |
+| **Privacy** | Full checklist in ANALYTICS_PLAN |
+| **A11y/perf** | Minimal JS addition |
+| **Legal** | Privacy policy update required |
+| **Disclosures** | Policy “Last updated” |
+| **Acceptance criteria** | Events fire in staging; policy matches |
+| **Manual QA** | Block Statcounter—site works |
+| **Effort** | Medium |
+| **Phase** | 11 |
+| **Dependencies** | F6 patterns |
+| **Risks** | Policy drift |
+| **Legal** | **Required** |
+| **Ethics** | Light |
+| **Status** | **Recommend Later** |
+
+---
+
+## Phased roadmap
+
+### Post-launch timeline
+
+```mermaid
+gantt
+  title ViableMHR post_launch roadmap
+  dateFormat YYYY-MM
+  section Phase9_Trust
+  F1_Methodology_copy           :2026-06, 1M
+  F2_Report_outdated            :2026-06, 2M
+  F4_Phone_labels               :2026-06, 1M
+  section Phase10_Growth
+  F3_City_pages                 :2026-07, 2M
+  F5_Compare_export             :2026-07, 2M
+  F6_Zero_result_presets        :2026-08, 1M
+  F11_Verification_tiers        :2026-08, 2M
+  section Phase11_Ops
+  F7_Grant_playbook             :2026-09, 3M
+  F10_Map_optional              :2026-10, 2M
+  F12_Analytics_goals           :2026-10, 2M
+  section Phase12_Revenue_conditional
+  F8_Sponsorship                :2027-01, 2M
+  F9_B2B_export                 :2027-01, 3M
+```
+
+### Plain-language roadmap table
+
+| Phase | Timing | Focus | Features | Revenue |
+|-------|--------|-------|----------|---------|
+| **9** | Months 1–2 post-launch | Trust + safety | F1, F2, F4 | $0 |
+| **10** | Months 3–4 | Navigator + SEO | F3, F5, F6, F11 | $0 |
+| **11** | Months 5–7 | Ops + measurement + optional map | F7, F10, F12 | $0 (grants pursued) |
+| **12+** | Month 8+ | Conditional revenue | F8, F9 | Only after legal/ethics sign-off |
+
+### Table 6: Detailed implementation table
+
+| Task ID | Task | Phase | Depends on | Owner | Effort |
+|---------|------|-------|------------|-------|--------|
+| T1 | Draft methodology/ranking About copy | 9 | — | Product | Low |
+| T2 | Legal review trust copy | 9 | T1 | Legal | Low |
+| T3 | Build report-outdated form + runbook link | 9 | T2 | Eng | Med |
+| T4 | Audit program phones; spec intake/crisis fields | 9 | — | Data | Med |
+| T5 | Implement phone labels in render | 9 | T4 | Eng | Low |
+| T6 | Author 3–5 city+care landing pages | 10 | T1 | Product | Med |
+| T7 | Add sitemap + canonical for landings | 10 | T6 | Eng | Low |
+| T8 | Compare export print view | 10 | — | Eng | Med |
+| T9 | Zero-result preset UI + metrics review | 10 | 7.1 | Eng | Med |
+| T10 | Verification tier schema + admin guide | 10 | T1 | Data/Eng | Med |
+| T11 | Grant playbook + outreach list | 11 | T1 | Leadership | Med |
+| T12 | Privacy policy + Statcounter goals | 11 | T9 | Eng/Legal | Med |
+| T13 | Map layer spike (perf/a11y) | 11 | T4 geo | Eng | Med |
+| T14 | Sponsorship policy + ethics review | 12 | T1,T2 | Legal | Med |
+| T15 | B2B export pilot scope + contract template | 12 | T10,T3 | Legal/Product | High |
+
+---
+
+## Disclosures and compliance checklist
+
+### Table 7: Disclosure / compliance checklist
+
+| Item | Required when | Status | Notes |
+|------|---------------|--------|-------|
+| No paid ranking statement | Always public | Implement F1 | Hard gate G-Transparency |
+| Verification methodology + limits | Always | Implement F1 | Not clinical endorsement |
+| Crisis disclaimer (988, not a crisis service) | All pages | Shipped | Maintain on landings |
+| Privacy policy ↔ Statcounter accuracy | Analytics change | Update with F12 | ANALYTICS_PLAN checklist |
+| Sponsored content label | If F8 | Not yet | FTC endorsement guides—legal |
+| Provider-paid visibility disclosure | If any provider payment | **N/A** if no paid listings | Hard gate |
+| Anti-Kickback review | F8, F9, any referral-linked fee | Before contract | Headway/Grow-style referral economics |
+| HIPAA / BAA assessment | B2B export if PHI risk | Before F9 | VMHR should not collect PHI |
+| COPPA / minor marketing | If youth-targeted ads | **N/A** if no ads | DTC telehealth marketing risk |
+| OIG-style data accuracy | Ongoing ops | F2, reverification | SAMHSA lesson |
+| Medicare/Medicaid claims | If insurance listed | **Unspecified** accuracy rules | No special claims without source |
+| Map third-party attribution | If F10 | If built | |
+| Grant funder acknowledgment | If F7 wins grant | Non-endorsement language | |
+
+---
+
+## Analytics and measurement plan
+
+Extends [ANALYTICS_PLAN.md](../product/ANALYTICS_PLAN.md). **No raw search queries** to third parties. Crisis intent not profiled for ads.
+
+### Business and trust outcomes
+
+| Goal | Metric | Target signal |
+|------|--------|---------------|
+| Discovery health | Zero-result rate | &lt; 15% (launch scope) |
+| Navigator value | Compare export count | Growth week-over-week |
+| Trust | Report-outdated submissions resolved | SLA **Unspecified** |
+| Revenue | Grant $ / B2B contracts | Track when Phase 11+ |
+| Safety | Crisis path clicks vs treatment | Qualitative balance |
+
+### Table 8: Analytics events
+
+| Event name | Where it fires | Properties (allowed) | Never send | Why it matters |
+|------------|----------------|----------------------|------------|----------------|
+| `search_executed` | Find Programs | `results_bucket`, `has_location`, `has_care_filter` | Raw query | Funnel health |
+| `zero_results` | Results=0 | `filter_count`, `care_level` | Raw query | F6, ops |
+| `preset_used` | Preset chip | `preset_id` | — | Entry path |
+| `intent_chosen` | Decision card | `intent` crisis/treatment/guidance | — | Safety |
+| `program_detail_view` | Slug load | `program_id` | — | Engagement |
+| `call_click` | Call button | `program_id`, `surface`, `line_type` intake/crisis/main | Phone number | Outcome proxy |
+| `share_click` | Share modal | `program_id` | — | Navigator handoff |
+| `compare_add` | Add to compare | `count` | — | F5 adoption |
+| `compare_export` | Export/print | `count` | — | F5 success |
+| `report_outdated_open` | Open form | `program_id` | — | F2 funnel |
+| `report_outdated_submit` | Form success | `issue_type` | Free text PHI | Trust loop |
+| `stale_badge_view` | Card in viewport | `program_id` | — | Freshness UX |
+| `verification_filter_on` | Filter toggle | `on` | — | Phase 7 feature |
+| `city_landing_view` | Education page | `city`, `care_level` | — | F3 SEO |
+| `disclosure_view` | About methodology | `section` | — | Trust |
+| `sponsored_module_view` | If F8 | `sponsor_id`, `placement` guides_only | — | Compliance |
+| `crisis_988_click` | 988 link | `surface` | — | Safety |
+| `submit_step` | Submit wizard | `step`, `action` | Field values | Submit funnel |
+| `submit_success` | Formspree 200 | — | Body | Conversion |
+
+### Watchpoints (not events)
+
+| Watchpoint | Tool | Threshold |
+|------------|------|-------------|
+| LCP, INP, CLS | Lighthouse CI | No regression vs Phase 4 baseline |
+| Lighthouse accessibility | CI | ≥ 95 priority pages |
+| Manual a11y | MANUAL_A11Y_CHECKLIST | Quarterly |
+| Statcounter ad tags | Privacy review | None allowed |
+
+---
+
+## Example copy
+
+### User-facing — ranking / transparency (F1)
+
+> **How programs are listed**  
+> ViableMHR does not sell placement, priority ranking, or “featured” spots. Search results follow your filters and relevance to your search words—not payments from programs.  
+> **What “verified” means**  
+> Our team checks listing details against public sources or direct contact at least every 90 days. Verification is not a medical endorsement, quality guarantee, or outcome promise. Always call the program to confirm availability, insurance, and fit.
+
+### User-facing — report outdated (F2)
+
+> **Report a listing issue**  
+> See something wrong or out of date? Tell us. Please do not include patient names, diagnoses, or other private health information. We review reports manually and do not charge programs to fix errors.
+
+### User-facing — sponsorship (F8, if ever)
+
+> **Sponsored educational content**  
+> This article is supported by [Organization Name]. Sponsorship pays for educational content only. Sponsors cannot pay to appear higher in search results or change how programs are ranked.
+
+### User-facing — privacy (F12 addition)
+
+> We use privacy-friendly analytics (Statcounter) to count page views and coarse traffic patterns. We do not sell your data, use ad retargeting, or send what you type in search to advertisers. Optional on-device metrics help us fix empty searches; they stay on your device unless you export them for support.
+
+### Provider-facing — B2B export (F9)
+
+> **Data services for navigators**  
+> ViableMHR offers periodic exports of our public program directory fields for discharge planning teams. This is not a referral service, admission guarantee, or paid listing program. Fees, if any, cover data delivery and verification labor only.
+
+### Provider-facing — grants (F7)
+
+> ViableMHR is a neutral North Texas youth mental health program directory. We do not charge programs for placement. Funding supports verification, hosting, and caregiver-facing navigation tools.
+
+---
+
+## Features requiring legal or ethics review before implementation
+
+| Feature | Review | Reason |
+|---------|--------|--------|
+| F8 Educational sponsorship | Legal + Ethics | Sponsorship disclosure; anti-kickback if sponsor is provider/system; ranking segregation |
+| F9 B2B export API | Legal + Ethics | Contract terms; no referral fees; HIPAA if PHI exchanged; BA **Unspecified** |
+| F2 Report-outdated form | Legal | Formspree retention; PHI warning enforcement |
+| F12 Analytics expansion | Legal | Privacy policy sync; crisis/search sensitivity |
+| F7 Grants | Legal | Grant compliance; funder acknowledgment |
+| Any pay-per-admission / lead sale | Legal | **Do Not Recommend** — Anti-Kickback / referral risk |
+| Medicare/Medicaid targeted ads | Legal | **Unspecified** applicability |
+
+---
+
+## Final prioritized task table
+
+| Priority | Task ID | Task | Phase | Blocker |
+|----------|---------|------|-------|---------|
+| 1 | T1 | Methodology/ranking About copy | 9 | — |
+| 2 | T2 | Legal review trust copy | 9 | T1 |
+| 3 | T4 | Phone field audit | 9 | — |
+| 4 | T5 | Phone labels UI | 9 | T4 |
+| 5 | T3 | Report-outdated form | 9 | T2 |
+| 6 | T6 | City+care landing pages (pilot) | 10 | T2 |
+| 7 | T8 | Compare export | 10 | — |
+| 8 | T10 | Verification tiers | 10 | T1 |
+| 9 | T9 | Zero-result presets | 10 | 7.1 metrics |
+| 10 | T7 | Sitemap for landings | 10 | T6 |
+| 11 | T11 | Grant playbook | 11 | T2 |
+| 12 | T12 | Analytics goals + privacy | 11 | Legal |
+| 13 | T13 | Map spike | 11 | Geo data |
+| 14 | T14 | Sponsorship policy | 12+ | T2, ethics |
+| 15 | T15 | B2B export pilot | 12+ | T10, T14 |
+
+---
+
+## Limitations
+
+- English-language, U.S.-centric snapshot (May 2026); public pages only—no logged-in provider dashboards.
+- Third-party accessibility not formally WCAG-tested here.
+- **Unspecified:** VMHR team size, budget, revenue targets, Medicare/Medicaid prevalence, HIPAA covered-entity determination, Core Web Vitals baseline numbers in this doc.
+
+## Related documents
+
+- [Launch scope](../product/LAUNCH_SCOPE.md)
+- [Phase 7 post-launch](../product/PHASE7_POST_LAUNCH.md)
+- [Phase 8 index](../product/PHASE8_MARKET_RESEARCH.md)
+- [Analytics plan](../product/ANALYTICS_PLAN.md)
+- [Zero-result monitoring](../operations/ZERO_RESULT_MONITORING.md)
+
+---
+
+*End of report. Documentation only — no application code changes.*
