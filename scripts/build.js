@@ -68,6 +68,7 @@ function copyStaticAssets() {
       { src: 'public/site.webmanifest', dest: 'site.webmanifest' },
       { src: 'public/favicon.ico', dest: 'favicon.ico' },
       { src: 'public/icon.png', dest: 'icon.png' },
+      { src: 'public/icon-192.png', dest: 'icon-192.png' },
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
