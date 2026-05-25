@@ -422,6 +422,24 @@
       metaBar.innerHTML = `<strong>Scenario:</strong> ${escapeHtml(scenarioTags.join(' • ') || 'General')} • <strong>${programs.length} program${programs.length !== 1 ? 's' : ''}</strong> included.`;
     }
 
+    const packetReadiness = document.getElementById('readiness-banner-packet');
+    if (packetReadiness && window.VMHRHandoffReadiness && typeof window.VMHRHandoffReadiness.evaluate === 'function') {
+      const result = window.VMHRHandoffReadiness.evaluate(programs, scenario);
+      packetReadiness.innerHTML = window.VMHRHandoffReadiness.renderBanner(result);
+    }
+
+    const previewHost = document.getElementById('packet-preview-host');
+    if (previewHost && window.VMHRHandoffPrint && typeof window.VMHRHandoffPrint.renderPreview === 'function') {
+      previewHost.innerHTML = '<p class="workspace-empty">Loading packet preview…</p>';
+      window.VMHRHandoffPrint.renderPreview(programs, scenario)
+        .then((html) => {
+          previewHost.innerHTML = `<div class="handoff-print">${html}</div>`;
+        })
+        .catch(() => {
+          previewHost.innerHTML = '<p class="workspace-empty">Could not load packet preview. Try Print / Save as PDF.</p>';
+        });
+    }
+
     if (window.VMHRProEvents) {
       window.VMHRProEvents.record('discharge_builder_complete', {
         field_count: Object.keys(scenario).length,
@@ -430,10 +448,15 @@
     }
   }
 
-  // Expose build — defers until programDataMap is populated by app.js.
-  // vmhr:rendered only fires on index.html; on /handoff we poll and listen for
-  // vmhr:programs-ready (dispatched after programs.json loads).
-  function buildWhenReady(scenario) {
+  function showCatalogLoadError(message) {
+    const primaryHost = document.getElementById('workspace-primary');
+    if (primaryHost) {
+      primaryHost.innerHTML = `<div class="workspace-empty">Could not load program data. ${escapeHtml(message || 'Try refreshing the page.')}</div>`;
+    }
+  }
+
+  // Expose build — waits for handoff-catalog.js before matching programs.
+  async function buildWhenReady(scenario) {
     const tryBuild = () => {
       const map = window.programDataMap;
       if (map && map.size > 0) {
@@ -444,6 +467,17 @@
     };
 
     if (tryBuild()) return;
+
+    const catalog = window.VMHRHandoffCatalog;
+    if (catalog && typeof catalog.whenReady === 'function') {
+      try {
+        await catalog.whenReady();
+      } catch (err) {
+        showCatalogLoadError(err && err.message ? err.message : '');
+        return;
+      }
+      if (tryBuild()) return;
+    }
 
     let attempts = 0;
     const MAX_ATTEMPTS = 100;
@@ -468,10 +502,7 @@
       }
       if (++attempts >= MAX_ATTEMPTS) {
         cleanup();
-        const primaryHost = document.getElementById('workspace-primary');
-        if (primaryHost) {
-          primaryHost.innerHTML = '<div class="workspace-empty">Could not load program data. Try refreshing the page.</div>';
-        }
+        showCatalogLoadError('Try refreshing the page.');
       }
     }, 100);
   }

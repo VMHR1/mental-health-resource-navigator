@@ -5,32 +5,37 @@
 (function () {
   if (typeof window === 'undefined') return;
 
+  const CATALOG_URL = '/programs.json';
   const programDataMap = new Map();
   window.programDataMap = programDataMap;
 
+  let loadPromise = null;
+
+  function parseProgramsPayload(text) {
+    if (typeof window.validateJSON === 'function') {
+      const check = window.validateJSON(text);
+      if (check.valid && check.data) return check.data;
+      if (!check.valid) {
+        console.warn('Handoff catalog: JSON validation warning', check.error);
+      }
+    }
+    return JSON.parse(text);
+  }
+
   async function loadHandoffCatalog() {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
     try {
-      const res = await fetch('programs.json', {
+      const res = await fetch(CATALOG_URL, {
         cache: 'no-cache',
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
       if (!res.ok) {
-        throw new Error(`programs.json HTTP ${res.status}`);
+        throw new Error(`programs.json HTTP ${res.status} (${res.url})`);
       }
       const text = await res.text();
-      let data;
-      if (typeof window.validateJSON === 'function') {
-        const check = window.validateJSON(text);
-        if (!check.valid) {
-          console.warn('Handoff catalog: JSON validation warning', check.error);
-        }
-        data = check.data;
-      } else {
-        data = JSON.parse(text);
-      }
+      const data = parseProgramsPayload(text);
       const programs = Array.isArray(data)
         ? data
         : (data && Array.isArray(data.programs) ? data.programs : []);
@@ -38,23 +43,43 @@
       programs.forEach((p) => {
         if (p && p.program_id) programDataMap.set(p.program_id, p);
       });
+      if (programDataMap.size === 0) {
+        throw new Error('programs.json loaded but contained no valid program records');
+      }
       if (typeof window.dispatchEvent === 'function') {
         window.dispatchEvent(
           new CustomEvent('vmhr:programs-ready', { detail: { count: programDataMap.size } })
         );
       }
       console.log('Handoff catalog loaded:', programDataMap.size, 'programs');
+      return programDataMap.size;
     } catch (err) {
       clearTimeout(timeoutId);
       console.error('Handoff catalog load failed:', err);
+      throw err;
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadHandoffCatalog, { once: true });
-  } else {
-    loadHandoffCatalog();
+  function whenReady() {
+    if (!loadPromise) {
+      loadPromise = loadHandoffCatalog().catch((err) => {
+        loadPromise = null;
+        throw err;
+      });
+    }
+    return loadPromise;
   }
 
-  window.VMHRHandoffCatalog = { reload: loadHandoffCatalog };
+  function reload() {
+    loadPromise = null;
+    return whenReady();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { whenReady(); }, { once: true });
+  } else {
+    whenReady();
+  }
+
+  window.VMHRHandoffCatalog = { reload, whenReady, getMap: () => programDataMap };
 })();

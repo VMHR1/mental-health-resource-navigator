@@ -25,7 +25,7 @@
   function loadHandoffCopy() {
     if (cachedCopy) return Promise.resolve(cachedCopy);
     if (copyPromise) return copyPromise;
-    copyPromise = fetch('data/handoff_copy.json', { cache: 'no-cache' })
+    copyPromise = fetch('/data/handoff_copy.json', { cache: 'no-cache' })
       .then((r) => {
         if (!r.ok) throw new Error('Failed to load handoff_copy.json');
         return r.json();
@@ -276,23 +276,19 @@
     return `<section class="handoff-print__section"><h2>${escapeHtml(label)}</h2><ol>${rows}</ol></section>`;
   }
 
-  function renderDocument(programs, copy, evaluation, scenario) {
+  function renderPacketBody(programs, copy, evaluation, scenario) {
     const now = new Date();
     const generated = now.toLocaleString();
     const programBlocks = programs.map(renderProgramBlock).join('');
-
-    // Phase 9D: readiness status (replaces simple evaluation status)
     const readinessSection = renderReadinessSection(programs, scenario);
     const scenarioHeader = renderScenarioHeader(scenario);
     const confirmBlock = renderWhatToConfirmBlock(programs);
     const timelineBlock = renderScenarioAwareTimeline(scenario);
-
-    // Legacy completeness fallback if readiness engine not available
     const legacyStatus = !window.VMHRHandoffReadiness && evaluation
       ? `<p class="handoff-print__meta">Completeness status at print: <strong>${escapeHtml(evaluation.label)}</strong></p>`
       : '';
 
-    const inner = `
+    return `
       <h1>Handoff packet</h1>
       <p class="handoff-print__meta">Generated ${escapeHtml(generated)} • ViableMHR neutral directory</p>
       ${scenarioHeader}
@@ -308,14 +304,25 @@
       ${renderCrisisBlock(copy)}
       <p class="handoff-print__footer">${escapeHtml(copy.footer || '')}</p>
     `;
+  }
 
+  function printStylesheetHref() {
+    const origin = typeof window !== 'undefined' && window.location && window.location.origin
+      ? window.location.origin
+      : '';
+    return `${origin}/phase1-design.css`;
+  }
+
+  function renderDocument(programs, copy, evaluation, scenario) {
+    const inner = renderPacketBody(programs, copy, evaluation, scenario);
+    const cssHref = escapeHtml(printStylesheetHref());
     return `
       <!doctype html>
       <html lang="en">
         <head>
           <meta charset="utf-8">
           <title>Handoff packet — ViableMHR</title>
-          <link rel="stylesheet" href="${escapeHtml(window.location.origin)}/phase1-design.css">
+          <link rel="stylesheet" href="${cssHref}">
           <style>
             body { background: #fff; }
           </style>
@@ -328,6 +335,19 @@
         </body>
       </html>
     `;
+  }
+
+  function openPrintWindow(html) {
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!w) {
+      URL.revokeObjectURL(url);
+      return false;
+    }
+    // Keep blob URL alive long enough for print/save-as-PDF (revoke too early blanks the tab).
+    setTimeout(() => URL.revokeObjectURL(url), 300000);
+    return true;
   }
 
   function recordExport(programs, evaluation) {
@@ -365,25 +385,36 @@
 
     const sc = scenario || (window.VMHRScenarioState ? window.VMHRScenarioState.load() : null) || null;
 
-    loadHandoffCopy().then((copy) => {
+    return loadHandoffCopy().then((copy) => {
       const html = renderDocument(list, copy, evaluation, sc);
-      const w = window.open('', '_blank', 'noopener,noreferrer');
-      if (!w) {
+      if (!openPrintWindow(html)) {
         if (typeof window.showToast === 'function') {
           const toast = document.getElementById('toast');
           if (toast) window.showToast('Pop-up blocked. Allow pop-ups to open the handoff packet.', 'error', toast);
         }
         return;
       }
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
       recordExport(list, evaluation);
     });
   }
 
+  /**
+   * Render inline packet preview HTML (body content only) for the packet step.
+   * @returns {Promise<string>}
+   */
+  function renderPreview(programs, scenario) {
+    const list = Array.isArray(programs) ? programs.filter(Boolean) : [];
+    if (!list.length) return Promise.resolve('<p class="workspace-empty">No programs in this packet yet. Return to the workspace and build options first.</p>');
+    const evaluation = window.VMHRHandoffCompleteness
+      ? window.VMHRHandoffCompleteness.evaluatePacket(list)
+      : null;
+    const sc = scenario || (window.VMHRScenarioState ? window.VMHRScenarioState.load() : null) || null;
+    return loadHandoffCopy().then((copy) => renderPacketBody(list, copy, evaluation, sc));
+  }
+
   window.VMHRHandoffPrint = {
     openPacket,
+    renderPreview,
     loadHandoffCopy,
   };
 })();
