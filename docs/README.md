@@ -27,6 +27,10 @@ See `performance/` for mobile performance and stutter investigations.
 - CSP roadmap: `security/CSP_HARDENING_ROADMAP.md`
 - Design tokens: `development/DESIGN_TOKENS_PHASE7.md`
 
+## Research (Phase 8)
+- Market analysis 2026: `research/MARKET_ANALYSIS_2026.md`
+- Phase 8 index: `product/PHASE8_MARKET_RESEARCH.md`
+
 ## Security & Operations
 - Security: `security/`
 - Operations/admin: `operations/`

@@ -28,7 +28,7 @@ Phase 7 improves the data feedback loop and maintainability **after** public lau
 - First **monthly zero-result report** with actions taken (7.1 acceptance)
 - CSP Phase A implementation (7.4)
 - Token alias pass on legal pages (7.5)
-- Phase 8 market research report (separate phase, no code)
+- ~~Phase 8 market research report~~ → [MARKET_ANALYSIS_2026.md](../research/MARKET_ANALYSIS_2026.md) (complete)
 
 ## Related
 

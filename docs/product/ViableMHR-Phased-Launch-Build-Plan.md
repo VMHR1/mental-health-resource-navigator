@@ -25,7 +25,7 @@ todos:
     status: pending
   - id: p8-market-research
     content: "Phase 8: Deferred market analysis research report only (no implementation)"
-    status: pending
+    status: completed
 isProject: false
 ---
 
