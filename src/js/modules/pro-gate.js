@@ -6,7 +6,7 @@
   if (typeof window === 'undefined') return;
 
   const STORAGE_KEY = 'vmhr_pro_gate_v1';
-  const CONFIG_PATH = 'data/pro_gate.json';
+  const CONFIG_PATHS = ['/pro_gate.json', 'pro_gate.json', 'data/pro_gate.json'];
 
   const PRO_PAGE_SLUGS = [
     'professionals',
@@ -77,13 +77,20 @@
 
   async function loadConfig() {
     if (configCache) return configCache;
-    try {
-      const res = await fetch(CONFIG_PATH, { cache: 'no-cache' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      configCache = await res.json();
-    } catch (_) {
-      configCache = { enabled: false };
+    for (const path of CONFIG_PATHS) {
+      try {
+        const res = await fetch(path, { cache: 'no-cache' });
+        if (!res.ok) continue;
+        configCache = await res.json();
+        return configCache;
+      } catch (_) {
+        /* try next path */
+      }
     }
+    // Fail closed on pro routes so a missing deploy cannot silently drop the gate
+    configCache = requiresProtectionSync()
+      ? { enabled: true, hint: 'Contact the site owner for preview access.' }
+      : { enabled: false };
     return configCache;
   }
 

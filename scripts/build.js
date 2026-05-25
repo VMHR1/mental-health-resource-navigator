@@ -91,6 +91,7 @@ function copyStaticAssets() {
       { src: 'public/data/verification_changelog.json', dest: 'data/verification_changelog.json' },
       { src: 'public/data/export_schema.json', dest: 'data/export_schema.json' },
       { src: 'public/data/pro_gate.json', dest: 'data/pro_gate.json' },
+      { src: 'public/data/pro_gate.json', dest: 'pro_gate.json' },
       { src: '_redirects', dest: '_redirects' },
       { src: '_headers', dest: '_headers' }
     ];

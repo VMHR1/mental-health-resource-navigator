@@ -11,7 +11,7 @@ Family search (`/`) without `?mode=navigator` stays open.
 
 ## Password
 
-The preview password is stored only as a SHA-256 hash in `public/data/pro_gate.json` (not plaintext in the repo). Change it with the hash command below before sharing widely.
+The preview password is stored only as a SHA-256 hash in `public/data/pro_gate.json` (not plaintext in the repo). The build copies it to both `data/pro_gate.json` and `/pro_gate.json` on deploy so Cloudflare Pages can serve it reliably. Change it with the hash command below before sharing widely.
 
 ## Change or disable the gate
 
