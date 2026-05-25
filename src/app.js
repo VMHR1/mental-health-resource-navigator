@@ -957,9 +957,8 @@ const callUpdateStats = () => {
     fn(programs, els, updateFavoritesCount);
   } else {
     console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
-    // Fallback
-  els.programCount.textContent = programs.length;
-  updateFavoritesCount();
+    if (els.programCount) els.programCount.textContent = programs.length;
+    updateFavoritesCount();
   }
 };
 
@@ -2182,6 +2181,11 @@ function render(){
     if (els.treatmentGrid) els.treatmentGrid.dataset.state = 'loading';
     updateResultsAwaitingPanel();
     if (!resultsUnlocked) renderResultsLocked();
+    return;
+  }
+
+  // Handoff and other catalog-only pages load programs but have no results grid.
+  if (!els.treatmentGrid) {
     return;
   }
 
@@ -3911,8 +3915,10 @@ async function loadPrograms(retryCount = 0){
   const maxRetries = 3;
   const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
   
-  els.loadWarn.classList.remove("show");
-  els.loadWarn.textContent = "";
+  if (els.loadWarn) {
+    els.loadWarn.classList.remove("show");
+    els.loadWarn.textContent = "";
+  }
   // Use stable alias to prevent recursion if window.renderSkeletons is overwritten
   let rs = window.__vmhr?.renderSkeletons || window.renderSkeletons;
   
@@ -4090,8 +4096,10 @@ async function loadPrograms(retryCount = 0){
         
         // Show warning to user if there are critical issues
         if (validationResults.invalidPrograms.length > 0) {
-          els.loadWarn.textContent = `Warning: ${validationResults.invalidPrograms.length} program(s) have data quality issues. Some results may be incomplete.`;
-          els.loadWarn.classList.add("show");
+          if (els.loadWarn) {
+            els.loadWarn.textContent = `Warning: ${validationResults.invalidPrograms.length} program(s) have data quality issues. Some results may be incomplete.`;
+            els.loadWarn.classList.add("show");
+          }
         }
       }
       
@@ -4142,6 +4150,9 @@ async function loadPrograms(retryCount = 0){
     programs = loadedPrograms;
     programDataMap.clear();
     programs.forEach(p => programDataMap.set(p.program_id, p));
+    if (typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('vmhr:programs-ready', { detail: { count: programs.length } }));
+    }
     syncStateToManager(); // Sync with StateManager (programs -> StateManager)
     console.log('Programs loaded:', programs.length, 'Ready:', ready);
     
@@ -4211,8 +4222,10 @@ async function loadPrograms(retryCount = 0){
     
     // Retry logic for network errors
     if (retryCount < maxRetries && (err.name === 'TypeError' || err.name === 'AbortError')) {
-      els.loadWarn.textContent = `Connection issue. Retrying... (${retryCount + 1}/${maxRetries})`;
-    els.loadWarn.classList.add("show");
+      if (els.loadWarn) {
+        els.loadWarn.textContent = `Connection issue. Retrying... (${retryCount + 1}/${maxRetries})`;
+        els.loadWarn.classList.add("show");
+      }
       
       await new Promise(resolve => setTimeout(resolve, retryDelay));
       return loadPrograms(retryCount + 1);
@@ -4230,8 +4243,10 @@ async function loadPrograms(retryCount = 0){
       errorMessage += "Please check your internet connection and try refreshing the page.";
     }
     
-    els.loadWarn.textContent = errorMessage;
-    els.loadWarn.classList.add("show");
+    if (els.loadWarn) {
+      els.loadWarn.textContent = errorMessage;
+      els.loadWarn.classList.add("show");
+    }
     announceToScreenReader(errorMessage, 'assertive');
     
     ready = true;

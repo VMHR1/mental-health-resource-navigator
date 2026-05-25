@@ -428,7 +428,7 @@ function updateStats(programs, els, updateFavoritesCount) {
     });
   });
   
-  els.programCount.textContent = programs.length;
+  if (els.programCount) els.programCount.textContent = programs.length;
   updateFavoritesCount();
 }
 
