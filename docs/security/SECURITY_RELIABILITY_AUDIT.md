@@ -138,6 +138,20 @@
 
 ---
 
+## Handoff and pro pages (2026-05-25)
+
+Pages that load [`app.js`](../../src/app.js) without the main search DOM (`#q`, `#treatmentGrid`) previously crashed in [`setupEventHandlers`](../../src/js/modules/events.js) (null modal `querySelectorAll`) and in `loadPrograms()` (`renderSkeletons` without `#treatmentGrid`).
+
+**Mitigations:**
+
+1. [`handoff.html`](../../src/html/handoff.html) uses [`handoff-catalog.js`](../../src/js/modules/handoff-catalog.js) instead of the full search stack.
+2. [`app.js`](../../src/app.js) `bind()` returns early when search DOM is absent (boards/pro pages that still load `app.js` for data only).
+3. [`events.js`](../../src/js/modules/events.js) null-guards modal close buttons.
+
+See [Runtime security guide](./RUNTIME_SECURITY_GUIDE.md) for CSP vs extension noise (`singleview.site`, SES lockdown).
+
+---
+
 ## Performance Verification
 
 ### Event Handler Optimization

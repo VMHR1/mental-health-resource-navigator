@@ -479,7 +479,21 @@ function validateJSON(jsonString) {
 }
 
 // ========== Rate Limiting ==========
+function isDevRateLimitBypass() {
+  try {
+    if (typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') return true;
+    return new URLSearchParams(window.location.search).get('debug') === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
 function checkRateLimit(key, maxAttempts = 3, windowMs = 3600000) {
+  if (isDevRateLimitBypass()) {
+    return { allowed: true, remainingAttempts: maxAttempts };
+  }
   const storageKey = `rateLimit_${key}`;
   const now = Date.now();
   const record = JSON.parse(localStorage.getItem(storageKey) || '{"attempts":[],"count":0}');

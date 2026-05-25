@@ -5,9 +5,10 @@
 
 ## Current state
 
-- CSP defined in **inline `<meta>`** on each HTML page.
+- **Canonical CSP** lives in [`scripts/csp-config.js`](../../scripts/csp-config.js); `npm run build` injects into each HTML file (replaces `<!-- VMHR_CSP:profile -->`).
 - Typical directives include `'unsafe-inline'` for scripts (Statcounter bootstrap, inline handlers).
-- Cloudflare **`_headers`** may duplicate or override — verify in deploy before changing.
+- Cloudflare Web Analytics (`static.cloudflareinsights.com`) is allowlisted to reduce console noise.
+- Cloudflare **`_headers`** does not duplicate CSP — only nosniff, frame options, cache.
 
 ## Goals
 

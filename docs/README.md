@@ -33,6 +33,7 @@ See `performance/` for mobile performance and stutter investigations.
 
 ## Security & Operations
 - Security: `security/`
+- Runtime security (CSP, console errors, handoff): `security/RUNTIME_SECURITY_GUIDE.md`
 - Operations/admin: `operations/`
 - Submit-to-publish runbook: `operations/SUBMIT_TO_PUBLISH_RUNBOOK.md`
 - Deploy & admin verification: `operations/DEPLOY_AND_ADMIN_VERIFICATION.md`

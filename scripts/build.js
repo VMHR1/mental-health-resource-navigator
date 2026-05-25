@@ -6,6 +6,7 @@ import * as esbuild from 'esbuild';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { applyCspToHtml } from './csp-config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,22 +42,22 @@ function copyStaticAssets() {
     // HTML files from src/html
     const includeAdmin = process.env.INCLUDE_ADMIN === '1';
     const htmlFiles = [
-      { src: 'src/html/index.html', dest: 'index.html' },
-      ...(includeAdmin ? [{ src: 'src/html/admin.html', dest: 'admin.html' }] : []),
-      { src: 'src/html/program.html', dest: 'program.html' },
-      { src: 'src/html/submit.html', dest: 'submit.html' },
-      { src: 'src/html/guides.html', dest: 'guides.html' },
-      { src: 'src/html/about.html', dest: 'about.html' },
-      { src: 'src/html/privacy.html', dest: 'privacy.html' },
-      { src: 'src/html/terms.html', dest: 'terms.html' },
-      { src: 'src/html/professionals.html', dest: 'professionals.html' },
-      { src: 'src/html/boards.html', dest: 'boards.html' },
-      { src: 'src/html/report-outdated.html', dest: 'report-outdated.html' },
-      { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html' },
-      { src: 'src/html/changelog.html', dest: 'changelog.html' },
-      { src: 'src/html/export.html', dest: 'export.html' },
-      { src: 'src/html/handoff.html', dest: 'handoff.html' },
-      { src: 'src/html/404.html', dest: '404.html' }
+      { src: 'src/html/index.html', dest: 'index.html', csp: 'standard' },
+      ...(includeAdmin ? [{ src: 'src/html/admin.html', dest: 'admin.html', csp: 'admin' }] : []),
+      { src: 'src/html/program.html', dest: 'program.html', csp: 'eval' },
+      { src: 'src/html/submit.html', dest: 'submit.html', csp: 'submit' },
+      { src: 'src/html/guides.html', dest: 'guides.html', csp: 'standard' },
+      { src: 'src/html/about.html', dest: 'about.html', csp: 'eval' },
+      { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval' },
+      { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval' },
+      { src: 'src/html/professionals.html', dest: 'professionals.html', csp: 'standard' },
+      { src: 'src/html/boards.html', dest: 'boards.html', csp: 'standard' },
+      { src: 'src/html/report-outdated.html', dest: 'report-outdated.html', csp: 'standard' },
+      { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html', csp: 'standard' },
+      { src: 'src/html/changelog.html', dest: 'changelog.html', csp: 'standard' },
+      { src: 'src/html/export.html', dest: 'export.html', csp: 'standard' },
+      { src: 'src/html/handoff.html', dest: 'handoff.html', csp: 'standard' },
+      { src: 'src/html/404.html', dest: '404.html', csp: 'standard' }
     ];
     if (!includeAdmin) {
       const adminDist = join('dist', 'admin.html');
@@ -107,10 +108,12 @@ function copyStaticAssets() {
     
     // Copy HTML files
     let copiedCount = 0;
-    htmlFiles.forEach(({ src, dest }) => {
+    htmlFiles.forEach(({ src, dest, csp }) => {
       if (existsSync(src)) {
         try {
-          writeFileSync(join('dist', dest), readFileSync(src, 'utf8'));
+          let html = readFileSync(src, 'utf8');
+          html = applyCspToHtml(html, csp || 'standard');
+          writeFileSync(join('dist', dest), html);
           copiedCount++;
         } catch (error) {
           console.error(`Error copying ${src}:`, error.message);
@@ -163,6 +166,7 @@ function copyStaticAssets() {
       'src/js/modules/handoff-workspace.js',
       'src/js/modules/handoff-readiness.js',
       'src/js/modules/intake-confidence.js',
+      'src/js/modules/handoff-catalog.js',
       'src/js/modules/export-center.js',
       'src/js/modules/report-outdated.js',
       'src/js/utils/location-match.js'
