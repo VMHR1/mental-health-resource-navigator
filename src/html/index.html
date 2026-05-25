@@ -50,6 +50,14 @@
   <script defer src="js/modules/home-phase1.js?v=7"></script>
   <script defer src="js/modules/flow-motion.js?v=2"></script>
   <script defer src="js/modules/flow-scroll.js?v=3"></script>
+  <script defer src="js/modules/pro-gate.js?v=1"></script>
+  <script defer src="js/modules/pro-events.js?v=1"></script>
+  <script defer src="js/modules/match-explain.js?v=1"></script>
+  <script defer src="js/modules/friction-flags.js?v=1"></script>
+  <script defer src="js/modules/handoff-completeness.js?v=1"></script>
+  <script defer src="js/modules/handoff-print.js?v=1"></script>
+  <script defer src="js/modules/navigator-presets.js?v=1"></script>
+  <script defer src="js/modules/navigator-mode.js?v=1"></script>
   <script defer src="js/state-manager.js?v=3"></script>
   
 </head>
@@ -643,6 +651,10 @@
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: No account required. Optional location is used only to sort results and is not stored. We use minimal aggregate page analytics—not ad or marketing trackers.</p>
       <p style="margin-top: 12px; font-size: 13px;">
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
         <a href="about.html">About</a>
         <span aria-hidden="true"> • </span>
         <a href="guides.html">Guides</a>
@@ -691,7 +703,10 @@
           <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
         </div>
       </div>
-      <div class="modal-body" id="comparisonList"></div>
+      <div class="modal-body">
+        <div id="handoffStatusHost" aria-live="polite"></div>
+        <div id="comparisonList"></div>
+      </div>
     </div>
   </div>
 

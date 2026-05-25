@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verification changelog • ViableMHR</title>
+  <meta name="description" content="History of directory verification waves for ViableMHR. Bulk events only; not a per-patient audit." />
+  <link rel="canonical" href="https://viablemhr.com/changelog.html">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=1"></script>
+  <style>
+    .cl-main { max-width: 900px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .cl-main h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); font-weight: 950; margin: 0 0 10px; }
+    .cl-lead { color: var(--muted); margin: 0 0 24px; line-height: 1.55; max-width: 720px; }
+    .cl-list { display: grid; gap: 16px; }
+    .cl-event { background: var(--cardSolid); border: 1px solid var(--stroke); border-radius: 12px; padding: 16px 18px; }
+    .cl-event__head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+    .cl-event__date { font-weight: 800; font-size: 16px; color: var(--vm-ink); }
+    .cl-event__scope { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 999px; background: var(--vm-accent-soft); color: var(--vm-accent-deep); font-weight: 700; }
+    .cl-event__meta { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+    .cl-event__notes { margin: 8px 0 0; font-size: 14px; color: var(--vm-ink); line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="container">
+    <header class="vm-header">
+      <div class="header-content">
+        <div class="brand">
+          <a href="/" class="mark" aria-label="ViableMHR home">
+            <img src="/brand-mark.svg?v=2" alt="" width="46" height="46" decoding="async" />
+          </a>
+          <div>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="btnlike" href="professionals.html">For professionals</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="cl-main">
+      <h1>Verification changelog</h1>
+      <p class="cl-lead">
+        A bulk log of when the directory has been verified, and how. We re-verify the directory on a 90-day cycle; this page shows recent waves and what each one covered. Detailed program-level history is not published here.
+      </p>
+      <div id="changelogContent" aria-busy="true" aria-live="polite">
+        <p class="cl-lead">Loading changelog…</p>
+      </div>
+    </main>
+
+    <footer>
+      <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
+      <p style="margin-top: 12px; font-size: 13px;">
+        <a href="index.html">For families</a>
+        <span aria-hidden="true"> • </span>
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span aria-hidden="true"> • </span>
+        <a href="terms.html">Terms of Service</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const target = document.getElementById('changelogContent');
+      if (!target) return;
+      function escape(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      }
+      function render(data) {
+        const events = Array.isArray(data && data.events) ? data.events : [];
+        if (!events.length) {
+          target.innerHTML = '<p class="cl-lead">No verification events have been published yet.</p>';
+          target.setAttribute('aria-busy', 'false');
+          return;
+        }
+        const sorted = events.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        target.innerHTML = '<div class="cl-list">' + sorted.map(function (ev) {
+          return `
+            <article class="cl-event">
+              <div class="cl-event__head">
+                <span class="cl-event__date">${escape(ev.date || 'Date unknown')}</span>
+                <span class="cl-event__scope">${escape(ev.scope || 'event')}</span>
+              </div>
+              <p class="cl-event__meta">Programs reviewed: <strong>${escape(ev.programs_reviewed_count || 0)}</strong>${ev.source ? ' · Source: ' + escape(ev.source) : ''}</p>
+              ${ev.notes ? `<p class="cl-event__notes">${escape(ev.notes)}</p>` : ''}
+            </article>
+          `;
+        }).join('') + '</div>';
+        target.setAttribute('aria-busy', 'false');
+      }
+      function loadChangelog() {
+        fetch('data/verification_changelog.json', { cache: 'no-cache' })
+          .then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+          .then(render)
+          .catch((err) => {
+            console.error('changelog load error', err);
+            target.innerHTML = '<p class="cl-lead">We could not load the changelog right now.</p>';
+            target.setAttribute('aria-busy', 'false');
+          });
+      }
+
+      if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
+        window.VMHRProGate.runWhenUnlocked(loadChangelog);
+      } else {
+        document.addEventListener('DOMContentLoaded', function () {
+          if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
+            window.VMHRProGate.runWhenUnlocked(loadChangelog);
+          } else {
+            loadChangelog();
+          }
+        }, { once: true });
+      }
+    })();
+  </script>
+
+  <!-- Default Statcounter code for Business Website http://viablemhr.com -->
+  <script type="text/javascript">
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
+  </script>
+  <script type="text/javascript"
+  src="https://www.statcounter.com/counter/counter.js" async></script>
+  <noscript><div class="statcounter"><a title="Web Analytics"
+  href="https://statcounter.com/" target="_blank"><img class="statcounter"
+  src="https://c.statcounter.com/13198280/0/601ff835/1/" alt="Web Analytics"
+  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+  <!-- End of Statcounter Code -->
+</body>
+</html>

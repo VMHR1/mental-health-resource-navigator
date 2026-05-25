@@ -155,7 +155,16 @@ function createCard(program, idx, options) {
   const isOpen = (state.getOpenId() === id);
 
   const phone = safeStr(program.phone);
-  const phoneDigits = phone ? normalizePhoneForTel(phone) : "";
+  const intakePhone = safeStr(program.intake_phone);
+  const phoneLabels = program.phone_labels && typeof program.phone_labels === 'object' ? program.phone_labels : null;
+  // Use intake_phone for the primary call action when listed; preserves existing behavior when absent
+  const primaryPhone = intakePhone || phone;
+  const primaryPhoneLabel = (() => {
+    if (intakePhone) return 'Intake';
+    if (phoneLabels && phoneLabels.main) return safeStr(phoneLabels.main);
+    return '';
+  })();
+  const phoneDigits = primaryPhone ? normalizePhoneForTel(primaryPhone) : "";
   const looksLikeShortcode = phoneDigits && phoneDigits.length <= 6;
   const mentionsText = /text/i.test(phone);
   const isCrisisTextLine = safeStr(program.program_id) === "crisis-textline-741741";
@@ -169,7 +178,7 @@ function createCard(program, idx, options) {
       phoneLabel = "Text Now";
     } else {
       phoneHref = `tel:${phoneDigits}`;
-      phoneLabel = "Call Now";
+      phoneLabel = primaryPhoneLabel ? `Call ${primaryPhoneLabel.toLowerCase()}` : "Call Now";
     }
   }
   
@@ -293,7 +302,7 @@ function createCard(program, idx, options) {
       <p class="card-location-line">${escapeHtml(loc)} · ${escapeHtml(settingLabel)}</p>
       <p class="card-ages-line">Ages served: ${escapeHtml(ages)}</p>
       <p class="card-good-to-ask"><strong>Good to ask about:</strong> schedule, intake process, insurance, family involvement</p>
-      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}.${isStale ? ' <strong>Over 90 days since verification—call to confirm details are current.</strong>' : ''} <a href="about.html#verification">What verified means</a>. Information may change—call to confirm.</p>` : `<p class="card-verified-line">Verification date not listed. <a href="about.html#verification">What verified means</a>. Call to confirm details.</p>`}
+      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}.${isStale ? ' <strong>Over 90 days since verification—call to confirm details are current.</strong>' : ''} <a href="about.html#verification">What verified means</a>. Information may change—call to confirm.${isStale && pidForUrl ? ` <a class="stale-report-link" href="report-outdated.html?program_id=${encodeURIComponent(pidForUrl)}">Report outdated listing</a>` : ''}</p>` : `<p class="card-verified-line">Verification date not listed. <a href="about.html#verification">What verified means</a>. Call to confirm details.${pidForUrl ? ` <a class="stale-report-link" href="report-outdated.html?program_id=${encodeURIComponent(pidForUrl)}">Report outdated listing</a>` : ''}</p>`}
     </div>
 
     ${availabilityBadge}

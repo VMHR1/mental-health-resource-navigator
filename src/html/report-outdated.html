@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Report outdated listing • ViableMHR</title>
+  <meta name="description" content="Report wrong phone, closed locations, or changed care levels in the ViableMHR directory. No patient details accepted." />
+  <link rel="canonical" href="https://viablemhr.com/report-outdated.html">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=1"></script>
+  <script defer src="js/modules/pro-events.js?v=1"></script>
+  <script defer src="js/modules/report-outdated.js?v=1"></script>
+  <style>
+    .ro-main { max-width: 720px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .ro-main h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); font-weight: 950; margin: 0 0 8px; }
+    .ro-lead { color: var(--muted); margin: 0 0 18px; line-height: 1.55; }
+    .ro-phi-warning { background: var(--vm-crisis-soft); border: 1px solid rgba(196,77,98,0.35); color: var(--vm-crisis-deep); padding: 12px 14px; border-radius: 8px; margin: 0 0 22px; font-size: 14px; }
+    form.ro-form { display: grid; gap: 16px; }
+    .ro-field { display: grid; gap: 6px; }
+    .ro-field label { font-weight: 700; font-size: 14px; }
+    .ro-field .ro-help { font-size: 12px; color: var(--muted); }
+    .ro-field input[type="text"],
+    .ro-field input[type="email"],
+    .ro-field select,
+    .ro-field textarea { font-family: var(--vm-font); font-size: 15px; padding: 10px 12px; border: 1px solid var(--stroke); border-radius: 8px; background: #fff; color: var(--vm-ink); }
+    .ro-field textarea { min-height: 96px; resize: vertical; }
+    .ro-field .ro-error { color: var(--vm-crisis-deep); font-size: 13px; }
+    .ro-field[data-invalid="true"] input,
+    .ro-field[data-invalid="true"] select,
+    .ro-field[data-invalid="true"] textarea { border-color: var(--vm-crisis); }
+    .ro-honeypot { position: absolute; left: -10000px; opacity: 0; pointer-events: none; }
+    .ro-actions { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+    .ro-status { font-size: 14px; padding: 12px 14px; border-radius: 8px; }
+    .ro-status[data-state="success"] { background: var(--vm-accent-soft); color: var(--vm-accent-deep); border: 1px solid rgba(42,157,143,0.3); }
+    .ro-status[data-state="error"] { background: var(--vm-crisis-soft); color: var(--vm-crisis-deep); border: 1px solid rgba(196,77,98,0.3); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="crisis-banner" role="region" aria-label="Crisis information">
+    <div class="inner">
+      <p class="crisis-banner__text">
+        If someone is in <strong>immediate physical danger</strong>, call <strong>911</strong>.
+        For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text <strong>988</strong>.
+      </p>
+      <div class="crisis-banner__actions">
+        <a href="tel:988">Call/Text 988</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="vm-header">
+      <div class="header-content">
+        <div class="brand">
+          <a href="/" class="mark" aria-label="ViableMHR home">
+            <img src="/brand-mark.svg?v=2" alt="" width="46" height="46" decoding="async" />
+          </a>
+          <div>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="btnlike" href="index.html">Back to search</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="ro-main">
+      <h1>Report outdated information</h1>
+      <p class="ro-lead">
+        Spotted a wrong phone, closed program, changed care level, or new insurance details? Tell us and a moderator will review. We do not publish reporter identities.
+      </p>
+      <div class="ro-phi-warning" role="alert">
+        <strong>Do not include patient information.</strong> No names, dates of birth, MRNs, diagnoses, or addresses. Submissions that contain patient identifiers will be discarded.
+      </div>
+
+      <form
+        class="ro-form"
+        id="reportOutdatedForm"
+        method="POST"
+        action="https://formspree.io/f/mjgbelej"
+        novalidate
+      >
+        <input type="hidden" name="_subject" value="ViableMHR report-outdated submission">
+        <input type="hidden" name="form" value="report-outdated">
+        <div class="ro-honeypot" aria-hidden="true">
+          <label for="ro-honeypot">Leave this empty</label>
+          <input id="ro-honeypot" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="ro-field" data-field="program_id">
+          <label for="ro-program-id">Program identifier (optional)</label>
+          <span class="ro-help">If you came here from a stale badge or a card, this is filled in automatically.</span>
+          <input id="ro-program-id" name="program_id" type="text" maxlength="120" autocomplete="off">
+        </div>
+
+        <div class="ro-field" data-field="program_name">
+          <label for="ro-program-name">Program or organization name</label>
+          <span class="ro-help">Required if no identifier above.</span>
+          <input id="ro-program-name" name="program_name" type="text" maxlength="200" autocomplete="off">
+          <span class="ro-error" id="ro-error-program_name" hidden></span>
+        </div>
+
+        <div class="ro-field" data-field="issue_type">
+          <label for="ro-issue-type">What needs to change?</label>
+          <select id="ro-issue-type" name="issue_type" required>
+            <option value="">Select an issue type…</option>
+            <option value="wrong_phone">Wrong phone or text number</option>
+            <option value="closed_program">Program has closed</option>
+            <option value="wrong_address">Wrong address or location</option>
+            <option value="wrong_care_level">Care level has changed</option>
+            <option value="wrong_ages">Ages served have changed</option>
+            <option value="wrong_insurance">Insurance details have changed</option>
+            <option value="wrong_website">Website is broken or incorrect</option>
+            <option value="duplicate_listing">Duplicate listing</option>
+            <option value="verification_request">Re-verification request</option>
+            <option value="other">Other</option>
+          </select>
+          <span class="ro-error" id="ro-error-issue_type" hidden></span>
+        </div>
+
+        <div class="ro-field" data-field="reporter_role">
+          <label for="ro-reporter-role">Your role (optional)</label>
+          <select id="ro-reporter-role" name="reporter_role">
+            <option value="">Prefer not to say</option>
+            <option value="discharge">Discharge planner / hospital staff</option>
+            <option value="bhops">Behavioral health operations</option>
+            <option value="lmha">LMHA / coalition / community organization</option>
+            <option value="school">School counselor</option>
+            <option value="program_staff">Program staff</option>
+            <option value="family">Family / caregiver</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="ro-field" data-field="details">
+          <label for="ro-details">What should change? (no patient information)</label>
+          <span class="ro-help">For example: "Phone disconnected" or "Now offers IOP only, not PHP." Limit 1000 characters.</span>
+          <textarea id="ro-details" name="details" maxlength="1000" required></textarea>
+          <span class="ro-error" id="ro-error-details" hidden></span>
+        </div>
+
+        <div class="ro-field" data-field="source">
+          <label for="ro-source">Source for the change (optional)</label>
+          <span class="ro-help">Link to a program website, voicemail message, or other publicly verifiable source.</span>
+          <input id="ro-source" name="source" type="text" maxlength="500" autocomplete="off">
+        </div>
+
+        <div class="ro-field" data-field="email">
+          <label for="ro-email">Email for follow-up (optional)</label>
+          <span class="ro-help">Only used if we have a clarifying question. Not published.</span>
+          <input id="ro-email" name="email" type="email" maxlength="120" autocomplete="email">
+          <span class="ro-error" id="ro-error-email" hidden></span>
+        </div>
+
+        <div id="ro-status" class="ro-status" hidden role="status" aria-live="polite"></div>
+
+        <div class="ro-actions">
+          <a class="btnlike" href="index.html">Cancel</a>
+          <button class="btnlike btn-primary" type="submit" id="ro-submit">Send report</button>
+        </div>
+      </form>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--muted);">
+        Reports are sent via Formspree to a moderator inbox and reviewed before any listing is changed. We never publish reporter identities. See our <a href="privacy.html">Privacy Policy</a>.
+      </p>
+    </main>
+
+    <footer>
+      <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
+      <p style="margin-top: 12px; font-size: 13px;">
+        <a href="index.html">For families</a>
+        <span aria-hidden="true"> • </span>
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span aria-hidden="true"> • </span>
+        <a href="terms.html">Terms of Service</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Default Statcounter code for Business Website http://viablemhr.com -->
+  <script type="text/javascript">
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
+  </script>
+  <script type="text/javascript"
+  src="https://www.statcounter.com/counter/counter.js" async></script>
+  <noscript><div class="statcounter"><a title="Web Analytics"
+  href="https://statcounter.com/" target="_blank"><img class="statcounter"
+  src="https://c.statcounter.com/13198280/0/601ff835/1/" alt="Web Analytics"
+  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+  <!-- End of Statcounter Code -->
+</body>
+</html>

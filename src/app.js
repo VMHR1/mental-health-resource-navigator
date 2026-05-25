@@ -289,6 +289,8 @@ const STORAGE_KEYS_COMPARISON = window.STORAGE_KEYS || { COMPARISON: 'comparison
 let comparisonSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS_COMPARISON.COMPARISON) || '[]'));
 
 const programDataMap = new Map();
+window.programDataMap = programDataMap;
+window.comparisonSet = comparisonSet;
 
 // ========== Autocomplete Indexes ==========
 // Avoid O(n^2) behavior in autocomplete by pre-indexing organizations.
@@ -1739,6 +1741,7 @@ function applyFilterPreset(preset) {
 // Make functions globally available for onclick handlers
 window.copyShareUrl = copyShareUrl;
 window.nativeShare = nativeShare;
+window.applyFilterPreset = applyFilterPreset;
 
 function copyToClipboard(text) {
   if (navigator.clipboard) {
@@ -2388,6 +2391,8 @@ function render(){
     window.flowMotion.setTreatmentGridState(activeList.length);
     window.flowMotion.flashResultsCount();
   }
+
+  document.dispatchEvent(new CustomEvent('vmhr:rendered', { detail: { count: activeList.length, showCrisis } }));
 }
 
 function syncTopToggles(){
@@ -4361,6 +4366,23 @@ function updateURLState() {
 
 function loadURLState() {
   const params = new URLSearchParams(window.location.search);
+
+  // Preset shortcut: when present, apply the preset config and skip granular URL params
+  // (preset applies an opinionated set; explicit params should be set via UI, not URL).
+  if (params.has('preset')) {
+    const presetId = params.get('preset');
+    const presets = window.FILTER_PRESETS || {};
+    const navigatorPresets = window.NAVIGATOR_PRESETS || {};
+    if (presets[presetId]) {
+      applyFilterPreset(presetId);
+      return;
+    }
+    if (navigatorPresets[presetId] && window.VMHRNavigatorMode && typeof window.VMHRNavigatorMode.applyPreset === 'function') {
+      window.VMHRNavigatorMode.applyPreset(presetId);
+      return;
+    }
+    // Unknown preset — fall through to normal URL state
+  }
   
   // Load search query
   if (params.has('q') && els.q) {

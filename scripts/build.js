@@ -49,6 +49,12 @@ function copyStaticAssets() {
       { src: 'src/html/about.html', dest: 'about.html' },
       { src: 'src/html/privacy.html', dest: 'privacy.html' },
       { src: 'src/html/terms.html', dest: 'terms.html' },
+      { src: 'src/html/professionals.html', dest: 'professionals.html' },
+      { src: 'src/html/boards.html', dest: 'boards.html' },
+      { src: 'src/html/report-outdated.html', dest: 'report-outdated.html' },
+      { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html' },
+      { src: 'src/html/changelog.html', dest: 'changelog.html' },
+      { src: 'src/html/export.html', dest: 'export.html' },
       { src: 'src/html/404.html', dest: '404.html' }
     ];
     if (!includeAdmin) {
@@ -78,6 +84,13 @@ function copyStaticAssets() {
       // Keep dist/data in sync for any legacy paths or tooling that reference it
       { src: 'public/data/programs.json', dest: 'data/programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'data/programs.geocoded.json' },
+      // Professional navigator layer data
+      { src: 'public/data/resource_boards.json', dest: 'data/resource_boards.json' },
+      { src: 'public/data/handoff_copy.json', dest: 'data/handoff_copy.json' },
+      { src: 'public/data/regional_gap_snapshot.json', dest: 'data/regional_gap_snapshot.json' },
+      { src: 'public/data/verification_changelog.json', dest: 'data/verification_changelog.json' },
+      { src: 'public/data/export_schema.json', dest: 'data/export_schema.json' },
+      { src: 'public/data/pro_gate.json', dest: 'data/pro_gate.json' },
       { src: '_redirects', dest: '_redirects' },
       { src: '_headers', dest: '_headers' }
     ];
@@ -130,6 +143,17 @@ function copyStaticAssets() {
       'src/js/modules/home-phase1.js',
       'src/js/modules/flow-motion.js',
       'src/js/modules/flow-scroll.js',
+      // Professional Navigator Layer modules
+      'src/js/modules/pro-gate.js',
+      'src/js/modules/pro-events.js',
+      'src/js/modules/navigator-mode.js',
+      'src/js/modules/navigator-presets.js',
+      'src/js/modules/match-explain.js',
+      'src/js/modules/friction-flags.js',
+      'src/js/modules/handoff-completeness.js',
+      'src/js/modules/handoff-print.js',
+      'src/js/modules/export-center.js',
+      'src/js/modules/report-outdated.js',
       'src/js/utils/location-match.js'
     ];
     

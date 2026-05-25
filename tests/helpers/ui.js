@@ -4,6 +4,15 @@
 
 import { expect } from '@playwright/test';
 
+/** Unlock professional preview gate for Playwright (sessionStorage). */
+export async function unlockProGate(page) {
+  await page.addInitScript(() => {
+    try {
+      sessionStorage.setItem('vmhr_pro_gate_v1', '1');
+    } catch (_) { /* ignore */ }
+  });
+}
+
 /** Wait until program data is loaded (awaiting panel stat or unlocked results count). */
 export async function waitForPrograms(page) {
   await expect(page.locator('#loadWarn')).not.toContainText(/unable to load/i, { timeout: 15000 });

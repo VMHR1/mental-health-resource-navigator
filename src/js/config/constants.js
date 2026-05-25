@@ -44,6 +44,10 @@ const FILTER_PRESETS = {
     care: 'Intensive Outpatient (IOP)',
     query: '',
   },
+  'php-programs': {
+    care: 'Partial Hospitalization (PHP)',
+    query: '',
+  },
   'outpatient-programs': {
     care: 'Outpatient',
     query: '',

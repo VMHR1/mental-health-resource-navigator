@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "version": 1,
+    "last_reviewed": "2026-05-25",
+    "review_cadence_days": 90
+  },
+  "disclaimer": "This packet is informational only. ViableMHR is not a clinical service and does not authorize, recommend, or book treatment. Confirm program details directly. Do not write patient identifying information on this printout.",
+  "care_levels_blurb": [
+    { "label": "Outpatient", "text": "Regular appointments such as therapy, counseling, psychiatry, or medication management. Youth typically leave the same day." },
+    { "label": "IOP — Intensive Outpatient", "text": "More structured than outpatient. Youth attend multiple days per week while living at home." },
+    { "label": "PHP — Partial Hospitalization / Day Program", "text": "Structured daytime treatment, usually more intensive than IOP. Youth attend during the day and return home." },
+    { "label": "Inpatient", "text": "Short-term 24-hour hospital-based care for acute safety concerns or stabilization." },
+    { "label": "Residential", "text": "Live-in treatment, usually longer than inpatient hospitalization." },
+    { "label": "Navigation", "text": "Help understanding options and preparing questions; not diagnosis or treatment." }
+  ],
+  "backup_plan_intro": "If the program you call cannot help right now, try one of the steps below. None of these are medical advice. If safety is immediate, call 911 or 988.",
+  "backup_plan_rows": [
+    {
+      "scenario": "First program does not answer",
+      "actions": "Try the other phone numbers on the program card. Leave a voicemail with your contact info and best times to reach you. Try the next option on this list. If safety is urgent, call 988."
+    },
+    {
+      "scenario": "Program has a waitlist",
+      "actions": "Ask the estimated wait time and whether they can refer to other locations or levels of care. Ask to be added to a cancellation list. Consider other options on this list while you wait."
+    },
+    {
+      "scenario": "Insurance is not accepted",
+      "actions": "Ask which plans are accepted today. Ask about self-pay or sliding-scale rates. Ask the billing department whether they can submit out-of-network claims. Try the Medicaid-friendly or self-pay options on this list."
+    },
+    {
+      "scenario": "Age range does not fit",
+      "actions": "Ask whether they make exceptions or have referrals to a program that does fit. Search the ViableMHR directory again with the age filter adjusted."
+    },
+    {
+      "scenario": "Program suggests a different care level",
+      "actions": "Ask what level they recommend and why. Use the care-level explainer in this packet to understand the difference. Search ViableMHR with that care level selected."
+    },
+    {
+      "scenario": "Safety worsens",
+      "actions": "Call 988 (Suicide and Crisis Lifeline — call or text). Call 911 if there is immediate physical danger. Text HOME to 741741 (Crisis Text Line). Contact your Texas LMHA crisis line if you have one."
+    }
+  ],
+  "call_script": [
+    "Are you accepting new children or adolescents?",
+    "What ages do you serve?",
+    "What level of care do you offer (PHP, IOP, outpatient, inpatient, residential, navigation)?",
+    "Do you accept our insurance? Is prior authorization required?",
+    "What is the intake process and how soon could intake happen?",
+    "What is the program schedule (days, hours, length)?",
+    "Is family involvement included?",
+    "Do you provide medication management?",
+    "Do you support co-occurring substance use or eating-disorder concerns?",
+    "What happens if symptoms worsen after hours?",
+    "What costs should we expect?",
+    "What should we bring to intake?"
+  ],
+  "crisis_block": {
+    "title": "Crisis and safety",
+    "body": "ViableMHR is not emergency care. If someone is in immediate physical danger, call 911. For mental health or substance-use crisis, call or text 988 (Suicide and Crisis Lifeline). Text HOME to 741741 for Crisis Text Line. Contact your local Texas Mental Health Authority for local crisis services."
+  },
+  "footer": "Prepared with ViableMHR — a free, neutral directory of Texas youth mental health programs. We do not accept payment for placement, do not run lead generation, and never collect patient identifiers. Confirm all details directly with each program."
+}

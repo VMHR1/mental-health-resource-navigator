@@ -1,4 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { unlockProGate } from './helpers/ui.js';
+
+const PRO_GATED_PATHS = new Set([
+  '/professionals.html',
+  '/boards.html',
+  '/report-outdated.html',
+  '/regional-snapshot.html',
+  '/changelog.html',
+  '/export.html',
+]);
 
 const PRIORITY_PAGES = [
   '/',
@@ -7,6 +17,12 @@ const PRIORITY_PAGES = [
   '/submit.html',
   '/privacy.html',
   '/terms.html',
+  '/professionals.html',
+  '/boards.html',
+  '/report-outdated.html',
+  '/regional-snapshot.html',
+  '/changelog.html',
+  '/export.html',
 ];
 
 const NON_FATAL_CONSOLE = [
@@ -51,6 +67,7 @@ test.describe('Link crawl and console errors (Phase 6)', () => {
     const broken = [];
 
     for (const startPath of PRIORITY_PAGES) {
+      if (PRO_GATED_PATHS.has(startPath)) await unlockProGate(page);
       await page.goto(startPath);
       await page.waitForLoadState('domcontentloaded');
 
@@ -95,6 +112,7 @@ test.describe('Link crawl and console errors (Phase 6)', () => {
       });
       page.on('pageerror', (err) => consoleErrors.push(err.message));
 
+      if (PRO_GATED_PATHS.has(path)) await unlockProGate(page);
       await page.goto(path);
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(800);

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Regional gap snapshot • ViableMHR</title>
+  <meta name="description" content="Aggregate, non-PHI snapshot of directory health: stale-data counts, missing-field trends, and thin coverage by city and care level. Counts and buckets only." />
+  <link rel="canonical" href="https://viablemhr.com/regional-snapshot.html">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=1"></script>
+  <script defer src="js/modules/pro-events.js?v=1"></script>
+  <style>
+    .rs-main { max-width: 1000px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .rs-main h1 { font-size: clamp(1.85rem, 4vw, 2.4rem); font-weight: 950; margin: 0 0 10px; }
+    .rs-lead { color: var(--muted); margin: 0 0 18px; line-height: 1.55; max-width: 720px; }
+    .rs-section { margin: 28px 0; padding: 20px 22px; background: var(--cardSolid); border: 1px solid var(--stroke); border-radius: 14px; }
+    .rs-section h2 { font-size: 1.2rem; margin: 0 0 12px; }
+    .rs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+    .rs-tile { background: #fff; border: 1px solid var(--stroke); border-radius: 10px; padding: 14px 16px; }
+    .rs-tile__label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+    .rs-tile__value { font-size: 1.6rem; font-weight: 900; color: var(--vm-ink); margin-top: 4px; }
+    .rs-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
+    .rs-table th, .rs-table td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--vm-border-soft); }
+    .rs-table th { background: rgba(28,36,52,0.04); font-weight: 700; }
+    .rs-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .rs-meta { font-size: 13px; color: var(--muted); }
+    .rs-error { padding: 16px; background: var(--vm-crisis-soft); color: var(--vm-crisis-deep); border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="crisis-banner" role="region" aria-label="Crisis information">
+    <div class="inner">
+      <p class="crisis-banner__text">
+        ViableMHR is not emergency care. If someone is in <strong>immediate physical danger</strong>, call <strong>911</strong>.
+        For mental health or substance-use crisis, call or text <strong>988</strong>.
+      </p>
+      <div class="crisis-banner__actions">
+        <a href="tel:988">Call/Text 988</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="vm-header">
+      <div class="header-content">
+        <div class="brand">
+          <a href="/" class="mark" aria-label="ViableMHR home">
+            <img src="/brand-mark.svg?v=2" alt="" width="46" height="46" decoding="async" />
+          </a>
+          <div>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="btnlike" href="professionals.html">For professionals</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="rs-main">
+      <h1>Regional gap snapshot</h1>
+      <p class="rs-lead">
+        A manually produced, aggregate view of directory health for partner organizations (hospitals, LMHAs, coalitions). <strong>Counts and buckets only</strong>—no raw search queries, no patient information, no IP addresses. Published quarterly.
+      </p>
+
+      <div id="rsContent" aria-busy="true" aria-live="polite">
+        <p class="rs-meta">Loading snapshot…</p>
+      </div>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--muted);">
+        Methodology and review cadence are documented in our internal runbook. Partners may request a quarterly PDF summary by emailing
+        <a href="mailto:viablementalhealthresources@gmail.com?subject=Regional%20snapshot%20request">viablementalhealthresources@gmail.com</a>.
+      </p>
+    </main>
+
+    <footer>
+      <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
+      <p style="margin-top: 12px; font-size: 13px;">
+        <a href="index.html">For families</a>
+        <span aria-hidden="true"> • </span>
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span aria-hidden="true"> • </span>
+        <a href="terms.html">Terms of Service</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const target = document.getElementById('rsContent');
+      if (!target) return;
+      function escape(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      }
+      function render(data) {
+        const meta = data.metadata || {};
+        const counts = data.counts || {};
+        const missing = counts.missing_field_counts || {};
+        const thin = Array.isArray(data.thin_coverage) ? data.thin_coverage : [];
+        const zero = Array.isArray(data.top_zero_result_signatures) ? data.top_zero_result_signatures : [];
+
+        const tiles = `
+          <div class="rs-grid">
+            <div class="rs-tile"><div class="rs-tile__label">Programs in directory</div><div class="rs-tile__value">${escape(meta.total_programs || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Stale programs (&gt; 90 days)</div><div class="rs-tile__value">${escape(counts.stale_program_count || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Recently updated (&le; 30 days)</div><div class="rs-tile__value">${escape(counts.recently_updated_count || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Missing website</div><div class="rs-tile__value">${escape(missing.website_url || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Insurance unclear</div><div class="rs-tile__value">${escape(missing.insurance_clear || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Intake phone unlabeled</div><div class="rs-tile__value">${escape(missing.intake_phone_labeled || 0)}</div></div>
+            <div class="rs-tile"><div class="rs-tile__label">Care level missing</div><div class="rs-tile__value">${escape(missing.care_level || 0)}</div></div>
+          </div>
+        `;
+
+        const thinHtml = thin.length
+          ? `<table class="rs-table"><thead><tr><th>City</th><th>Care level</th><th>Programs</th></tr></thead><tbody>${
+              thin.map((row) => `<tr><td>${escape(row.city)}</td><td>${escape(row.care_level)}</td><td>${escape(row.program_count)}</td></tr>`).join('')
+            }</tbody></table>`
+          : '<p class="rs-meta">No thin-coverage entries at the current threshold.</p>';
+
+        const zeroHtml = zero.length
+          ? `<table class="rs-table"><thead><tr><th>Filter signature</th><th>Zero-result events</th></tr></thead><tbody>${
+              zero.map((row) => `<tr><td><code>${escape(row.signature)}</code></td><td>${escape(row.count)}</td></tr>`).join('')
+            }</tbody></table>`
+          : '<p class="rs-meta">No aggregated zero-result data published with this snapshot.</p>';
+
+        target.innerHTML = `
+          <section class="rs-section">
+            <h2>Headline counts</h2>
+            <p class="rs-meta">Period: <strong>${escape(meta.period)}</strong> · Generated: ${escape(meta.generated_at)}</p>
+            ${tiles}
+            <div class="rs-actions">
+              <a class="btnlike" href="data/regional_gap_snapshot.json" download data-pro-event="regional_snapshot_download" data-pro-event-props='{"period":"${escape(meta.period)}"}'>Download JSON</a>
+            </div>
+          </section>
+
+          <section class="rs-section">
+            <h2>Thin coverage (city × care level)</h2>
+            <p class="rs-meta">Pairs with 2 or fewer programs. Useful for QI and coalition planning.</p>
+            ${thinHtml}
+          </section>
+
+          <section class="rs-section">
+            <h2>Top zero-result filter signatures</h2>
+            <p class="rs-meta">Aggregated from optional staging metrics. Signatures encode filter combinations only, never raw query text.</p>
+            ${zeroHtml}
+          </section>
+
+          <section class="rs-section">
+            <h2>Methodology</h2>
+            <p>${escape(meta.methodology || '')}</p>
+            ${Array.isArray(data.notes) ? `<ul>${data.notes.map((n) => `<li>${escape(n)}</li>`).join('')}</ul>` : ''}
+          </section>
+        `;
+        target.setAttribute('aria-busy', 'false');
+      }
+      function loadSnapshot() {
+        fetch('data/regional_gap_snapshot.json', { cache: 'no-cache' })
+          .then((r) => {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(render)
+          .catch((err) => {
+            console.error('snapshot load error', err);
+            target.innerHTML = '<p class="rs-error">No snapshot is published yet. Check back next quarter.</p>';
+            target.setAttribute('aria-busy', 'false');
+          });
+      }
+
+      if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
+        window.VMHRProGate.runWhenUnlocked(loadSnapshot);
+      } else {
+        document.addEventListener('DOMContentLoaded', function () {
+          if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
+            window.VMHRProGate.runWhenUnlocked(loadSnapshot);
+          } else {
+            loadSnapshot();
+          }
+        }, { once: true });
+      }
+    })();
+  </script>
+
+  <!-- Default Statcounter code for Business Website http://viablemhr.com -->
+  <script type="text/javascript">
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
+  </script>
+  <script type="text/javascript"
+  src="https://www.statcounter.com/counter/counter.js" async></script>
+  <noscript><div class="statcounter"><a title="Web Analytics"
+  href="https://statcounter.com/" target="_blank"><img class="statcounter"
+  src="https://c.statcounter.com/13198280/0/601ff835/1/" alt="Web Analytics"
+  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+  <!-- End of Statcounter Code -->
+</body>
+</html>

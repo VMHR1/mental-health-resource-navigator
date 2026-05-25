@@ -48,5 +48,53 @@
     <priority>0.3</priority>
   </url>
 
+  <!-- For Professionals -->
+  <url>
+    <loc>https://viablemhr.com/professionals.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Resource Boards -->
+  <url>
+    <loc>https://viablemhr.com/boards.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Report Outdated Listing -->
+  <url>
+    <loc>https://viablemhr.com/report-outdated.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Regional Gap Snapshot -->
+  <url>
+    <loc>https://viablemhr.com/regional-snapshot.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Verification Changelog -->
+  <url>
+    <loc>https://viablemhr.com/changelog.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Export Center (pilot) -->
+  <url>
+    <loc>https://viablemhr.com/export.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
   <!-- Individual programs: see sitemap-programs.xml (canonical /programs/{id}.html) -->
 </urlset>

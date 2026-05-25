@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Export center (pilot) • ViableMHR</title>
+  <meta name="description" content="Download filtered CSV or JSON exports of the ViableMHR directory. For pilot partner organizations. Counts and fields only; no patient data." />
+  <link rel="canonical" href="https://viablemhr.com/export.html">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script defer src="security.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=1"></script>
+  <script defer src="js/modules/pro-events.js?v=1"></script>
+  <script defer src="js/modules/export-center.js?v=1"></script>
+  <style>
+    .ex-main { max-width: 880px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .ex-main h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); font-weight: 950; margin: 0 0 10px; }
+    .ex-lead { color: var(--muted); margin: 0 0 18px; line-height: 1.55; max-width: 720px; }
+    .ex-form { background: var(--cardSolid); border: 1px solid var(--stroke); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; }
+    .ex-field { display: grid; gap: 6px; }
+    .ex-field label { font-weight: 700; font-size: 14px; }
+    .ex-field select, .ex-field input { font-family: var(--vm-font); font-size: 15px; padding: 10px 12px; border: 1px solid var(--stroke); border-radius: 8px; background: #fff; color: var(--vm-ink); }
+    .ex-radio-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .ex-radio-row label { font-weight: 600; }
+    .ex-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .ex-license { background: var(--vm-accent-soft); border: 1px solid rgba(42,157,143,0.25); border-radius: 10px; padding: 14px 16px; margin-top: 24px; font-size: 14px; color: var(--vm-ink); }
+    .ex-status { font-size: 13px; color: var(--muted); }
+    .ex-schema-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    .ex-schema-table th, .ex-schema-table td { padding: 6px 8px; border-bottom: 1px solid var(--vm-border-soft); text-align: left; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="container">
+    <header class="vm-header">
+      <div class="header-content">
+        <div class="brand">
+          <a href="/" class="mark" aria-label="ViableMHR home">
+            <img src="/brand-mark.svg?v=2" alt="" width="46" height="46" decoding="async" />
+          </a>
+          <div>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="btnlike" href="professionals.html">For professionals</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="ex-main">
+      <h1>Export center <span style="font-size:12px;background:var(--vm-accent-deep);color:#fff;padding:2px 8px;border-radius:999px;vertical-align:middle;">Pilot</span></h1>
+      <p class="ex-lead">
+        Download a filtered CSV or JSON of the public directory. Useful for QI dashboards, coalition planning, or printable lists. No patient data, no ranking, no scoring is included. License terms appear below.
+      </p>
+
+      <form class="ex-form" id="exportForm">
+        <div class="ex-field">
+          <label for="ex-care">Level of care</label>
+          <select id="ex-care" name="care">
+            <option value="">All levels</option>
+            <option value="Partial Hospitalization (PHP)">PHP</option>
+            <option value="Intensive Outpatient (IOP)">IOP</option>
+            <option value="Outpatient">Outpatient</option>
+            <option value="Navigation">Navigation</option>
+            <option value="Crisis services">Crisis services</option>
+          </select>
+        </div>
+
+        <div class="ex-field">
+          <label for="ex-city">City (exact match, optional)</label>
+          <input id="ex-city" name="city" type="text" autocomplete="off" placeholder="e.g. Plano">
+        </div>
+
+        <div class="ex-field">
+          <label for="ex-domain">Service domain (optional)</label>
+          <select id="ex-domain" name="domain">
+            <option value="">All domains</option>
+            <option value="mental_health">Mental health</option>
+            <option value="substance_use">Substance use</option>
+            <option value="eating_disorders">Eating disorders</option>
+            <option value="co_occurring">Co-occurring</option>
+          </select>
+        </div>
+
+        <div class="ex-field">
+          <label for="ex-verified">Verified within (days, optional)</label>
+          <select id="ex-verified" name="verifiedWithinDays">
+            <option value="">Any verification age</option>
+            <option value="30">Last 30 days</option>
+            <option value="60">Last 60 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="180">Last 180 days</option>
+          </select>
+        </div>
+
+        <fieldset class="ex-field" style="border:0; padding:0; margin:0;">
+          <legend style="font-weight:700; font-size:14px; margin-bottom:6px;">Format</legend>
+          <div class="ex-radio-row">
+            <label><input type="radio" name="format" value="csv" checked> CSV</label>
+            <label><input type="radio" name="format" value="json"> JSON</label>
+          </div>
+        </fieldset>
+
+        <div class="ex-actions">
+          <button type="submit" class="btnlike btn-primary">Download export</button>
+        </div>
+
+        <p class="ex-status" id="exportStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="ex-license" aria-label="License">
+        <strong>License & use:</strong>
+        <span id="exportLicenseText">Loading license terms…</span>
+      </section>
+
+      <section style="margin-top: 28px;" aria-label="Exported fields">
+        <h2 style="font-size:1.1rem; margin: 0 0 8px;">Exported fields</h2>
+        <p class="ex-lead">Only the fields below are included. Internal admin and audit fields are never exported.</p>
+        <table class="ex-schema-table" id="exportSchemaTable">
+          <thead><tr><th>Field</th><th>Type</th></tr></thead>
+          <tbody><tr><td colspan="2" class="ex-status">Loading schema…</td></tr></tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      <p>This directory is informational and does not provide clinical advice.</p>
+      <p style="margin-top: 12px; font-size: 13px;">
+        <a href="index.html">For families</a>
+        <span aria-hidden="true"> • </span>
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span aria-hidden="true"> • </span>
+        <a href="terms.html">Terms of Service</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      function init() {
+        const form = document.getElementById('exportForm');
+        const status = document.getElementById('exportStatus');
+        if (window.VMHRExportCenter && typeof window.VMHRExportCenter.attach === 'function') {
+          window.VMHRExportCenter.attach(form, status);
+          window.VMHRExportCenter.loadData().then(function (bundle) {
+            const schema = bundle.schema || {};
+            const license = document.getElementById('exportLicenseText');
+            if (license) license.textContent = schema.license || 'See repository for full terms.';
+            const table = document.querySelector('#exportSchemaTable tbody');
+            if (table && Array.isArray(schema.fields)) {
+              table.innerHTML = schema.fields.map(function (f) {
+                return '<tr><td>' + f.label + ' (<code>' + f.key + '</code>)</td><td>' + (f.type || '') + '</td></tr>';
+              }).join('');
+            }
+          }).catch(function () {
+            const status = document.getElementById('exportStatus');
+            if (status) status.textContent = 'Could not load schema. The export still works using built-in defaults.';
+          });
+        }
+      }
+      function boot() {
+        if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
+          window.VMHRProGate.runWhenUnlocked(init);
+        } else {
+          init();
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+  </script>
+
+  <!-- Default Statcounter code for Business Website http://viablemhr.com -->
+  <script type="text/javascript">
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
+  </script>
+  <script type="text/javascript"
+  src="https://www.statcounter.com/counter/counter.js" async></script>
+  <noscript><div class="statcounter"><a title="Web Analytics"
+  href="https://statcounter.com/" target="_blank"><img class="statcounter"
+  src="https://c.statcounter.com/13198280/0/601ff835/1/" alt="Web Analytics"
+  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+  <!-- End of Statcounter Code -->
+</body>
+</html>

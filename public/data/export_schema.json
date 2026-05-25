@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "license": "Free for non-commercial, non-referral, neutral use. Do not use for paid placement, lead generation, or patient referral brokerage. Attribute to ViableMHR when redistributing.",
+  "intended_audiences": ["discharge", "bhops", "lmha", "school", "research"],
+  "fields": [
+    { "key": "program_id", "label": "Program ID", "type": "string" },
+    { "key": "program_name", "label": "Program name", "type": "string" },
+    { "key": "organization", "label": "Organization", "type": "string" },
+    { "key": "level_of_care", "label": "Level of care", "type": "string" },
+    { "key": "entry_type", "label": "Entry type", "type": "string" },
+    { "key": "service_setting", "label": "Service setting", "type": "string" },
+    { "key": "ages_served", "label": "Ages served", "type": "string" },
+    { "key": "city", "label": "City", "type": "string" },
+    { "key": "state", "label": "State", "type": "string" },
+    { "key": "zip", "label": "ZIP", "type": "string" },
+    { "key": "phone", "label": "Phone", "type": "string" },
+    { "key": "intake_phone", "label": "Intake phone (when labeled)", "type": "string" },
+    { "key": "website_url", "label": "Website URL", "type": "string" },
+    { "key": "insurance_notes", "label": "Insurance notes", "type": "string" },
+    { "key": "service_domains", "label": "Service domains", "type": "array<string>" },
+    { "key": "last_verified", "label": "Last verified date", "type": "date" },
+    { "key": "verification_status", "label": "Verification status", "type": "string" }
+  ],
+  "notes": [
+    "Internal admin fields (audit logs, raw scraping notes) are never exported.",
+    "Distance, rankings, and editorial scores are never exported.",
+    "Exports reflect the current state of public/data/programs.json at download time."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "last_updated": "2026-05-25",
+    "purpose": "Human-readable log of directory verification waves. Not a per-patient or per-program audit trail; bulk events only."
+  },
+  "events": [
+    {
+      "date": "2026-05-18",
+      "scope": "full",
+      "programs_reviewed_count": 112,
+      "source": "Internet + provider websites; spot-check fixes",
+      "notes": "Full directory re-verification. Newport Academy Dallas removed (closed location). Insurance details refreshed where publicly stated; Unity Behavioral Health insurance status carried forward as 'not listed'.",
+      "source_run_id": "internet-verification-may2026"
+    },
+    {
+      "date": "2025-12-26",
+      "scope": "insurance",
+      "programs_reviewed_count": 84,
+      "source": "Provider websites",
+      "notes": "Added accepted_insurance objects to each program where insurance information was publicly stated. Recorded source URLs and verification dates.",
+      "source_run_id": "insurance-verification-dec2025"
+    },
+    {
+      "date": "2025-12-26",
+      "scope": "website_links",
+      "programs_reviewed_count": 112,
+      "source": "Existing verification_source URLs",
+      "notes": "Parsed and stored a canonical website_url for each program with coverage of 112/112 listings.",
+      "source_run_id": "website-links-dec2025"
+    }
+  ]
+}

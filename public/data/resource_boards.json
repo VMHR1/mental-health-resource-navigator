@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "generated_at": "2026-05-25",
+    "editorial_policy": "Listing order on each board is editorial and is not influenced by payment. No program pays to appear on a board. External links are reviewed at least quarterly.",
+    "review_cadence_days": 90,
+    "next_review_due": "2026-08-25"
+  },
+  "boards": [
+    {
+      "id": "post-discharge-php-iop",
+      "title": "Post-discharge PHP and IOP starting points",
+      "audience": ["discharge", "facility"],
+      "summary": "Programs to consider after a hospital discharge that need step-down care. Confirm clinical fit, insurance, and availability directly with each program.",
+      "editorial_note": "Neutral ordering; not paid placement. Last reviewed: 2026-05-25.",
+      "items": [
+        {
+          "type": "preset",
+          "label": "Search PHP programs",
+          "preset_id": "php-programs",
+          "description": "Partial hospitalization / day programs across the directory."
+        },
+        {
+          "type": "preset",
+          "label": "Search IOP programs",
+          "preset_id": "iop-programs",
+          "description": "Intensive outpatient programs across the directory."
+        },
+        {
+          "type": "preset",
+          "label": "IOP in Plano",
+          "preset_id": "iop-plano",
+          "description": "Filtered to Plano-area intensive outpatient listings."
+        },
+        {
+          "type": "guide_anchor",
+          "label": "Understand PHP vs IOP vs outpatient",
+          "href": "guides.html#levels-of-care",
+          "description": "Plain-language explanations of each level of care."
+        },
+        {
+          "type": "guide_anchor",
+          "label": "Family call script (printable)",
+          "href": "guides.html#what-to-ask",
+          "description": "Questions to ask when calling a program."
+        }
+      ]
+    },
+    {
+      "id": "medicaid-friendly-youth",
+      "title": "Medicaid-friendly youth options",
+      "audience": ["discharge", "lmha", "school", "family"],
+      "summary": "Starting points when a family relies on Medicaid, CHIP, or sliding-scale care. Insurance details change—always confirm with the program and the plan.",
+      "editorial_note": "Neutral ordering; not paid placement. External links to Medicaid resources are reviewed quarterly. Last reviewed: 2026-05-25.",
+      "items": [
+        {
+          "type": "internal_search",
+          "label": "Programs accepting Medicaid / CHIP",
+          "href": "index.html?mode=navigator&insurance=bucket%3Amedicaid",
+          "description": "Filtered list of programs that list Medicaid or CHIP."
+        },
+        {
+          "type": "internal_search",
+          "label": "Self-pay or sliding scale",
+          "href": "index.html?mode=navigator&insurance=bucket%3Aself_pay",
+          "description": "Programs that list self-pay or sliding-scale options."
+        },
+        {
+          "type": "external",
+          "label": "Texas HHSC — Find Medicaid coverage",
+          "href": "https://www.hhs.texas.gov/services/health/medicaid-chip",
+          "description": "Official Texas Health and Human Services Medicaid and CHIP information.",
+          "rel_label": "Texas HHSC"
+        },
+        {
+          "type": "external",
+          "label": "Texas Health Steps (for children on Medicaid)",
+          "href": "https://www.hhs.texas.gov/providers/medicaid-providers/medicaid-clients/texas-health-steps",
+          "description": "Medicaid wellness program for children and teens.",
+          "rel_label": "Texas HHSC"
+        },
+        {
+          "type": "guide_anchor",
+          "label": "What to ask about insurance",
+          "href": "guides.html#what-to-ask",
+          "description": "Insurance questions on the call script."
+        }
+      ]
+    },
+    {
+      "id": "substance-use-co-occurring",
+      "title": "Substance use with co-occurring mental health",
+      "audience": ["discharge", "lmha", "school", "family"],
+      "summary": "Programs that address substance use alongside mental health concerns. Many programs treat both; ask each program how they integrate care.",
+      "editorial_note": "Neutral ordering; not paid placement. Last reviewed: 2026-05-25.",
+      "items": [
+        {
+          "type": "preset",
+          "label": "Substance use programs (all levels)",
+          "preset_id": "substance-use-all",
+          "description": "Every program with substance use in its service domains."
+        },
+        {
+          "type": "preset",
+          "label": "Substance use IOP",
+          "preset_id": "substance-use-iop",
+          "description": "Intensive outpatient with substance use focus."
+        },
+        {
+          "type": "preset",
+          "label": "Substance use PHP",
+          "preset_id": "substance-use-php",
+          "description": "Partial hospitalization with substance use focus."
+        },
+        {
+          "type": "preset",
+          "label": "Substance use outpatient",
+          "preset_id": "substance-use-outpatient",
+          "description": "Standard outpatient with substance use focus."
+        },
+        {
+          "type": "external",
+          "label": "SAMHSA youth substance use treatment locator",
+          "href": "https://findtreatment.gov/",
+          "description": "National federal directory; useful when local options are limited.",
+          "rel_label": "SAMHSA"
+        }
+      ]
+    },
+    {
+      "id": "eating-disorder-resources",
+      "title": "Eating disorder resources",
+      "audience": ["discharge", "school", "family"],
+      "summary": "Programs in the directory with eating disorder focus, plus external information lines and finders. Eating disorder care often needs medical and psychiatric coordination—call each program.",
+      "editorial_note": "Neutral ordering; not paid placement. External links reviewed quarterly. Last reviewed: 2026-05-25.",
+      "items": [
+        {
+          "type": "preset",
+          "label": "Eating disorder programs (all levels)",
+          "preset_id": "eating-disorders-all",
+          "description": "All eating disorder listings in the directory."
+        },
+        {
+          "type": "preset",
+          "label": "Eating disorder PHP",
+          "preset_id": "eating-disorders-php",
+          "description": "Partial hospitalization with eating disorder focus."
+        },
+        {
+          "type": "preset",
+          "label": "Eating disorder IOP",
+          "preset_id": "eating-disorders-iop",
+          "description": "Intensive outpatient with eating disorder focus."
+        },
+        {
+          "type": "external",
+          "label": "NEDA Helpline (National Eating Disorders Association)",
+          "href": "https://www.nationaleatingdisorders.org/help-support/contact-helpline",
+          "description": "Information and referral support; not emergency care.",
+          "rel_label": "NEDA"
+        },
+        {
+          "type": "external",
+          "label": "ANAD Helpline",
+          "href": "https://anad.org/get-help/about-our-helpline/",
+          "description": "Free peer-support helpline for eating disorders.",
+          "rel_label": "ANAD"
+        }
+      ]
+    },
+    {
+      "id": "crisis-and-urgent-support",
+      "title": "Crisis and urgent support",
+      "audience": ["discharge", "lmha", "school", "family"],
+      "summary": "Use these resources when safety is the priority. ViableMHR is not emergency care. If someone is in immediate physical danger, call 911. For mental health or substance use crisis, call or text 988.",
+      "editorial_note": "Neutral ordering. Last reviewed: 2026-05-25.",
+      "items": [
+        {
+          "type": "external",
+          "label": "988 Suicide and Crisis Lifeline (call or text)",
+          "href": "tel:988",
+          "description": "24/7 crisis support nationwide.",
+          "rel_label": "988"
+        },
+        {
+          "type": "external",
+          "label": "What happens when you contact 988",
+          "href": "https://www.samhsa.gov/find-help/988",
+          "description": "Federal explainer of the 988 process.",
+          "rel_label": "SAMHSA"
+        },
+        {
+          "type": "preset",
+          "label": "Crisis resources in the directory",
+          "preset_id": "crisis-support",
+          "description": "Filtered to crisis-flagged listings in ViableMHR."
+        },
+        {
+          "type": "external",
+          "label": "Find your Texas LMHA (Local Mental Health Authority)",
+          "href": "https://www.hhs.texas.gov/services/mental-health-substance-use/mental-health-substance-use-resources/texas-local-mental-health-authorities-local-behavioral-health-authorities",
+          "description": "LMHA finder for Texas counties.",
+          "rel_label": "Texas HHSC"
+        },
+        {
+          "type": "external",
+          "label": "Crisis Text Line (text HOME to 741741)",
+          "href": "sms:741741",
+          "description": "Text-based crisis support.",
+          "rel_label": "Crisis Text Line"
+        }
+      ]
+    }
+  ]
+}
