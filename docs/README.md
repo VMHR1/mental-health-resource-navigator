@@ -18,6 +18,7 @@ See `performance/` for mobile performance and stutter investigations.
 - Launch scope: `product/LAUNCH_SCOPE.md`
 - Phased build plan: `product/ViableMHR-Phased-Launch-Build-Plan.md`
 - Program URL strategy: `product/PROGRAM_URL_STRATEGY.md`
+- Analytics plan (post-launch): `product/ANALYTICS_PLAN.md`
 
 ## Security & Operations
 - Security: `security/`
@@ -25,3 +26,5 @@ See `performance/` for mobile performance and stutter investigations.
 - Submit-to-publish runbook: `operations/SUBMIT_TO_PUBLISH_RUNBOOK.md`
 - Deploy & admin verification: `operations/DEPLOY_AND_ADMIN_VERIFICATION.md`
 - Manual a11y checklist (Phase 4): `operations/MANUAL_A11Y_CHECKLIST.md`
+- Launch QA checklist (Phase 6): `operations/QA_LAUNCH_CHECKLIST.md`
+- Launch day deploy: `operations/LAUNCH_DAY_DEPLOY_CHECKLIST.md`

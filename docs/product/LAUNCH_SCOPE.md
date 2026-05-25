@@ -62,7 +62,7 @@ Must complete before public launch:
 - Trust strip accuracy (Phase 3.1 — no false “zero tracking” claim)
 - Privacy policy alignment with Statcounter (Phase 3.2)
 - Sitemap includes guides + about (Phase 5.1)
-- Full QA checklist (Phase 6)
+- Full QA checklist (`docs/operations/QA_LAUNCH_CHECKLIST.md`)
 
 ## Monetization
 

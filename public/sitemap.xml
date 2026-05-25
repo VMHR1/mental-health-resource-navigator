@@ -3,23 +3,15 @@
   <!-- Homepage -->
   <url>
     <loc>https://viablemhr.com/</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Program Search/Detail Page -->
-  <url>
-    <loc>https://viablemhr.com/program.html</loc>
-    <lastmod>2026-01-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
+
   <!-- Submit Program Page -->
   <url>
     <loc>https://viablemhr.com/submit.html</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -39,20 +31,22 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <!-- Terms of Service -->
   <url>
     <loc>https://viablemhr.com/terms.html</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  
+
   <!-- Privacy Policy -->
   <url>
     <loc>https://viablemhr.com/privacy.html</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
+  <!-- Individual programs: see sitemap-programs.xml (canonical /programs/{id}.html) -->
 </urlset>

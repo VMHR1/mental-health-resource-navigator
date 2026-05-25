@@ -26,7 +26,7 @@
     "test:e2e:update:linux": "docker run --rm -v $(pwd):/workspace -w /workspace mcr.microsoft.com/playwright:v1.40.0-focal /bin/bash -c \"npm install && npx playwright install chromium firefox webkit && npm run build && npx playwright test --update-snapshots\"",
     "test:mobile": "playwright test --project=mobile --project=mobile-webkit",
     "audit": "lhci autorun --config=lighthouserc.json",
-    "verify": "npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit",
+    "verify": "env -u PLAYWRIGHT_BROWSERS_PATH sh -c 'npm run build && npm run validate-data && npm run validate-filters && npm run test:e2e && npm run audit'",
     "audit:search": "node scripts/audit-search-localhost.mjs",
     "audit:insurance": "node scripts/audit-insurance-plans.mjs",
     "smoke:prod": "node scripts/prod-smoke.mjs",

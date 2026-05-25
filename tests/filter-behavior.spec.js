@@ -1,7 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { openAdvancedFilters, waitForPrograms, revealSearchForTest } from './helpers/ui.js';
+import {
+  openAdvancedFilters,
+  waitForPrograms,
+  revealSearchForTest,
+  clickFindPrograms,
+  closeFilterTrayIfOpen,
+} from './helpers/ui.js';
 
 test.describe('Filter behavior and routing', () => {
   test('eating disorder preset returns eating disorder programs', async ({ page }) => {
@@ -62,12 +68,14 @@ test.describe('Filter behavior and routing', () => {
     await openAdvancedFilters(page);
     await page.selectOption('#care', 'Outpatient', { force: true });
     await page.waitForTimeout(400);
-    await page.getByTestId('find-programs-btn').click();
-    await page.waitForTimeout(600);
+    await closeFilterTrayIfOpen(page);
+    await clickFindPrograms(page);
+    await page.waitForTimeout(100);
     expect(await page.locator('.card:has(.pname)').count()).toBeGreaterThan(0);
 
     await page.selectOption('#care', 'Residential', { force: true });
-    await page.getByTestId('find-programs-btn').click();
+    await closeFilterTrayIfOpen(page);
+    await clickFindPrograms(page);
     await page.waitForTimeout(600);
     expect(await page.locator('.card:has(.pname)').count()).toBeGreaterThan(0);
   });

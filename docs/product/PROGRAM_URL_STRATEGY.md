@@ -73,7 +73,7 @@ All new links should use `programPublicPath(id)`.
 - [x] Update `shareProgram()` to use `programPublicPath(sanitizedId)` with absolute origin
 - [x] QR code encodes slug URL
 - [ ] Verify `?program=` on home still expands card (regression test)
-- [ ] Remove or demote `program.html` from main sitemap
+- [x] Remove or demote `program.html` from main sitemap (Phase 5.1)
 
 ## Testing
 

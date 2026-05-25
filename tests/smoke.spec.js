@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAdvancedFilters, openResultsAction, waitForPrograms, revealSearchForTest } from './helpers/ui.js';
+import { openAdvancedFilters, openResultsAction, waitForPrograms, revealSearchForTest, clickFindPrograms, clickResetFilters } from './helpers/ui.js';
 
 test.describe('Smoke Tests', () => {
   test('page loads without fatal console errors', async ({ page }) => {
@@ -43,7 +43,7 @@ test.describe('Smoke Tests', () => {
     // Click Find Programs button
     const findBtn = page.getByTestId('find-programs-btn');
     await expect(findBtn).toBeVisible();
-    await findBtn.click();
+    await clickFindPrograms(page);
 
     // Wait for results to update (either cards appear or empty state shows)
     await page.waitForTimeout(1000);
@@ -67,12 +67,12 @@ test.describe('Smoke Tests', () => {
 
     const searchInput = page.getByTestId('search-input');
     await searchInput.fill('test');
-    await page.getByTestId('find-programs-btn').click();
+    await clickFindPrograms(page);
     await expect(searchInput).toHaveValue('test');
 
     const resetBtn = page.getByTestId('reset-btn');
     await expect(resetBtn).toBeVisible();
-    await resetBtn.click();
+    await clickResetFilters(page);
 
     await expect(searchInput).toHaveValue('');
     await expect(page.getByTestId('active-filter-chips').locator('.active-filter-chip')).toHaveCount(0);

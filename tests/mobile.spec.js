@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAdvancedFilters, revealSearchForTest, showAllResults, waitForPrograms } from './helpers/ui.js';
+import { openAdvancedFilters, revealSearchForTest, showAllResults, waitForPrograms, clickFindPrograms } from './helpers/ui.js';
 
 test.describe('Mobile Verification', () => {
   // Only run these tests on mobile projects
@@ -160,7 +160,7 @@ test.describe('Mobile Verification', () => {
     // Perform a search
     const searchInput = page.getByTestId('search-input');
     await searchInput.fill('test search');
-    await page.getByTestId('find-programs-btn').click();
+    await clickFindPrograms(page);
 
     // Wait for results to update with a timeout
     await page.waitForTimeout(1000);
@@ -238,7 +238,7 @@ test.describe('Mobile Verification', () => {
     }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await searchInput.press('Escape');
-    await page.getByTestId('find-programs-btn').click({ force: true });
+    await clickFindPrograms(page);
 
     // Wait for results to render (use selector-based wait instead of timeout)
     await page.waitForSelector('#treatmentSection, [data-testid="results-grid"], [data-testid="empty-state"]', { 
@@ -311,7 +311,7 @@ test.describe('Mobile Verification', () => {
     }, { timeout: 2000 }).catch(() => {});
     await page.waitForTimeout(100); // Brief pause for layout to stabilize
     await searchInput.press('Escape');
-    await page.getByTestId('find-programs-btn').click({ force: true });
+    await clickFindPrograms(page);
     
     // Wait for results to settle (cards can re-render once after filter apply)
     await page.waitForSelector('.card', { timeout: 10000 });

@@ -58,7 +58,7 @@ After `npm run build`:
 
 | Artifact | Path | Check |
 |----------|------|-------|
-| Main sitemap | `dist/sitemap.xml` | Returns 200 in prod |
+| Main sitemap | `dist/sitemap.xml` | Returns 200 in prod; no legacy `program.html` |
 | Program sitemap | `dist/sitemap-programs.xml` | Generated; one URL per program |
 | Slug pages | `dist/programs/*.html` | Count matches program count |
 | Programs data | `dist/programs.json` | Matches `public/data/programs.json` |
@@ -103,7 +103,7 @@ Manual (3 random programs):
 | Gap | Phase | Notes |
 |-----|-------|-------|
 | ~~Trust strip “no tracking” vs Statcounter~~ | 3.1 | ✅ Fixed May 2026 |
-| `guides.html` missing from sitemap | 5.1 | SEO — guides added in Phase 1 |
+| ~~`guides.html` missing from sitemap~~ | 5.1 | ✅ Fixed May 2026 |
 | ~~Share URLs use `?program=` not slug~~ | 2.2 | ✅ Done |
 | CSP `unsafe-inline` in meta tags | 7.4 | Security hardening |
 
