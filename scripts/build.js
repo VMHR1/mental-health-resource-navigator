@@ -122,6 +122,7 @@ function copyStaticAssets() {
       'src/js/modules/filters.js',
       'src/js/modules/sort.js',
       'src/js/modules/performance.js',
+      'src/js/modules/product-metrics.js',
       'src/js/modules/render.js',
       'src/js/modules/events.js',
       'src/js/modules/home-phase1.js',

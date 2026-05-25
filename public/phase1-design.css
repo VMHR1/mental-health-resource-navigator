@@ -1261,6 +1261,28 @@ body[data-guided-step="4"] .guided-search-strip__grid .guided-search-field selec
   border-color: rgba(22, 101, 52, 0.28) !important;
 }
 
+.badge.stale-verification {
+  color: #92400e !important;
+  background: rgba(180, 83, 9, 0.12) !important;
+  border-color: rgba(180, 83, 9, 0.35) !important;
+}
+
+.card.card--verification-stale {
+  border-color: rgba(180, 83, 9, 0.35);
+  box-shadow: 0 0 0 1px rgba(180, 83, 9, 0.08);
+}
+
+.program-detail-stale-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(180, 83, 9, 0.08);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+  color: var(--vm-ink, #1a1a1a);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .card-primary-actions {
   display: flex;
   flex-wrap: wrap;

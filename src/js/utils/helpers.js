@@ -231,6 +231,23 @@ if (typeof window !== 'undefined') {
     const label = safeStr(visibleLabel);
     return label ? `${label} (opens in new tab)` : 'Opens in new tab';
   };
+
+  /**
+   * Verification freshness for cards and detail (Phase 7.2).
+   * @returns {'recent'|'fresh'|'stale'|'missing'}
+   */
+  window.getVerificationFreshness = function getVerificationFreshness(lastVerified, options = {}) {
+    const recentDays = options.recentDays ?? 60;
+    const staleDays = options.staleDays ?? 90;
+    const raw = safeStr(lastVerified);
+    if (!raw) return 'missing';
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return 'missing';
+    const daysSince = (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSince < recentDays) return 'recent';
+    if (daysSince <= staleDays) return 'fresh';
+    return 'stale';
+  };
 }
 
 

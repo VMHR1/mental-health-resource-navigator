@@ -398,6 +398,18 @@ function renderProgramDetail(program) {
       verText += `Last verified: ${safeStr(program.last_verified)}`;
     }
     verVal.textContent = verText;
+
+    const freshness =
+      typeof window.getVerificationFreshness === 'function'
+        ? window.getVerificationFreshness(program.last_verified)
+        : 'missing';
+    if (freshness === 'stale') {
+      const staleNote = document.createElement('p');
+      staleNote.className = 'program-detail-stale-note';
+      staleNote.textContent =
+        'This listing was last verified more than 90 days ago. Call the program to confirm details are still accurate.';
+      verSection.appendChild(staleNote);
+    }
     verSection.appendChild(verVal);
 
     const verNote = document.createElement('p');

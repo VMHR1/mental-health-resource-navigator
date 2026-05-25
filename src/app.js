@@ -2376,6 +2376,14 @@ function render(){
   announceToScreenReader(`${count} ${label} found${count === 0 ? '. Try adjusting your filters.' : ''}`);
   updateComparisonCount();
 
+  if (typeof window.VMHRProductMetrics?.recordSearchOutcome === 'function') {
+    window.VMHRProductMetrics.recordSearchOutcome({
+      resultsCount: count,
+      filters: filterSnapshot,
+      showCrisis,
+    });
+  }
+
   if (window.flowMotion) {
     window.flowMotion.setTreatmentGridState(activeList.length);
     window.flowMotion.flashResultsCount();

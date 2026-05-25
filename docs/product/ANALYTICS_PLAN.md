@@ -1,6 +1,6 @@
 # Post-launch analytics plan (privacy-preserving)
 
-**Status:** Planning document — no additional tracking implemented at launch  
+**Status:** Phase 7.1 — local zero-result rollup active; third-party custom events still deferred  
 **Last updated:** 2026-05-23  
 **Aligns with:** [Privacy Policy](../../src/html/privacy.html#analytics), [Launch scope](./LAUNCH_SCOPE.md)
 
@@ -55,7 +55,7 @@ Events are **counts or buckets only** — not user-identifiable profiles.
 | **First-party aggregate endpoint** | Full control; hash queries server-side | Requires backend + privacy review |
 | **Client-only weekly rollup** | No new third parties | Hard to aggregate across users |
 
-**Recommendation:** Start with Statcounter page paths + manual zero-result sampling (Phase 7). Add custom events only after privacy policy section update and 90-day review.
+**Recommendation:** Use Statcounter page paths + **`VMHRProductMetrics`** local rollup ([ZERO_RESULT_MONITORING.md](../operations/ZERO_RESULT_MONITORING.md)). Add Statcounter custom goals or first-party events only after privacy policy update and 90-day review.
 
 ---
 

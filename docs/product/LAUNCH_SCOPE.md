@@ -48,7 +48,7 @@ Measure monthly unless noted. Baselines established in first two weeks.
 | 2 | **Submit funnel completion** | ≥ 60% of started drafts reach Formspree submit | Formspree submissions vs. client-side draft starts (approximate until analytics) |
 | 3 | **Program detail views** | Growing week-over-week; ≥ 30% of search sessions open ≥ 1 detail | Statcounter page paths for `/programs/*.html` |
 | 4 | **Crisis path usage** | Crisis card clicks and 988 link clicks tracked qualitatively | Manual review + link analytics |
-| 5 | **Data freshness** | 100% of listed programs verified within 90 days OR flagged stale in UI (Phase 7) | `validate-data.js` + `metadata.generated_at` |
+| 5 | **Data freshness** | 100% of listed programs verified within 90 days OR flagged stale in UI (Phase 7 — stale badges + verification filter enabled) | `validate-data.js` + card/detail UI + `SHOW_VERIFICATION_FILTERS` |
 | 6 | **Accessibility regression** | No drop below 95 Lighthouse accessibility on home, guides, submit, program slug, privacy | CI / pre-deploy `npm run audit` |
 | 7 | **Trust incidents** | Zero unresolved false claims (tracking, paid ranking, clinical endorsement) | User reports + internal review |
 

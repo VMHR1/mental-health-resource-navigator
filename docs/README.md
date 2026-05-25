@@ -19,6 +19,13 @@ See `performance/` for mobile performance and stutter investigations.
 - Phased build plan: `product/ViableMHR-Phased-Launch-Build-Plan.md`
 - Program URL strategy: `product/PROGRAM_URL_STRATEGY.md`
 - Analytics plan (post-launch): `product/ANALYTICS_PLAN.md`
+- **Phase 7 post-launch:** `product/PHASE7_POST_LAUNCH.md`
+
+## Post-launch (Phase 7)
+- Zero-result monitoring: `operations/ZERO_RESULT_MONITORING.md`
+- Bundle spike (defer): `development/BUNDLE_SPIKE_PHASE7.md`
+- CSP roadmap: `security/CSP_HARDENING_ROADMAP.md`
+- Design tokens: `development/DESIGN_TOKENS_PHASE7.md`
 
 ## Security & Operations
 - Security: `security/`

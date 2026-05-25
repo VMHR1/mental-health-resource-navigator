@@ -233,16 +233,17 @@ function createCard(program, idx, options) {
   div.dataset.open = isOpen ? "true" : "false";
   div.setAttribute("data-id", id);
 
-  // Check if verified within 60 days
-  let isRecent = false;
-  if(lastVerified) {
-    const date = new Date(lastVerified);
-    const now = new Date();
-    const daysSince = (now - date) / (1000 * 60 * 60 * 24);
-    if(daysSince < 60) {
-      div.dataset.recent = "true";
-      isRecent = true;
-    }
+  const verificationFreshness =
+    typeof window.getVerificationFreshness === 'function'
+      ? window.getVerificationFreshness(lastVerified)
+      : 'missing';
+  const isRecent = verificationFreshness === 'recent';
+  const isStale = verificationFreshness === 'stale';
+  if (verificationFreshness !== 'missing') {
+    div.dataset.verificationFreshness = verificationFreshness;
+  }
+  if (isStale) {
+    div.classList.add('card--verification-stale');
   }
 
   const userLocation = state.getUserLocation();
@@ -287,11 +288,12 @@ function createCard(program, idx, options) {
           return '';
         })() : ''}
         ${isRecent ? `<span class="badge recent">Recently verified</span>` : ''}
+        ${isStale ? `<span class="badge stale-verification">Verification overdue</span>` : ''}
       </div>
       <p class="card-location-line">${escapeHtml(loc)} · ${escapeHtml(settingLabel)}</p>
       <p class="card-ages-line">Ages served: ${escapeHtml(ages)}</p>
       <p class="card-good-to-ask"><strong>Good to ask about:</strong> schedule, intake process, insurance, family involvement</p>
-      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}. <a href="about.html#verification">What verified means</a>. Information may change—call to confirm.</p>` : `<p class="card-verified-line">Verification date not listed. <a href="about.html#verification">What verified means</a>. Call to confirm details.</p>`}
+      ${verifiedShort ? `<p class="card-verified-line">${escapeHtml(verifiedShort)}.${isStale ? ' <strong>Over 90 days since verification—call to confirm details are current.</strong>' : ''} <a href="about.html#verification">What verified means</a>. Information may change—call to confirm.</p>` : `<p class="card-verified-line">Verification date not listed. <a href="about.html#verification">What verified means</a>. Call to confirm details.</p>`}
     </div>
 
     ${availabilityBadge}

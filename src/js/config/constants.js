@@ -150,7 +150,7 @@ const CSS_CLASSES = {
 const FEATURE_FLAGS = {
   STATEWIDE_MODE: false,           // Enable county filtering and statewide location support
   SHOW_SUD_FILTERS: true,         // Enable service_domain and sud_services filters (needed for eating disorders and substance use)
-  SHOW_VERIFICATION_FILTERS: false // Enable verification recency filter
+  SHOW_VERIFICATION_FILTERS: true // Phase 7.2: verification recency filter + stale badges
 };
 
 // For non-module environments
