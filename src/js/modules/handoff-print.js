@@ -200,20 +200,110 @@
     `;
   }
 
-  function renderDocument(programs, copy, evaluation) {
+  function renderScenarioHeader(scenario) {
+    if (!scenario || typeof scenario !== 'object') return '';
+    const tags = [];
+    if (scenario.care_level) tags.push(scenario.care_level.toUpperCase().replace(/_/g, ' '));
+    if (scenario.geography) tags.push(scenario.geography.replace(/_/g, ' '));
+    if (scenario.insurance_type) tags.push(scenario.insurance_type.replace(/_/g, ' '));
+    if (scenario.age_band) tags.push(`Ages ${scenario.age_band}`);
+    if (scenario.virtual_preference && scenario.virtual_preference !== 'either') tags.push(`Virtual: ${scenario.virtual_preference.replace(/_/g, ' ')}`);
+    if (scenario.transportation_concern) tags.push('Transportation concern');
+    if (scenario.school_coordination) tags.push('School coordination');
+    const needs = Array.isArray(scenario.specialized_needs) ? scenario.specialized_needs : [];
+    needs.forEach((n) => tags.push(n.replace(/_/g, ' ')));
+    if (!tags.length) return '';
+    const tagHtml = tags.map((t) => `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border:1px solid #ccc;border-radius:100px;font-size:11px;">${escapeHtml(t)}</span>`).join('');
+    return `<div class="handoff-print__scenario-header" style="margin:8px 0 14px;"><strong>Scenario:</strong> ${tagHtml}</div>`;
+  }
+
+  function renderReadinessSection(programs, scenario) {
+    if (!window.VMHRHandoffReadiness) return '';
+    const result = window.VMHRHandoffReadiness.evaluate(programs, scenario);
+    const STATUS_COLORS = {
+      ready: '#1a7f5e',
+      needs_confirmation: '#b07d00',
+      weak_handoff: '#c05000',
+      do_not_hand_off: '#d62828',
+    };
+    const color = STATUS_COLORS[result.status] || '#333';
+    const items = (result.failing_checks || []).map((c) => `<li>${escapeHtml(c.message)}</li>`).join('');
+    return `
+      <section class="handoff-print__section" style="border-left:4px solid ${color}; padding-left:12px; margin-bottom:16px;">
+        <strong style="color:${color};">Handoff readiness: ${escapeHtml(result.label)}</strong>
+        ${items ? `<ul style="margin:6px 0 0; padding-left:1.1rem; font-size:13px;">${items}</ul>` : ''}
+        <p style="font-size:11px;color:#666;margin:8px 0 0;">${escapeHtml(result.disclaimer)}</p>
+      </section>`;
+  }
+
+  function renderWhatToConfirmBlock(programs) {
+    const items = [];
+    programs.forEach((p) => {
+      const name = safe(p.program_name);
+      const flags = window.VMHRFrictionFlags ? window.VMHRFrictionFlags.computeFlags(p, null) : [];
+      flags.forEach((flagId) => {
+        const def = window.VMHRFrictionFlags && window.VMHRFrictionFlags.FLAG_DEFINITIONS[flagId];
+        if (def && def.whatToAsk) items.push(`${name}: ${def.whatToAsk}`);
+      });
+    });
+    if (!items.length) items.push('Confirm current intake phone, insurance acceptance, and care-level availability with each program before handing off.');
+    return `
+      <section class="handoff-print__section">
+        <h2>What to confirm on each call</h2>
+        <ul>${items.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
+      </section>`;
+  }
+
+  function renderScenarioAwareTimeline(scenario) {
+    const sc = scenario || {};
+    const isSchool = sc.school_coordination === 'yes';
+    const label = isSchool ? 'School re-entry timeline' : 'Next-step timeline';
+    const items = isSchool
+      ? [
+          { when: 'In the next 24–48 hours', what: 'Make first call to the primary option. Use the call script below.' },
+          { when: 'Within 72 hours', what: 'If no answer, call the backup option. Notify the school counselor of the plan.' },
+          { when: 'Within 7 days', what: 'Confirm intake date. Connect with school on any needed accommodations to discuss.' },
+          { when: 'Before first day back', what: 'Confirm the student\'s care-level engagement with the school support team (without clinical detail).' },
+          { when: 'At any time', what: 'If safety concern escalates, call 988. If immediate danger, call 911.' },
+        ]
+      : [
+          { when: 'In the next 24–48 hours', what: 'Make first call to the primary option. Use the call script below.' },
+          { when: 'Within 72 hours', what: 'If no answer or the program cannot help, call the backup option.' },
+          { when: 'Within 7 days', what: 'Confirm intake date or appointment. Update the family on next steps.' },
+          { when: 'At any time', what: 'If safety concern escalates, call 988. If immediate danger, call 911.' },
+        ];
+    const rows = items.map((i) => `<li><strong>${escapeHtml(i.when)}:</strong> ${escapeHtml(i.what)}</li>`).join('');
+    return `<section class="handoff-print__section"><h2>${escapeHtml(label)}</h2><ol>${rows}</ol></section>`;
+  }
+
+  function renderDocument(programs, copy, evaluation, scenario) {
     const now = new Date();
     const generated = now.toLocaleString();
     const programBlocks = programs.map(renderProgramBlock).join('');
-    const evalStatus = evaluation ? `<p class="handoff-print__meta">Completeness status at print: <strong>${escapeHtml(evaluation.label)}</strong></p>` : '';
+
+    // Phase 9D: readiness status (replaces simple evaluation status)
+    const readinessSection = renderReadinessSection(programs, scenario);
+    const scenarioHeader = renderScenarioHeader(scenario);
+    const confirmBlock = renderWhatToConfirmBlock(programs);
+    const timelineBlock = renderScenarioAwareTimeline(scenario);
+
+    // Legacy completeness fallback if readiness engine not available
+    const legacyStatus = !window.VMHRHandoffReadiness && evaluation
+      ? `<p class="handoff-print__meta">Completeness status at print: <strong>${escapeHtml(evaluation.label)}</strong></p>`
+      : '';
 
     const inner = `
       <h1>Handoff packet</h1>
       <p class="handoff-print__meta">Generated ${escapeHtml(generated)} • ViableMHR neutral directory</p>
+      ${scenarioHeader}
       <div class="handoff-print__disclaimer">${escapeHtml(copy.disclaimer || '')}</div>
-      ${evalStatus}
+      ${readinessSection}
+      ${legacyStatus}
       ${programBlocks}
+      ${confirmBlock}
       ${renderCareLevelBlock(copy)}
       ${renderCallScriptBlock(copy)}
+      ${timelineBlock}
       ${renderBackupPlanSection(copy)}
       ${renderCrisisBlock(copy)}
       <p class="handoff-print__footer">${escapeHtml(copy.footer || '')}</p>
@@ -257,8 +347,9 @@
   /**
    * Open the handoff packet in a new window/tab.
    * @param {Array<Object>} programs - up to 3 programs
+   * @param {Object} [scenario] - optional non-PHI scenario from VMHRScenarioState (Phase 9D)
    */
-  function openPacket(programs) {
+  function openPacket(programs, scenario) {
     const list = Array.isArray(programs) ? programs.filter(Boolean) : [];
     if (!list.length) {
       if (typeof window.showToast === 'function') {
@@ -272,8 +363,10 @@
       ? window.VMHRHandoffCompleteness.evaluatePacket(list)
       : null;
 
+    const sc = scenario || (window.VMHRScenarioState ? window.VMHRScenarioState.load() : null) || null;
+
     loadHandoffCopy().then((copy) => {
-      const html = renderDocument(list, copy, evaluation);
+      const html = renderDocument(list, copy, evaluation, sc);
       const w = window.open('', '_blank', 'noopener,noreferrer');
       if (!w) {
         if (typeof window.showToast === 'function') {

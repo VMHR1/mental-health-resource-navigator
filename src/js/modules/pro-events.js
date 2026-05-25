@@ -34,6 +34,18 @@
     'boards_open_school',
     'submit_open_program',
     'report_outdated_open_program',
+    // Phase 9C/9D: Discharge Handoff Builder events
+    'discharge_builder_start',      // scenario builder first interaction
+    'discharge_builder_complete',   // builder reaches workspace
+    'scenario_field_changed',       // any scenario field changes (field_id + was_default)
+    'workspace_loaded',             // workspace canvas renders
+    'readiness_status_generated',   // readiness status computed (status bucket)
+    'caveat_type_shown',            // friction flag appears in workspace
+    'handoff_packet_print',         // print action invoked
+    'board_used',                   // board "Open as scenario" clicked
+    'handoff_builder_open',         // CTA click from professionals landing
+    'handoff_builder_open_discharge', // CTA click from discharge section
+    'report_outdated_start',        // report-outdated opened from workspace
   ]);
 
   // Allow only enumerable, low-cardinality properties — no free-text.

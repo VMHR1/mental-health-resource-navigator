@@ -547,7 +547,7 @@ function setupEventHandlers(options) {
     }
     
     // Keyboard shortcuts
-    if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+    if (e.key === "/" && !e.ctrlKey && !e.metaKey && els.q) {
       e.preventDefault();
       els.q.focus();
       els.q.select();
@@ -662,16 +662,22 @@ function setupEventHandlers(options) {
     });
   });
 
-  // Modal close buttons
-  els.favoritesModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => callbacks.hideModal(els.favoritesModal));
-  });
-  els.historyModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => callbacks.hideModal(els.historyModal));
-  });
-  els.comparisonModal.querySelectorAll('.modal-close').forEach(btn => {
-    on(btn, "click", () => callbacks.hideModal(els.comparisonModal));
-  });
+  // Modal close buttons (search page only — modals absent on handoff / pro pages)
+  if (els.favoritesModal) {
+    els.favoritesModal.querySelectorAll('.modal-close').forEach(btn => {
+      on(btn, "click", () => callbacks.hideModal(els.favoritesModal));
+    });
+  }
+  if (els.historyModal) {
+    els.historyModal.querySelectorAll('.modal-close').forEach(btn => {
+      on(btn, "click", () => callbacks.hideModal(els.historyModal));
+    });
+  }
+  if (els.comparisonModal) {
+    els.comparisonModal.querySelectorAll('.modal-close').forEach(btn => {
+      on(btn, "click", () => callbacks.hideModal(els.comparisonModal));
+    });
+  }
   
   // Clear comparison
   const clearComparisonBtn = document.getElementById('clearComparison');

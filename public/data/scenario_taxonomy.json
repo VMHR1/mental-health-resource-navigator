@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "description": "Allowed values for the Phase 9C discharge handoff scenario builder. All fields are bands or categories — never patient identifiers. Update this file when adding new care levels or geography options; bump schema_version.",
+    "phi_status": "no_phi",
+    "last_updated": "2026-05-25"
+  },
+  "age_bands": [
+    { "id": "5-9",   "label": "5–9 years",          "min": 5,  "max": 9  },
+    { "id": "10-12", "label": "10–12 years",         "min": 10, "max": 12 },
+    { "id": "13-14", "label": "13–14 years",         "min": 13, "max": 14 },
+    { "id": "15-17", "label": "15–17 years",         "min": 15, "max": 17 },
+    { "id": "18plus","label": "18+ (transitional)",  "min": 18, "max": null }
+  ],
+  "care_levels": [
+    { "id": "php",         "label": "Partial Hospitalization (PHP / Day program)" },
+    { "id": "iop",         "label": "Intensive Outpatient (IOP)" },
+    { "id": "outpatient",  "label": "Outpatient (weekly therapy)" },
+    { "id": "residential", "label": "Residential" },
+    { "id": "navigation",  "label": "Care navigation / resource coordination" },
+    { "id": "unsure",      "label": "Unsure — help me find the right level" }
+  ],
+  "insurance_types": [
+    { "id": "medicaid_chip",  "label": "Medicaid / CHIP" },
+    { "id": "commercial",     "label": "Commercial insurance (named plan)" },
+    { "id": "tricare",        "label": "TRICARE / military" },
+    { "id": "self_pay",       "label": "Self-pay / sliding scale" },
+    { "id": "uninsured",      "label": "Uninsured — looking for low-cost options" },
+    { "id": "unsure",         "label": "Unsure" }
+  ],
+  "geography": [
+    { "id": "dallas",       "label": "Dallas" },
+    { "id": "fort_worth",   "label": "Fort Worth" },
+    { "id": "plano",        "label": "Plano" },
+    { "id": "frisco",       "label": "Frisco" },
+    { "id": "mckinney",     "label": "McKinney" },
+    { "id": "arlington",    "label": "Arlington" },
+    { "id": "garland",      "label": "Garland" },
+    { "id": "irving",       "label": "Irving" },
+    { "id": "denton",       "label": "Denton" },
+    { "id": "lewisville",   "label": "Lewisville / Flower Mound" },
+    { "id": "richardson",   "label": "Richardson / Allen" },
+    { "id": "carrollton",   "label": "Carrollton / Farmers Branch" },
+    { "id": "grand_prairie","label": "Grand Prairie / Mansfield" },
+    { "id": "dfw_metro",    "label": "DFW metro — no city preference" },
+    { "id": "virtual_ok",   "label": "Virtual — no geographic constraint" }
+  ],
+  "safety_urgency": [
+    { "id": "routine",    "label": "Routine post-discharge — no acute safety concern" },
+    { "id": "heightened", "label": "Heightened concern — safety plan in place, monitoring ongoing" },
+    { "id": "crisis",     "label": "Active crisis — stop here and call 988 or 911" }
+  ],
+  "specialized_needs": [
+    { "id": "eating_disorder",   "label": "Eating disorder" },
+    { "id": "substance_use",     "label": "Substance use / SUD" },
+    { "id": "co_occurring",      "label": "Co-occurring mental health + SUD" },
+    { "id": "autism_neurodiv",   "label": "Autism / neurodiversity support" },
+    { "id": "si_nssi",           "label": "SI / NSSI history (no clinical detail needed)" },
+    { "id": "lgbtq_affirming",   "label": "LGBTQ+ affirming preferred" },
+    { "id": "spanish_speaking",  "label": "Spanish-speaking services preferred" }
+  ],
+  "virtual_preference": [
+    { "id": "in_person_only",   "label": "In-person only" },
+    { "id": "virtual_ok",       "label": "Virtual acceptable" },
+    { "id": "virtual_preferred","label": "Virtual preferred" },
+    { "id": "either",           "label": "Either is fine" }
+  ],
+  "scenario_presets": [
+    {
+      "id": "post-discharge-iop-medicaid",
+      "label": "Post-discharge IOP — Medicaid — DFW",
+      "description": "Common discharge scenario: step-down from inpatient to IOP with Medicaid coverage in DFW metro.",
+      "defaults": {
+        "care_level": "iop",
+        "insurance_type": "medicaid_chip",
+        "geography": "dfw_metro",
+        "virtual_preference": "either",
+        "safety_urgency": "routine"
+      }
+    },
+    {
+      "id": "post-discharge-php-commercial",
+      "label": "Post-discharge PHP — Commercial insurance — DFW",
+      "description": "Step-down to PHP/day program with commercial insurance in DFW metro.",
+      "defaults": {
+        "care_level": "php",
+        "insurance_type": "commercial",
+        "geography": "dfw_metro",
+        "virtual_preference": "in_person_only",
+        "safety_urgency": "routine"
+      }
+    },
+    {
+      "id": "school-reentry-outpatient",
+      "label": "School re-entry — Outpatient — DFW",
+      "description": "Adolescent stepping down to outpatient therapy with school coordination needed.",
+      "defaults": {
+        "care_level": "outpatient",
+        "geography": "dfw_metro",
+        "virtual_preference": "either",
+        "safety_urgency": "routine",
+        "school_coordination": true
+      }
+    },
+    {
+      "id": "uninsured-low-cost",
+      "label": "Uninsured / low-income — sliding scale",
+      "description": "Family without insurance looking for low-cost or sliding-scale options.",
+      "defaults": {
+        "insurance_type": "uninsured",
+        "geography": "dfw_metro",
+        "virtual_preference": "either",
+        "safety_urgency": "routine"
+      }
+    }
+  ]
+}

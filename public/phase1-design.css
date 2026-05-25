@@ -2459,3 +2459,82 @@ body.navigator-mode-on .navigator-overlay { display: block; }
     display: none !important;
   }
 }
+
+/* ===== Phase 9C/9D: Intake confidence pills ===== */
+.confidence-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 100px;
+  border: 1px solid transparent;
+  vertical-align: middle;
+}
+.confidence-pill--provider {
+  background: #d1f0e8;
+  border-color: #2a9d8f;
+  color: #1a6b60;
+}
+.confidence-pill--phone {
+  background: #ddf0fb;
+  border-color: #3a8dc5;
+  color: #1b5e8e;
+}
+.confidence-pill--website {
+  background: #f0f4ff;
+  border-color: #5c7cfa;
+  color: #2a4ab5;
+}
+.confidence-pill--unconfirmed {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #666;
+}
+
+/* Intake verify notice */
+.intake-verify-notice {
+  font-size: 12px;
+  color: #7a5800;
+  background: #fff8e6;
+  border: 1px solid #e8c840;
+  border-radius: 6px;
+  padding: 5px 9px;
+  margin: 6px 0 0;
+}
+
+/* Phone unlabeled notice */
+.phone-unlabeled {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ===== Phase 9D: Readiness status — needs-confirmation and critical variants ===== */
+.handoff-status--needs-confirmation {
+  border-left-color: #b07d00;
+  background: #fffbf0;
+}
+.handoff-status--needs-confirmation .handoff-status__value {
+  color: #b07d00;
+}
+.handoff-status--weak {
+  border-left-color: #c05000;
+  background: #fff5f0;
+}
+.handoff-status--weak .handoff-status__value {
+  color: #c05000;
+}
+.handoff-status--critical {
+  border-left-color: #d62828;
+  background: #fff0f0;
+}
+.handoff-status--critical .handoff-status__value {
+  color: #d62828;
+}
+.handoff-status__disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+

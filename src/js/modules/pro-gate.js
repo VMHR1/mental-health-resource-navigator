@@ -15,10 +15,13 @@
     'regional-snapshot',
     'changelog',
     'export',
+    'handoff',  // Phase 9C: Discharge Handoff Builder
   ];
 
   let configCache = null;
   let overlayEl = null;
+  /** @type {Promise<boolean>|null} Resolves when overlay unlock succeeds (or gate not needed). */
+  let overlayPromise = null;
 
   function safe(x) {
     return (x == null ? '' : String(x)).trim();
@@ -133,23 +136,25 @@
 
   function showOverlay(config, options) {
     options = options || {};
-    if (overlayEl) return;
+    if (isUnlocked()) return Promise.resolve(true);
+    if (overlayPromise) return overlayPromise;
 
-    document.documentElement.classList.add('pro-gate-locked');
+    overlayPromise = new Promise((resolve) => {
+      document.documentElement.classList.add('pro-gate-locked');
 
-    const panel = document.createElement('div');
-    panel.className = 'pro-gate';
-    panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-labelledby', 'proGateTitle');
+      const panel = document.createElement('div');
+      panel.className = 'pro-gate';
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('aria-labelledby', 'proGateTitle');
 
-    const reason = options.reason === 'navigator'
-      ? 'Navigator mode and professional tools are in preview.'
-      : 'The professional section is in preview.';
+      const reason = options.reason === 'navigator'
+        ? 'Navigator mode and professional tools are in preview.'
+        : 'The professional section is in preview.';
 
-    const hint = safe(config && config.hint) || 'Contact the site owner for access.';
+      const hint = safe(config && config.hint) || 'Contact the site owner for access.';
 
-    panel.innerHTML = `
+      panel.innerHTML = `
       <div class="pro-gate__card">
         <h1 id="proGateTitle" class="pro-gate__title">Professional preview</h1>
         <p class="pro-gate__lead">${escapeHtml(reason)} Enter the preview password to continue.</p>
@@ -167,38 +172,43 @@
       </div>
     `;
 
-    overlayEl = document.createElement('div');
-    overlayEl.className = 'pro-gate-overlay';
-    overlayEl.appendChild(panel);
-    document.body.appendChild(overlayEl);
+      overlayEl = document.createElement('div');
+      overlayEl.className = 'pro-gate-overlay';
+      overlayEl.appendChild(panel);
+      document.body.appendChild(overlayEl);
 
-    const form = panel.querySelector('#proGateForm');
-    const input = panel.querySelector('#proGatePassword');
-    const errorEl = panel.querySelector('#proGateError');
-    const submitBtn = panel.querySelector('#proGateSubmit');
+      const form = panel.querySelector('#proGateForm');
+      const input = panel.querySelector('#proGatePassword');
+      const errorEl = panel.querySelector('#proGateError');
+      const submitBtn = panel.querySelector('#proGateSubmit');
 
-    setTimeout(() => input && input.focus(), 50);
+      setTimeout(() => input && input.focus(), 50);
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (errorEl) {
-        errorEl.hidden = true;
-        errorEl.textContent = '';
-      }
-      if (submitBtn) submitBtn.disabled = true;
-      const ok = await verifyPassword(input ? input.value : '', config);
-      if (submitBtn) submitBtn.disabled = false;
-      if (!ok) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
         if (errorEl) {
-          errorEl.textContent = 'Incorrect password. Try again.';
-          errorEl.hidden = false;
+          errorEl.hidden = true;
+          errorEl.textContent = '';
         }
-        if (input) input.select();
-        return;
-      }
-      setUnlocked(true);
-      removeOverlay();
+        if (submitBtn) submitBtn.disabled = true;
+        const ok = await verifyPassword(input ? input.value : '', config);
+        if (submitBtn) submitBtn.disabled = false;
+        if (!ok) {
+          if (errorEl) {
+            errorEl.textContent = 'Incorrect password. Try again.';
+            errorEl.hidden = false;
+          }
+          if (input) input.select();
+          return;
+        }
+        setUnlocked(true);
+        removeOverlay();
+        overlayPromise = null;
+        resolve(true);
+      });
     });
+
+    return overlayPromise;
   }
 
   /**

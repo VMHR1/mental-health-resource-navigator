@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Discharge Handoff Builder • ViableMHR</title>
+  <meta name="description" content="Build a discharge handoff plan for a youth mental health step-down. No patient identifiers. Neutral, free, client-side only." />
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://viablemhr.com/handoff.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Discharge Handoff Builder • ViableMHR">
+  <meta property="og:description" content="Build a discharge-ready handoff plan. Scenario-based, no PHI, neutral directory.">
+  <meta property="og:url" content="https://viablemhr.com/handoff.html">
+  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
+  <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.statcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://c.statcounter.com; connect-src 'self' https://api.github.com https://formspree.io https://api.qrserver.com https://www.statcounter.com https://c.statcounter.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self' https://formspree.io;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f7f6f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="phase1-design.css?v=18">
+  <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script defer src="security.js?v=2"></script>
+  <!-- Core data + search stack (needed for programDataMap, getVerificationFreshness) -->
+  <script defer src="js/data-validator.js?v=3"></script>
+  <script defer src="js/config/constants.js?v=6"></script>
+  <script defer src="js/utils/location-match.js?v=1"></script>
+  <script defer src="js/utils/helpers.js?v=5"></script>
+  <script defer src="js/modules/storage.js?v=3"></script>
+  <script defer src="js/modules/search.js?v=14"></script>
+  <script defer src="js/modules/empty-state.js?v=1"></script>
+  <script defer src="js/modules/product-metrics.js?v=1"></script>
+  <script defer src="js/modules/filters.js?v=6"></script>
+  <script defer src="js/modules/sort.js?v=3"></script>
+  <script defer src="js/modules/distance.js?v=2"></script>
+  <script defer src="js/modules/performance.js?v=4"></script>
+  <script defer src="js/modules/render.js?v=4"></script>
+  <script defer src="js/modules/events.js?v=9"></script>
+  <script defer src="js/state-manager.js?v=3"></script>
+  <script defer src="app.js?v=26"></script>
+  <!-- Pro gate + events -->
+  <script defer src="js/modules/pro-gate.js?v=2"></script>
+  <script defer src="js/modules/pro-events.js?v=1"></script>
+  <!-- Phase 9C/9D handoff modules -->
+  <script defer src="js/modules/match-explain.js?v=1"></script>
+  <script defer src="js/modules/friction-flags.js?v=1"></script>
+  <script defer src="js/modules/handoff-completeness.js?v=1"></script>
+  <script defer src="js/modules/handoff-print.js?v=1"></script>
+  <script defer src="js/modules/scenario-state.js?v=1"></script>
+  <script defer src="js/modules/intake-confidence.js?v=1"></script>
+  <script defer src="js/modules/handoff-readiness.js?v=1"></script>
+  <script defer src="js/modules/handoff-workspace.js?v=1"></script>
+  <script defer src="js/modules/handoff-builder.js?v=1"></script>
+  <style>
+    /* ===== Handoff page layout ===== */
+    .handoff-page { max-width: 980px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .handoff-page h1 { font-size: clamp(1.75rem, 4vw, 2.3rem); font-weight: 950; margin: 0 0 8px; }
+    .handoff-lead { color: var(--muted); margin: 0 0 20px; line-height: 1.55; max-width: 680px; }
+
+    /* Step tabs */
+    .handoff-steps { display: flex; gap: 0; border-bottom: 2px solid var(--stroke); margin-bottom: 28px; }
+    .handoff-step-tab { padding: 10px 18px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: default; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+    .handoff-step-tab.active { color: var(--vm-accent-deep); border-bottom-color: var(--vm-accent-deep); }
+    .handoff-step-tab.done { color: var(--vm-ink); }
+
+    /* Scenario builder */
+    .scenario-builder { background: var(--cardSolid); border: 1px solid var(--stroke); border-radius: 18px; padding: 28px; }
+    .scenario-builder h2 { font-size: 1.2rem; font-weight: 800; margin: 0 0 6px; }
+    .scenario-builder .builder-lead { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+    .scenario-field-group { margin-bottom: 22px; }
+    .scenario-field-group > label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--vm-ink); }
+    .scenario-field-group .field-hint { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: block; }
+    .scenario-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--stroke); border-radius: 10px; font-size: 15px; background: #fff; color: var(--vm-ink); appearance: none; cursor: pointer; }
+    .scenario-select:focus { outline: 2px solid var(--vm-accent-deep); outline-offset: 1px; }
+    .scenario-toggle-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .scenario-toggle { position: relative; display: flex; align-items: center; gap: 6px; padding: 8px 13px; border: 1.5px solid var(--stroke); border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; background: #fff; transition: background .15s, border-color .15s; user-select: none; }
+    .scenario-toggle input[type="checkbox"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .scenario-toggle.checked { background: var(--vm-accent-soft); border-color: var(--vm-accent-deep); color: var(--vm-accent-deep); font-weight: 600; }
+    .scenario-toggle:focus-within { outline: 2px solid var(--vm-accent-deep); outline-offset: 2px; border-radius: 100px; }
+    .builder-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+    .builder-clear { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
+    .builder-clear:hover { color: var(--vm-ink); }
+
+    /* Crisis path intercept */
+    .crisis-intercept { background: #fff0f0; border: 2px solid #d62828; border-radius: 16px; padding: 24px 28px; margin: 16px 0; text-align: center; }
+    .crisis-intercept h2 { color: #d62828; margin: 0 0 10px; font-size: 1.25rem; }
+    .crisis-intercept p { margin: 0 0 14px; line-height: 1.6; }
+    .crisis-intercept .crisis-cta { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .crisis-intercept a.crisis-btn { background: #d62828; color: #fff; padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 15px; text-decoration: none; }
+    .crisis-intercept a.crisis-btn:hover { background: #b01f1f; }
+
+    /* Workspace canvas */
+    .workspace-canvas { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+    @media (max-width: 768px) { .workspace-canvas { grid-template-columns: 1fr; } }
+
+    .workspace-main h2 { font-size: 1.05rem; font-weight: 800; margin: 0 0 12px; }
+    .workspace-programs { display: flex; flex-direction: column; gap: 14px; }
+    .workspace-program-card { background: var(--cardSolid); border: 1.5px solid var(--stroke); border-radius: 14px; padding: 18px 20px; }
+    .workspace-program-card h3 { font-size: 1rem; font-weight: 700; margin: 0 0 4px; }
+    .workspace-program-card .wpc-org { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+    .workspace-program-card .wpc-meta { font-size: 13px; color: var(--vm-ink); line-height: 1.7; }
+    .workspace-program-card .wpc-phone { font-size: 13px; margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .wpc-phone-line { display: flex; gap: 6px; align-items: center; }
+    .wpc-phone-line .phone-label-pill { font-size: 11px; font-weight: 600; background: var(--vm-accent-soft); color: var(--vm-accent-deep); padding: 2px 7px; border-radius: 100px; }
+    .wpc-phone-line .confidence-pill { font-size: 10px; color: var(--muted); border: 1px solid var(--stroke); padding: 1px 5px; border-radius: 100px; }
+    .wpc-flags { margin-top: 10px; }
+    .workspace-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 20px 0 8px; }
+    .workspace-empty { padding: 28px 20px; text-align: center; color: var(--muted); font-size: 14px; border: 2px dashed var(--stroke); border-radius: 14px; }
+
+    /* Call order */
+    .call-order-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .call-order-item { background: var(--cardSolid); border: 1.5px solid var(--stroke); border-radius: 12px; padding: 12px 16px; display: flex; gap: 12px; align-items: flex-start; }
+    .call-order-num { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: var(--vm-accent-soft); color: var(--vm-accent-deep); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .call-order-body { font-size: 13px; line-height: 1.55; }
+    .call-order-reason { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* What-to-confirm list */
+    .confirm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .confirm-item { font-size: 13px; display: flex; gap: 8px; padding: 8px 12px; border: 1.5px solid var(--stroke); border-radius: 10px; background: var(--cardSolid); }
+    .confirm-item::before { content: "✓"; color: var(--vm-accent-deep); font-weight: 800; flex-shrink: 0; }
+
+    /* Right sidebar */
+    .workspace-sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .sidebar-panel { background: var(--cardSolid); border: 1.5px solid var(--stroke); border-radius: 14px; padding: 18px; }
+    .sidebar-panel h3 { font-size: 14px; font-weight: 700; margin: 0 0 10px; }
+    .sidebar-panel p, .sidebar-panel li { font-size: 13px; line-height: 1.55; color: var(--vm-ink); }
+    .sidebar-panel ul { margin: 0; padding-left: 1.1rem; }
+    .sidebar-panel li { margin-bottom: 5px; }
+
+    /* Next-step timeline */
+    .timeline-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .timeline-item { display: flex; gap: 10px; align-items: flex-start; }
+    .timeline-marker { width: 8px; height: 8px; min-width: 8px; border-radius: 50%; background: var(--vm-accent-deep); margin-top: 5px; }
+    .timeline-body { font-size: 13px; line-height: 1.5; }
+    .timeline-when { font-weight: 700; font-size: 12px; color: var(--vm-accent-deep); display: block; margin-bottom: 1px; }
+
+    /* Workspace actions */
+    .workspace-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+    /* Packet step */
+    .packet-meta-bar { background: var(--cardSolid); border: 1px solid var(--stroke); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: var(--muted); }
+    .packet-meta-bar strong { color: var(--vm-ink); }
+    .packet-action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .packet-disclaimer { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.55; border-top: 1px solid var(--stroke); padding-top: 14px; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="crisis-banner" role="region" aria-label="Crisis information">
+    <div class="inner">
+      <p class="crisis-banner__text">
+        If someone is in <strong>immediate physical danger</strong>, call <strong>911</strong>.
+        For crisis support, call or text <strong>988</strong>.
+        <strong>This tool is not emergency care.</strong>
+      </p>
+      <div class="crisis-banner__actions">
+        <a href="tel:988">Call/Text 988</a>
+        <a href="https://www.samhsa.gov/find-help/988" class="crisis-banner__secondary" target="_blank" rel="noopener noreferrer">What is 988?<span class="sr-only"> (opens in new tab)</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="vm-header">
+      <div class="header-content">
+        <div class="brand">
+          <a href="/" class="mark" aria-label="ViableMHR home">
+            <img src="/brand-mark.svg?v=2" alt="" width="46" height="46" decoding="async" />
+          </a>
+          <div>
+            <p class="kicker">ViableMHR</p>
+            <p class="title">Texas youth mental health resources</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="btnlike" href="professionals.html">For professionals</a>
+          <a class="btnlike" href="index.html">Search programs</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="handoff-page">
+      <h1>Discharge handoff builder</h1>
+      <p class="handoff-lead">
+        Build a discharge-ready handoff plan for a youth mental health step-down. Enter the discharge scenario — no patient names, DOB, or MRN — and get a structured packet with primary options, a backup, a call order, and a crisis fallback.
+      </p>
+
+      <!-- Step tabs -->
+      <nav class="handoff-steps" aria-label="Handoff builder steps">
+        <span class="handoff-step-tab active" data-step-label="scenario" aria-current="step">1. Scenario</span>
+        <span class="handoff-step-tab" data-step-label="workspace">2. Workspace</span>
+        <span class="handoff-step-tab" data-step-label="packet">3. Packet</span>
+      </nav>
+
+      <!-- Step 1: Scenario builder -->
+      <section id="handoff-step-scenario" data-handoff-step="scenario" aria-label="Scenario builder">
+        <div class="scenario-builder">
+          <h2>Build the scenario</h2>
+          <p class="builder-lead">
+            All fields are bands and categories — no patient identifiers. Inputs live in your browser session only and are never uploaded.
+            <strong>If someone is in active crisis, stop here and call 988 or 911.</strong>
+          </p>
+
+          <div class="scenario-field-group">
+            <label for="scenario-safety">Safety urgency</label>
+            <span class="field-hint">If active crisis, the builder will route you to 988/911 guidance immediately.</span>
+            <select id="scenario-safety" class="scenario-select" data-scenario-field="safety_urgency">
+              <option value="">Select…</option>
+              <option value="routine">Routine post-discharge — no acute safety concern</option>
+              <option value="heightened">Heightened concern — safety plan in place, monitoring ongoing</option>
+              <option value="crisis">Active crisis — stop here and call 988 or 911</option>
+            </select>
+          </div>
+
+          <!-- Crisis intercept (hidden until crisis is selected) -->
+          <div id="crisis-intercept" class="crisis-intercept" hidden aria-live="assertive">
+            <h2>Active crisis — do not use this tool</h2>
+            <p>This tool is for discharge planning, not crisis response. For an active crisis, call 988 (Suicide &amp; Crisis Lifeline) or 911 for immediate physical danger.</p>
+            <div class="crisis-cta">
+              <a href="tel:988" class="crisis-btn">Call/Text 988</a>
+              <a href="https://www.samhsa.gov/find-help/988" class="crisis-btn" target="_blank" rel="noopener noreferrer">What is 988?</a>
+            </div>
+            <p style="margin-top:14px; font-size:13px;">
+              After the immediate crisis is resolved, <a href="boards.html#crisis-urgent-support">browse crisis and urgent support resources</a> or <a href="#" id="crisis-back-link">return to the handoff builder</a>.
+            </p>
+          </div>
+
+          <div id="scenario-fields-main">
+            <div class="scenario-field-group">
+              <label for="scenario-age">Age band</label>
+              <span class="field-hint">Band only — not the patient's date of birth.</span>
+              <select id="scenario-age" class="scenario-select" data-scenario-field="age_band">
+                <option value="">Select…</option>
+                <option value="5-9">5–9 years</option>
+                <option value="10-12">10–12 years</option>
+                <option value="13-14">13–14 years</option>
+                <option value="15-17">15–17 years</option>
+                <option value="18plus">18+ (transitional)</option>
+              </select>
+            </div>
+
+            <div class="scenario-field-group">
+              <label for="scenario-care-level">Care level sought</label>
+              <select id="scenario-care-level" class="scenario-select" data-scenario-field="care_level">
+                <option value="">Select…</option>
+                <option value="php">Partial Hospitalization (PHP / Day program)</option>
+                <option value="iop">Intensive Outpatient (IOP)</option>
+                <option value="outpatient">Outpatient (weekly therapy)</option>
+                <option value="residential">Residential</option>
+                <option value="navigation">Care navigation / resource coordination</option>
+                <option value="unsure">Unsure — help me find options</option>
+              </select>
+            </div>
+
+            <div class="scenario-field-group">
+              <label for="scenario-geo">City / area</label>
+              <span class="field-hint">Geographic band — not a street address.</span>
+              <select id="scenario-geo" class="scenario-select" data-scenario-field="geography">
+                <option value="">Select…</option>
+                <option value="dallas">Dallas</option>
+                <option value="fort_worth">Fort Worth</option>
+                <option value="plano">Plano</option>
+                <option value="frisco">Frisco</option>
+                <option value="mckinney">McKinney</option>
+                <option value="arlington">Arlington</option>
+                <option value="garland">Garland</option>
+                <option value="irving">Irving</option>
+                <option value="denton">Denton</option>
+                <option value="lewisville">Lewisville / Flower Mound</option>
+                <option value="richardson">Richardson / Allen</option>
+                <option value="carrollton">Carrollton / Farmers Branch</option>
+                <option value="grand_prairie">Grand Prairie / Mansfield</option>
+                <option value="dfw_metro">DFW metro — no city preference</option>
+                <option value="virtual_ok">Virtual — no geographic constraint</option>
+              </select>
+            </div>
+
+            <div class="scenario-field-group">
+              <label for="scenario-insurance">Insurance type</label>
+              <span class="field-hint">Insurance category — not a member ID or plan number.</span>
+              <select id="scenario-insurance" class="scenario-select" data-scenario-field="insurance_type">
+                <option value="">Select…</option>
+                <option value="medicaid_chip">Medicaid / CHIP</option>
+                <option value="commercial">Commercial insurance (named plan)</option>
+                <option value="tricare">TRICARE / military</option>
+                <option value="self_pay">Self-pay / sliding scale</option>
+                <option value="uninsured">Uninsured — looking for low-cost options</option>
+                <option value="unsure">Unsure</option>
+              </select>
+            </div>
+
+            <div class="scenario-field-group">
+              <label for="scenario-virtual">Virtual acceptable?</label>
+              <select id="scenario-virtual" class="scenario-select" data-scenario-field="virtual_preference">
+                <option value="">Select…</option>
+                <option value="in_person_only">In-person only</option>
+                <option value="virtual_ok">Virtual acceptable</option>
+                <option value="virtual_preferred">Virtual preferred</option>
+                <option value="either">Either is fine</option>
+              </select>
+            </div>
+
+            <div class="scenario-field-group">
+              <label>Additional considerations</label>
+              <div class="scenario-toggle-row" role="group" aria-label="Additional scenario considerations">
+                <label class="scenario-toggle" id="toggle-transportation">
+                  <input type="checkbox" data-scenario-field="transportation_concern" value="yes">
+                  Transportation concern
+                </label>
+                <label class="scenario-toggle" id="toggle-school">
+                  <input type="checkbox" data-scenario-field="school_coordination" value="yes">
+                  School coordination needed
+                </label>
+              </div>
+            </div>
+
+            <div class="scenario-field-group">
+              <label>Specialized needs <span style="font-weight:400; color:var(--muted);">(select all that apply)</span></label>
+              <div class="scenario-toggle-row" role="group" aria-label="Specialized needs">
+                <label class="scenario-toggle" id="toggle-eating">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="eating_disorder">
+                  Eating disorder
+                </label>
+                <label class="scenario-toggle" id="toggle-sud">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="substance_use">
+                  Substance use / SUD
+                </label>
+                <label class="scenario-toggle" id="toggle-cooccurring">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="co_occurring">
+                  Co-occurring MH + SUD
+                </label>
+                <label class="scenario-toggle" id="toggle-autism">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="autism_neurodiv">
+                  Autism / neurodiversity
+                </label>
+                <label class="scenario-toggle" id="toggle-si">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="si_nssi">
+                  SI / NSSI history
+                </label>
+                <label class="scenario-toggle" id="toggle-lgbtq">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="lgbtq_affirming">
+                  LGBTQ+ affirming preferred
+                </label>
+                <label class="scenario-toggle" id="toggle-spanish">
+                  <input type="checkbox" data-scenario-field="specialized_needs" value="spanish_speaking">
+                  Spanish-speaking preferred
+                </label>
+              </div>
+            </div>
+
+            <div class="builder-actions">
+              <button type="button" class="btn-primary" id="build-workspace-btn">Build workspace</button>
+              <a href="boards.html" class="btnlike">Start from a board instead</a>
+              <button type="button" class="builder-clear" id="clear-scenario-btn">Clear scenario</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Workspace canvas -->
+      <section id="handoff-step-workspace" data-handoff-step="workspace" aria-label="Handoff workspace" hidden>
+        <!-- Readiness banner (populated by handoff-readiness.js) -->
+        <div id="handoff-readiness-host" aria-live="polite"></div>
+
+        <div class="workspace-canvas">
+          <!-- Left: programs + call order + confirm list -->
+          <div class="workspace-main">
+            <div id="workspace-scenario-summary" style="margin-bottom:16px; font-size:13px; color:var(--muted);"></div>
+
+            <h2>Primary options</h2>
+            <div id="workspace-primary" class="workspace-programs">
+              <div class="workspace-empty">Building primary options…</div>
+            </div>
+
+            <div class="workspace-section-label">Backup options</div>
+            <div id="workspace-backup" class="workspace-programs">
+              <div class="workspace-empty">Building backup options…</div>
+            </div>
+
+            <div class="workspace-section-label">Call order</div>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">Ordered by operational signals only: verification freshness, labeled intake phone, geographic fit. Not a quality ranking.</p>
+            <ol class="call-order-list" id="workspace-call-order" aria-label="Recommended call order"></ol>
+
+            <div class="workspace-section-label">What to confirm on each call</div>
+            <ul class="confirm-list" id="workspace-confirm-list" aria-label="Confirmation checklist"></ul>
+
+            <div class="workspace-actions">
+              <button type="button" class="btn-primary" id="preview-packet-btn">Preview &amp; print packet</button>
+              <button type="button" class="btnlike" id="edit-scenario-btn">Edit scenario</button>
+            </div>
+          </div>
+
+          <!-- Right sidebar: readiness, timeline, crisis -->
+          <aside class="workspace-sidebar" aria-label="Handoff status and next steps">
+            <div class="sidebar-panel">
+              <h3>Next-step timeline</h3>
+              <ul class="timeline-list" id="workspace-timeline">
+                <li class="timeline-item">
+                  <span class="timeline-marker"></span>
+                  <span class="timeline-body"><span class="timeline-when">In the next 24–48 hours</span>Make first call to the primary option. Use the call script in the packet.</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-marker"></span>
+                  <span class="timeline-body"><span class="timeline-when">Within 72 hours</span>If no answer or the program cannot help, call the backup option.</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-marker"></span>
+                  <span class="timeline-body"><span class="timeline-when">Within 7 days</span>Confirm intake date or appointment. Update the family on next steps.</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-marker"></span>
+                  <span class="timeline-body"><span class="timeline-when">At any time</span>If safety concern escalates, call 988. If immediate danger, call 911.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="sidebar-panel" style="border-color: #d62828; background: #fff8f8;">
+              <h3 style="color:#d62828;">Crisis fallback</h3>
+              <p>If at any point safety deteriorates:</p>
+              <ul>
+                <li><strong>Call or text 988</strong> — Suicide &amp; Crisis Lifeline</li>
+                <li><strong>Call 911</strong> for immediate physical danger</li>
+                <li><a href="boards.html#crisis-urgent-support">Crisis and urgent support board</a></li>
+              </ul>
+              <p style="margin-top:8px;">ViableMHR is not emergency care.</p>
+            </div>
+
+            <div class="sidebar-panel">
+              <h3>Scenario summary</h3>
+              <ul id="sidebar-scenario-tags" style="list-style:none; padding:0; margin:0;"></ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Step 3: Packet preview -->
+      <section id="handoff-step-packet" data-handoff-step="packet" aria-label="Packet preview" hidden>
+        <div id="readiness-banner-packet" aria-live="polite"></div>
+        <div class="packet-meta-bar" id="packet-meta-bar">
+          <strong>Handoff packet ready.</strong> Review the information below before printing. All content is from the ViableMHR directory — confirm details with each program before handing off.
+        </div>
+        <div class="packet-action-row">
+          <button type="button" class="btn-primary" id="packet-print-btn">Print / Save as PDF</button>
+          <button type="button" class="btnlike" id="packet-edit-scenario-btn">Edit scenario</button>
+          <button type="button" class="btnlike" id="packet-edit-workspace-btn">Back to workspace</button>
+        </div>
+        <div id="packet-preview-host" style="margin-top:20px;"></div>
+        <div class="packet-disclaimer">
+          <strong>Disclaimer:</strong> This packet is informational only. It is not medical advice, not a clinical recommendation, and not a referral. Confirm all details with each program before handing off to the family. ViableMHR is a neutral directory; we do not rank programs by quality. Programs may change their intake, insurance, or care-level information between our verification cycles — always verify current details by phone. For a crisis, call 988 or 911.
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
+      <p style="margin-top: 12px; font-size: 13px;">
+        <a href="index.html">For families</a>
+        <span aria-hidden="true"> • </span>
+        <a href="professionals.html">For professionals</a>
+        <span aria-hidden="true"> • </span>
+        <a href="boards.html">Boards</a>
+        <span aria-hidden="true"> • </span>
+        <a href="guides.html">Guides</a>
+        <span aria-hidden="true"> • </span>
+        <a href="about.html">About</a>
+        <span aria-hidden="true"> • </span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span aria-hidden="true"> • </span>
+        <a href="terms.html">Terms of Service</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Default Statcounter code -->
+  <script type="text/javascript">
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
+  </script>
+  <script type="text/javascript"
+  src="https://www.statcounter.com/counter/counter.js" async></script>
+  <noscript><div class="statcounter"><a title="Web Analytics"
+  href="https://statcounter.com/" target="_blank"><img class="statcounter"
+  src="https://c.statcounter.com/13198280/0/601ff835/1/" alt="Web Analytics"
+  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+</body>
+</html>

@@ -60,6 +60,14 @@ function buildSnapshot(programs, metrics, period) {
   let recentlyAdded = 0;
   let recentlyUpdated = 0;
 
+  // Phase 9B: new field coverage counts
+  let hasVerificationTier = 0;
+  let hasIntakePhone = 0;
+  let hasReferralInfo = 0;
+  let hasVirtualField = 0;
+  let hasSchoolCoordination = 0;
+  let hasMedicaidPlans = 0;
+
   const cityCareCounts = new Map();
   const careLevels = new Set();
 
@@ -89,6 +97,14 @@ function buildSnapshot(programs, metrics, period) {
     } else {
       careLevels.add(care);
     }
+
+    // Phase 9B field coverage tracking
+    if (p.verification_tier && p.verification_tier !== 'unconfirmed') hasVerificationTier++;
+    if (safeStr(p.intake_phone)) hasIntakePhone++;
+    if (p.referral_required != null || p.self_referral_accepted != null) hasReferralInfo++;
+    if (p.virtual_available != null) hasVirtualField++;
+    if (p.school_coordination != null) hasSchoolCoordination++;
+    if (Array.isArray(p.medicaid_plans) && p.medicaid_plans.length > 0) hasMedicaidPlans++;
 
     const locations = Array.isArray(p.locations) ? p.locations : [];
     locations.forEach((loc) => {
@@ -134,6 +150,22 @@ function buildSnapshot(programs, metrics, period) {
         insurance_clear: unclearInsurance,
         intake_phone_labeled: missingIntakeLabel,
         care_level: missingCareLevel,
+      },
+      phase9b_field_coverage: {
+        total_programs: total,
+        has_verification_tier: hasVerificationTier,
+        missing_verification_tier: total - hasVerificationTier,
+        has_intake_phone: hasIntakePhone,
+        missing_intake_phone: total - hasIntakePhone,
+        has_referral_info: hasReferralInfo,
+        missing_referral_info: total - hasReferralInfo,
+        has_virtual_field: hasVirtualField,
+        missing_virtual_field: total - hasVirtualField,
+        has_school_coordination: hasSchoolCoordination,
+        missing_school_coordination: total - hasSchoolCoordination,
+        has_medicaid_plans: hasMedicaidPlans,
+        missing_medicaid_plans: total - hasMedicaidPlans,
+        note: "Phase 9B backfill progress. Targets: >=80% PHP/IOP records with intake_phone and verification_tier within one quarter."
       },
     },
     thin_coverage: thinCoverage,

@@ -1,7 +1,7 @@
 {
   "metadata": {
     "schema_version": 1,
-    "generated_at": "2026-05-25T06:47:27.983Z",
+    "generated_at": "2026-05-25T19:01:35.725Z",
     "period": "2026-Q2",
     "total_programs": 112,
     "methodology": "Counts and buckets only. No raw search queries, no patient identifiers. Stale = last_verified > 90 days or missing. Thin coverage = <= 2 programs for a (city, care_level) pair."
@@ -14,6 +14,22 @@
       "insurance_clear": 10,
       "intake_phone_labeled": 112,
       "care_level": 0
+    },
+    "phase9b_field_coverage": {
+      "total_programs": 112,
+      "has_verification_tier": 0,
+      "missing_verification_tier": 112,
+      "has_intake_phone": 0,
+      "missing_intake_phone": 112,
+      "has_referral_info": 0,
+      "missing_referral_info": 112,
+      "has_virtual_field": 0,
+      "missing_virtual_field": 112,
+      "has_school_coordination": 0,
+      "missing_school_coordination": 112,
+      "has_medicaid_plans": 0,
+      "missing_medicaid_plans": 112,
+      "note": "Phase 9B backfill progress. Targets: >=80% PHP/IOP records with intake_phone and verification_tier within one quarter."
     }
   },
   "thin_coverage": [

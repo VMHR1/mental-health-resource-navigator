@@ -2400,8 +2400,12 @@ function render(){
 }
 
 function syncTopToggles(){
-  els.showCrisisTop.checked = els.showCrisis.checked;
-  els.onlyVirtualTop.checked = els.onlyVirtual.checked;
+  if (els.showCrisis && els.showCrisisTop) {
+    els.showCrisisTop.checked = els.showCrisis.checked;
+  }
+  if (els.onlyVirtual && els.onlyVirtualTop) {
+    els.onlyVirtualTop.checked = els.onlyVirtual.checked;
+  }
 }
 
 // ========== Autocomplete ==========
@@ -2782,6 +2786,11 @@ function bind(){
     console.error('setupEventHandlers not available. Make sure js/modules/events.js is loaded.');
       return;
     }
+
+  // Handoff and other pages load app.js for programDataMap only — no search UI.
+  if (!document.getElementById('q') && !document.getElementById('treatmentGrid')) {
+    return;
+  }
     
   // Setup state accessors - use StateManager if available, fallback to legacy variables
   const state = {
@@ -3932,9 +3941,10 @@ async function loadPrograms(retryCount = 0){
     }
   }
   
-  if (typeof rs === 'function') {
+  // Handoff and other pro pages have no search grid — skip skeleton UI.
+  if (typeof rs === 'function' && els.treatmentGrid) {
     rs(els);
-  } else {
+  } else if (typeof rs !== 'function') {
     console.error('renderSkeletons not available. Make sure js/modules/render.js is loaded.');
   }
 

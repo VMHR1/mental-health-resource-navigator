@@ -8,6 +8,7 @@ const PRO_GATED_PATHS = new Set([
   '/regional-snapshot.html',
   '/changelog.html',
   '/export.html',
+  '/handoff.html',
 ]);
 
 const PRIORITY_PAGES = [
@@ -23,6 +24,7 @@ const PRIORITY_PAGES = [
   '/regional-snapshot.html',
   '/changelog.html',
   '/export.html',
+  '/handoff.html',
 ];
 
 const NON_FATAL_CONSOLE = [

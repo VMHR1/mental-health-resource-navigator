@@ -431,8 +431,8 @@
   }
 
   // Expose build — defers until programDataMap is populated by app.js.
-  // vmhr:rendered only fires on index.html (search page), so on /handoff we
-  // poll and listen for vmhr:programs-ready from app.js after catalog load.
+  // vmhr:rendered only fires on index.html; on /handoff we poll and listen for
+  // vmhr:programs-ready (dispatched after programs.json loads).
   function buildWhenReady(scenario) {
     const tryBuild = () => {
       const map = window.programDataMap;
@@ -446,32 +446,34 @@
     if (tryBuild()) return;
 
     let attempts = 0;
-    const MAX_ATTEMPTS = 50;
+    const MAX_ATTEMPTS = 100;
+    let intervalId = null;
 
-    const cleanup = (intervalId) => {
-      clearInterval(intervalId);
+    const cleanup = () => {
+      if (intervalId != null) clearInterval(intervalId);
+      intervalId = null;
       window.removeEventListener('vmhr:programs-ready', onProgramsReady);
     };
 
     const onProgramsReady = () => {
-      if (tryBuild()) cleanup(interval);
+      if (tryBuild()) cleanup();
     };
 
-    const interval = setInterval(() => {
+    window.addEventListener('vmhr:programs-ready', onProgramsReady);
+
+    intervalId = setInterval(() => {
       if (tryBuild()) {
-        cleanup(interval);
+        cleanup();
         return;
       }
       if (++attempts >= MAX_ATTEMPTS) {
-        cleanup(interval);
+        cleanup();
         const primaryHost = document.getElementById('workspace-primary');
         if (primaryHost) {
           primaryHost.innerHTML = '<div class="workspace-empty">Could not load program data. Try refreshing the page.</div>';
         }
       }
     }, 100);
-
-    window.addEventListener('vmhr:programs-ready', onProgramsReady);
   }
 
   window.VMHRHandoffWorkspace = { build: buildWhenReady, filterPrograms };

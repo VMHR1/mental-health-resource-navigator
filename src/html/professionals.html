@@ -98,6 +98,15 @@
         <strong>What we do not do:</strong> No paid rankings. No lead generation. No referral fees. No advertising on family search. No patient identifiers. Families never pay.
       </p>
 
+      <!-- Phase 9C: Handoff Builder CTA -->
+      <div style="background:var(--vm-accent-soft); border:1.5px solid rgba(42,157,143,.3); border-radius:16px; padding:20px 24px; margin-bottom:24px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
+        <div>
+          <strong style="display:block; font-size:1.05rem; margin-bottom:4px;">Discharge handoff builder</strong>
+          <span style="font-size:14px; color:var(--muted);">Enter a discharge scenario — no patient identifiers — and get a structured packet with primary options, a backup, a call order, and a crisis fallback.</span>
+        </div>
+        <a class="btnlike btn-primary" href="handoff.html" data-pro-event="handoff_builder_open" style="white-space:nowrap;">Start a discharge handoff</a>
+      </div>
+
       <nav class="pro-toc" aria-label="On this page">
         <strong style="display:block; margin-bottom:10px;">Audiences on this page</strong>
         <ul>
@@ -120,7 +129,8 @@
           <li>Nothing about the workflow stores patient data: comparison lists live in your browser, the packet prints client-side.</li>
         </ul>
         <div class="pro-actions">
-          <a class="btnlike btn-primary" href="index.html?mode=navigator" data-pro-event="navigator_cta_discharge">Open navigator mode</a>
+          <a class="btnlike btn-primary" href="handoff.html" data-pro-event="handoff_builder_open_discharge">Start discharge handoff builder</a>
+          <a class="btnlike" href="index.html?mode=navigator" data-pro-event="navigator_cta_discharge">Open navigator mode</a>
           <a class="btnlike" href="boards.html#post-discharge-php-iop" data-pro-event="board_link_discharge">Post-discharge PHP/IOP board</a>
           <a class="btnlike" href="guides.html#what-to-ask">Family call script</a>
         </div>

@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "description": "Configuration for the handoff readiness status engine (Phase 9D). Readiness is a procedural check — not a quality score, not a clinical recommendation. Edit checks or weights here without a code change; bump schema_version and document why.",
+    "phi_status": "no_phi",
+    "last_updated": "2026-05-25",
+    "warning": "Do not add clinical-judgment or quality-scoring logic to this file. The readiness status is purely procedural."
+  },
+  "statuses": {
+    "ready":               { "label": "Ready for handoff",              "severity": 0 },
+    "needs_confirmation":  { "label": "Needs confirmation",             "severity": 1 },
+    "weak_handoff":        { "label": "Weak handoff",                   "severity": 2 },
+    "do_not_hand_off":     { "label": "Do not hand off without calling", "severity": 3 }
+  },
+  "disclaimer": "Readiness is a procedural check — it confirms the packet contains expected structural elements (backup option, intake label, verification freshness, crisis fallback). It is not a clinical recommendation, not a quality score, and not a substitute for confirming details directly with each program. ViableMHR is not emergency care; call 988 for crisis support or 911 for immediate danger.",
+  "checks": [
+    {
+      "id": "program_count",
+      "label": "At least one program selected",
+      "description": "Packet must have at least one program before any status is computed.",
+      "required": true,
+      "failure_status": "do_not_hand_off",
+      "failure_message": "No programs selected. Add at least one program to the handoff."
+    },
+    {
+      "id": "backup_option",
+      "label": "Backup option exists",
+      "description": "At least 2 programs selected, giving the family a fallback if the first call does not work.",
+      "required": false,
+      "failure_status": "weak_handoff",
+      "failure_message": "No backup option. Add a second program in case the first is unavailable, has a waitlist, or does not accept the insurance."
+    },
+    {
+      "id": "backup_diversity",
+      "label": "Backup differs on at least one dimension",
+      "description": "Primary and backup options should differ on insurance type listed, city, or virtual/in-person — otherwise the backup provides little practical redundancy.",
+      "required": false,
+      "failure_status": "weak_handoff",
+      "failure_message": "Primary and backup options are similar on all key dimensions. Consider adding a program that differs on insurance, city, or virtual availability."
+    },
+    {
+      "id": "care_level_match",
+      "label": "Care level matches scenario",
+      "description": "Every selected program lists the requested care level, or an adjacent level the planner accepted.",
+      "required": false,
+      "failure_status": "weak_handoff",
+      "failure_message": "One or more programs do not list the requested care level. Confirm care level directly with the program."
+    },
+    {
+      "id": "age_band_fit",
+      "label": "Age band fits all selected programs",
+      "description": "Every selected program serves the scenario's age band.",
+      "required": false,
+      "failure_status": "weak_handoff",
+      "failure_message": "One or more programs may not serve the age band in this scenario. Confirm age eligibility."
+    },
+    {
+      "id": "insurance_clear",
+      "label": "Insurance status clear or explicitly tagged call-to-verify",
+      "description": "No selected program shows insurance_unclear flag without a confirm prompt.",
+      "required": false,
+      "failure_status": "needs_confirmation",
+      "failure_message": "Insurance status is unclear for one or more programs. Confirm accepted plans before handing off."
+    },
+    {
+      "id": "intake_phone_labeled",
+      "label": "Intake/admissions phone labeled",
+      "description": "Every selected program has a labeled intake phone so the planner knows what number to give the family.",
+      "required": false,
+      "failure_status": "needs_confirmation",
+      "failure_message": "Intake phone is not labeled for one or more programs. Confirm whether the listed number is intake, main reception, or crisis before handing off.",
+      "data_gap_note": "As of 2026-Q2, 112/112 records lack a labeled intake phone. This check will show needs_confirmation across most packets until backfill is complete."
+    },
+    {
+      "id": "verification_fresh",
+      "label": "Verification within 90 days",
+      "description": "Every selected program was verified within the last 90 days.",
+      "required": false,
+      "failure_status": "needs_confirmation",
+      "failure_message": "One or more programs have not been verified within 90 days. Confirm details are current."
+    },
+    {
+      "id": "crisis_fallback_present",
+      "label": "Crisis fallback included",
+      "description": "The packet always includes 988/911 language. This is asserted, not user-toggled.",
+      "required": true,
+      "failure_status": "do_not_hand_off",
+      "failure_message": "Crisis fallback block is missing. This should not happen — contact support."
+    },
+    {
+      "id": "no_stale_critical_fields",
+      "label": "No stale data combined with missing intake label",
+      "description": "A program that is both verification-stale and has no intake label creates a compounding risk.",
+      "required": false,
+      "failure_status": "do_not_hand_off",
+      "failure_message": "One or more programs are both verification-stale and missing an intake phone label. Do not hand off without a direct call to each affected program."
+    },
+    {
+      "id": "location_or_virtual_fit",
+      "label": "Location or virtual fit considered",
+      "description": "Every program is either in the scenario's geography or is virtual when the scenario allows virtual.",
+      "required": false,
+      "failure_status": "weak_handoff",
+      "failure_message": "One or more programs may not serve the selected geography. Confirm whether the program accepts the family's location or offers virtual services."
+    }
+  ],
+  "status_assignment_rules": {
+    "description": "Check failures escalate status by severity. The highest-severity failing check wins. Multiple failures of the same severity do not compound beyond that level.",
+    "order": ["do_not_hand_off", "weak_handoff", "needs_confirmation", "ready"],
+    "blocking_check_ids": ["program_count", "crisis_fallback_present"],
+    "note": "blocking checks prevent any further evaluation and immediately return do_not_hand_off"
+  },
+  "print_behavior": {
+    "note": "Print is never blocked by readiness status. The status is informational. The planner is always the decision-maker.",
+    "ready":              { "show_banner": true,  "banner_type": "success",  "confirm_before_print": false },
+    "needs_confirmation": { "show_banner": true,  "banner_type": "warning",  "confirm_before_print": false },
+    "weak_handoff":       { "show_banner": true,  "banner_type": "warning",  "confirm_before_print": false },
+    "do_not_hand_off":    { "show_banner": true,  "banner_type": "critical", "confirm_before_print": true  }
+  }
+}

@@ -133,6 +133,47 @@ function validateProgram(program, index) {
     }
   }
 
+  // Validate Phase 9B optional enum fields
+  const yesNoVaries = ['yes', 'no', 'varies', 'unknown'];
+  if (program.referral_required != null && !yesNoVaries.includes(program.referral_required)) {
+    error(`referral_required must be one of: ${yesNoVaries.join(', ')}`, programId);
+  }
+  if (program.self_referral_accepted != null && !yesNoVaries.includes(program.self_referral_accepted)) {
+    error(`self_referral_accepted must be one of: ${yesNoVaries.join(', ')}`, programId);
+  }
+  if (program.school_coordination != null && !yesNoVaries.includes(program.school_coordination)) {
+    error(`school_coordination must be one of: ${yesNoVaries.join(', ')}`, programId);
+  }
+  const yesNoUnknown = ['yes', 'no', 'unknown'];
+  if (program.assessment_required != null && !yesNoUnknown.includes(program.assessment_required)) {
+    error(`assessment_required must be one of: ${yesNoUnknown.join(', ')}`, programId);
+  }
+  const contactMethods = ['website', 'phone', 'provider_attestation'];
+  if (program.last_intake_confirm_method != null && !contactMethods.includes(program.last_intake_confirm_method)) {
+    error(`last_intake_confirm_method must be one of: ${contactMethods.join(', ')}`, programId);
+  }
+  const verificationTiers = ['website_confirmed', 'phone_confirmed', 'provider_attestation', 'unconfirmed'];
+  if (program.verification_tier != null && !verificationTiers.includes(program.verification_tier)) {
+    error(`verification_tier must be one of: ${verificationTiers.join(', ')}`, programId);
+  }
+  const successContactMethods = ['phone', 'email', 'web_form', 'unknown'];
+  if (program.last_successful_contact_method != null && !successContactMethods.includes(program.last_successful_contact_method)) {
+    error(`last_successful_contact_method must be one of: ${successContactMethods.join(', ')}`, programId);
+  }
+  const familyInvolvementModels = ['expected', 'optional', 'varies', 'unknown'];
+  if (program.family_involvement_model != null && !familyInvolvementModels.includes(program.family_involvement_model)) {
+    error(`family_involvement_model must be one of: ${familyInvolvementModels.join(', ')}`, programId);
+  }
+  // Validate ISO dates for new fields
+  const newDateFields = ['last_intake_confirm_at', 'waitlist_last_confirmed', 'insurance_verified_at', 'provider_attestation_at'];
+  newDateFields.forEach((field) => {
+    if (program[field] != null) {
+      if (!validateISODate(program[field])) {
+        error(`${field} date format is invalid (expected ISO 8601): ${program[field]}`, programId);
+      }
+    }
+  });
+
   // Validate level_of_care matches UI enum strings where applicable
   if (program.level_of_care) {
     const validLevels = [

@@ -96,5 +96,13 @@
     <priority>0.4</priority>
   </url>
 
+  <!-- Discharge Handoff Builder (Phase 9C — professional only, noindex) -->
+  <url>
+    <loc>https://viablemhr.com/handoff.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
   <!-- Individual programs: see sitemap-programs.xml (canonical /programs/{id}.html) -->
 </urlset>

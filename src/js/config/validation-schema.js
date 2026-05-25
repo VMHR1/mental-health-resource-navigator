@@ -10,6 +10,34 @@ export const PROGRAM_SCHEMA = {
     'waitlist_status', 'accepted_insurance',
     // New statewide-ready fields (all optional for backward compatibility)
     'primary_county', 'service_area', 'geo', 'verification', 'sud_services',
+    // Phase 9B: discharge-handoff fields (all optional, additive, never inferred)
+    'intake_phone',            // labeled intake/admissions line — top backfill priority
+    'phone_labels',            // object: { main, intake, admissions, crisis, billing, fax }
+    'crisis_phone',            // separate crisis line when program publishes one
+    'intake_hours',            // when intake is reachable (string or structured)
+    'last_intake_confirm_method', // enum: website | phone | provider_attestation
+    'last_intake_confirm_at',  // ISO date of last intake-details confirmation
+    'referral_required',       // enum: yes | no | varies | unknown
+    'self_referral_accepted',  // enum: yes | no | varies | unknown
+    'assessment_required',     // enum: yes | no | unknown
+    'waitlist_last_confirmed', // ISO date — provenance-gated like last_verified
+    'medicaid_plans',          // array of TX Medicaid managed-care plan names
+    'sliding_scale_available', // bool
+    'self_pay_available',      // bool
+    'insurance_verified_at',   // ISO date per-record insurance verification
+    'transportation_notes',    // provider-supplied free text only
+    'virtual_available',       // explicit bool (derived from setting/notes today)
+    'virtual_availability_notes', // string e.g. "virtual statewide" or "follow-up only"
+    'school_coordination',     // enum: yes | no | varies | unknown
+    'family_involvement_model',// enum: expected | optional | varies | unknown
+    'parent_program_offered',  // bool
+    'step_down_friendly',      // bool — stated by program
+    'step_up_friendly',        // bool — stated by program
+    'discharge_friendly_notes',// provider-supplied string
+    'verification_tier',       // enum: website_confirmed | phone_confirmed | provider_attestation | unconfirmed
+    'last_successful_contact_method', // enum: phone | email | web_form | unknown
+    'provider_attestation_at', // ISO date
+    'provider_attestation_email_domain', // domain only — never a person's address
   ],
   types: {
     program_id: 'string',
@@ -33,13 +61,41 @@ export const PROGRAM_SCHEMA = {
     accepting_new_patients: 'string',
     waitlist_status: 'string',
     accepted_insurance: 'object',
-    // New field types (all optional, backward compatible)
+    // New statewide-ready field types (all optional, backward compatible)
     primary_county: 'string',
     service_area: 'object',
     geo: 'object',
     verification: 'object',
     service_domains: 'array',
-    sud_services: 'array'
+    sud_services: 'array',
+    // Phase 9B field types
+    intake_phone: 'string',
+    phone_labels: 'object',
+    crisis_phone: 'string',
+    intake_hours: 'string',
+    last_intake_confirm_method: 'string',
+    last_intake_confirm_at: 'string',
+    referral_required: 'string',
+    self_referral_accepted: 'string',
+    assessment_required: 'string',
+    waitlist_last_confirmed: 'string',
+    medicaid_plans: 'array',
+    sliding_scale_available: 'boolean',
+    self_pay_available: 'boolean',
+    insurance_verified_at: 'string',
+    transportation_notes: 'string',
+    virtual_available: 'boolean',
+    virtual_availability_notes: 'string',
+    school_coordination: 'string',
+    family_involvement_model: 'string',
+    parent_program_offered: 'boolean',
+    step_down_friendly: 'boolean',
+    step_up_friendly: 'boolean',
+    discharge_friendly_notes: 'string',
+    verification_tier: 'string',
+    last_successful_contact_method: 'string',
+    provider_attestation_at: 'string',
+    provider_attestation_email_domain: 'string',
   }
 };
 

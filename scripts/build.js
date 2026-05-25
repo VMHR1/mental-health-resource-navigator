@@ -55,6 +55,7 @@ function copyStaticAssets() {
       { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html' },
       { src: 'src/html/changelog.html', dest: 'changelog.html' },
       { src: 'src/html/export.html', dest: 'export.html' },
+      { src: 'src/html/handoff.html', dest: 'handoff.html' },
       { src: 'src/html/404.html', dest: '404.html' }
     ];
     if (!includeAdmin) {
@@ -92,6 +93,9 @@ function copyStaticAssets() {
       { src: 'public/data/export_schema.json', dest: 'data/export_schema.json' },
       { src: 'public/data/pro_gate.json', dest: 'data/pro_gate.json' },
       { src: 'public/data/pro_gate.json', dest: 'pro_gate.json' },
+      // Phase 9B data files
+      { src: 'public/data/scenario_taxonomy.json', dest: 'data/scenario_taxonomy.json' },
+      { src: 'public/data/handoff_readiness_rules.json', dest: 'data/handoff_readiness_rules.json' },
       { src: '_redirects', dest: '_redirects' },
       { src: '_headers', dest: '_headers' }
     ];
@@ -153,6 +157,12 @@ function copyStaticAssets() {
       'src/js/modules/friction-flags.js',
       'src/js/modules/handoff-completeness.js',
       'src/js/modules/handoff-print.js',
+      // Phase 9C/9D modules
+      'src/js/modules/scenario-state.js',
+      'src/js/modules/handoff-builder.js',
+      'src/js/modules/handoff-workspace.js',
+      'src/js/modules/handoff-readiness.js',
+      'src/js/modules/intake-confidence.js',
       'src/js/modules/export-center.js',
       'src/js/modules/report-outdated.js',
       'src/js/utils/location-match.js'

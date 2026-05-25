@@ -398,6 +398,7 @@ function createCard(program, idx, options) {
  * @param {Object} els - DOM element references
  */
 function renderSkeletons(els) {
+  if (!els || !els.treatmentGrid) return;
   const make = () => {
     const d = document.createElement("div");
     d.className = "skeleton";
