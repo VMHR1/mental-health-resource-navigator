@@ -98,7 +98,7 @@ function findBestCityMatch(query, cities) {
     if (!isPlausibleCityName(city)) continue;
     const cityLower = city.toLowerCase();
     if (cityLower === q) return city;
-    const cityPattern = new RegExp(`(^|\\s)${escapeRegex(cityLower).replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
+    const cityPattern = new RegExp(`(^|\\s)${escapeRegex(cityLower).replace(/\s+/g, '\\s*')}(\\s|$)`, 'i');
     if (cityPattern.test(q)) return city;
   }
   
@@ -347,6 +347,12 @@ function detectInsuranceFromQuery(q) {
   return detectInsurancePlanFromQuery(q);
 }
 
+/** Words that, immediately before a bare 1-2 digit number, mean it's not a child's age (e.g. "Suite 14"). */
+const NON_AGE_PRECEDING_WORDS = new Set([
+  'suite', 'ste', 'unit', 'apt', 'apartment', 'room', 'rm', 'floor', 'fl',
+  'building', 'bldg', 'ext', 'extension', 'phone', 'tel', '#', 'no', 'number',
+]);
+
 function parseSmartSearch(query, cities) {
   const q = query.toLowerCase();
   const filters = {
@@ -389,7 +395,7 @@ function parseSmartSearch(query, cities) {
     for (const city of sortedCities) {
       if (!isPlausibleCityName(city)) continue;
       // Match city only if it's a complete word (word boundary) or at start/end
-      const cityPattern = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`, 'i');
+      const cityPattern = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s*')}(\\s|$)`, 'i');
       if (cityPattern.test(q)) {
         // Normalize city name - handle "de soto" -> "De Soto", "desoto" -> "De Soto"
         if (city === 'desoto' || city === 'de soto') {
@@ -416,16 +422,27 @@ function parseSmartSearch(query, cities) {
   
   // Age detection - handle multiple patterns
   // Pattern 1: "13 and up" or "13+" or "13 years and up"
-  const andUpMatch = q.match(/\b(\d{1,2})\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older)\b/i);
+  // Trailing lookahead (not \b) after the alternation: \b never matches between
+  // a symbol like "+" and a following space/end-of-string, which silently broke
+  // the very common "13+" shorthand.
+  const andUpMatch = q.match(/\b(\d{1,2})\s*(?:\+|and\s*up|years?\s*and\s*up|yrs?\s*and\s*up|and\s*older)(?=\s|$)/i);
   if (andUpMatch) {
     filters.minAge = Number(andUpMatch[1]);
     // Set age to the minimum for filtering purposes
     filters.age = andUpMatch[1];
   } else {
-    // Pattern 2: Exact age like "13 year old" or "13"
+    // Pattern 2: Exact age like "13 year old" or a bare number "13".
+    // A bare number (no "year(s) old"/"yo" qualifier) is only treated as an age
+    // if it isn't immediately preceded by an obviously non-age context word —
+    // otherwise things like "Suite 14" or "Unit 12" get misread as an age filter.
     const ageMatch = q.match(/\b(\d{1,2})\s*(?:year|yr|y\.o\.|yo)?\s*(?:old)?\b/);
-    if(ageMatch) {
-      filters.age = ageMatch[1];
+    if (ageMatch) {
+      const hasQualifier = /year|yr|y\.o\.|yo|old/i.test(ageMatch[0]);
+      const precedingWord = q.slice(0, ageMatch.index).trim().split(/\s+/).pop() || '';
+      const isNonAgeContext = NON_AGE_PRECEDING_WORDS.has(precedingWord.replace(/[.:#]/g, ''));
+      if (hasQualifier || !isNonAgeContext) {
+        filters.age = ageMatch[1];
+      }
     }
   }
   
@@ -549,7 +566,7 @@ function stripParsedQueryTokens(query, cities) {
   const sortedCities = [...cityList].sort((a, b) => b.length - a.length);
   for (const city of sortedCities) {
     const cityPattern = new RegExp(
-      `(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`,
+      `(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s*')}(\\s|$)`,
       'gi'
     );
     terms = terms.replace(cityPattern, ' ');
@@ -557,14 +574,14 @@ function stripParsedQueryTokens(query, cities) {
 
   if (parsed.loc) {
     const loc = parsed.loc.toLowerCase();
-    const re = new RegExp(`\\b${escapeRegex(loc).replace(/\s+/g, '\\s+')}\\b`, 'gi');
+    const re = new RegExp(`\\b${escapeRegex(loc).replace(/\s+/g, '\\s*')}\\b`, 'gi');
     terms = terms.replace(re, ' ');
   }
 
   if (parsed.locs && parsed.locs.length) {
     parsed.locs.forEach((loc) => {
       const re = new RegExp(
-        `\\b${escapeRegex(loc.toLowerCase()).replace(/\s+/g, '\\s+')}\\b`,
+        `\\b${escapeRegex(loc.toLowerCase()).replace(/\s+/g, '\\s*')}\\b`,
         'gi'
       );
       terms = terms.replace(re, ' ');
@@ -603,7 +620,7 @@ function getTextSearchTermList(query, cities) {
 
 function removeCityFromQuery(text, city) {
   if (!city) return text;
-  const re = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s+')}(\\s|$)`, 'gi');
+  const re = new RegExp(`(^|\\s)${escapeRegex(city).replace(/\s+/g, '\\s*')}(\\s|$)`, 'gi');
   return text.replace(re, ' ');
 }
 
