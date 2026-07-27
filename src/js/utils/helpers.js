@@ -201,7 +201,62 @@ function resolveVerificationUrl(program) {
   return "";
 }
 
-// For non-module environments
+/** Root-relative program detail URL (Phase 2 slug pages). */
+function programPublicPath(programId) {
+  const id = safeStr(programId);
+  if (!id) return '/program.html';
+  return `/programs/${encodeURIComponent(id)}.html`;
+}
+
+function newTabSrHtml() {
+  return '<span class="sr-only"> (opens in new tab)</span>';
+}
+
+function newTabAccessibleLabel(visibleLabel) {
+  const label = safeStr(visibleLabel);
+  return label ? `${label} (opens in new tab)` : 'Opens in new tab';
+}
+
+/**
+ * Verification freshness for cards and detail (Phase 7.2).
+ * @returns {'recent'|'fresh'|'stale'|'missing'}
+ */
+function getVerificationFreshness(lastVerified, options = {}) {
+  const recentDays = options.recentDays ?? 60;
+  const staleDays = options.staleDays ?? 90;
+  const raw = safeStr(lastVerified);
+  if (!raw) return 'missing';
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return 'missing';
+  const daysSince = (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24);
+  if (daysSince < recentDays) return 'recent';
+  if (daysSince <= staleDays) return 'fresh';
+  return 'stale';
+}
+
+export {
+  safeStr,
+  escapeHtml,
+  safeUrl,
+  domainFromUrl,
+  normalizePhoneForTel,
+  bestAddress,
+  mapsLinkFor,
+  stableIdFor,
+  locLabel,
+  isCrisis,
+  hasVirtual,
+  parseAgeSpec,
+  programServesAge,
+  isHttpUrl,
+  resolveVerificationUrl,
+  programPublicPath,
+  newTabSrHtml,
+  newTabAccessibleLabel,
+  getVerificationFreshness,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.safeStr = safeStr;
   window.escapeHtml = escapeHtml;
@@ -218,36 +273,10 @@ if (typeof window !== 'undefined') {
   window.programServesAge = programServesAge;
   window.isHttpUrl = isHttpUrl;
   window.resolveVerificationUrl = resolveVerificationUrl;
-  /** Root-relative program detail URL (Phase 2 slug pages). */
-  window.programPublicPath = function programPublicPath(programId) {
-    const id = safeStr(programId);
-    if (!id) return '/program.html';
-    return `/programs/${encodeURIComponent(id)}.html`;
-  };
-  window.newTabSrHtml = function newTabSrHtml() {
-    return '<span class="sr-only"> (opens in new tab)</span>';
-  };
-  window.newTabAccessibleLabel = function newTabAccessibleLabel(visibleLabel) {
-    const label = safeStr(visibleLabel);
-    return label ? `${label} (opens in new tab)` : 'Opens in new tab';
-  };
-
-  /**
-   * Verification freshness for cards and detail (Phase 7.2).
-   * @returns {'recent'|'fresh'|'stale'|'missing'}
-   */
-  window.getVerificationFreshness = function getVerificationFreshness(lastVerified, options = {}) {
-    const recentDays = options.recentDays ?? 60;
-    const staleDays = options.staleDays ?? 90;
-    const raw = safeStr(lastVerified);
-    if (!raw) return 'missing';
-    const date = new Date(raw);
-    if (Number.isNaN(date.getTime())) return 'missing';
-    const daysSince = (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSince < recentDays) return 'recent';
-    if (daysSince <= staleDays) return 'fresh';
-    return 'stale';
-  };
+  window.programPublicPath = programPublicPath;
+  window.newTabSrHtml = newTabSrHtml;
+  window.newTabAccessibleLabel = newTabAccessibleLabel;
+  window.getVerificationFreshness = getVerificationFreshness;
 }
 
 
