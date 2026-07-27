@@ -6,7 +6,7 @@
  */
 
 import { readFileSync, existsSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,15 +14,11 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
 // Import shared validation schema
-// Note: validation-schema.js uses CommonJS exports, so we'll use createRequire for compatibility
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
 let VALID_SERVICE_DOMAINS, REQUIRED_FIELDS, validateISODate, REVERIFICATION_THRESHOLD_DAYS;
 try {
   const schemaPath = join(rootDir, 'src', 'js', 'config', 'validation-schema.js');
   if (existsSync(schemaPath)) {
-    const schemaModule = require(schemaPath);
+    const schemaModule = await import(pathToFileURL(schemaPath).href);
     VALID_SERVICE_DOMAINS = schemaModule.VALID_SERVICE_DOMAINS;
     REQUIRED_FIELDS = schemaModule.PROGRAM_SCHEMA.required;
     validateISODate = schemaModule.validateISODate;
