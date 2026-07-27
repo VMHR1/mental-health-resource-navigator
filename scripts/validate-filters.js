@@ -7,7 +7,7 @@
 
 import { readFileSync } from 'fs';
 import { spawnSync } from 'child_process';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -312,19 +312,30 @@ function runFilterTests() {
   return true;
 }
 
-function loadBrowserScript(relativePath, win = {}) {
-  const code = readFileSync(join(rootDir, relativePath), 'utf8');
+async function loadBrowserScript(relativePath, win = {}) {
+  const absPath = join(rootDir, relativePath);
+  const code = readFileSync(absPath, 'utf8');
+  // Real ES modules (converted files) can't run through `new Function` (a
+  // top-level `export` is a SyntaxError in a function body) - import them
+  // directly instead, and merge their exports into `win` so later
+  // not-yet-converted classic files loaded into the same `win` still find
+  // these symbols via window.foo, same as they do in the browser.
+  if (/(^|\n)export\s/.test(code)) {
+    const mod = await import(pathToFileURL(absPath).href);
+    Object.assign(win, mod);
+    return win;
+  }
   const fn = new Function('window', code);
   fn(win);
   return win;
 }
 
-function runSearchFilterTests() {
+async function runSearchFilterTests() {
   console.log('\nRunning search/location/age filter tests...\n');
   const win = {};
-  loadBrowserScript('src/js/utils/location-match.js', win);
-  loadBrowserScript('src/js/utils/helpers.js', win);
-  loadBrowserScript('src/js/modules/search.js', win);
+  await loadBrowserScript('src/js/utils/location-match.js', win);
+  await loadBrowserScript('src/js/utils/helpers.js', win);
+  await loadBrowserScript('src/js/modules/search.js', win);
 
   const {
     programServesLocation,
@@ -513,7 +524,7 @@ function runInsurancePlanAudit() {
 }
 
 const statewideOk = runFilterTests();
-const searchOk = runSearchFilterTests();
+const searchOk = await runSearchFilterTests();
 const insuranceOk = runInsurancePlanAudit();
 process.exit(statewideOk && searchOk && insuranceOk ? 0 : 1);
 

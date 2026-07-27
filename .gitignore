@@ -59,3 +59,6 @@ IMPROVEMENT_AVENUES.md
 LEGAL_RISK_ANALYSIS.md
 CODE_DOCUMENTATION.md
 
+
+# Playwright MCP debug artifacts
+.playwright-mcp/

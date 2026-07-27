@@ -278,59 +278,10 @@ async function build() {
   }
 }
 
-// Also create a simple bundle for non-module environments
-async function createLegacyBundle() {
-  try {
-    const files = [
-      'src/js/config/constants.js',
-      'src/js/utils/helpers.js',
-      'src/js/modules/storage.js',
-      'src/js/modules/search.js',
-    'src/js/modules/empty-state.js',
-      'src/js/state-manager.js',
-      'src/js/data-validator.js'
-    ];
-    
-    let bundle = '';
-    let filesFound = 0;
-    
-    files.forEach(file => {
-      if (existsSync(file)) {
-        try {
-          bundle += readFileSync(file, 'utf8') + '\n\n';
-          filesFound++;
-        } catch (error) {
-          console.error(`Error reading ${file}:`, error.message);
-        }
-      } else {
-        console.warn(`Warning: ${file} not found, skipping`);
-      }
-    });
-    
-    if (bundle.length > 0) {
-      // Ensure js directory exists in dist
-      if (!existsSync('dist/js')) {
-        mkdirSync('dist/js', { recursive: true });
-      }
-      
-      // Write bundle to dist directory
-      writeFileSync(join('dist/js', 'bundle.js'), bundle);
-      console.log(`Legacy bundle created (${filesFound} files)`);
-    } else {
-      console.warn('Warning: No files found for legacy bundle');
-    }
-  } catch (error) {
-    console.error('Error creating legacy bundle:', error);
-    // Don't throw - legacy bundle is optional
-    console.warn('Continuing without legacy bundle...');
-  }
-}
-
 // Main execution with proper error handling
 build()
   .then(async () => {
     if (!isWatch) {
-      await createLegacyBundle();
       try {
         const { generateProgramPages } = await import('./generate-program-pages.js');
         generateProgramPages();

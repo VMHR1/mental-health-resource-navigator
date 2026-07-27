@@ -157,7 +157,20 @@ const FEATURE_FLAGS = {
   SHOW_VERIFICATION_FILTERS: true // Phase 7.2: verification recency filter + stale badges
 };
 
-// For non-module environments
+export {
+  SITE,
+  CITIES,
+  LEVELS_OF_CARE,
+  FILTER_PRESETS,
+  SEARCH_EXAMPLES,
+  FEATURE_FLAGS,
+  SORT_OPTIONS,
+  DEFAULT_SORT,
+  STORAGE_KEYS,
+  CSS_CLASSES,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.SITE = SITE;
   window.CITIES = CITIES;

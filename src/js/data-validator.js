@@ -439,7 +439,15 @@ function normalizePhoneNumber(phone) {
   return phone; // Return original if can't normalize
 }
 
-// Export for use in other modules
+export {
+  validateProgramSchema,
+  validateProgramsData,
+  checkDataFreshness,
+  normalizeCityName,
+  normalizePhoneNumber,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.validateProgramSchema = validateProgramSchema;
   window.validateProgramsData = validateProgramsData;
@@ -447,9 +455,6 @@ if (typeof window !== 'undefined') {
   window.normalizeCityName = normalizeCityName;
   window.normalizePhoneNumber = normalizePhoneNumber;
 }
-
-// Note: Exports are available via window object for browser usage
-// CommonJS exports removed to avoid ESM compatibility warnings
 
 
 

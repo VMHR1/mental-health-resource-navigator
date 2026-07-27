@@ -239,7 +239,9 @@ function getStateManager() {
   return stateManagerInstance;
 }
 
-// For non-module environments
+export { StateManager, getStateManager };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.StateManager = StateManager;
   window.getStateManager = getStateManager;
