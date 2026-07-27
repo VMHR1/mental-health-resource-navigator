@@ -4,22 +4,33 @@
  */
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
-function loadBrowserScript(relativePath, win = {}) {
-  const code = readFileSync(join(root, relativePath), 'utf8');
+async function loadBrowserScript(relativePath, win = {}) {
+  const absPath = join(root, relativePath);
+  const code = readFileSync(absPath, 'utf8');
+  // Real ES modules (converted files) can't run through `new Function` (a
+  // top-level `export` is a SyntaxError in a function body) - import them
+  // directly instead, and merge their exports into `win` so later
+  // not-yet-converted classic files loaded into the same `win` still find
+  // these symbols via window.foo, same as they do in the browser.
+  if (/(^|\n)export\s/.test(code)) {
+    const mod = await import(pathToFileURL(absPath).href);
+    Object.assign(win, mod);
+    return win;
+  }
   new Function('window', code)(win);
   return win;
 }
 
 const win = {};
-loadBrowserScript('src/js/utils/location-match.js', win);
-loadBrowserScript('src/js/utils/helpers.js', win);
-loadBrowserScript('src/js/modules/search.js', win);
-loadBrowserScript('src/js/modules/filters.js', win);
+await loadBrowserScript('src/js/utils/location-match.js', win);
+await loadBrowserScript('src/js/utils/helpers.js', win);
+await loadBrowserScript('src/js/modules/search.js', win);
+await loadBrowserScript('src/js/modules/filters.js', win);
 
 const data = JSON.parse(readFileSync(join(root, 'public/data/programs.json'), 'utf8'));
 win.registerInsurancePlansFromData(data.programs);
