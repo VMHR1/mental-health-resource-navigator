@@ -143,7 +143,9 @@ class UserDataStorage {
   }
 }
 
-// For non-module environments
+export { loadEncryptedData, saveEncryptedData, UserDataStorage };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.loadEncryptedData = loadEncryptedData;
   window.saveEncryptedData = saveEncryptedData;
