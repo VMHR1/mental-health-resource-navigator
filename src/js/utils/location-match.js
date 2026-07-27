@@ -199,6 +199,14 @@ function programServesLocation(program, searchCities, options = {}) {
   return false;
 }
 
+export {
+  normalizeCityKey,
+  formatCityLabel,
+  countyForCity,
+  programServesLocation,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.normalizeCityKey = normalizeCityKey;
   window.formatCityLabel = formatCityLabel;
