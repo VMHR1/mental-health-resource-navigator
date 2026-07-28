@@ -701,7 +701,17 @@ function hideModal(modalEl) {
   }
 }
 
-// For non-module environments
+export {
+  createCard,
+  renderSkeletons,
+  updateStats,
+  renderComparison,
+  showToast,
+  showModal,
+  hideModal,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   // Create stable namespace that won't be overwritten
   window.__vmhr = window.__vmhr || {};

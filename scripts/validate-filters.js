@@ -9,6 +9,8 @@ import { readFileSync } from 'fs';
 import { spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
+import { matchesFilters } from '../src/js/modules/filters.js';
+import { FEATURE_FLAGS } from '../src/js/config/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,65 +39,32 @@ function safeStr(val) {
   return String(val);
 }
 
-// Simplified matchesFilters logic (extracted from app.js)
+// Adapts the mock DOM `els` shape (kept from the old hand-copied version, so
+// all 8 call sites below stay unchanged) into the real filters object the
+// production matchesFilters() expects, then calls the real function - not a
+// reimplementation. STATEWIDE_MODE is forced on here (production has it off)
+// because this suite's whole purpose is validating the statewide-ready
+// fields matchesFilters gates behind it; SHOW_SUD_FILTERS/SHOW_VERIFICATION_FILTERS
+// are left at their real production values (both true today).
 function testMatchesFilters(p, els) {
-  // County filter
-  const countyVal = els.county ? safeStr(els.county.value || '') : '';
-  if (countyVal) {
-    const programCounty = safeStr(p.primary_county || '').toLowerCase();
-    const serviceAreaCounties = Array.isArray(p.service_area?.counties) 
-      ? p.service_area.counties.map(c => safeStr(c).toLowerCase())
-      : [];
-    const countyMatch = programCounty === countyVal.toLowerCase() ||
-                        serviceAreaCounties.includes(countyVal.toLowerCase());
-    if (!countyMatch) return false;
-  }
-
-  // Service domain filter
-  const serviceDomainVal = els.serviceDomain ? safeStr(els.serviceDomain.value || '') : '';
-  if (serviceDomainVal) {
-    const programDomains = Array.isArray(p.service_domains) 
-      ? p.service_domains.map(d => safeStr(d).toLowerCase())
-      : [];
-    if (!programDomains.includes(serviceDomainVal.toLowerCase())) return false;
-  }
-
-  // SUD services filter
-  if (els.sudServices) {
-    const selectedOptions = Array.from(els.sudServices.selectedOptions).map(opt => opt.value);
-    if (selectedOptions.length > 0) {
-      const programSudServices = Array.isArray(p.sud_services)
-        ? p.sud_services.map(s => safeStr(s).toLowerCase())
-        : [];
-      const hasMatch = selectedOptions.some(selected =>
-        programSudServices.includes(selected.toLowerCase())
-      );
-      if (!hasMatch) return false;
-    }
-  }
-
-  // Verification recency filter
-  const verificationRecencyVal = els.verificationRecency ? safeStr(els.verificationRecency.value || '') : '';
-  if (verificationRecencyVal) {
-    const recencyDays = parseInt(verificationRecencyVal, 10);
-    if (!isNaN(recencyDays) && recencyDays > 0) {
-      const verifiedAt = p.verification?.last_verified_at || p.last_verified;
-      if (!verifiedAt) return false;
-      
-      try {
-        const verifiedDate = new Date(verifiedAt);
-        if (isNaN(verifiedDate.getTime())) return false;
-        
-        const now = new Date();
-        const daysDiff = Math.floor((now - verifiedDate) / (1000 * 60 * 60 * 24));
-        if (daysDiff > recencyDays) return false;
-      } catch (e) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  const filters = {
+    query: els.q ? safeStr(els.q.value || '') : '',
+    location: els.loc ? safeStr(els.loc.value || '') : '',
+    age: els.age ? safeStr(els.age.value || '') : '',
+    care: els.care ? safeStr(els.care.value || '') : '',
+    insurance: els.insurance ? safeStr(els.insurance.value || '') : '',
+    onlyVirtual: Boolean(els.onlyVirtual?.checked),
+    showCrisis: Boolean(els.showCrisis?.checked),
+    county: els.county ? safeStr(els.county.value || '') : '',
+    serviceDomain: els.serviceDomain ? safeStr(els.serviceDomain.value || '') : '',
+    selectedSudServices: els.sudServices
+      ? Array.from(els.sudServices.selectedOptions).map((opt) => opt.value)
+      : [],
+    verificationRecency: els.verificationRecency ? safeStr(els.verificationRecency.value || '') : '',
+  };
+  return matchesFilters(p, filters, {
+    featureFlags: { ...FEATURE_FLAGS, STATEWIDE_MODE: true },
+  });
 }
 
 // Test cases
@@ -192,6 +161,11 @@ function runFilterTests() {
   // Test 4: SUD services filter
   console.log('Test 4: SUD services filter');
   const els4 = createMockElements();
+  // matchesFilters only applies the SUD-services filter when serviceDomain is
+  // also 'substance_use' (mirrors the real UI, where these checkboxes only
+  // appear under that domain) - without this the filter silently no-ops and
+  // the test would pass without ever exercising the real logic.
+  els4.serviceDomain = { value: 'substance_use' };
   els4.sudServices = {
     selectedOptions: [
       { value: 'detox' },

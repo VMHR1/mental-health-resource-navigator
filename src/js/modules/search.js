@@ -1,6 +1,8 @@
 // ========== Search Module ==========
 // Search functionality including fuzzy matching, autocomplete, and smart parsing
 
+import { safeStr } from '../utils/helpers.js';
+
 // Fuzzy search utilities
 function levenshteinDistance(str1, str2) {
   const m = str1.length;
@@ -694,11 +696,25 @@ function stripFilterFromQuery(query, chipType, cities = []) {
   return cleanOrphanLocationWords(q);
 }
 
-function safeStr(x) {
-  return (x ?? '').toString().trim();
-}
+export {
+  levenshteinDistance,
+  fuzzyMatch,
+  findBestCityMatch,
+  detectCareLevel,
+  detectInsuranceFromQuery,
+  getTextSearchTerms,
+  getTextSearchTermList,
+  stripFilterFromQuery,
+  parseSmartSearch,
+  registerInsurancePlansFromData,
+  getInsurancePlanAliasEntry,
+};
 
-// For non-module environments
+// For classic-script (non-module) consumers not yet converted. Window
+// versions of getTextSearchTerms/getTextSearchTermList/stripFilterFromQuery/
+// parseSmartSearch auto-inject resolveSearchCities() as a convenience for
+// callers with no cities list handy - real importers get the full-signature
+// functions above and can pass cities explicitly.
 if (typeof window !== 'undefined') {
   window.levenshteinDistance = levenshteinDistance;
   window.fuzzyMatch = fuzzyMatch;

@@ -598,7 +598,14 @@ function getEffectiveSearchFilters(query, dropdowns = {}, options = {}) {
   return { parsed, chips };
 }
 
-// For non-module environments
+export {
+  matchesFilters,
+  calculateRelevanceScore,
+  getEffectiveSearchFilters,
+  INSURANCE_BUCKETS,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.matchesFilters = matchesFilters;
   window.calculateRelevanceScore = calculateRelevanceScore;
