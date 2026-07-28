@@ -1,103 +1,39 @@
 ---
-description: Specifies domain-specific validation rules for mental health program data, crisis content, and service categorization
+description: Verification freshness, confirmation tiers, and what blocks a build vs. what only warns
+globs: src/js/data-validator.js,src/js/config/validation-schema.js,scripts/validate-data.js,src/js/utils/helpers.js
 ---
 
-# === USER INSTRUCTIONS ===
-description: Documentation for domain-specific validation rules related to mental health program data and crisis content handling
-1. Mental Health Program Structure Validation
-- Enforces required fields specific to mental health services:
-  - Program name, organization, level of care categorization
-  - Service delivery method (in-person, virtual, hybrid)
-  - Age range validation with special "and up" handling
-  - Geographic service area boundaries
-- Special handling for crisis resource categorization
-- Verification requirements for crisis service providers
-- Contact method validation for crisis programs
-- Response time commitment verification
-- 24/7 availability confirmation
-3. Neutrality Enforcement
-- Detection of marketing language
-- Validation of objective program descriptions
-- Removal of subjective quality claims
-- Standardized terminology enforcement
-- Clinical language compliance checks
-4. Service Area Validation
-- Geographic boundary verification
-- Multi-region service area validation
-- County-level coverage confirmation
-- Virtual service delivery validation
-- Hybrid program location requirements
-5. Verification Requirements
-- 90-day reverification enforcement
-- Multiple verification source validation
-- Source credibility assessment
-- Data freshness tracking
-- Program status monitoring
-6. Healthcare Privacy Compliance
-- PHI exclusion validation
-- Contact information verification rules
-- Location data precision requirements
-- Accessibility information validation
-7. Program Categorization Rules
-- Level of care validation (PHP, IOP, Outpatient)
-- Service domain classification
-- Insurance coverage validation
-- Specialty service verification
-Implementation Files:
-- js/data-validator.js: Primary validation implementation
-- js/program-detail.js: Program-specific rules
-- js/modules/search.js: Search-related validations
-# === END USER INSTRUCTIONS ===
+# Validation and verification rules
 
-# validation-rules
+## Freshness thresholds
 
-## Program Data Validation Schema
-- Required core fields validation:
-  - program_id (unique identifier)
-  - organization (verified provider entity)
-  - program_name (neutral language enforcement)
-  - level_of_care (matches defined service types)
+`getVerificationFreshness(lastVerified)` in `src/js/utils/helpers.js` returns one of four buckets based on days since `last_verified`:
 
-## Service Domain Validation
-- Mental health service type validation:
-  - Primary service domain required
-  - Valid categories: mental_health, substance_use, co_occurring, eating_disorders
-  - Multiple domains allowed with evidence requirements
-  - Crisis service designation requires 24/7 availability validation
+| Bucket | Condition |
+|---|---|
+| `recent` | < 60 days |
+| `fresh` | 60–90 days |
+| `stale` | > 90 days |
+| `missing` | absent or unparseable date |
 
-## Data Freshness Rules
-- Programs must be verified within 90 days
-- Verification source requirements:
-  - Valid URL or documented contact
-  - Independent verification for crisis services
-  - Professional credentials for clinical programs
+`REVERIFICATION_THRESHOLD_DAYS = 90` in `validation-schema.js` is the canonical reverification interval; the 60-day `recent` cutoff is a display distinction only. Don't conflate them.
 
-## Service Area Validation
-- Geographic coverage validation:
-  - Point-based (specific facility)
-  - County-based service areas
-  - Statewide coverage
-  - Multi-region service patterns
-- Virtual service designation requirements
+`missing` is not the same as `stale` — missing means unverifiable. A program with an unparseable date must land in `missing`, never be treated as fresh by default.
 
-## Content Neutrality Rules
-- Marketing language detection
-- Clinical terminology requirements
-- Crisis content guidelines
-- Service description standardization
+## Verification tiers
 
-## Age Range Validation
-- Required for all programs
-- Special parsing for:
-  - Youth services (under 18)
-  - Transitional age youth (16-24)
-  - Adult services (18+)
-  - Senior-specific programs
-- Age range overlap validation
+`verification_tier`: `website_confirmed` | `phone_confirmed` | `provider_attestation` | `unconfirmed`.
 
-Importance Score: 85
-Key validation rules focus on ensuring data integrity and appropriate categorization of mental health services, with particular emphasis on crisis service verification and content neutrality.
+These record *how* a program was confirmed and are provenance-gated — set them only from an actual confirmation event, never derive them from the presence of other fields. Same applies to `last_intake_confirm_method` (`website | phone | provider_attestation`) and `last_successful_contact_method` (`phone | email | web_form | unknown`).
 
-$END$
+## Dates
 
- If you're using this file in context, clearly say in italics in one small line that "Context added by Giga validation-rules" along with specifying exactly what information was used from this file in a human-friendly way, instead of using kebab-case use normal sentence case.
+All date fields are ISO 8601 (`YYYY-MM-DD` or full ISO). `validateISODate` rejects anything else, including strings that parse but don't round-trip — which is what catches invented values like month 13.
+
+## Blocking vs. advisory
+
+`scripts/validate-data.js` is a **blocking** gate: any error exits non-zero, failing `npm run build` and CI. It enforces unique `program_id`s, required fields, enum membership, and cross-file parity between `programs.json`, `programs.geocoded.json`, and the regional snapshots.
+
+`src/js/data-validator.js` is the browser-side counterpart and is **advisory** — it logs warnings (e.g. probable duplicate programs) at runtime and must never block rendering. Console warnings on page load are expected and are not test failures; only errors are.
+
+Both import the same schema module, so a rule added to `validation-schema.js` takes effect in both places at once.
