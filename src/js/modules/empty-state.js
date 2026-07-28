@@ -120,6 +120,15 @@ function getBroadenSearchRemovalPlan(ctx) {
   return null;
 }
 
+export {
+  careLevelToSearchToken,
+  rebuildQueryFromParsed,
+  getEmptyStateCopy,
+  getBroadenSearchRemovalPlan,
+  summarizeActiveFilters,
+};
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.careLevelToSearchToken = careLevelToSearchToken;
   window.rebuildQueryFromParsed = rebuildQueryFromParsed;

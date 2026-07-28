@@ -1,16 +1,14 @@
 // ========== Product metrics (Phase 7.1) ==========
 // Privacy-preserving local rollup — no raw search queries, no third-party events.
 
+import { safeStr } from '../utils/helpers.js';
+
 const METRICS_KEY = 'vmhr_product_metrics_v1';
 const MAX_EVENTS = 200;
 const DEBOUNCE_MS = 2500;
 
 let lastRecordKey = '';
 let lastRecordAt = 0;
-
-function safeStr(x) {
-  return (x ?? '').toString().trim();
-}
 
 function bucketResultsCount(count) {
   const n = Number(count);
@@ -164,6 +162,9 @@ function clearMetrics() {
   }
 }
 
+export { recordSearchOutcome, getMetricsSummary, exportMetricsJson, clearMetrics };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.VMHRProductMetrics = {
     recordSearchOutcome,

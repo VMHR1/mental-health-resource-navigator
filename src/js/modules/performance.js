@@ -323,7 +323,9 @@ function initPerformanceOptimizations(options = {}) {
   };
 }
 
-// For non-module environments
+export { initPerformanceOptimizations };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.initPerformanceOptimizations = initPerformanceOptimizations;
 }

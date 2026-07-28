@@ -3,8 +3,8 @@
 // friction flags on top of the existing family search results.
 // Does NOT modify search order or filter logic.
 
-(function () {
-  if (typeof window === 'undefined') return;
+const VMHRNavigatorMode = (function () {
+  if (typeof window === 'undefined') return undefined;
 
   const SESSION_KEY = 'vmhr_navigator_mode_v1';
   const MODE_ON_CLASS = 'navigator-mode-on';
@@ -360,7 +360,7 @@
     init();
   }
 
-  window.VMHRNavigatorMode = {
+  return {
     activate,
     deactivate,
     isOn,
@@ -368,3 +368,10 @@
     applyPreset: applyNavigatorPreset,
   };
 })();
+
+export { VMHRNavigatorMode };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.VMHRNavigatorMode = VMHRNavigatorMode;
+}

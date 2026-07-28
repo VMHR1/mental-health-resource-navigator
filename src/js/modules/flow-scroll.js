@@ -2,7 +2,7 @@
  * Phase 4 — Scroll-linked space recovery (context bar + section reveals)
  */
 
-(function () {
+const flowScroll = (function () {
   'use strict';
 
   const INTENT_LABELS = {
@@ -198,7 +198,14 @@
     init();
   }
 
-  window.flowScroll = {
+  return {
     updateFlowContextBar,
   };
 })();
+
+export { flowScroll };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.flowScroll = flowScroll;
+}

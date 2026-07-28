@@ -117,7 +117,9 @@ function sortPrograms(programs, sortType, options = {}) {
   return sorted;
 }
 
-// For non-module environments
+export { sortPrograms };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.sortPrograms = sortPrograms;
 }

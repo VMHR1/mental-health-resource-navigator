@@ -89,7 +89,9 @@ function hasValidLocation(program) {
   });
 }
 
-// Export for use in other modules
+export { haversineDistance, calculateProgramDistance, hasValidLocation };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.haversineDistance = haversineDistance;
   window.calculateProgramDistance = calculateProgramDistance;
