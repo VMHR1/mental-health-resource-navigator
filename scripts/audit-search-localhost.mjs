@@ -32,6 +32,18 @@ await loadBrowserScript('src/js/utils/helpers.js', win);
 await loadBrowserScript('src/js/modules/search.js', win);
 await loadBrowserScript('src/js/modules/filters.js', win);
 
+// search.js's real exports are the raw parseSmartSearch(query, cities) /
+// getTextSearchTerms(query, cities) - the browser-only window.* shims
+// auto-inject cities via resolveSearchCities(). Reproduce that here so the
+// rest of this script (and matchesFilters, which always calls
+// options.parseSmartSearch with just the query) keep working the same as
+// they did against the shims.
+const { CITIES } = await import(pathToFileURL(join(root, 'src/js/config/constants.js')).href);
+const rawParseSmartSearch = win.parseSmartSearch;
+win.parseSmartSearch = (query) => rawParseSmartSearch(query, CITIES);
+const rawGetTextSearchTerms = win.getTextSearchTerms;
+win.getTextSearchTerms = (query) => rawGetTextSearchTerms(query, CITIES);
+
 const data = JSON.parse(readFileSync(join(root, 'public/data/programs.json'), 'utf8'));
 win.registerInsurancePlansFromData(data.programs);
 const allPrograms = data.programs;
