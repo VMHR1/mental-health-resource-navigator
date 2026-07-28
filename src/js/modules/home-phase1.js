@@ -3,7 +3,7 @@
  * Preserves existing filter/search IDs and scheduleRenderFn integration.
  */
 
-(function () {
+const homePhase1 = (function () {
   'use strict';
 
   /** Maps guided program-type values to #care filter option values. */
@@ -428,7 +428,18 @@
     init();
   }
 
-  window.initPhase1Home = init;
-  window.revealViableSearch = revealSearchSection;
-  window.setFlowIntent = setFlowIntent;
+  return {
+    initPhase1Home: init,
+    revealViableSearch: revealSearchSection,
+    setFlowIntent,
+  };
 })();
+
+export const { initPhase1Home, revealViableSearch, setFlowIntent } = homePhase1;
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.initPhase1Home = initPhase1Home;
+  window.revealViableSearch = revealViableSearch;
+  window.setFlowIntent = setFlowIntent;
+}
