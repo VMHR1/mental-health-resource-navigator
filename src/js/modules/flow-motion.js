@@ -2,7 +2,7 @@
  * Phase 3 — Input-responsive motion (query chips, filter chip transitions, grid state)
  */
 
-(function () {
+const flowMotion = (function () {
   'use strict';
 
   const PRESS_MS = 150;
@@ -253,7 +253,7 @@
     init();
   }
 
-  window.flowMotion = {
+  return {
     renderSearchQueryChips,
     updateResultsStatusBadge,
     setTreatmentGridState,
@@ -261,3 +261,10 @@
     updateActiveFilterChipsWithMotion,
   };
 })();
+
+export { flowMotion };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.flowMotion = flowMotion;
+}
