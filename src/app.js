@@ -1829,7 +1829,6 @@ async function addRecentSearch(query) {
   renderRecentSearches();
 }
 
-let scheduleRenderFn = null;
 /** Bumped on each render; stale async renders must not overwrite the UI. */
 let renderGeneration = 0;
 
@@ -1867,8 +1866,8 @@ function renderRecentSearches() {
     btn.addEventListener('click', (e) => {
       const search = btn.dataset.search;
       els.q.value = search;
-      if (scheduleRenderFn) {
-        scheduleRenderFn();
+      if (window.scheduleRenderFn) {
+        window.scheduleRenderFn();
       } else {
         render();
       }
@@ -2643,8 +2642,8 @@ function selectSuggestion(index) {
   // Clear any previous search state and trigger fresh search
   // Use a small delay to ensure the input value is set
   setTimeout(() => {
-    if (scheduleRenderFn) {
-      scheduleRenderFn();
+    if (window.scheduleRenderFn) {
+      window.scheduleRenderFn();
     } else {
       render();
     }
@@ -2915,7 +2914,7 @@ function bind(){
   window.setupEventHandlers({ els, callbacks, state });
   
   // Make scheduleRender accessible globally (set by events module)
-  // scheduleRenderFn is set inside setupEventHandlers
+  // window.scheduleRenderFn is set inside setupEventHandlers
 }
 
 function setupPrivacyControls() {
@@ -3298,7 +3297,7 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.county.value = '';
         selectedCounty = null;
-        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
     });
@@ -3318,7 +3317,7 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.serviceDomain.value = '';
         selectedServiceDomains = [];
-        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
     });
@@ -3346,7 +3345,7 @@ function updateActiveFilterChips() {
           Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
           selectedSudServices = [];
           syncChipsToSelect('sudServices');
-          if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+          if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
           else render();
         }
       });
@@ -3366,7 +3365,7 @@ function updateActiveFilterChips() {
       removeFn: () => {
         els.verificationRecency.value = '';
         verificationRecencyDays = null;
-        if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
     });
@@ -3476,7 +3475,7 @@ function clearActiveFilterChip(chipType) {
   }
   if (typeof syncTopToggles === 'function') syncTopToggles();
   if (typeof updateURLState === 'function') updateURLState();
-  if (typeof scheduleRenderFn === 'function') scheduleRenderFn();
+  if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
   else render();
 }
 
@@ -3580,8 +3579,8 @@ async function handleLocationConsentAllow() {
     }
 
     // Re-render with distance sorting
-    if (typeof scheduleRenderFn === 'function') {
-      scheduleRenderFn();
+    if (typeof window.scheduleRenderFn === 'function') {
+      window.scheduleRenderFn();
     } else {
       render();
     }
@@ -3604,8 +3603,8 @@ function revertDistanceSortWithoutLocation() {
     els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
   }
   syncStateToManager();
-  if (typeof scheduleRenderFn === 'function') {
-    scheduleRenderFn();
+  if (typeof window.scheduleRenderFn === 'function') {
+    window.scheduleRenderFn();
   } else {
     render();
   }
@@ -3635,8 +3634,8 @@ function handleStopLocationSharing() {
   updateLocationButtonVisibility();
   
   // Re-render without distance sorting
-  if (typeof scheduleRenderFn === 'function') {
-    scheduleRenderFn();
+  if (typeof window.scheduleRenderFn === 'function') {
+    window.scheduleRenderFn();
   } else {
     render();
   }
