@@ -718,7 +718,9 @@ function setupEventHandlers(options) {
   callbacks.setupPrivacyControls();
 }
 
-// For non-module environments
+export { setupEventHandlers };
+
+// For classic-script (non-module) consumers not yet converted
 if (typeof window !== 'undefined') {
   window.setupEventHandlers = setupEventHandlers;
 }
