@@ -138,6 +138,25 @@ This repo has repeatedly punished reasoning-from-plausibility. Real examples, ea
 - **Counters that disagreed with the records they described** — `metadata.audit_*` said 74/38 while the records said 105/6/1. Recompute from source rather than trusting a stored summary.
 - **A workflow that reported success while doing nothing** — a `**` glob that bash never expanded. Confirm the side effect happened, not that the step was green.
 
+### The same applies to claims about the future
+
+A prediction is a claim. "This will take about five minutes", "this should fix the failures", "expect CI to go green" — each needs a trace, and the trace is the measurement it is extrapolated from plus the assumptions it rests on. An estimate with no stated basis is a guess wearing the costume of an answer.
+
+When forecasting, show the derivation and the load-bearing assumption:
+
+> ~20-25 min. Basis: run #82 measured 33.5 min for ~290 tests (~7s/test); halving for 2 workers gives ~17 min, plus ~1 min setup and ~2-5 min Lighthouse. **Assumes the suite goes green** — failures retry twice and would push this back up.
+
+That is checkable, and someone can tell you which part is wrong. "About 20 minutes" is not.
+
+Rules:
+
+- **Never state a predicted number in the same voice as a measured one.** Label which it is. If a table mixes them, mark the estimated rows.
+- **Name what would falsify it.** A forecast with no failure condition cannot be wrong, which means it carries no information.
+- **Do not assert a cause before measuring it.** In this session the desktop suite's slowness was confidently attributed to one blocked external script; measuring showed two independent ~6.5s hangs, and removing just the named one saved 400ms of 13,092ms. The confident version was wrong and the measurement took one command.
+- **Do not predict a result you are about to be able to observe.** If a run is in flight, wait for it and report the actual rather than forecasting the outcome and being quoted on it.
+- **Close the loop.** After the fact, state the measured value against the estimate, and say plainly when the estimate was off. Do not let a stale prediction stand as though it were confirmed.
+- Distinguish *expected*, *hoped*, and *verified*. "The build fix should clear these 18 failures" is a hypothesis until a run says 270 passed.
+
 Practical rules that follow:
 
 - Prefer running the thing over reasoning about it. One command beats three paragraphs of inference.
