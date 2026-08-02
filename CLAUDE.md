@@ -31,7 +31,11 @@ npx playwright test tests/mobile.spec.js --project=mobile --headed
 E2E runs against built output, so `dist/` must be current — `npm run build` first if you changed source.
 Playwright's `webServer` reuses an already-running server locally, so kill stray `http-server` processes on 4173 if tests behave oddly.
 
-Screenshot snapshots are platform-specific and CI runs Linux. Update them with `npm run test:e2e:update:linux` (Docker) and commit the `*-linux.png` files; `npm run test:e2e:update-snapshots` only produces macOS ones.
+**A stale `dist/` will lie to you.** The build copies data files into `dist/data/`; if an earlier build left files there that the current build no longer produces, tests pass locally and fail in CI's clean checkout. When a test fails only in CI, `rm -rf dist && npm run build` before believing anything. The build now throws on any failed copy rather than logging and exiting 0, which is what let a `dist` with no data files ship to production.
+
+**Test projects** are `desktop` (Chromium), `mobile` (Pixel 7 / Chromium = Android) and `mobile-webkit` (iPhone 13 / WebKit = iOS). `devices['iPhone 13']` defaults to WebKit, so a mobile project that omits `browserName` silently becomes a duplicate of `mobile-webkit` — both projects state their browser explicitly to prevent that.
+
+Screenshot snapshots are platform-specific and CI runs Linux, and they are also per-project (`*-mobile-linux.png` vs `*-mobile-webkit-linux.png`), so changing a project's browser or viewport invalidates its baselines. Regenerate via the `Update Playwright Snapshots` workflow (`workflow_dispatch`, commits back to the branch it runs on); `npm run test:e2e:update:linux` (Docker) is the local equivalent. `npm run test:e2e:update-snapshots` only produces macOS ones. Snapshots also encode whatever the page rendered at capture time — if the site was broken then, the baseline enshrines the bug.
 
 ## Architecture
 
@@ -76,7 +80,18 @@ Other data files: `pro_gate.json` (pro-gate password hash), `scenario_taxonomy.j
 
 At build time `scripts/generate-program-pages.js` emits `dist/programs/{program_id}.html` per program plus a sitemap, so shareable URLs resolve without SPA rewrites.
 
-**Data-ops scripts** (see `npm run` names in `package.json`): `validate-data` (schema/integrity, blocking), `verify-all-programs` / `mark-programs-verified` (verification workflow), `audit-program-data` / `spot-check-25` (audits), `verify-program-links` / `apply-link-fixes` (link health), `sync-regional-data` (regions dataset), `geocode-programs` (lat/lng), `remove-program`. Several `apply-*.js` scripts encode one-off dated fix batches.
+**Data-ops scripts** (see `npm run` names in `package.json`): `validate-data` (schema/integrity, blocking), `verify-all-programs` / `mark-programs-verified` (verification workflow), `audit-program-data` / `spot-check-25` (audits), `verify-program-links` / `apply-link-fixes` (link health), `sync-regional-data` (regions dataset), `assign-waves` (rolling re-verification slots), `geocode-programs` (lat/lng), `remove-program`. Several `apply-*.js` scripts encode one-off dated fix batches.
+
+### Automated freshness pipeline
+
+`.github/workflows/data-freshness.yml` runs weekly, re-verifies the wave due that ISO week via `audit-program-data.js --wave N`, and **opens a PR** — it never pushes to `updated-main`, because that branch deploys without waiting for CI and the runbook forbids auto-merging program data.
+
+- **Waves.** `scripts/assign-verification-waves.js` assigns each program a `verification_wave` (0-11) from an FNV-1a hash of `program_id` — deterministic across machines and stable when the roster changes. One wave per week re-verifies each program every 84 days, inside the 90-day window. This exists because every program once shared one `last_verified`, so the whole directory expired on the same day.
+- **Catch-up.** `--wave N` also sweeps anything ≥100 days old regardless of wave, so a skipped or failed run cannot let a program quietly expire.
+- **`validate-data` gates freshness**: warns past 90 days, fails when >20% exceed 120 days or lack `last_verified`, and warns on *cohort risk* when >25% share one date. `VALIDATE_AS_OF=YYYY-MM-DD` previews a future date without editing data.
+- **What `verified` actually means**: the source URL resolved and the phone/city strings appeared on the page. It does **not** confirm intake hours, waitlist, or whether a program accepts new patients — those fields are unpopulated and are not crawlable. Never describe the crawl as an accuracy measurement; real accuracy needs the sampled phone audit in `docs/operations/DATA_FRESHNESS_AUTOMATION_PLAN.md`.
+- `verification.status` is **not** family-facing — only the pro-gated export reads it. Families see freshness derived from `last_verified` (`render.js`), so a status downgrade is invisible to them while a stale date is not.
+- Only a full sweep may set `metadata.last_full_verification`; wave runs set `last_wave_verification`. The `audit_*` counters are recomputed from the file as written, not from the current run.
 
 ### Cross-cutting build behavior
 
@@ -91,7 +106,11 @@ At build time `scripts/generate-program-pages.js` emits `dist/programs/{program_
 
 ### Deployment
 
-Cloudflare Pages deploys on push to **`updated-main`** (the default branch) and **does not wait for CI to pass** — a broken push can go live before the red X appears. Prefer a feature branch + PR for anything non-trivial. `npm run push:deploy` pushes HEAD straight to `updated-main`; treat it accordingly. CI (`.github/workflows/ci.yml`) runs `npm run verify` on PRs and pushes to `updated-main`.
+Cloudflare Pages deploys on push to **`updated-main`** (the default branch) and **does not wait for CI to pass** — a broken push can go live before the red X appears. Prefer a feature branch + PR for anything non-trivial. `npm run push:deploy` pushes HEAD straight to `updated-main`; treat it accordingly.
+
+CI (`.github/workflows/ci.yml`) is split for fast signal: a `fast` job (build + `validate-data` + `validate-filters`, ~3s of actual work) gates a 4-way sharded `e2e` job and a parallel `lighthouse` job. Put cheap correctness checks in `fast` — that is what fails in under a minute. Playwright browsers are cached per version, and `concurrency` cancels superseded runs.
+
+Requires **Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests"**; without it the freshness workflow's PR step fails with `GitHub Actions is not permitted to create or approve pull requests` after already pushing its branch.
 
 ## Domain rules
 
