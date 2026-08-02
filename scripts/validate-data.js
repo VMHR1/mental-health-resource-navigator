@@ -313,6 +313,95 @@ function validateCrossFileParity() {
   }
 }
 
+// ── Verification freshness gate ───────────────────────────────────────────────
+// Domain rule: verification expires after REVERIFICATION_THRESHOLD_DAYS (90).
+// Graduated on purpose: routine slippage warns loudly but must not block
+// unrelated PRs, while a directory-wide lapse fails the build.
+//
+// Also reports cohort risk. If a large share of programs carry the same
+// last_verified date they expire on the same day, which is how the whole
+// directory can flip to "stale" for families at once.
+//
+// Set VALIDATE_AS_OF=YYYY-MM-DD to evaluate against a future date (useful for
+// answering "what does CI look like after the next expiry?" without editing data).
+const HARD_FAIL_DAYS = 120;
+const HARD_FAIL_SHARE = 0.2;
+const COHORT_WARN_SHARE = 0.25;
+
+function validateVerificationFreshness() {
+  console.log('\nValidating verification freshness...\n');
+
+  const programsPath = join(rootDir, 'public', 'data', 'programs.json');
+  if (!existsSync(programsPath)) return;
+
+  let data;
+  try {
+    data = JSON.parse(readFileSync(programsPath, 'utf8'));
+  } catch {
+    return; // parse failure already reported by validateProgramsJson
+  }
+
+  const programs = Array.isArray(data.programs) ? data.programs : [];
+  if (programs.length === 0) return;
+
+  const asOfRaw = process.env.VALIDATE_AS_OF;
+  const asOf = asOfRaw ? new Date(asOfRaw) : new Date();
+  if (Number.isNaN(asOf.getTime())) {
+    error(`VALIDATE_AS_OF is not a valid date: ${asOfRaw}`);
+    return;
+  }
+  if (asOfRaw) console.log(`(evaluating as of ${asOfRaw})`);
+
+  const overdue = [];
+  const critical = [];
+  const missing = [];
+  const cohorts = new Map();
+
+  for (const p of programs) {
+    const last = p.last_verified || (p.verification && p.verification.last_verified_at);
+    const parsed = last ? new Date(last) : null;
+    if (!parsed || Number.isNaN(parsed.getTime())) {
+      missing.push(p.program_id);
+      continue;
+    }
+    cohorts.set(last, (cohorts.get(last) || 0) + 1);
+    const age = Math.floor((asOf - parsed) / 86400000);
+    if (age > HARD_FAIL_DAYS) critical.push(`${p.program_id} (${age}d)`);
+    else if (age > REVERIFICATION_THRESHOLD_DAYS) overdue.push(`${p.program_id} (${age}d)`);
+  }
+
+  const staleCount = overdue.length + critical.length + missing.length;
+  const pct = (n) => `${((n / programs.length) * 100).toFixed(1)}%`;
+
+  console.log(`Programs: ${programs.length}`);
+  console.log(`Within ${REVERIFICATION_THRESHOLD_DAYS}d: ${programs.length - staleCount} (${pct(programs.length - staleCount)})`);
+  console.log(`Overdue (>${REVERIFICATION_THRESHOLD_DAYS}d): ${overdue.length}`);
+  console.log(`Critical (>${HARD_FAIL_DAYS}d): ${critical.length}`);
+  console.log(`Missing last_verified: ${missing.length}`);
+
+  if (overdue.length > 0) {
+    console.warn(`\n⚠ [GLOBAL] ${overdue.length} program(s) past the ${REVERIFICATION_THRESHOLD_DAYS}-day verification window: ${overdue.slice(0, 25).join(', ')}${overdue.length > 25 ? ', …' : ''}`);
+  }
+  if (missing.length > 0) {
+    console.warn(`\n⚠ [GLOBAL] ${missing.length} program(s) have no usable last_verified: ${missing.slice(0, 25).join(', ')}${missing.length > 25 ? ', …' : ''}`);
+  }
+
+  // Cohort risk — the failure mode where everything expires the same day.
+  for (const [date, count] of [...cohorts.entries()].sort((a, b) => b[1] - a[1])) {
+    if (count / programs.length <= COHORT_WARN_SHARE) break;
+    const expires = new Date(new Date(date).getTime() + REVERIFICATION_THRESHOLD_DAYS * 86400000)
+      .toISOString().slice(0, 10);
+    console.warn(`\n⚠ [GLOBAL] Cohort risk: ${count} program(s) (${pct(count)}) share last_verified ${date} and all expire on ${expires}. Stagger re-verification so the directory does not go stale at once.`);
+  }
+
+  const blockingCount = critical.length + missing.length;
+  if (blockingCount / programs.length > HARD_FAIL_SHARE) {
+    error(
+      `Verification lapse: ${blockingCount} program(s) (${pct(blockingCount)}) are over ${HARD_FAIL_DAYS} days old or missing last_verified, exceeding the ${HARD_FAIL_SHARE * 100}% ceiling. Re-verify before shipping: node scripts/audit-program-data.js`,
+    );
+  }
+}
+
 // Main execution
 console.log('='.repeat(60));
 console.log('Data Validation');
@@ -321,6 +410,7 @@ console.log();
 
 validateProgramsJson();
 validateCrossFileParity();
+validateVerificationFreshness();
 
 console.log();
 console.log('='.repeat(60));
