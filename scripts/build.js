@@ -105,7 +105,11 @@ function copyStaticAssets() {
     if (!existsSync('dist')) {
       mkdirSync('dist', { recursive: true });
     }
-    
+
+    // Collected so a failed copy fails the build instead of silently shipping
+    // an incomplete dist.
+    const copyErrors = [];
+
     // Copy HTML files
     let copiedCount = 0;
     htmlFiles.forEach(({ src, dest, csp }) => {
@@ -113,10 +117,13 @@ function copyStaticAssets() {
         try {
           let html = readFileSync(src, 'utf8');
           html = applyCspToHtml(html, csp || 'standard');
-          writeFileSync(join('dist', dest), html);
+          const destPath = join('dist', dest);
+          mkdirSync(dirname(destPath), { recursive: true });
+          writeFileSync(destPath, html);
           copiedCount++;
         } catch (error) {
           console.error(`Error copying ${src}:`, error.message);
+          copyErrors.push(`${src} -> ${dest}: ${error.message}`);
         }
       } else {
         console.warn(`Warning: ${src} not found, skipping`);
@@ -127,10 +134,17 @@ function copyStaticAssets() {
     staticFiles.forEach(({ src, dest }) => {
       if (existsSync(src)) {
         try {
-          writeFileSync(join('dist', dest), readFileSync(src, 'utf8'));
+          // Nested destinations (data/*.json) need their directory created first.
+          // Without this every data/ copy fails with ENOENT on a clean build,
+          // and because the error was only logged the build still exited 0 —
+          // shipping a dist with no data files.
+          const destPath = join('dist', dest);
+          mkdirSync(dirname(destPath), { recursive: true });
+          writeFileSync(destPath, readFileSync(src, 'utf8'));
           copiedCount++;
         } catch (error) {
           console.error(`Error copying ${src}:`, error.message);
+          copyErrors.push(`${src} -> ${dest}: ${error.message}`);
         }
       } else {
         console.warn(`Warning: ${src} not found, skipping`);
@@ -216,6 +230,15 @@ function copyStaticAssets() {
     }
     
     console.log(`Static assets copied (${copiedCount} files)`);
+
+    // A copy failure means the deployed site is missing a file it fetches at
+    // runtime. Previously these were logged and ignored, so the build exited 0
+    // and shipped a dist whose pro pages could never render.
+    if (copyErrors.length > 0) {
+      throw new Error(
+        `${copyErrors.length} static asset(s) failed to copy:\n  ${copyErrors.join('\n  ')}`,
+      );
+    }
   } catch (error) {
     console.error('Error in copyStaticAssets:', error);
     throw error;
