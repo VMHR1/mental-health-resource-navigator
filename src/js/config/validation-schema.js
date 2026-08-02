@@ -38,6 +38,8 @@ export const PROGRAM_SCHEMA = {
     'last_successful_contact_method', // enum: phone | email | web_form | unknown
     'provider_attestation_at', // ISO date
     'provider_attestation_email_domain', // domain only — never a person's address
+    // Operations metadata — not user-facing, never rendered.
+    'verification_wave',       // rolling re-verification slot (see scripts/assign-verification-waves.js)
   ],
   types: {
     program_id: 'string',
@@ -96,6 +98,7 @@ export const PROGRAM_SCHEMA = {
     last_successful_contact_method: 'string',
     provider_attestation_at: 'string',
     provider_attestation_email_domain: 'string',
+    verification_wave: 'number',
   }
 };
 
