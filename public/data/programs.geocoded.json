@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-05-18T03:32:52.509Z",
+    "generatedAt": "2026-08-02T21:03:18.821Z",
     "last_full_verification": "2026-05-18",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
@@ -20,7 +20,7 @@
     "geocoding_attribution": "© OpenStreetMap contributors",
     "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
     "note": "Geocoded data for distance calculations. Regenerate when program addresses change.",
-    "regional_sync_at": "2026-05-18T03:32:52.509Z",
+    "regional_sync_at": "2026-08-02T21:03:18.821Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
@@ -2913,10 +2913,10 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Cigna, ComPsych, Magellan, Medicare, Medicaid, Molina, Optum, Superior, TRICARE, UMR, UnitedHealthcare | Types: Commercial, Medicare, Medicaid/CHIP plans (listed), Military (TRICARE) | Dallas Behavioral lists accepted insurance providers; confirm plan/product and authorization requirements.",
       "verification_source": "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-02",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-02",
         "source_url": "https://www.dallasbehavioral.com/programs/",
         "plans": [
           "Aetna",
@@ -2964,14 +2964,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-02",
         "source_urls": [
           "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
           "https://www.dallasbehavioral.com/programs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-02T21:03:18.636Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true
@@ -4400,12 +4400,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Mesa Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-02",
       "website": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-02",
         "source_url": "https://www.mesasprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -4423,14 +4423,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-02",
         "source_urls": [
           "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
           "https://www.mesasprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-02T21:03:18.636Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true
@@ -5118,10 +5118,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-02",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-02",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -5142,14 +5142,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-02",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-02T21:03:18.636Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true
@@ -5372,12 +5372,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/keller",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-02",
       "website": "https://www.carruscarebehavioral.com/keller",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-02",
         "source_url": "https://www.carruscarebehavioral.com/keller",
         "plans": [],
         "types": [
@@ -5393,13 +5393,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-02",
         "source_urls": [
           "https://www.carruscarebehavioral.com/keller"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-02T21:03:18.636Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true
@@ -5734,10 +5734,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "Official 988 Lifeline site: https://988lifeline.org/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-02",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-02"
       },
       "website_url": "https://988lifeline.org/",
       "website_domain": "988lifeline.org",
@@ -5745,13 +5745,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-02",
         "source_urls": [
           "https://988lifeline.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-02T21:03:18.636Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true
