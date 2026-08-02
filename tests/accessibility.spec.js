@@ -14,8 +14,22 @@ function assertNoSeriousViolations(results, contextLabel) {
     (v) => v.impact === 'critical' || v.impact === 'serious',
   );
   if (serious.length) {
+    // Include per-node targets and check data (for color-contrast: computed
+    // fg/bg and the measured ratio). A count alone made CI failures
+    // undiagnosable without rerunning axe by hand against a guess.
     const summary = serious
-      .map((v) => `${v.id} (${v.impact}): ${v.help} — ${v.nodes.length} node(s)`)
+      .map((v) => {
+        const nodes = v.nodes
+          .map((n) => {
+            const d = n.any?.[0]?.data;
+            const detail = d && d.contrastRatio !== undefined
+              ? ` (fg ${d.fgColor} on bg ${d.bgColor}, ratio ${d.contrastRatio}, needs ${d.expectedContrastRatio})`
+              : '';
+            return `    ${JSON.stringify(n.target)}${detail}\n      ${n.html.slice(0, 160)}`;
+          })
+          .join('\n');
+        return `${v.id} (${v.impact}): ${v.help} — ${v.nodes.length} node(s)\n${nodes}`;
+      })
       .join('\n');
     throw new Error(`[${contextLabel}] axe violations:\n${summary}`);
   }
