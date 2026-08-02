@@ -7,7 +7,8 @@ name: Data Freshness
 
 on:
   schedule:
-    # Mondays 06:00 America/Chicago (11:00 UTC CST / 12:00 UTC CDT — cron is UTC only)
+    # Cron is UTC only. 11:00 UTC = 06:00 CDT (summer) / 05:00 CST (winter).
+    # The project operates on America/Chicago; the hour drifts by one across DST.
     - cron: '0 11 * * 1'
   workflow_dispatch:
     inputs:

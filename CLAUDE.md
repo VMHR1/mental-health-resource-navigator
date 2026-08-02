@@ -107,6 +107,7 @@ These are enforced in `src/js/config/validation-schema.js` and `src/js/modules/f
 
 ## Conventions
 
+- **Operating timezone is America/Chicago (Central).** Interpret any bare time — runbook SLAs, deploy windows, "this evening" — as Central unless stated otherwise. GitHub Actions cron is UTC only, so scheduled workflows carry a comment mapping the UTC hour to Central and drift by one hour across DST.
 - Only modify code relevant to the request; avoid touching unrelated functionality.
 - Never leave placeholder comments like `// ... rest of the logic` — write the complete code.
 - The site is informational, not medical advice, and programs never pay for placement or ranking. Copy changes should preserve that neutrality.
