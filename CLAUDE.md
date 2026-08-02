@@ -35,7 +35,25 @@ Screenshot snapshots are platform-specific and CI runs Linux. Update them with `
 
 ## Architecture
 
-Static multi-page site — no framework, no runtime dependencies. `src/html/*.html` are the pages; each has hand-ordered `<script>` tags. esbuild runs with **`bundle: false`**, so it transpiles each entry point to a matching file in `dist/` rather than producing one bundle. `scripts/build.js` also copies static assets, injects CSP, and generates one static page per program.
+Static multi-page site — no framework, no runtime dependencies. `src/html/*.html` are the pages; each has hand-ordered `<script>` tags. esbuild runs with **`bundle: false`**, so it transpiles each entry point to a matching file in `dist/` rather than producing one bundle. `scripts/build.js` also copies static assets, injects CSP, and generates one static page per program. The list of pages the build ships (and each page's CSP profile) lives in the `htmlFiles` array in `scripts/build.js` — add new pages there.
+
+### Two layers: family-facing vs. professional
+
+The app has a **public family-facing layer** and a **professional layer** gated behind a client-side password.
+
+- **Family-facing:** `index.html` (the search app — `src/app.js` orchestrates search/filter/sort/render over `programs.json`), plus `program.html`, `guides.html`, `submit.html`, `about.html`, `privacy.html`, `terms.html`, `report-outdated.html`, `404.html`.
+- **Professional layer** (all behind the pro gate): `professionals.html`, `handoff.html`, `boards.html`, `regional-snapshot.html`, `export.html`, `changelog.html`, plus **navigator mode** on the search page (`index.html?mode=navigator`).
+
+**Pro gate** (`src/js/modules/pro-gate.js`, config `public/data/pro_gate.json`) is a lightweight *preview* gate, **not** real auth, a paywall, or a login — no accounts, no billing, no server check. It SHA-256-compares a password in the browser and sets a `sessionStorage` unlock flag; it fails closed on pro routes if config can't load. `pro-gate.js` loads on 8 pages (the 6 pro pages above + `index.html` for navigator mode). `pro-events.js` is a privacy-preserving, local-only (no upload) event rollup for the pro layer.
+
+**Professional feature clusters** (each is session-only, category-values-only, **no PHI / no free-text / no server calls**):
+
+- **Navigator mode** (`navigator-mode.js`, `navigator-presets.js`) — a professional overlay on the normal family search results: adds a "Pro" toolbar, workflow presets, per-card match explainers (`match-explain.js`), and operational "friction flags" (`friction-flags.js`). It **never** changes search order, filtering, or ranking.
+- **Discharge handoff builder** (`handoff.html`) — build a printable step-down-program packet from a category-only scenario. `handoff-builder.js` (scenario form) → `handoff-workspace.js` (filters programs, computes call order / confirmation items) → `handoff-readiness.js` + `handoff-completeness.js` (procedural completeness checks — **not** a quality/clinical score; print is never blocked) → `handoff-print.js` (packet). `handoff-catalog.js` loads `programs.json` into `programDataMap` on this page alone, avoiding the full search stack. Copy from `handoff_copy.json`; rules from `handoff_readiness_rules.json`.
+- **Scenario state** (`scenario-state.js`, taxonomy `scenario_taxonomy.json`) — session-only storage + URL encode/decode for sharing a scenario, shared by navigator mode and the handoff builder. Strict field/value allowlist so no PHI reaches storage or the URL.
+- **Export center** (`export.html`, `export-center.js`) — self-serve CSV/JSON download of the public directory for partners. Emits **only** the neutral fields allowlisted in `export_schema.json` (never distance, rankings, or internal fields); file is generated client-side.
+- **Resource boards** (`boards.html`, `resource_boards.json`) — curated, editorially-ordered (non-paid) link boards of presets, guide anchors, and external links.
+- **Regional gap snapshot** (`regional-snapshot.html`, `regional_gap_snapshot.json`) — aggregate, non-PHI directory-health report (stale counts, missing-field trends, thin-coverage buckets). **Not** the same as `public/data/regions/` (see Data pipeline).
 
 **Module system is mid-migration.** Historically every file attached its exports to `window` and correctness depended on `<script>` tag order. Files are being converted to real ES modules using a dual-export "strangler fig": add real `export` statements *while keeping* the existing `window.foo = foo` assignments, then flip that file's tag to `type="module"`. Both forms must stay until the whole cluster is converted — not-yet-converted siblings still read through `window`.
 
@@ -52,17 +70,28 @@ When converting a file:
 
 `public/data/*.json` is the source of truth; the build copies it into `dist/` (some files to two paths for legacy consumers). `programs.json` drives everything; `programs.geocoded.json` adds lat/lng for distance sorting and is generated separately via `node scripts/geocode-programs.js` (Nominatim, rate-limited to 1 req/sec, must be committed).
 
+Other data files: `pro_gate.json` (pro-gate password hash), `scenario_taxonomy.json` (allowed scenario vocabulary), `handoff_copy.json` + `handoff_readiness_rules.json` (handoff builder), `export_schema.json` (export field allowlist + license), `resource_boards.json` (boards), `regional_gap_snapshot.json` (snapshot page), `verification_changelog.json` (changelog page).
+
+**`public/data/regions/` is a different thing from the regional-snapshot page** despite the name. It's a manifest-driven regional dataset (`manifest.json`, `dfw.index.json`, `dfw.details.json`) that the main search app (`src/app.js`) loads and **merges as an augmentation on top of `programs.json`**.
+
 At build time `scripts/generate-program-pages.js` emits `dist/programs/{program_id}.html` per program plus a sitemap, so shareable URLs resolve without SPA rewrites.
+
+**Data-ops scripts** (see `npm run` names in `package.json`): `validate-data` (schema/integrity, blocking), `verify-all-programs` / `mark-programs-verified` (verification workflow), `audit-program-data` / `spot-check-25` (audits), `verify-program-links` / `apply-link-fixes` (link health), `sync-regional-data` (regions dataset), `geocode-programs` (lat/lng), `remove-program`. Several `apply-*.js` scripts encode one-off dated fix batches.
 
 ### Cross-cutting build behavior
 
 - **CSP** is injected per-page at build time from `scripts/csp-config.js` using named profiles (`standard`, `eval`, `submit`, `admin`). Edit the profiles there, never per-page copies.
 - **Cache busting is manual**: `?v=N` query strings on script/link tags in the HTML. `_headers` sets a 1-year `immutable` cache on `/*.js`, so bumping `?v=` is what actually ships a JS change.
 - `admin.html` is excluded from builds unless `INCLUDE_ADMIN=1`.
+- `_headers` and `_redirects` are Cloudflare Pages config. Don't add `200` rewrites for pretty URLs in `_redirects` — Pages' Pretty URLs already handle `.html` → extensionless and manual rewrites loop.
+
+### Cloudflare Pages Functions (backend)
+
+`functions/api/` holds serverless endpoints deployed alongside the static site (Cloudflare Pages Functions, not part of the esbuild build): `GET /api/programs` (serves `programs.json` with caching + optional query filtering) and `POST /api/submit-program` (program submission with an Origin allowlist / CORS, replacing Formspree). These run at the edge — there is no local Node server for them; `npx wrangler pages dev` is the way to exercise them locally.
 
 ### Deployment
 
-Cloudflare Pages deploys on push to **`updated-main`** (the default branch) and **does not wait for CI to pass** — a broken push can go live before the red X appears. Prefer a feature branch + PR for anything non-trivial. `npm run push:deploy` pushes HEAD straight to `updated-main`; treat it accordingly.
+Cloudflare Pages deploys on push to **`updated-main`** (the default branch) and **does not wait for CI to pass** — a broken push can go live before the red X appears. Prefer a feature branch + PR for anything non-trivial. `npm run push:deploy` pushes HEAD straight to `updated-main`; treat it accordingly. CI (`.github/workflows/ci.yml`) runs `npm run verify` on PRs and pushes to `updated-main`.
 
 ## Domain rules
 
@@ -81,3 +110,9 @@ These are enforced in `src/js/config/validation-schema.js` and `src/js/modules/f
 - Only modify code relevant to the request; avoid touching unrelated functionality.
 - Never leave placeholder comments like `// ... rest of the logic` — write the complete code.
 - The site is informational, not medical advice, and programs never pay for placement or ranking. Copy changes should preserve that neutrality.
+
+## Further documentation
+
+`docs/README.md` is the documentation hub, indexing deeper references under `docs/architecture/` (overview, data flow, API), `docs/operations/` (deploy, admin, pro-gate, runbooks), `docs/performance/`, `docs/security/`, `docs/product/`, and `docs/research/`. Consult these for anything beyond this file's summary.
+
+`AGENTS.md` is a symlink to this file — edit `CLAUDE.md` and both stay in sync.
