@@ -31,7 +31,8 @@
     "audit_unable_to_verify": 0,
     "audit_conflicting": 0,
     "last_internet_verification": "2026-05-18",
-    "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json"
+    "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
+    "verification_wave_count": 12
   },
   "programs": [
     {
@@ -89,7 +90,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "php-dallas-behavioral-health-care-hospital-desoto",
@@ -175,7 +177,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "php-texas-health-bh-center-richardson",
@@ -234,7 +237,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "php-reflections-dallas",
@@ -298,7 +302,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-reflections-richardson",
@@ -362,7 +367,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "php-changes-frisco",
@@ -420,7 +426,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-changes-mckinney",
@@ -478,7 +485,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "php-texas-health-seay-plano",
@@ -539,7 +547,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-connections-mckinney",
@@ -622,7 +631,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-connections-plano",
@@ -705,7 +715,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "php-reflections-the-colony",
@@ -769,7 +780,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "php-carrus-frisco",
@@ -824,7 +836,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "php-carrus-mckinney",
@@ -879,7 +892,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "php-carrus-plano",
@@ -934,7 +948,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "php-basepoint-mckinney",
@@ -1007,7 +1022,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "php-basepoint-frisco",
@@ -1080,7 +1096,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-connections-denton",
@@ -1163,7 +1180,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "php-branches-denton",
@@ -1239,7 +1257,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "php-bricolage-flower-mound",
@@ -1301,7 +1320,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "php-carrus-flower-mound",
@@ -1356,7 +1376,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "php-texas-health-arlington",
@@ -1415,7 +1436,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "php-texas-health-springwood-bedford",
@@ -1474,7 +1496,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "php-branches-fort-worth",
@@ -1550,7 +1573,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "php-mesa-springs-innovations-arlington",
@@ -1608,7 +1632,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "php-mesa-springs-innovations-fort-worth",
@@ -1666,7 +1691,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "php-mind-above-matter-keller",
@@ -1755,7 +1781,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "php-mind-above-matter-burleson",
@@ -1844,7 +1871,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "php-connections-keller",
@@ -1928,7 +1956,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "php-connections-mansfield",
@@ -2012,7 +2041,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "php-carrus-mansfield",
@@ -2067,7 +2097,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "php-carrus-keller",
@@ -2122,7 +2153,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "php-cook-childrens-fort-worth",
@@ -2180,7 +2212,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "php-branches-excel-fort-worth",
@@ -2254,7 +2287,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "php-basepoint-forney",
@@ -2327,7 +2361,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "php-connections-rockwall",
@@ -2408,7 +2443,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "php-carrus-sherman",
@@ -2463,7 +2499,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "php-virtual-basepoint",
@@ -2536,7 +2573,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "php-virtual-connections",
@@ -2619,7 +2657,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "iop-childrens-sparc-dallas",
@@ -2676,7 +2715,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "iop-southern-area-dallas",
@@ -2737,7 +2777,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "iop-unity-richardson",
@@ -2788,7 +2829,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-texas-health-bh-center-richardson",
@@ -2847,7 +2889,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "iop-dallas-behavioral-health-care-hospital-desoto",
@@ -2933,7 +2976,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 10
     },
     {
       "program_id": "iop-reflections-dallas",
@@ -2997,7 +3041,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "iop-changes-frisco",
@@ -3055,7 +3100,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "iop-changes-mckinney",
@@ -3113,7 +3159,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "iop-texas-health-bh-center-frisco",
@@ -3172,7 +3219,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "iop-texas-health-seay-plano",
@@ -3233,7 +3281,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "iop-connections-plano",
@@ -3316,7 +3365,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "iop-connections-mckinney",
@@ -3399,7 +3449,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "iop-connections-denton",
@@ -3482,7 +3533,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "iop-reflections-richardson",
@@ -3546,7 +3598,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "iop-bricolage-flower-mound",
@@ -3608,7 +3661,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "iop-carrus-flower-mound",
@@ -3663,7 +3717,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 6
     },
     {
       "program_id": "iop-reflections-the-colony",
@@ -3727,7 +3782,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-branches-denton",
@@ -3803,7 +3859,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "iop-carrus-plano",
@@ -3858,7 +3915,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "iop-basepoint-mckinney",
@@ -3931,7 +3989,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "iop-basepoint-frisco",
@@ -4004,7 +4063,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "iop-carrus-mckinney",
@@ -4059,7 +4119,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "iop-reflections-the-colony-10plus",
@@ -4123,7 +4184,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-carrus-frisco",
@@ -4178,7 +4240,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     },
     {
       "program_id": "iop-branches-fort-worth",
@@ -4254,7 +4317,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "iop-mesa-springs-fort-worth",
@@ -4312,7 +4376,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "iop-mesa-springs-arlington",
@@ -4370,7 +4435,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 10
     },
     {
       "program_id": "iop-mind-above-matter-keller",
@@ -4459,7 +4525,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "iop-mind-above-matter-burleson",
@@ -4548,7 +4615,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "iop-connections-keller",
@@ -4632,7 +4700,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "iop-connections-mansfield",
@@ -4716,7 +4785,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "iop-virtual-charlie-health",
@@ -4792,7 +4862,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "iop-virtual-basepoint",
@@ -4865,7 +4936,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "iop-virtual-connections",
@@ -4948,7 +5020,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "iop-basepoint-forney",
@@ -5021,7 +5094,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-texas-health-rockwall",
@@ -5080,7 +5154,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 10
     },
     {
       "program_id": "iop-connections-rockwall",
@@ -5161,7 +5236,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-carrus-sherman",
@@ -5216,7 +5292,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "iop-carrus-mansfield",
@@ -5271,7 +5348,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "iop-carrus-keller",
@@ -5326,7 +5404,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 10
     },
     {
       "program_id": "iop-basepoint-arlington",
@@ -5398,7 +5477,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "crisis-mcot-ntbha",
@@ -5444,7 +5524,8 @@
           "phone_on_page": true,
           "city_on_page": false
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "crisis-mcot-lifepath",
@@ -5489,7 +5570,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "crisis-mcot-denton-mhmr",
@@ -5534,7 +5616,8 @@
           "phone_on_page": true,
           "city_on_page": false
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "crisis-mcot-icare-tarrant",
@@ -5581,7 +5664,8 @@
           "phone_on_page": true,
           "city_on_page": false
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "crisis-mcot-lakes-regional",
@@ -5626,7 +5710,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "crisis-988",
@@ -5671,7 +5756,8 @@
           "phone_on_page": false,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 10
     },
     {
       "program_id": "crisis-trevor",
@@ -5718,7 +5804,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "crisis-sccntx",
@@ -5765,7 +5852,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "crisis-textline-741741",
@@ -5812,7 +5900,8 @@
           "phone_on_page": false,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 5
     },
     {
       "program_id": "crisis-walkin-southern-area-urgent-care",
@@ -5857,7 +5946,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "crisis-walkin-lifepath-outpatient-clinic",
@@ -5908,7 +5998,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "crisis-walkin-denton-mhmr-triage",
@@ -5953,7 +6044,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "crisis-walkin-metrocare",
@@ -5998,7 +6090,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "eating-disorder-childrens-health-plano",
@@ -6047,7 +6140,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "eating-disorder-walker-wellness-dallas",
@@ -6096,7 +6190,8 @@
         "signals": {
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "eating-disorder-center-discovery-plano",
@@ -6156,7 +6251,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "eating-disorder-eating-recovery-center-dallas",
@@ -6205,7 +6301,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "eating-disorder-eating-disorder-solutions-dallas",
@@ -6252,7 +6349,8 @@
         "audited_at": "2026-05-18T03:32:52.292Z",
         "signals": {}
       },
-      "website": "https://eatingdisordersolutions.com/locations/"
+      "website": "https://eatingdisordersolutions.com/locations/",
+      "verification_wave": 9
     },
     {
       "program_id": "substance-use-childrens-health-teen-recovery-dallas",
@@ -6298,7 +6396,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 2
     },
     {
       "program_id": "substance-use-youth180-dallas",
@@ -6345,7 +6444,8 @@
           "city_on_page": true
         }
       },
-      "website": "https://www.youth180tx.org/"
+      "website": "https://www.youth180tx.org/",
+      "verification_wave": 0
     },
     {
       "program_id": "substance-use-grace-counseling-lewisville",
@@ -6392,7 +6492,8 @@
         "notes": "IOP for adolescents confirmed via Grace Counseling program pages; insurance requires call.",
         "audited_at": "2026-05-18T03:32:52.292Z",
         "signals": {}
-      }
+      },
+      "verification_wave": 7
     },
     {
       "program_id": "substance-use-imagine-programs-plano",
@@ -6438,7 +6539,8 @@
           "city_on_page": true
         }
       },
-      "website": "https://imagineprograms.net/"
+      "website": "https://imagineprograms.net/",
+      "verification_wave": 1
     },
     {
       "program_id": "substance-use-changes-mckinney",
@@ -6497,7 +6599,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "substance-use-changes-frisco",
@@ -6556,7 +6659,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "substance-use-basepoint-academy-arlington",
@@ -6621,7 +6725,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "substance-use-carrus-cares-plano",
@@ -6676,7 +6781,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 8
     },
     {
       "program_id": "substance-use-fort-behavioral-evergreen-path-fort-worth",
@@ -6724,7 +6830,8 @@
         "notes": "Program and address confirmed on fortbehavioral.com; insurance requires call.",
         "audited_at": "2026-05-18T03:32:52.292Z",
         "signals": {}
-      }
+      },
+      "verification_wave": 4
     },
     {
       "program_id": "substance-use-cenikor-odyssey-house-houston",
@@ -6771,7 +6878,8 @@
         "notes": "Adolescent services page confirms ages 13–17; call admissions for Houston/Odyssey House placement and insurance.",
         "audited_at": "2026-05-18T03:32:52.292Z",
         "signals": {}
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "substance-use-sundown-ranch-canton",
@@ -6819,7 +6927,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 1
     },
     {
       "program_id": "substance-use-clearfork-academy-fort-worth",
@@ -6875,7 +6984,8 @@
         "notes": "Phone and Fort Worth address align with clearforkacademy.com; insurance and gender-specific campus—call admissions.",
         "audited_at": "2026-05-18T03:32:52.292Z",
         "signals": {}
-      }
+      },
+      "verification_wave": 3
     },
     {
       "program_id": "osar-recovery-resource-council-fort-worth",
@@ -6923,7 +7033,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 0
     },
     {
       "program_id": "osar-mhmr-tarrant-county",
@@ -6972,7 +7083,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 9
     },
     {
       "program_id": "osar-andrews-center-east-texas",
@@ -7020,7 +7132,8 @@
           "phone_on_page": true,
           "city_on_page": true
         }
-      }
+      },
+      "verification_wave": 11
     }
   ]
 }

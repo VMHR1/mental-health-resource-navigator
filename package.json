@@ -14,6 +14,7 @@
     "validate-filters": "node scripts/validate-filters.js",
     "validate-data": "node scripts/validate-data.js",
     "sync-regional-data": "node scripts/sync-regional-data.js",
+    "assign-waves": "node scripts/assign-verification-waves.js",
     "verify-all-programs": "node scripts/verify-all-programs.js",
     "verify-all-programs:force": "node scripts/verify-all-programs.js --force",
     "spot-check-attention": "node scripts/spot-check-25.js",
