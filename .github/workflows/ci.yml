@@ -1,5 +1,22 @@
 name: CI
 
+# Structured for fast signal. The previous single `verify` job ran build,
+# validators, ~291 browser tests and Lighthouse in one serial stream, so the
+# first sign of a broken schema arrived ~35 minutes after pushing.
+#
+# The checks that catch most real breakage are not the slow ones: build,
+# validate-data and validate-filters together take about 3 seconds. They now
+# run first in their own job and gate everything else, so a bad data file or a
+# broken filter fails in well under a minute.
+#
+# The browser suite is irreducibly slow per test — it drives three real
+# browsers through hundreds of page loads — so it is sharded across runners
+# instead. Wall clock scales with shard count; total compute stays about the
+# same.
+#
+# Snapshot regeneration deliberately lives in update-playwright-snapshots.yml,
+# not here.
+
 on:
   pull_request:
     branches: [updated-main]
@@ -7,16 +24,19 @@ on:
     branches: [updated-main]
   workflow_dispatch:
 
+concurrency:
+  # A newer push makes an in-flight run obsolete; do not pay for both.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  fast:
+    name: Fast checks (build + data + filters)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -24,19 +44,90 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build
+        run: npm run build
+
+      - name: Validate data
+        run: npm run validate-data
+
+      - name: Validate filters and smart search
+        run: npm run validate-filters
+
+  e2e:
+    name: E2E (shard ${{ matrix.shard }}/4)
+    needs: fast
+    runs-on: ubuntu-latest
+    strategy:
+      # One shard failing should not hide results from the others.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('./node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      # Browser download was ~40s on every job. Cached per Playwright version,
+      # which is the only thing that invalidates it.
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      # Unconditional on purpose: `install` skips browsers already present in
+      # the cache and only fetches what is missing, so a warm cache costs just
+      # the system-dependency step. Narrowing this by cache-hit risks omitting
+      # WebKit, which the mobile-webkit project needs.
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Verify (build, validate, test, audit)
-        run: npm run verify
+      - name: Build
+        run: npm run build
+
+      - name: Run E2E tests
+        run: npx playwright test --shard=${{ matrix.shard }}/4
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse
+    needs: fast
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Lighthouse CI
+        run: npm run audit
 
       - name: Upload Lighthouse results
         if: always()
@@ -45,11 +136,4 @@ jobs:
           name: lighthouse-results
           path: .lighthouseci/
           retention-days: 30
-
-# Note: this workflow deliberately does NOT regenerate snapshots.
-# It previously carried an `update-snapshots` job that ran the entire
-# Playwright suite a second time on every push and PR, purely to upload a
-# 7-day artifact that nothing consumed — doubling CI compute for no signal.
-# Regenerating baselines on demand belongs to update-playwright-snapshots.yml,
-# which does the same run and commits the result back.
-
+          if-no-files-found: ignore
