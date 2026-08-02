@@ -55,5 +55,11 @@ jobs:
           git config --local user.name "GitHub Action"
           git add -- tests
           git commit -m "Update Playwright snapshots (Linux baselines)"
-          git push origin HEAD:${{ github.ref_name }}
+          # The suite takes ~17 minutes, so the ref can move while it runs and
+          # a plain push would be rejected as non-fast-forward — losing the
+          # regenerated baselines after all that work. Rebase onto whatever
+          # landed meanwhile; snapshots touch only tests/, so conflicts with
+          # other work are not expected.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
 
