@@ -9,7 +9,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : undefined,
+  // CI ran everything on a single worker, leaving most of the runner idle.
+  // '50%' scales with whatever the runner provides rather than hardcoding a
+  // core count, and stays conservative because the visual snapshot tests in
+  // mobile.spec are timing-sensitive under load. retries above absorbs the
+  // occasional flake; raise this further only if runs stay stable.
+  workers: process.env.CI ? '50%' : undefined,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:4173',
