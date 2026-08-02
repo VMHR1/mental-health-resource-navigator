@@ -3,6 +3,14 @@ name: Update Playwright Snapshots
 on:
   workflow_dispatch:
 
+# Declared explicitly because this workflow pushes commits. Without this it
+# inherits the repository's default workflow permissions, and when that
+# default is read-only the push fails with "Permission denied to
+# github-actions[bot]" after the whole ~10-minute suite has already run
+# (run #4: commit f813f45 was created, then the push 403'd).
+permissions:
+  contents: write
+
 jobs:
   update-snapshots:
     runs-on: ubuntu-latest
