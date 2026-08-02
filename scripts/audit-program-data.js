@@ -306,7 +306,50 @@ async function auditProgram(program) {
 }
 
 const data = JSON.parse(readFileSync(PROGRAMS_PATH, 'utf8'));
-const programs = data.programs;
+const allPrograms = data.programs;
+
+// --wave N limits the run to one rolling verification wave (see
+// scripts/assign-verification-waves.js) so the scheduled job re-verifies a
+// slice each week instead of the whole directory at once.
+//
+// Anything approaching expiry is always included regardless of wave, so a
+// skipped or failed run can never let a program quietly cross 90 days.
+const CATCH_UP_DAYS = 80;
+
+function waveArg() {
+  const i = process.argv.indexOf('--wave');
+  if (i === -1 || i === process.argv.length - 1) return null;
+  const n = Number(process.argv[i + 1]);
+  return Number.isInteger(n) ? n : null;
+}
+
+const WAVE = waveArg();
+let programs = allPrograms;
+
+if (WAVE !== null) {
+  const ageInDays = (p) => {
+    const raw = p.last_verified || p.verification?.last_verified_at;
+    const d = raw ? new Date(raw) : null;
+    if (!d || Number.isNaN(d.getTime())) return Infinity;
+    return Math.floor((new Date(AUDIT_DATE) - d) / 86400000);
+  };
+  const inWave = [];
+  const catchUp = [];
+  for (const p of allPrograms) {
+    if (p.verification_wave === WAVE) inWave.push(p);
+    else if (ageInDays(p) >= CATCH_UP_DAYS) catchUp.push(p);
+  }
+  programs = [...inWave, ...catchUp];
+  console.log(
+    `Wave ${WAVE}: ${inWave.length} program(s) due` +
+    (catchUp.length ? `, plus ${catchUp.length} catch-up (>=${CATCH_UP_DAYS}d old)` : '') +
+    ` of ${allPrograms.length} total.`,
+  );
+  if (programs.length === 0) {
+    console.log('Nothing due in this wave. Exiting without changes.');
+    process.exit(0);
+  }
+}
 
 console.log(`Auditing ${programs.length} programs (audit date: ${AUDIT_DATE})...\n`);
 
@@ -373,15 +416,34 @@ if (!DRY_RUN) {
       return next;
     });
     if (rel.endsWith('programs.json')) {
+      // Count from the file as written, not from this run's results. A wave run
+      // touches a slice of the directory, so run-scoped counts would describe
+      // ~9 programs while appearing to describe all of them — the drift that
+      // left these counters reading 74/38 against an actual 105/6/1.
+      const tally = { verified: 0, partially_verified: 0, unable_to_verify: 0, conflicting_information: 0 };
+      for (const p of fileData.programs) {
+        const s = p.verification?.status;
+        if (s && s in tally) tally[s]++;
+      }
+
       fileData.metadata = {
         ...fileData.metadata,
-        last_full_verification: AUDIT_DATE,
-        last_directory_review_notes: `Automated data audit ${AUDIT_DATE}. See scripts/data-audit-summary.json.`,
-        audit_verified: byStatus.verified.length,
-        audit_partially_verified: byStatus.partially_verified.length,
-        audit_unable_to_verify: byStatus.unable_to_verify.length,
-        audit_conflicting: byStatus.conflicting_information.length,
+        last_directory_review_notes: WAVE === null
+          ? `Automated data audit ${AUDIT_DATE}. See scripts/data-audit-summary.json.`
+          : `Automated wave ${WAVE} audit ${AUDIT_DATE} (${programs.length} of ${fileData.programs.length} programs). See scripts/data-audit-summary.json.`,
+        audit_verified: tally.verified,
+        audit_partially_verified: tally.partially_verified,
+        audit_unable_to_verify: tally.unable_to_verify,
+        audit_conflicting: tally.conflicting_information,
       };
+
+      // Only a full sweep may claim a full verification.
+      if (WAVE === null) {
+        fileData.metadata.last_full_verification = AUDIT_DATE;
+      } else {
+        fileData.metadata.last_wave_verification = AUDIT_DATE;
+        fileData.metadata.last_wave_verified = WAVE;
+      }
     }
     writeFileSync(path, `${JSON.stringify(fileData, null, 2)}\n`, 'utf8');
     console.log(`Updated ${rel}`);
