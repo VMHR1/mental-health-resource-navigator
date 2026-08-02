@@ -124,6 +124,28 @@ These are enforced in `src/js/config/validation-schema.js` and `src/js/modules/f
 - **Crisis listings are hidden by default** and only surface via the crisis toggle or crisis-specific presets — 988 stays the primary crisis path.
 - Several filters are gated behind `FEATURE_FLAGS` in `constants.js` (`STATEWIDE_MODE` is off in production), and the SUD-services filter only applies when `serviceDomain` is also `substance_use`. Tests that ignore these gates silently pass without exercising the real logic.
 
+## Path-trace every claim about the code
+
+**Before stating that the code does something, trace it to a path.** Cite `file:line`, or the command and its output. If you cannot point at the evidence, say you are inferring — do not assert it. This applies to summaries and completion reports as much as to analysis: "the build copies data files" is a claim, and `scripts/build.js:84-99` is the trace.
+
+This repo has repeatedly punished reasoning-from-plausibility. Real examples, each of which read as obviously true and was wrong:
+
+- **A passing local test proved nothing** — `dist/` held files from an earlier build that the current build no longer produced. Trace: `rm -rf dist && npm run build`, then check what actually exists.
+- **A green build was hiding ten failed copies.** Errors went to `console.error` while the process exited 0. Trace the exit code *and* the output, not just the exit code.
+- **A comparison that could never be true.** `handoff-workspace.js` tested `freshness === 'current'`; `getVerificationFreshness` only ever returns `recent|fresh|stale|missing`. Trace the producer before trusting the consumer.
+- **An enum that never matched.** A branch tested `'not_listed'` while the data uses `'not_listed_on_website'`. Check the values in `public/data/*.json`, not the ones the code implies.
+- **Two config entries that were secretly identical.** `devices['iPhone 13']` defaults to WebKit, so a project omitting `browserName` silently duplicated another. Resolve the actual value; do not read intent from the name.
+- **Counters that disagreed with the records they described** — `metadata.audit_*` said 74/38 while the records said 105/6/1. Recompute from source rather than trusting a stored summary.
+- **A workflow that reported success while doing nothing** — a `**` glob that bash never expanded. Confirm the side effect happened, not that the step was green.
+
+Practical rules that follow:
+
+- Prefer running the thing over reasoning about it. One command beats three paragraphs of inference.
+- When something fails only in CI, reproduce the CI condition (clean checkout, clean `dist/`) before diagnosing. A local pass is not a counter-example until it is faithful.
+- `window.foo` may not have the same signature as the exported `foo` (see the module-migration notes above). Trace the shim.
+- State what was verified and what was not. "Tests pass" should name which tests ran and on what.
+- If a fix is not verifiable in this environment, say so and name the check that would confirm it, rather than implying it was confirmed.
+
 ## Conventions
 
 - **Operating timezone is America/Chicago (Central).** Interpret any bare time — runbook SLAs, deploy windows, "this evening" — as Central unless stated otherwise. GitHub Actions cron is UTC only, so scheduled workflows carry a comment mapping the UTC hour to Central and drift by one hour across DST.
