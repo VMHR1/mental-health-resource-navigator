@@ -1,8 +1,22 @@
 # Automated Data-Freshness & Accuracy Pipeline — Implementation Plan
 
-**Status:** Approved plan, not yet implemented. This document is the handoff spec for the implementing agent/developer.
+**Status:** Partially implemented — see the progress table below.
 **Authored:** 2026-08-02 (all "today"-relative facts below are as of this date).
 **Goal:** Families receive correct program information ≥90% of the time, and the fields families most need (intake, insurance, availability) are actually populated.
+
+## Progress
+
+| Phase | State | Notes |
+|---|---|---|
+| 0 — measurement bug fixes | **Done** | `validateISODate` (was throwing RangeError, not returning false), `friction-flags` enum mismatch, `handoff-workspace` dead `'current'` comparison. Metadata counter drift fixed in Phase 3's write path. |
+| 1 — cliff + de-synchronize | **Partly done** | `scripts/assign-verification-waves.js` written and applied: all 112 programs carry `verification_wave` (12 waves, deterministic + stable). **Still required: the actual re-verification run**, which needs network egress the dev sandbox blocks — run the workflow via `workflow_dispatch` with `full: true`, or `node scripts/audit-program-data.js --force` locally, before **2026-08-16**. |
+| 2 — staleness gate | **Gate done; scorecard not started** | `validate-data.js` now warns >90d, blocks when >20% exceed 120d, and reports cohort risk. `VALIDATE_AS_OF=YYYY-MM-DD` previews a future date. `scripts/accuracy-scorecard.js` **not yet written**. |
+| 3 — scheduled workflow | **Done** | `.github/workflows/data-freshness.yml` — weekly cron, derives wave from ISO week, opens a PR (never pushes). `audit-program-data.js --wave N` added with a 10-day catch-up sweep. `scripts/apply-patches.js` **not yet written**. |
+| 4 — correction intake | **Not started** | Wire `submit.js` / `report-outdated.html` to `/api/submit-program`; needs `GITHUB_TOKEN` + `GITHUB_REPO` on Cloudflare Pages. Un-gating report-outdated is a product decision. |
+| 5 — intake backfill + accuracy audit | **Not started** | `scripts/build-call-queue.js`. This is the only path to the "information families most need" criterion and to a defensible accuracy number. |
+| 6 — LLM extraction | Deferred | Needs a credential; do not start before 1–5 run. |
+
+**Before the next scheduled run, confirm in repo settings:** Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests". Without it the workflow's PR step fails.
 
 > Implementer notes: read `CLAUDE.md` first (build, three-mirror data rule, `?v=` cache busting, deploy-on-push risk). Work in phase order — Phase 0 fixes bugs that would corrupt every metric built later. Each phase lands as its own PR against `updated-main`; never push data changes directly (Cloudflare deploys without waiting for CI).
 
