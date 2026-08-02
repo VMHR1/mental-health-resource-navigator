@@ -46,36 +46,10 @@ jobs:
           path: .lighthouseci/
           retention-days: 30
 
-  update-snapshots:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Build
-        run: npm run build
-
-      - name: Update snapshots
-        run: npx playwright test --update-snapshots
-
-      - name: Upload updated snapshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: updated-snapshots
-          path: tests/**/*-snapshots/*.png
-          retention-days: 7
-
+# Note: this workflow deliberately does NOT regenerate snapshots.
+# It previously carried an `update-snapshots` job that ran the entire
+# Playwright suite a second time on every push and PR, purely to upload a
+# 7-day artifact that nothing consumed — doubling CI compute for no signal.
+# Regenerating baselines on demand belongs to update-playwright-snapshots.yml,
+# which does the same run and commits the result back.
 

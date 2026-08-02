@@ -23,16 +23,21 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      // Android / Chrome. devices['iPhone 13'] defaults to WebKit, so this
+      // project previously ran the exact same browser as mobile-webkit below:
+      // every mobile test executed twice on WebKit and Android was never
+      // covered at all. Pixel 7 is Chromium, which is what Android users get.
       name: 'mobile',
       use: {
-        ...devices['iPhone 13'],
+        ...devices['Pixel 7'],
       },
     },
     {
+      // iOS / Safari. browserName is redundant with the device default but is
+      // kept explicit so this project cannot silently change browser again.
       name: 'mobile-webkit',
       use: {
         ...devices['iPhone 13'],
-        // Use WebKit browser to match iOS Safari
         browserName: 'webkit',
       },
     },
