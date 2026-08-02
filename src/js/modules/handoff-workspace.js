@@ -148,7 +148,8 @@
     const lastVerified = safe(program.last_verified || (program.verification && program.verification.last_verified_at));
     const fn = window.getVerificationFreshness;
     const freshness = lastVerified && typeof fn === 'function' ? fn(lastVerified) : 'missing';
-    if (freshness === 'current') score += 3;
+    if (freshness === 'recent') score += 3;
+    else if (freshness === 'fresh') score += 2;
     else if (freshness === 'stale') score += 1;
 
     const hasIntake = safe(program.intake_phone) || (program.phone_labels && Object.keys(program.phone_labels).length > 0);
@@ -258,7 +259,7 @@
       const hasIntake = safe(p.intake_phone) || (p.phone_labels && Object.keys(p.phone_labels).length > 0);
 
       const reasons = [];
-      if (freshness === 'current') reasons.push('verification current');
+      if (freshness === 'recent' || freshness === 'fresh') reasons.push('verification current');
       if (hasIntake) reasons.push('intake phone labeled');
       if (p.verification_tier === 'provider_attestation') reasons.push('provider-confirmed');
 

@@ -129,7 +129,8 @@ export function validateISODate(dateString) {
   if (!ISO_DATE_REGEX.test(dateString)) return false;
   
   const date = new Date(dateString);
-  return !isNaN(date.getTime()) && dateString === date.toISOString().split('T')[0] || dateString === date.toISOString();
+  return !isNaN(date.getTime())
+    && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
 }
 
 // Export for both browser and Node.js
