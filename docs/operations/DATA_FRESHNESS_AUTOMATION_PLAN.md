@@ -9,14 +9,38 @@
 | Phase | State | Notes |
 |---|---|---|
 | 0 — measurement bug fixes | **Done** | `validateISODate` (was throwing RangeError, not returning false), `friction-flags` enum mismatch, `handoff-workspace` dead `'current'` comparison. Metadata counter drift fixed in Phase 3's write path. |
-| 1 — cliff + de-synchronize | **Partly done** | `scripts/assign-verification-waves.js` written and applied: all 112 programs carry `verification_wave` (12 waves, deterministic + stable). **Still required: the actual re-verification run**, which needs network egress the dev sandbox blocks — run the workflow via `workflow_dispatch` with `full: true`, or `node scripts/audit-program-data.js --force` locally, before **2026-08-16**. |
+| 1 — cliff + de-synchronize | **Done pending merge** | Waves applied; full re-verification ran via the workflow (run 30764970885, all 112 programs re-stamped 2026-08-02) and sits in **PR #11 — green, `mergeable_state: clean`, awaiting the owner's merge**. Merging clears the 2026-08-16 cliff. |
 | 2 — staleness gate | **Gate done; scorecard not started** | `validate-data.js` now warns >90d, blocks when >20% exceed 120d, and reports cohort risk. `VALIDATE_AS_OF=YYYY-MM-DD` previews a future date. `scripts/accuracy-scorecard.js` **not yet written**. |
-| 3 — scheduled workflow | **Done** | `.github/workflows/data-freshness.yml` — weekly cron, derives wave from ISO week, opens a PR (never pushes). `audit-program-data.js --wave N` added with a 10-day catch-up sweep. `scripts/apply-patches.js` **not yet written**. |
+| 3 — scheduled workflow | **Done; two scripts pending** | Weekly cron opens PRs (verified end-to-end: PR #12 was bot-opened). `audit-program-data.js --wave N` + catch-up sweep in place. **Not yet done from this phase's spec:** `scripts/apply-patches.js`, crawler retry/backoff, and the committed `scripts/state/url-health.json` two-strikes failure history. |
 | 4 — correction intake | **Not started** | Wire `submit.js` / `report-outdated.html` to `/api/submit-program`; needs `GITHUB_TOKEN` + `GITHUB_REPO` on Cloudflare Pages. Un-gating report-outdated is a product decision. |
 | 5 — intake backfill + accuracy audit | **Not started** | `scripts/build-call-queue.js`. This is the only path to the "information families most need" criterion and to a defensible accuracy number. |
 | 6 — LLM extraction | Deferred | Needs a credential; do not start before 1–5 run. |
 
-**Before the next scheduled run, confirm in repo settings:** Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests". Without it the workflow's PR step fails.
+Actions settings are confirmed working (bot-opened PR #12 proves PR creation; the snapshot workflow now declares `contents: write` explicitly after run #4 pushed and was denied).
+
+## Backlog — findings from the 2026-08-02 session not covered by a phase
+
+Ordered by suggested priority. Each is traced; none is speculative.
+
+**Data corrections (hand edits, small):**
+1. **Four dead source URLs** found by the full sweep — `crisis-mcot-ntbha` (Dallas RIGHT Care page on dallascityhall.com is gone — **a crisis listing; treat first**), `php-bricolage-flower-mound` + `iop-bricolage-flower-mound` (bricolagebehavioral.com pages unreachable), `iop-unity-richardson` (unitybehavioral.com/services unreachable). Detail is in PR #11's body and `scripts/data-audit-summary.json` from run 30764970885.
+
+**Crawler/tooling debt (Phase 3 spec items not yet built):**
+2. `scripts/verify-all-programs.js` — hardcoded `REVIEW_DATE='2026-05-17'` makes its skip logic dead, and it coerces 403/429 to "ok" so a bot-blocking site reads as healthy. Fix or fold into `audit-program-data.js` and deprecate. Same fate for `scripts/mark-programs-verified.js` (stamps every program unconditionally; already superseded).
+3. `audit-program-data.js` — no retry/backoff; a transient failure can flip a program's status in one run. The planned two-consecutive-runs rule needs the committed `scripts/state/url-health.json`.
+4. `scripts/apply-patches.js` (generic, replaces the four frozen `apply-*.js` one-offs) — prerequisite for Phase 5 call results.
+5. `src/js/data-validator.js` carries a divergent duplicate of the schema and validates `verification.sources` — a field that does not exist in the data (records use `verification.source_urls`). Dead check; align with `validation-schema.js`.
+
+**Product decisions needed (cannot be done by an agent alone):**
+6. `report-outdated.html` is behind the pro gate (`report-outdated.js` wraps `init()` in `runWhenUnlocked`) — families who spot a wrong phone number cannot report it. One-line change once decided.
+7. Correction intake (Phase 4) needs `GITHUB_TOKEN`/`GITHUB_REPO` set on Cloudflare Pages — owner action.
+8. CI policy option: desktop-only on PRs (~2 min) with the full 3-browser matrix on merge/nightly. Current full run is ~5 min; this is optional.
+
+**Minor / cosmetic:**
+9. `404.html` ships without a CSP meta (only page that doesn't; predates this session).
+10. `playwright.config.js` `workers: '50%'` is deliberately conservative — raise after a few stable weeks.
+11. Repo setting **"Automatically delete head branches"** is off; the weekly workflow leaves one dead branch per run. Leftover `data-freshness/2026-08-02-2` still needs a manual delete (the session's git proxy cannot push deletions).
+12. The flow keyframe pulse (`phase1-design.css`, `45% { ... color: var(--flow-accent) }`) still flashes the light accent mid-animation — transient, axe-invisible, left deliberately; revisit only if motion-reduced users report it.
 
 > Implementer notes: read `CLAUDE.md` first (build, three-mirror data rule, `?v=` cache busting, deploy-on-push risk). Work in phase order — Phase 0 fixes bugs that would corrupt every metric built later. Each phase lands as its own PR against `updated-main`; never push data changes directly (Cloudflare deploys without waiting for CI).
 
