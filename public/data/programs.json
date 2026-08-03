@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-05-18T03:32:52.509Z",
+    "generatedAt": "2026-08-03T13:36:54.827Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,19 +15,21 @@
       "missing_website_url": 0
     },
     "last_full_verification": "2026-05-18",
-    "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-05-18T03:32:52.509Z",
+    "last_directory_review_notes": "Automated wave 8 audit 2026-08-03 (8 of 112 programs). See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-08-03T13:36:54.827Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
     "last_spot_check_fix_notes": "May 2026: Bricolage domain correction, BasePoint location URLs, Unity insurance re-check.",
-    "audit_verified": 74,
-    "audit_partially_verified": 38,
-    "audit_unable_to_verify": 0,
+    "audit_verified": 105,
+    "audit_partially_verified": 6,
+    "audit_unable_to_verify": 1,
     "audit_conflicting": 0,
     "last_internet_verification": "2026-05-18",
     "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
-    "verification_wave_count": 12
+    "verification_wave_count": 12,
+    "last_wave_verification": "2026-08-03",
+    "last_wave_verified": 8
   },
   "programs": [
     {
@@ -445,12 +447,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -468,17 +470,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/mckinney-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 8
@@ -967,12 +970,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy McKinney: https://basepointacademy.com/locations/mckinney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://basepointacademy.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -1005,17 +1008,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://basepointacademy.com/locations/mckinney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -1276,12 +1280,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid; verify via bricolagebehavioral.com/insurance-verification/",
       "verification_source": "Bricolage Behavioral Health PHP: https://bricolagebehavioral.com/partial-hospitalization-program/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://bricolagebehavioral.com/partial-hospitalization-program/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://bricolagebehavioral.com/frequently-asked-questions/",
         "plans": [
           "Aetna",
@@ -1303,17 +1307,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://bricolagebehavioral.com/partial-hospitalization-program/",
           "https://bricolagebehavioral.com/frequently-asked-questions/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -2995,12 +3000,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -3024,17 +3029,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -3119,12 +3125,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -3142,17 +3148,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/mckinney-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 8
@@ -4008,12 +4015,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Frisco: https://basepointacademy.com/locations/frisco/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "website": "https://basepointacademy.com/locations/frisco/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -4046,17 +4053,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://basepointacademy.com/locations/frisco/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -6063,10 +6071,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.metrocareservices.org/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-03"
       },
       "website_url": "https://www.metrocareservices.org/contact-us/",
       "website_domain": "metrocareservices.org",
@@ -6074,16 +6082,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://www.metrocareservices.org/contact-us/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -6744,14 +6753,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all insurance including Medicaid and Tricare",
       "verification_source": "https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-03",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-03",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "types": [
           "Commercial (all)",
@@ -6764,17 +6773,18 @@
       "verification_source_url": "https://www.carruscare.com/",
       "website": "https://www.carruscarebehavioral.com/plano",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-03",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano",
           "https://www.carruscare.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-03T13:36:54.439Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
