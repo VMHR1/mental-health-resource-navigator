@@ -23,6 +23,7 @@ const buildOptions = {
     'src/js/utils/helpers.js',
     'src/js/utils/location-match.js',
     'src/js/config/constants.js',
+    'src/js/config/validation-schema.js',
     'src/js/state-manager.js',
     'src/js/data-validator.js'
   ],

@@ -11,7 +11,7 @@
 | 0 — measurement bug fixes | **Done** | `validateISODate` (was throwing RangeError, not returning false), `friction-flags` enum mismatch, `handoff-workspace` dead `'current'` comparison. Metadata counter drift fixed in Phase 3's write path. |
 | 1 — cliff + de-synchronize | **Done pending merge** | Waves applied; full re-verification ran via the workflow (run 30764970885, all 112 programs re-stamped 2026-08-02) and sits in **PR #11 — green, `mergeable_state: clean`, awaiting the owner's merge**. Merging clears the 2026-08-16 cliff. |
 | 2 — staleness gate | **Gate done; scorecard not started** | `validate-data.js` now warns >90d, blocks when >20% exceed 120d, and reports cohort risk. `VALIDATE_AS_OF=YYYY-MM-DD` previews a future date. `scripts/accuracy-scorecard.js` **not yet written**. |
-| 3 — scheduled workflow | **Done; two scripts pending** | Weekly cron opens PRs (verified end-to-end: PR #12 was bot-opened). `audit-program-data.js --wave N` + catch-up sweep in place. **Not yet done from this phase's spec:** `scripts/apply-patches.js`, crawler retry/backoff, and the committed `scripts/state/url-health.json` two-strikes failure history. |
+| 3 — scheduled workflow | **Done** | Weekly cron opens PRs (verified end-to-end: PR #12 was bot-opened). `audit-program-data.js --wave N` + catch-up sweep in place. Crawler retry/backoff, the committed `scripts/state/url-health.json` two-strikes history, the `bot_blocked` signal and `scripts/apply-patches.js` all landed 2026-08-03 — see Backlog progress. |
 | 4 — correction intake | **Not started** | Wire `submit.js` / `report-outdated.html` to `/api/submit-program`; needs `GITHUB_TOKEN` + `GITHUB_REPO` on Cloudflare Pages. Un-gating report-outdated is a product decision. |
 | 5 — intake backfill + accuracy audit | **Not started** | `scripts/build-call-queue.js`. This is the only path to the "information families most need" criterion and to a defensible accuracy number. |
 | 6 — LLM extraction | Deferred | Needs a credential; do not start before 1–5 run. |
@@ -21,15 +21,16 @@ Actions settings are confirmed working (bot-opened PR #12 proves PR creation; th
 ## Backlog — findings from the 2026-08-02 session not covered by a phase
 
 Ordered by suggested priority. Each is traced; none is speculative.
+Items 2–5 and 9 were implemented on 2026-08-03; see **Backlog progress** below.
 
 **Data corrections (hand edits, small):**
-1. **Four dead source URLs** found by the full sweep — `crisis-mcot-ntbha` (Dallas RIGHT Care page on dallascityhall.com is gone — **a crisis listing; treat first**), `php-bricolage-flower-mound` + `iop-bricolage-flower-mound` (bricolagebehavioral.com pages unreachable), `iop-unity-richardson` (unitybehavioral.com/services unreachable). Detail is in PR #11's body and `scripts/data-audit-summary.json` from run 30764970885.
+1. **Four dead source URLs** found by the full sweep — `crisis-mcot-ntbha` (Dallas RIGHT Care page on dallascityhall.com is gone — **a crisis listing; treat first**), `php-bricolage-flower-mound` + `iop-bricolage-flower-mound` (bricolagebehavioral.com pages unreachable), `iop-unity-richardson` (unitybehavioral.com/services unreachable). Detail is in PR #11's body and `scripts/data-audit-summary.json` from run 30764970885. **Still open** — confirming a dead page and finding its replacement needs outbound access to those hosts, which the agent environment's network policy denies (`connect_rejected` on all four). Apply the corrections as a patchfile through `npm run data:patch` once someone with browser access has the replacement URLs.
 
 **Crawler/tooling debt (Phase 3 spec items not yet built):**
-2. `scripts/verify-all-programs.js` — hardcoded `REVIEW_DATE='2026-05-17'` makes its skip logic dead, and it coerces 403/429 to "ok" so a bot-blocking site reads as healthy. Fix or fold into `audit-program-data.js` and deprecate. Same fate for `scripts/mark-programs-verified.js` (stamps every program unconditionally; already superseded).
-3. `audit-program-data.js` — no retry/backoff; a transient failure can flip a program's status in one run. The planned two-consecutive-runs rule needs the committed `scripts/state/url-health.json`.
-4. `scripts/apply-patches.js` (generic, replaces the four frozen `apply-*.js` one-offs) — prerequisite for Phase 5 call results.
-5. `src/js/data-validator.js` carries a divergent duplicate of the schema and validates `verification.sources` — a field that does not exist in the data (records use `verification.source_urls`). Dead check; align with `validation-schema.js`.
+2. ~~`scripts/verify-all-programs.js` — hardcoded `REVIEW_DATE='2026-05-17'` makes its skip logic dead, and it coerces 403/429 to "ok" so a bot-blocking site reads as healthy.~~ **Done** — both it and `mark-programs-verified.js` deleted; see progress notes.
+3. ~~`audit-program-data.js` — no retry/backoff; a transient failure can flip a program's status in one run.~~ **Done** — retry/backoff + committed `scripts/state/url-health.json` two-strikes rule.
+4. ~~`scripts/apply-patches.js` (generic, replaces the four frozen `apply-*.js` one-offs)~~ **Done** — `npm run data:patch`.
+5. ~~`src/js/data-validator.js` carries a divergent duplicate of the schema and validates `verification.sources`~~ **Done** — imports the shared schema; checks `source_urls`.
 
 **Product decisions needed (cannot be done by an agent alone):**
 6. `report-outdated.html` is behind the pro gate (`report-outdated.js` wraps `init()` in `runWhenUnlocked`) — families who spot a wrong phone number cannot report it. One-line change once decided.
@@ -37,10 +38,26 @@ Ordered by suggested priority. Each is traced; none is speculative.
 8. CI policy option: desktop-only on PRs (~2 min) with the full 3-browser matrix on merge/nightly. Current full run is ~5 min; this is optional.
 
 **Minor / cosmetic:**
-9. `404.html` ships without a CSP meta (only page that doesn't; predates this session).
+9. ~~`404.html` ships without a CSP meta (only page that doesn't; predates this session).~~ **Done** — the page was in `build.js`'s `htmlFiles` with the `standard` profile all along, but `applyCspToHtml` only substitutes a `<!-- VMHR_CSP:… -->` marker or an existing meta and 404.html had neither, so the profile was silently a no-op. Marker added.
 10. `playwright.config.js` `workers: '50%'` is deliberately conservative — raise after a few stable weeks.
 11. Repo setting **"Automatically delete head branches"** is off; the weekly workflow leaves one dead branch per run. Leftover `data-freshness/2026-08-02-2` still needs a manual delete (the session's git proxy cannot push deletions).
 12. The flow keyframe pulse (`phase1-design.css`, `45% { ... color: var(--flow-accent) }`) still flashes the light accent mid-animation — transient, axe-invisible, left deliberately; revisit only if motion-reduced users report it.
+
+### Backlog progress — 2026-08-03
+
+**2 — retired the duplicate crawler.** `scripts/verify-all-programs.js` and `scripts/mark-programs-verified.js` are deleted rather than repaired: `audit-program-data.js` already performed every check they did, and keeping a second crawler meant keeping a second copy of the 403-reads-as-healthy bug. Its one unique check (organization name present on its own source page) is folded into `audit-program-data.js` as the `org_on_page` signal — reported, not scored, because a page can legitimately be branded differently from the record. `scripts/spot-check-25.js` was the only dependent; it now reads `scripts/data-audit-summary.json` (`needs_manual_confirmation`) instead of the deleted script's report, and its own `f.ok || f.status === 403` coercion is fixed the same way. `npm run verify-all-programs{,:force}` removed from `package.json`.
+
+**3 — the crawler no longer trusts a single bad fetch.** Two independent defences in `audit-program-data.js`:
+- *Within a run*: `FETCH_ATTEMPTS = 2` with jittered backoff, retrying only what could plausibly succeed on a second try (network error, timeout, 5xx, 429). A 404 is an answer and is not retried.
+- *Across runs*: committed `scripts/state/url-health.json` holds per-URL `consecutive_failures`. `STRIKES_BEFORE_DOWN = 2`, so a program is flipped to `unable_to_verify` only after two consecutive failed runs. A first failure **holds** the record — prior `verification.status` and prior `last_verified` both kept, with `verification.hold_reason` and `last_attempted_at` recording why. 403/429 set `bot_blocked` and hold the same way instead of being coerced to `ok`. Entries are dropped when a URL recovers and pruned when no program references it any more.
+
+Verified end to end against a program temporarily pointed at a dead local URL: run 1 held with `status: verified` and `last_verified: 2026-05-18` untouched and `consecutive_failures: 1`; run 2 wrote `unable_to_verify` with `consecutive_failures: 2`; run 3 against a live local URL cleared the entry; run 4 pruned the now-unreferenced URL. Data restored afterwards (`git checkout -- public/data/`).
+
+**4 — `scripts/apply-patches.js` / `npm run data:patch`.** Reads a patchfile keyed by `program_id`, shallow-merges `fields`, merges `accepted_insurance` rather than replacing it, rebuilds the verification block (the `v()` pattern from `apply-internet-verification-may2026.js`), writes all three mirrors, optionally prepends a `verification_changelog.json` event, and supports `--dry-run`. Everything is validated against `validation-schema.js` *before* any write, and the file applies whole or not at all: unknown `program_id`s, field names outside the schema, wrong types, non-ISO dates, bad `verification.status` values and non-http `source_urls` are all hard errors. `stamp_verified: false` lets a typo fix land without claiming the program was re-verified — `last_verified` is what families see.
+
+**5 — `data-validator.js` was running a schema nobody had updated.** It read `window.PROGRAM_SCHEMA` with an inline fallback, but `validation-schema.js` is loaded by no HTML page, so `window.PROGRAM_SCHEMA` was always `undefined` and the "fallback" was the only schema that ever ran in a browser. It predated all 30-odd Phase 9B intake fields and checked `verification.sources`, a key no record has. Now a real `import` (validated in-browser: 50 optional fields present, `intake_phone` among them), checking `verification.source_urls` as an array of URL strings plus a new `VALID_VERIFICATION_STATUSES` allowlist in the shared schema. `validation-schema.js` added to `build.js` entry points so `dist/js/config/validation-schema.js` exists; `data-validator.js` bumped to `?v=4` on both pages that load it.
+
+**Not done:** items 1 (needs network access this environment denies), 6–8 and 11 (product/owner decisions), 10 and 12 (deliberate).
 
 > Implementer notes: read `CLAUDE.md` first (build, three-mirror data rule, `?v=` cache busting, deploy-on-push risk). Work in phase order — Phase 0 fixes bugs that would corrupt every metric built later. Each phase lands as its own PR against `updated-main`; never push data changes directly (Cloudflare deploys without waiting for CI).
 
@@ -131,6 +148,8 @@ Stub only: an `--extract` mode on the audit script that, given an `ANTHROPIC_API
 ---
 
 ## Critical files
+
+*The phase specs above are kept as written, including their as-of-2026-08-02 descriptions of code that has since changed. Current state is in the progress table and the Backlog progress notes — notably `verify-all-programs.js` and `mark-programs-verified.js` no longer exist, and `apply-patches.js` + `state/url-health.json` do.*
 
 **New:** `.github/workflows/data-freshness.yml`, `scripts/accuracy-scorecard.js`, `scripts/apply-patches.js`, `scripts/assign-verification-waves.js`, `scripts/build-call-queue.js`, `scripts/state/url-health.json`, `public/data/accuracy_scorecard.json`.
 

@@ -96,9 +96,14 @@ npm run verify             # build + validate-data + validate-filters + e2e + li
 Optional data maintenance:
 
 ```bash
-npm run verify-all-programs     # Reverification sweep
-npm run audit-program-data      # Data quality audit
+npm run audit-program-data:dry  # Reverification sweep, report only (no writes)
+npm run audit-program-data      # Same sweep, writes verification blocks
+npm run data:patch <file.json>  # Apply a reviewed batch of record corrections
 ```
+
+`verify-all-programs` was retired — its checks live in `audit-program-data.js`,
+which now retries transient failures and requires two consecutive failed runs
+before calling a source URL down.
 
 ## Build & deploy
 

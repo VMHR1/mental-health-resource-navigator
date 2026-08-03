@@ -122,6 +122,15 @@ export const VALID_LEVELS_OF_CARE = [
   'Walk-In Outpatient',
 ];
 
+// verification.status values written by scripts/audit-program-data.js.
+// Pro-gated surfaces only — families never see this field (see CLAUDE.md).
+export const VALID_VERIFICATION_STATUSES = [
+  'verified',
+  'partially_verified',
+  'unable_to_verify',
+  'conflicting_information',
+];
+
 export const REVERIFICATION_THRESHOLD_DAYS = 90;
 
 // ISO 8601 date validation regex (YYYY-MM-DD or full ISO format)
@@ -141,18 +150,14 @@ if (typeof window !== 'undefined') {
   window.PROGRAM_SCHEMA = PROGRAM_SCHEMA;
   window.VALID_SERVICE_DOMAINS = VALID_SERVICE_DOMAINS;
   window.VALID_LEVELS_OF_CARE = VALID_LEVELS_OF_CARE;
+  window.VALID_VERIFICATION_STATUSES = VALID_VERIFICATION_STATUSES;
   window.REVERIFICATION_THRESHOLD_DAYS = REVERIFICATION_THRESHOLD_DAYS;
   window.validateISODate = validateISODate;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    PROGRAM_SCHEMA,
-    VALID_SERVICE_DOMAINS,
-    VALID_LEVELS_OF_CARE,
-    REVERIFICATION_THRESHOLD_DAYS,
-    validateISODate,
-    ISO_DATE_REGEX
-  };
-}
+// No CommonJS block here on purpose. Node-side consumers (scripts/validate-data.js,
+// scripts/apply-patches.js) load this file with `await import()`, and the browser
+// loads it as a real ES module through data-validator.js. A `module.exports`
+// fallback would only make esbuild warn (commonjs-variable-in-esm) on every build
+// for a branch nothing reaches.
 
