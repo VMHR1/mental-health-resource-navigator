@@ -9,9 +9,20 @@
  *
  * NOTE: src/js/utils/helpers.js's safeUrl() dereferences window.location
  * unguarded, so it cannot be imported here — safeHttpUrl() below is a
- * Node-safe local equivalent used in its place.
+ * Node-safe local equivalent used in its place. programPublicPath() is also
+ * kept local because helpers.js's version returns a `.html`-suffixed path;
+ * this renderer needs the extensionless Cloudflare Pretty URL form.
  */
-import { safeStr, escapeHtml, locLabel, getVerificationFreshness } from '../src/js/utils/helpers.js';
+import {
+  safeStr,
+  escapeHtml,
+  locLabel,
+  getVerificationFreshness,
+  normalizePhoneForTel,
+  hasVirtual,
+  mapsLinkFor,
+  newTabAccessibleLabel,
+} from '../src/js/utils/helpers.js';
 
 const SITE_BASE = 'https://viablemhr.com';
 
@@ -46,41 +57,11 @@ function safeMapsHref(mapsUrl) {
   return '';
 }
 
-function mapsLinkFor(program) {
-  const locs = Array.isArray(program.locations) ? program.locations : [];
-  const l = locs[0] || {};
-  if (!safeStr(l.address)) return '';
-  const parts = [safeStr(l.address), safeStr(l.city), safeStr(l.state), safeStr(l.zip)].filter(Boolean);
-  const addr = parts.join(', ');
-  if (!addr) return '';
-  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr);
-}
-
-function normalizePhoneForTel(phone) {
-  const raw = safeStr(phone);
-  if (!raw) return '';
-  const plus = raw.trim().startsWith('+') ? '+' : '';
-  const digits = raw.replace(/[^\d]/g, '');
-  return plus + digits;
-}
-
-function hasVirtual(program) {
-  const setting = safeStr(program.service_setting).toLowerCase();
-  if (setting.includes('virtual') || setting.includes('tele')) return true;
-  const locs = Array.isArray(program.locations) ? program.locations : [];
-  return locs.some((l) => safeStr(l.city).toLowerCase() === 'virtual');
-}
-
 /** Root-relative program detail URL (extensionless, matches Cloudflare Pretty URLs). */
 function programPublicPath(programId) {
   const id = safeStr(programId);
   if (!id) return '/program.html';
   return `/programs/${encodeURIComponent(id)}`;
-}
-
-function newTabAccessibleLabel(visibleLabel) {
-  const label = safeStr(visibleLabel);
-  return label ? `${label} (opens in new tab)` : 'Opens in new tab';
 }
 
 /**
