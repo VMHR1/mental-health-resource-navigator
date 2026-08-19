@@ -58,7 +58,7 @@ function safeMapsHref(mapsUrl) {
 }
 
 /** Root-relative program detail URL (extensionless, matches Cloudflare Pretty URLs). */
-function programPublicPath(programId) {
+export function programPublicPath(programId) {
   const id = safeStr(programId);
   if (!id) return '/program.html';
   return `/programs/${encodeURIComponent(id)}`;

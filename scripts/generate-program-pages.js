@@ -11,12 +11,20 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { renderProgramHead, renderProgramBody, programCanonicalUrl, bestLastVerified } from './render-program-detail.js';
+import {
+  renderProgramHead,
+  renderProgramBody,
+  programCanonicalUrl,
+  programPublicPath,
+  bestLastVerified,
+} from './render-program-detail.js';
+import { safeStr, escapeHtml } from '../src/js/utils/helpers.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const HEAD_MARKER = '<!--vmhr-program-head-->';
+const DIRECTORY_LIST_MARKER = '<!--vmhr-directory-list-->';
 const BODY_START_MARKER = '<!--vmhr-program-body-start-->';
 const BODY_END_MARKER = '<!--vmhr-program-body-end-->';
 
@@ -81,6 +89,74 @@ function renderProgramPage(templateSource, program, allPrograms) {
   return html;
 }
 
+/**
+ * Renders the full static directory list for dist/directory.html: every program,
+ * grouped by level_of_care and listed within an unordered list per group so no
+ * ordering reads as a ranking.
+ *
+ * Group order is fixed at build time as a plain alphabetical sort of the
+ * level_of_care values present in the data — an arbitrary-but-stable rule
+ * chosen only to make output deterministic across builds. It is NOT a ranking
+ * of level-of-care importance or urgency. Entries within a group are also
+ * alphabetical by program_name, for the same reason.
+ */
+export function buildDirectoryListHtml(programs) {
+  const list = Array.isArray(programs) ? programs : [];
+
+  const groups = new Map();
+  for (const p of list) {
+    // Only list programs that actually get a static page written (same id
+    // check as the per-program loop below) so every directory link resolves.
+    const id = (p.program_id || '').toString().trim();
+    if (!id || !/^[a-z0-9_-]+$/i.test(id)) continue;
+
+    const care = safeStr(p.level_of_care) || 'Unspecified';
+    if (!groups.has(care)) groups.set(care, []);
+    groups.get(care).push(p);
+  }
+
+  const groupNames = [...groups.keys()].sort((a, b) => a.localeCompare(b));
+
+  const sections = groupNames.map((care) => {
+    const entries = groups.get(care).slice().sort((a, b) =>
+      safeStr(a.program_name).localeCompare(safeStr(b.program_name))
+    );
+
+    const items = entries.map((p) => {
+      const name = escapeHtml(safeStr(p.program_name) || 'Program');
+      const org = safeStr(p.organization);
+      // programPublicPath() only ever emits `/programs/{id}` where id already
+      // passed the `/^[a-z0-9_-]+$/i` filter above, so it is already
+      // attribute-safe; escapeHtml() would HTML-entity-encode its slashes
+      // (&#x2F;) which is harmless to browsers but breaks plain-text link
+      // audits expecting literal href="/programs/...".
+      const href = programPublicPath(p.program_id || '');
+
+      const locs = Array.isArray(p.locations) ? p.locations : [];
+      const first = locs[0] || {};
+      const city = safeStr(first.city);
+      const state = safeStr(first.state);
+      // escapeHtml() trims via safeStr() first, which would eat a leading
+      // space, so the " (" separator is added after escaping, not inside it.
+      let locText = '';
+      if (city && state) locText = ` (${escapeHtml(city)}, ${escapeHtml(state)})`;
+      else if (city) locText = ` (${escapeHtml(city)})`;
+
+      const orgText = org ? ` — ${escapeHtml(org)}` : '';
+      return `<li><a href="${href}">${name}</a>${orgText}${locText}</li>`;
+    }).join('\n        ');
+
+    return `<div class="directory-group">
+      <h2>${escapeHtml(care)}</h2>
+      <ul>
+        ${items}
+      </ul>
+    </div>`;
+  });
+
+  return sections.join('\n    ');
+}
+
 export function generateProgramPages() {
   const dataPath = join(root, 'public', 'data', 'programs.json');
   const templatePath = join(root, 'dist', 'program.html');
@@ -120,6 +196,25 @@ export function generateProgramPages() {
     const lastmod = lastVerified || today;
     urls.push({ loc: programCanonicalUrl(id), lastmod });
     written += 1;
+  }
+
+  // Fill the static directory page (dist/directory.html) with the same
+  // program list, in the same data pass, so it and the per-program pages
+  // never drift out of sync.
+  const directoryPath = join(root, 'dist', 'directory.html');
+  if (existsSync(directoryPath)) {
+    const directorySource = readFileSync(directoryPath, 'utf8');
+    if (!directorySource.includes(DIRECTORY_LIST_MARKER)) {
+      throw new Error(
+        'generate-program-pages: expected to find the vmhr-directory-list marker in dist/directory.html but it was missing'
+      );
+    }
+    const directoryListHtml = buildDirectoryListHtml(programs);
+    const filledDirectory = directorySource.replace(DIRECTORY_LIST_MARKER, directoryListHtml);
+    writeFileSync(directoryPath, filledDirectory, 'utf8');
+    console.log(`Directory page: dist/directory.html filled with ${programs.length} programs`);
+  } else {
+    console.warn('generate-program-pages: dist/directory.html missing; skip directory list fill');
   }
 
   const sitemapBody = urls

@@ -48,6 +48,7 @@ function copyStaticAssets() {
       { src: 'src/html/program.html', dest: 'program.html', csp: 'eval' },
       { src: 'src/html/submit.html', dest: 'submit.html', csp: 'submit' },
       { src: 'src/html/guides.html', dest: 'guides.html', csp: 'standard' },
+      { src: 'src/html/directory.html', dest: 'directory.html', csp: 'standard' },
       { src: 'src/html/about.html', dest: 'about.html', csp: 'eval' },
       { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval' },
       { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval' },
