@@ -82,7 +82,7 @@ function copyStaticAssets() {
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
-      { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
+      { src: 'public/sitemap-pages.xml', dest: 'sitemap-pages.xml' },
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
       // Keep dist/data in sync for any legacy paths or tooling that reference it
