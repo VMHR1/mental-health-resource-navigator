@@ -306,12 +306,12 @@ async function build() {
 build()
   .then(async () => {
     if (!isWatch) {
-      try {
-        const { generateProgramPages } = await import('./generate-program-pages.js');
-        generateProgramPages();
-      } catch (e) {
-        console.warn('Program slug page generation skipped:', e?.message || e);
-      }
+      // Intentionally NOT wrapped in a warn-and-continue try/catch: a thrown
+      // error here (e.g. a missing head/body marker in dist/program.html)
+      // means program pages would ship broken or unrendered, so it must fail
+      // the build rather than silently regress to the old loading-shell pages.
+      const { generateProgramPages } = await import('./generate-program-pages.js');
+      generateProgramPages();
     }
     console.log('Build process completed successfully');
     process.exit(0);
