@@ -38,7 +38,7 @@ function injectSeoMeta(program) {
   const pid = safeStr(program.program_id);
   if (!pid) return;
   const base = 'https://viablemhr.com';
-  const pageUrl = `${base}/programs/${encodeURIComponent(pid)}.html`;
+  const pageUrl = `${base}/programs/${encodeURIComponent(pid)}`;
 
   let canon = document.querySelector('link[rel="canonical"]');
   if (!canon) {
@@ -496,7 +496,52 @@ function renderProgramDetail(program) {
   injectSeoMeta(program);
 }
 
+// Client-side enhancement for build-time prerendered program pages
+// (dist/programs/{id}.html, see scripts/render-program-detail.js). The build
+// bakes in a static "Last verified" note that is only accurate as of build
+// time; the >90-day staleness note can go stale itself (or become newly due)
+// between builds. This recomputes it from data-last-verified and patches the
+// DOM in place — it must NOT touch anything else on a prerendered page.
+function enhancePrerenderedStaleness(prerenderedRoot) {
+  const lastVerified = prerenderedRoot.getAttribute('data-last-verified') || '';
+  const freshness =
+    typeof window.getVerificationFreshness === 'function'
+      ? window.getVerificationFreshness(lastVerified)
+      : 'missing';
+  if (freshness !== 'stale') return;
+  if (prerenderedRoot.querySelector('.program-detail-stale-note')) return;
+
+  let verificationSection = null;
+  prerenderedRoot.querySelectorAll('.program-detail-section').forEach((sec) => {
+    const h2 = sec.querySelector('h2');
+    if (h2 && h2.textContent === 'Verification') verificationSection = sec;
+  });
+  if (!verificationSection) return;
+
+  const staleNote = document.createElement('p');
+  staleNote.className = 'program-detail-stale-note';
+  staleNote.textContent =
+    'This listing was last verified more than 90 days ago. Call the program to confirm details are still accurate.';
+
+  const valueEl = verificationSection.querySelector('.program-detail-value');
+  if (valueEl) {
+    verificationSection.insertBefore(staleNote, valueEl);
+  } else {
+    verificationSection.appendChild(staleNote);
+  }
+}
+
 (async () => {
+  const prerenderedRoot = document.querySelector('#programDetail [data-prerendered="true"]');
+  if (prerenderedRoot) {
+    // Build already emitted full HTML (scripts/render-program-detail.js) —
+    // skip the programs.json fetch and DOM replace entirely to avoid a
+    // flash of empty content. Only enhancement: recompute staleness, the
+    // one build-time output that decays with wall-clock time.
+    enhancePrerenderedStaleness(prerenderedRoot);
+    return;
+  }
+
   await loadPrograms();
 
   const programId = getProgramIdFromLocation();
