@@ -9,9 +9,9 @@
  *
  * NOTE: src/js/utils/helpers.js's safeUrl() dereferences window.location
  * unguarded, so it cannot be imported here — safeHttpUrl() below is a
- * Node-safe local equivalent used in its place. programPublicPath() is also
- * kept local because helpers.js's version returns a `.html`-suffixed path;
- * this renderer needs the extensionless Cloudflare Pretty URL form.
+ * Node-safe local equivalent used in its place. programPublicPath() ships
+ * the extensionless Cloudflare Pretty URL form and is imported directly
+ * from helpers.js since the signatures match exactly.
  */
 import {
   safeStr,
@@ -22,6 +22,7 @@ import {
   hasVirtual,
   mapsLinkFor,
   newTabAccessibleLabel,
+  programPublicPath,
 } from '../src/js/utils/helpers.js';
 
 const SITE_BASE = 'https://viablemhr.com';
@@ -57,12 +58,9 @@ function safeMapsHref(mapsUrl) {
   return '';
 }
 
-/** Root-relative program detail URL (extensionless, matches Cloudflare Pretty URLs). */
-export function programPublicPath(programId) {
-  const id = safeStr(programId);
-  if (!id) return '/program.html';
-  return `/programs/${encodeURIComponent(id)}`;
-}
+// programPublicPath is imported from helpers.js above and re-exported here
+// for scripts/generate-program-pages.js, which imports it from this module.
+export { programPublicPath };
 
 /**
  * Related programs by shared location/level-of-care/organization.
