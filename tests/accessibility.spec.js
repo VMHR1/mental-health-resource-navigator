@@ -107,6 +107,62 @@ test.describe('Accessibility (axe-core)', () => {
     assertNoSeriousViolations(results, 'submit');
   });
 
+  test('php programs hub page', async ({ page }) => {
+    await page.goto('/php-programs.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'php programs hub');
+  });
+
+  test('iop programs hub page', async ({ page }) => {
+    await page.goto('/iop-programs.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'iop programs hub');
+  });
+
+  test('residential programs hub page', async ({ page }) => {
+    await page.goto('/residential-programs.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'residential programs hub');
+  });
+
+  test('crisis resources page', async ({ page }) => {
+    await page.goto('/crisis-resources.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'crisis resources');
+  });
+
+  test('guide: how to search', async ({ page }) => {
+    await page.goto('/guide-how-to-search.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'guide how to search');
+  });
+
+  test('guide: levels of care', async ({ page }) => {
+    await page.goto('/guide-levels-of-care.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'guide levels of care');
+  });
+
+  test('guide: what to ask', async ({ page }) => {
+    await page.goto('/guide-what-to-ask.html');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'guide what to ask');
+  });
+
   test('directory page', async ({ page }) => {
     await page.goto('/directory');
     await page.waitForLoadState('networkidle');

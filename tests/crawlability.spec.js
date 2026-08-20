@@ -119,6 +119,20 @@ test.describe('Crawlability: no ranking/sponsorship language', () => {
     expect(html).not.toMatch(RANKING_LANGUAGE);
   });
 
+  const HUB_PAGES = [
+    'php-programs.html',
+    'iop-programs.html',
+    'residential-programs.html',
+    'crisis-resources.html',
+  ];
+
+  for (const hubPage of HUB_PAGES) {
+    test(`no ranking/sponsorship language in dist/${hubPage} (excluding the neutrality disclaimer)`, () => {
+      const html = readDist(hubPage).split(NEUTRALITY_DISCLAIMER).join('');
+      expect(html).not.toMatch(RANKING_LANGUAGE);
+    });
+  }
+
   test('no ranking/sponsorship language in any dist/programs/*.html', () => {
     const programFiles = readdirSync(join(distDir, 'programs')).filter((f) => f.endsWith('.html'));
     expect(programFiles.length).toBeGreaterThan(0);

@@ -25,6 +25,13 @@ const PRIORITY_PAGES = [
   '/changelog.html',
   '/export.html',
   '/handoff.html',
+  '/php-programs.html',
+  '/iop-programs.html',
+  '/residential-programs.html',
+  '/crisis-resources.html',
+  '/guide-how-to-search.html',
+  '/guide-levels-of-care.html',
+  '/guide-what-to-ask.html',
 ];
 
 const NON_FATAL_CONSOLE = [
