@@ -3,9 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PHP programs • ViableMHR</title>
-  <meta name="description" content="Partial Hospitalization (PHP) programs in the ViableMHR directory of Texas youth mental health resources.">
-  <link rel="canonical" href="https://viablemhr.com/php-programs">
+  <title>How to search this directory • ViableMHR</title>
+  <meta name="description" content="How to search the ViableMHR directory by city, level of care, age, insurance, and crisis support.">
+  <link rel="canonical" href="https://viablemhr.com/guide-how-to-search">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="How to search this directory • ViableMHR">
+  <meta property="og:description" content="How to search the ViableMHR directory by city, level of care, age, insurance, and crisis support.">
+  <meta property="og:url" content="https://viablemhr.com/guide-how-to-search">
+  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
+  <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
   <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -13,34 +19,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="phase1-design.css?v=18">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="PHP programs • ViableMHR">
-  <meta property="og:description" content="Partial Hospitalization (PHP) programs in the ViableMHR directory of Texas youth mental health resources.">
-  <meta property="og:url" content="https://viablemhr.com/php-programs">
-  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
-  <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
-
-  <!-- Icons -->
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
-
   <script defer src="security.js?v=2"></script>
   <style>
-    .hub-list {
-      margin: 0;
-      padding-left: 20px;
-      line-height: 1.7;
-    }
-    .hub-intro {
-      max-width: 68ch;
-    }
-    .hub-links {
-      margin-top: 24px;
-    }
+    .guides-main { max-width: 920px; margin: 0 auto 56px; padding: 0 16px 48px; }
+    .guides-main h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 950; margin: 0 0 12px; }
+    .guides-section { margin-bottom: 24px; }
   </style>
 </head>
 <body>
@@ -78,16 +66,26 @@
       </div>
     </header>
 
-    <main id="main">
-      <h1>Partial Hospitalization (PHP) programs</h1>
-      <p class="hub-intro">This site does not rank or recommend one program as best.</p>
-      <p class="hub-intro">Programs below are listed alphabetically by program name.</p>
+    <main id="main" class="guides-main">
+      <section class="guides-section" id="how-to-search" aria-labelledby="howToSearchHeading">
+        <h1 id="howToSearchHeading">How to search this directory</h1>
+        <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Open <strong>More filters</strong> on the home page for insurance and other options.</p>
+        <ul class="search-tips-list" style="margin: 16px 0;">
+          <li><strong>Location:</strong> Plano, Dallas, Frisco (includes nearby counties and telehealth when listed)</li>
+          <li><strong>Care level:</strong> PHP, IOP, outpatient, partial hospitalization, day treatment, residential</li>
+          <li><strong>Age:</strong> <code>14</code>, <code>13 and up</code>, <code>16 year old</code></li>
+          <li><strong>Insurance:</strong> any listed plan — <code>accepts Cigna</code>, <code>BCBS</code>, <code>UHC</code>, <code>BHS</code>, <code>Medicaid</code>, <code>sliding scale</code></li>
+          <li><strong>Crisis:</strong> type <em>crisis support</em> or use the preset or “Show crisis resources” chip</li>
+        </ul>
+        <p class="search-tips-examples-label">Try an example on the home page:</p>
+        <p style="color: var(--muted); font-size: 14px; margin-top: 8px;">Use the search box on <a href="index.html">the main page</a> with phrases like “IOP in Plano”, “PHP for age 14”, or “virtual therapy”.</p>
+      </section>
 
-      <ul class="hub-list">
-        <!--vmhr-hub-list-->
-      </ul>
-
-      <p class="hub-links"><a href="/directory">Browse the full directory</a> · <a href="/guide-levels-of-care">Understanding levels of care</a></p>
+      <p style="margin-top: 32px; font-size: 14px; color: var(--muted);">
+        <a href="/guides.html">All guides</a>
+        <span aria-hidden="true"> · </span>
+        <a href="index.html">Return to program search</a>
+      </p>
     </main>
   </div>
 

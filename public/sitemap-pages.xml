@@ -32,6 +32,30 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Guide: How to search this directory -->
+  <url>
+    <loc>https://viablemhr.com/guide-how-to-search</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Guide: Understanding levels of care -->
+  <url>
+    <loc>https://viablemhr.com/guide-levels-of-care</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Guide: What to ask when you call -->
+  <url>
+    <loc>https://viablemhr.com/guide-what-to-ask</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- About / methodology -->
   <url>
     <loc>https://viablemhr.com/about</loc>
