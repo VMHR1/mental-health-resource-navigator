@@ -63,6 +63,10 @@ test.describe('SEO metadata (Phase 5)', () => {
     expect(body).not.toContain('.html');
   });
 
+  test('sampleProgramIds() sanity: yields the expected count', () => {
+    expect(sampleProgramIds().length).toBe(6);
+  });
+
   test('sitemap-programs.xml lists all programs with extensionless canonical locs', async ({ request }) => {
     const programIds = sampleProgramIds().map((p) => p.id);
     const res = await request.get('/sitemap-programs.xml');

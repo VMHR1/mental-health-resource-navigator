@@ -473,7 +473,7 @@ function renderProgramDetail(program) {
 
       const idEnc = encodeURIComponent(p.program_id || '');
       const detailLink = document.createElement('a');
-      const hrefFn = window.programPublicPath || ((id) => `/programs/${encodeURIComponent(id)}.html`);
+      const hrefFn = window.programPublicPath || ((id) => `/programs/${encodeURIComponent(id)}`);
       detailLink.href = hrefFn(p.program_id || '');
       detailLink.className = 'linkBtn primary';
       detailLink.textContent = 'View Details';
