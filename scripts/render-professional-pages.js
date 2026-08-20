@@ -22,6 +22,28 @@
  */
 import { escapeHtml, safeStr } from '../src/js/utils/helpers.js';
 
+/**
+ * Attribute-safe URL escaping for href values in this renderer. Board hrefs
+ * come from two sources: code-built internal paths (`/?mode=navigator&...`,
+ * `/directory`) and data-derived hrefs straight from resource_boards.json
+ * (external URLs plus the M1 internal ones). escapeHtml() would entity-encode
+ * `/` to `&#x2F;` on both, which breaks plain-text link audits expecting a
+ * literal `href="/..."` and mangles external URLs' paths with no security
+ * benefit (see the identical reasoning in render-program-detail.js's I4
+ * fix). Used for every href in this file, code-built and data-derived alike:
+ * it stays XSS-safe in attribute context because `"` and `<`/`>` are still
+ * escaped (hrefs here are always inside double-quoted attributes), while
+ * `&` is escaped so a literal `&` in a query string renders as the correct
+ * `&amp;` per HTML attribute syntax — only `/` is left alone.
+ */
+function escapeAttrUrl(u) {
+  return safeStr(u)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 /** Mirrors buildHref() in src/html/boards.html's inline script. */
 function boardItemHref(item) {
   switch (item.type) {
@@ -63,7 +85,7 @@ export function renderBoardsContent(data) {
 
   const navHtml =
     '<nav aria-label="Boards" style="margin-bottom: 24px;"><strong style="display:block;margin-bottom:8px;">Jump to a board</strong><ul style="margin:0;padding-left:1.2rem;display:grid;gap:6px;">' +
-    boards.map((b) => `<li><a href="#${escapeHtml(b.id)}">${escapeHtml(b.title)}</a></li>`).join('') +
+    boards.map((b) => `<li><a href="#${escapeAttrUrl(b.id)}">${escapeHtml(b.title)}</a></li>`).join('') +
     '</ul></nav>';
 
   const boardsHtml =
@@ -85,7 +107,7 @@ export function renderBoardsContent(data) {
                     return `
                     <li class="board-item">
                       <div class="board-item__top">
-                        <a class="board-item__label" href="${escapeHtml(href)}"${newTab ? ' target="_blank" rel="noopener noreferrer"' : ''} data-pro-event="board_open" data-pro-event-props='{"board_id":"${escapeHtml(b.id)}"}'>
+                        <a class="board-item__label" href="${escapeAttrUrl(href)}"${newTab ? ' target="_blank" rel="noopener noreferrer"' : ''} data-pro-event="board_open" data-pro-event-props='{"board_id":"${escapeHtml(b.id)}"}'>
                           ${escapeHtml(item.label || href)}${newTab ? ' <span aria-hidden="true">↗</span><span class="sr-only"> (opens in new tab)</span>' : ''}
                         </a>
                         <span class="board-item__type ${badge.cls}">${escapeHtml(badge.label)}</span>
@@ -222,6 +244,26 @@ function mustFillMarker(html, marker, replacement, label) {
 }
 
 /**
+ * Once the build has filled a page's marker with full static content, the
+ * container's `aria-busy="true"` (set for the client-only loading state) is
+ * stale — the content is already there in the shipped HTML, so screen
+ * readers and crawlers reading the prerendered page should not be told it's
+ * still loading. Flips it to "false" on that one container's opening tag
+ * only. The client script's own `aria-busy="false"` write in its
+ * data-prerendered skip-branch stays as a harmless no-op for real
+ * (JS-enabled) visitors. The legacy fetch/error path, which still starts
+ * from a genuinely empty container, is untouched — its `aria-busy="true"`
+ * keeps its original loading semantics.
+ */
+function markContainerNotBusy(html, containerId, label) {
+  const pattern = new RegExp(`(<div id="${containerId}"[^>]*?)aria-busy="true"`);
+  if (!pattern.test(html)) {
+    throw new Error(`render-professional-pages: expected to find aria-busy="true" on #${containerId} in ${label} but it was missing`);
+  }
+  return html.replace(pattern, `$1aria-busy="false"`);
+}
+
+/**
  * Fills the three professional-layer page markers in dist/. Called from
  * generateProgramPages() after the HTML files exist in dist/ and after
  * public/data has already been copied there by scripts/build.js.
@@ -233,6 +275,7 @@ export function fillProfessionalPages({ readFileSync, writeFileSync, join, root 
       dataPath: join(root, 'dist', 'data', 'resource_boards.json'),
       marker: '<!--vmhr-boards-content-->',
       render: renderBoardsContent,
+      containerId: 'boardsContent',
       label: 'dist/boards.html',
     },
     {
@@ -240,6 +283,7 @@ export function fillProfessionalPages({ readFileSync, writeFileSync, join, root 
       dataPath: join(root, 'dist', 'data', 'verification_changelog.json'),
       marker: '<!--vmhr-changelog-content-->',
       render: renderChangelogContent,
+      containerId: 'changelogContent',
       label: 'dist/changelog.html',
     },
     {
@@ -247,6 +291,7 @@ export function fillProfessionalPages({ readFileSync, writeFileSync, join, root 
       dataPath: join(root, 'dist', 'data', 'regional_gap_snapshot.json'),
       marker: '<!--vmhr-regional-snapshot-content-->',
       render: renderRegionalSnapshotContent,
+      containerId: 'rsContent',
       label: 'dist/regional-snapshot.html',
     },
   ];
@@ -255,7 +300,8 @@ export function fillProfessionalPages({ readFileSync, writeFileSync, join, root 
     const data = JSON.parse(readFileSync(page.dataPath, 'utf8'));
     const html = readFileSync(page.htmlPath, 'utf8');
     const filled = mustFillMarker(html, page.marker, page.render(data), page.label);
-    writeFileSync(page.htmlPath, filled, 'utf8');
+    const notBusy = markContainerNotBusy(filled, page.containerId, page.label);
+    writeFileSync(page.htmlPath, notBusy, 'utf8');
     console.log(`Professional page: ${page.label} filled from ${page.dataPath.split('/').slice(-2).join('/')}`);
   }
 }
