@@ -18,6 +18,7 @@ import {
   programPublicPath,
   bestLastVerified,
 } from './render-program-detail.js';
+import { fillProfessionalPages } from './render-professional-pages.js';
 import { safeStr, escapeHtml } from '../src/js/utils/helpers.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -211,6 +212,10 @@ export function buildDirectoryListHtml(programs) {
  * neutral, non-ranking ordering rule as buildDirectoryListHtml above). Only
  * the `<li>` items are returned — the surrounding `<ul>` lives in the hub's
  * HTML template around the vmhr-hub-list marker.
+ *
+ * Returns `{ html, count }` — `count` is the number of matching entries,
+ * derived from the same filtered list that produced `html` so callers never
+ * need a second, potentially-drifting filter pass just to get a count.
  */
 export function buildHubListHtml(programs, matches) {
   const list = Array.isArray(programs) ? programs : [];
@@ -223,7 +228,7 @@ export function buildHubListHtml(programs, matches) {
     })
     .sort((a, b) => safeStr(a.program_name).localeCompare(safeStr(b.program_name)));
 
-  return entries
+  const html = entries
     .map((p) => {
       const name = escapeHtml(safeStr(p.program_name) || 'Program');
       const org = safeStr(p.organization);
@@ -241,6 +246,8 @@ export function buildHubListHtml(programs, matches) {
       return `<li><a href="${href}">${name}</a>${orgText}${locText}</li>`;
     })
     .join('\n        ');
+
+  return { html, count: entries.length };
 }
 
 export function generateProgramPages() {
@@ -319,11 +326,7 @@ export function generateProgramPages() {
         `generate-program-pages: expected to find the vmhr-hub-list marker in dist/${hub.file} but it was missing`
       );
     }
-    const hubListHtml = buildHubListHtml(programs, hub.matches);
-    const matchCount = programs.filter((p) => {
-      const id = (p.program_id || '').toString().trim();
-      return id && /^[a-z0-9_-]+$/i.test(id) && hub.matches(safeStr(p.level_of_care));
-    }).length;
+    const { html: hubListHtml, count: matchCount } = buildHubListHtml(programs, hub.matches);
     if (matchCount === 0) {
       throw new Error(
         `generate-program-pages: hub dist/${hub.file} (${hub.label}) matched 0 programs; a level-of-care hub must never ship empty`
@@ -370,6 +373,12 @@ ${sitemapBody}
 </sitemapindex>
 `;
   writeFileSync(join(root, 'dist', 'sitemap.xml'), sitemapIndex, 'utf8');
+
+  // Fill the three professional-layer pages (boards, changelog,
+  // regional-snapshot) with build-time rendered content in the same pass —
+  // see scripts/render-professional-pages.js for the pro-gate exposure
+  // analysis behind rendering these fully rather than a gated subset.
+  fillProfessionalPages({ readFileSync, writeFileSync, join, root });
 
   console.log(`Program slug pages: ${written} files → dist/programs/*.html`);
   console.log(`Sitemap: dist/sitemap-programs.xml (${written} URLs)`);

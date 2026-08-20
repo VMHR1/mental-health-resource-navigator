@@ -80,7 +80,7 @@
       </p>
 
       <div id="rsContent" aria-busy="true" aria-live="polite">
-        <p class="rs-meta">Loading snapshot…</p>
+        <!--vmhr-regional-snapshot-content-->
       </div>
 
       <p style="margin-top: 24px; font-size: 13px; color: var(--muted);">
@@ -189,6 +189,14 @@
             target.innerHTML = '<p class="rs-error">No snapshot is published yet. Check back next quarter.</p>';
             target.setAttribute('aria-busy', 'false');
           });
+      }
+
+      // Build already rendered full content (scripts/render-professional-pages.js)
+      // — skip the fetch/innerHTML wipe entirely, same convention as
+      // src/js/program-detail.js's data-prerendered check.
+      if (target.querySelector('[data-prerendered="true"]')) {
+        target.setAttribute('aria-busy', 'false');
+        return;
       }
 
       if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {

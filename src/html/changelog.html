@@ -61,7 +61,7 @@
         A bulk log of when the directory has been verified, and how. We re-verify the directory on a 90-day cycle; this page shows recent waves and what each one covered. Detailed program-level history is not published here.
       </p>
       <div id="changelogContent" aria-busy="true" aria-live="polite">
-        <p class="cl-lead">Loading changelog…</p>
+        <!--vmhr-changelog-content-->
       </div>
     </main>
 
@@ -123,6 +123,14 @@
             target.innerHTML = '<p class="cl-lead">We could not load the changelog right now.</p>';
             target.setAttribute('aria-busy', 'false');
           });
+      }
+
+      // Build already rendered full content (scripts/render-professional-pages.js)
+      // — skip the fetch/innerHTML wipe entirely, same convention as
+      // src/js/program-detail.js's data-prerendered check.
+      if (target.querySelector('[data-prerendered="true"]')) {
+        target.setAttribute('aria-busy', 'false');
+        return;
       }
 
       if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {

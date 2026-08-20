@@ -93,7 +93,7 @@
       </p>
 
       <div id="boardsContent" aria-live="polite" aria-busy="true">
-        <p style="color: var(--muted);">Loading boards…</p>
+        <!--vmhr-boards-content-->
       </div>
     </main>
 
@@ -220,6 +220,14 @@
             console.error('boards load error', err);
             showError('We could not load the resource boards. Please refresh the page.');
           });
+      }
+
+      // Build already rendered full content (scripts/render-professional-pages.js)
+      // — skip the fetch/innerHTML wipe entirely, same convention as
+      // src/js/program-detail.js's data-prerendered check.
+      if (target.querySelector('[data-prerendered="true"]')) {
+        target.setAttribute('aria-busy', 'false');
+        return;
       }
 
       if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
