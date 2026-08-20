@@ -104,5 +104,37 @@
     <priority>0.4</priority>
   </url>
 
+  <!-- PHP programs hub -->
+  <url>
+    <loc>https://viablemhr.com/php-programs</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- IOP programs hub -->
+  <url>
+    <loc>https://viablemhr.com/iop-programs</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Residential programs hub -->
+  <url>
+    <loc>https://viablemhr.com/residential-programs</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Crisis resources hub -->
+  <url>
+    <loc>https://viablemhr.com/crisis-resources</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Individual programs: see sitemap-programs.xml (canonical /programs/{id}) -->
 </urlset>

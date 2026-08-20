@@ -25,8 +25,54 @@ const root = join(__dirname, '..');
 
 const HEAD_MARKER = '<!--vmhr-program-head-->';
 const DIRECTORY_LIST_MARKER = '<!--vmhr-directory-list-->';
+const HUB_LIST_MARKER = '<!--vmhr-hub-list-->';
 const BODY_START_MARKER = '<!--vmhr-program-body-start-->';
 const BODY_END_MARKER = '<!--vmhr-program-body-end-->';
+
+/**
+ * Level-of-care hub pages (Task 7 / Phase 2). Each hub is a plain alphabetical
+ * list of programs matching an explicit `matches` predicate over
+ * `level_of_care` — never a fuzzy/substring match, so it's obvious from
+ * reading the code exactly which data rows land on which hub.
+ *
+ * Threshold defense: every hub here has >=5 matching listings against the
+ * current public/data/programs.json (PHP 44, IOP 45, Residential 5, Crisis
+ * aggregate 11 = Mobile Crisis 5 + Crisis Hotline 4 + Walk-In Crisis / Urgent 1
+ * + Psychiatric Triage 1). Outpatient (2) and Navigation (3) stay below the
+ * >=5 threshold and intentionally do NOT get hub pages — they remain
+ * reachable only via /directory. A hub whose predicate matches zero programs
+ * throws at build time (see generateProgramPages()) rather than shipping a
+ * silently empty page.
+ */
+const HUB_PAGES = [
+  {
+    file: 'php-programs.html',
+    label: 'PHP',
+    matches: (careLevel) => careLevel === 'Partial Hospitalization (PHP)',
+  },
+  {
+    file: 'iop-programs.html',
+    label: 'IOP',
+    matches: (careLevel) => careLevel === 'Intensive Outpatient (IOP)',
+  },
+  {
+    file: 'residential-programs.html',
+    label: 'Residential',
+    matches: (careLevel) => careLevel === 'Residential',
+  },
+  {
+    file: 'crisis-resources.html',
+    label: 'Crisis',
+    // Explicit allowlist of the crisis-ish level_of_care strings present in
+    // public/data/programs.json — deliberately not a fuzzy/substring match
+    // (e.g. "Walk-In Outpatient" must NOT match this hub).
+    matches: (careLevel) =>
+      careLevel === 'Mobile Crisis' ||
+      careLevel === 'Crisis Hotline' ||
+      careLevel === 'Walk-In Crisis / Urgent' ||
+      careLevel === 'Psychiatric Triage',
+  },
+];
 
 const KNOWN_TITLE = '<title>Program Details • ViableMHR</title>';
 const KNOWN_DESCRIPTION =
@@ -159,6 +205,44 @@ export function buildDirectoryListHtml(programs) {
   return sections.join('\n    ');
 }
 
+/**
+ * Renders the flat `<li>` items for one level-of-care hub page: every program
+ * whose level_of_care satisfies `matches`, alphabetical by program_name (same
+ * neutral, non-ranking ordering rule as buildDirectoryListHtml above). Only
+ * the `<li>` items are returned — the surrounding `<ul>` lives in the hub's
+ * HTML template around the vmhr-hub-list marker.
+ */
+export function buildHubListHtml(programs, matches) {
+  const list = Array.isArray(programs) ? programs : [];
+
+  const entries = list
+    .filter((p) => {
+      const id = (p.program_id || '').toString().trim();
+      if (!id || !/^[a-z0-9_-]+$/i.test(id)) return false;
+      return matches(safeStr(p.level_of_care));
+    })
+    .sort((a, b) => safeStr(a.program_name).localeCompare(safeStr(b.program_name)));
+
+  return entries
+    .map((p) => {
+      const name = escapeHtml(safeStr(p.program_name) || 'Program');
+      const org = safeStr(p.organization);
+      const href = programPublicPath(p.program_id || '');
+
+      const locs = Array.isArray(p.locations) ? p.locations : [];
+      const first = locs[0] || {};
+      const city = safeStr(first.city);
+      const state = safeStr(first.state);
+      let locText = '';
+      if (city && state) locText = ` (${escapeHtml(city)}, ${escapeHtml(state)})`;
+      else if (city) locText = ` (${escapeHtml(city)})`;
+
+      const orgText = org ? ` — ${escapeHtml(org)}` : '';
+      return `<li><a href="${href}">${name}</a>${orgText}${locText}</li>`;
+    })
+    .join('\n        ');
+}
+
 export function generateProgramPages() {
   const dataPath = join(root, 'public', 'data', 'programs.json');
   const templatePath = join(root, 'dist', 'program.html');
@@ -219,6 +303,38 @@ export function generateProgramPages() {
     console.log(`Directory page: dist/directory.html filled with ${programs.length} programs`);
   } else {
     throw new Error('generate-program-pages: dist/directory.html missing; cannot fill directory list');
+  }
+
+  // Fill the 4 level-of-care hub pages in the same data pass so they never
+  // drift from the directory/program pages. A hub whose predicate matches
+  // zero programs fails the build loudly rather than shipping silently empty.
+  for (const hub of HUB_PAGES) {
+    const hubPath = join(root, 'dist', hub.file);
+    if (!existsSync(hubPath)) {
+      throw new Error(`generate-program-pages: dist/${hub.file} missing; cannot fill hub list`);
+    }
+    const hubSource = readFileSync(hubPath, 'utf8');
+    if (!hubSource.includes(HUB_LIST_MARKER)) {
+      throw new Error(
+        `generate-program-pages: expected to find the vmhr-hub-list marker in dist/${hub.file} but it was missing`
+      );
+    }
+    const hubListHtml = buildHubListHtml(programs, hub.matches);
+    const matchCount = programs.filter((p) => {
+      const id = (p.program_id || '').toString().trim();
+      return id && /^[a-z0-9_-]+$/i.test(id) && hub.matches(safeStr(p.level_of_care));
+    }).length;
+    if (matchCount === 0) {
+      throw new Error(
+        `generate-program-pages: hub dist/${hub.file} (${hub.label}) matched 0 programs; a level-of-care hub must never ship empty`
+      );
+    }
+    // Function replacement so a literal $&/$'/$` etc. in program data
+    // embedded within hubListHtml can never be interpreted by
+    // String.replace's special-pattern substitution (see mustReplace() above).
+    const filledHub = hubSource.replace(HUB_LIST_MARKER, () => hubListHtml);
+    writeFileSync(hubPath, filledHub, 'utf8');
+    console.log(`Hub page: dist/${hub.file} filled with ${matchCount} programs (${hub.label})`);
   }
 
   const sitemapBody = urls
