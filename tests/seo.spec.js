@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,16 +13,29 @@ function sampleProgramIds(count = 6) {
   return programs
     .filter((p) => p.program_id && /^[a-z0-9_-]+$/i.test(p.program_id))
     .slice(0, count)
-    .map((p) => ({ id: p.program_id, name: p.program_name }));
+    .map((p) => ({
+      id: p.program_id,
+      name: p.program_name,
+      organization: p.organization,
+      city: Array.isArray(p.locations) && p.locations[0] ? p.locations[0].city : '',
+    }));
+}
+
+/** Mirrors composeDisambiguatedName() in scripts/render-program-detail.js (C1). */
+function expectedDisambiguatedName({ name, organization, city }) {
+  const tail = [organization, city].filter(Boolean).join(', ');
+  const parts = [name];
+  if (tail) parts.push(tail);
+  return parts.filter(Boolean).join(' — ');
 }
 
 const STATIC_PAGES = [
   { path: '/', canonical: 'https://viablemhr.com/' },
-  { path: '/guides.html', canonical: 'https://viablemhr.com/guides.html', ogTitle: 'Guides for families' },
-  { path: '/about.html', canonical: 'https://viablemhr.com/about.html', ogTitle: 'About ViableMHR' },
-  { path: '/submit.html', canonical: 'https://viablemhr.com/submit.html' },
-  { path: '/privacy.html', canonical: 'https://viablemhr.com/privacy.html' },
-  { path: '/terms.html', canonical: 'https://viablemhr.com/terms.html' },
+  { path: '/guides.html', canonical: 'https://viablemhr.com/guides', ogTitle: 'Guides for families' },
+  { path: '/about.html', canonical: 'https://viablemhr.com/about', ogTitle: 'About ViableMHR' },
+  { path: '/submit.html', canonical: 'https://viablemhr.com/submit' },
+  { path: '/privacy.html', canonical: 'https://viablemhr.com/privacy' },
+  { path: '/terms.html', canonical: 'https://viablemhr.com/terms' },
 ];
 
 test.describe('SEO metadata (Phase 5)', () => {
@@ -89,12 +102,14 @@ test.describe('Program detail page SEO (per-program static pages)', () => {
   const TEMPLATE_DEFAULT_DESCRIPTION =
     'Detailed information about a Texas youth mental health program on ViableMHR.';
 
-  for (const { id, name } of sampleProgramIds()) {
+  for (const sample of sampleProgramIds()) {
+    const { id, name } = sample;
     test(`/programs/${id} has unique SEO metadata and rendered content`, async ({ page }) => {
       await page.goto(`/programs/${id}`);
 
-      // Unique title.
-      await expect(page).toHaveTitle(`${name} • ViableMHR`);
+      // Unique, disambiguated title (program_name alone collapses across
+      // programs that share a level-of-care label — see C1).
+      await expect(page).toHaveTitle(`${expectedDisambiguatedName(sample)} • ViableMHR`);
 
       // Extensionless canonical pointing at this program.
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -121,12 +136,17 @@ test.describe('Program detail page SEO (per-program static pages)', () => {
     });
   }
 
-  test('two sampled program pages have distinct titles', async ({ page }) => {
-    const [first, second] = sampleProgramIds();
-    await page.goto(`/programs/${first.id}`);
-    const firstTitle = await page.title();
-    await page.goto(`/programs/${second.id}`);
-    const secondTitle = await page.title();
-    expect(firstTitle).not.toBe(secondTitle);
+  test('every dist/programs/*.html has a distinct <title>', () => {
+    const programsDir = join(root, 'dist', 'programs');
+    const files = readdirSync(programsDir).filter((f) => f.endsWith('.html'));
+    expect(files.length).toBeGreaterThan(0);
+
+    const titles = files.map((f) => {
+      const html = readFileSync(join(programsDir, f), 'utf8');
+      const m = html.match(/<title>([^<]*)<\/title>/);
+      return m ? m[1] : `__MISSING_TITLE__${f}`;
+    });
+
+    expect(new Set(titles).size).toBe(files.length);
   });
 });

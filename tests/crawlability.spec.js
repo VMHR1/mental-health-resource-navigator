@@ -142,5 +142,9 @@ test.describe('Crawlability: XSS-safe program rendering', () => {
     // real assertion is that the tag delimiters themselves never survive.
     expect(html).toContain('&lt;script&gt;alert(1)&lt;&#x2F;script&gt;');
     expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    // phone/website_url both carry a javascript: payload in the fixture;
+    // normalizePhoneForTel/safeHttpUrl must neutralize both so no href
+    // attribute in the output ever resolves to a javascript: URL (see M9).
+    expect(html).not.toMatch(/href="javascript:/i);
   });
 });
