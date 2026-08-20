@@ -166,8 +166,8 @@ const VMHRNavigatorMode = (function () {
             <span class="navigator-toolbar__badge">Pro</span>
           </div>
           <div class="navigator-toolbar__actions">
-            <a class="btnlike" href="boards.html">Boards</a>
-            <a class="btnlike" href="report-outdated.html" id="navToolbarReport">Report outdated</a>
+            <a class="btnlike" href="/boards">Boards</a>
+            <a class="btnlike" href="/report-outdated" id="navToolbarReport">Report outdated</a>
             <button type="button" class="btnlike" id="navOpenCompareHandoff" aria-label="Open compare panel and prepare handoff packet">Compare &amp; handoff</button>
             <button type="button" class="btnlike btn-ghost" id="navToolbarExit">Exit navigator</button>
           </div>

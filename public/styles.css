@@ -3727,7 +3727,8 @@ body.modal-open {
   min-width: 0;
 }
 
-.modal-header h2{
+.modal-header h2,
+.modal-header .modal-heading{
   margin: 0;
   font-size: 20px;
   font-weight: 950;

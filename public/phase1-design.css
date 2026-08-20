@@ -1070,7 +1070,8 @@ body[data-guided-step="4"] .guided-search-strip__grid .guided-search-field selec
   margin-bottom: 16px;
 }
 
-.filter-tray-panel__head h2 {
+.filter-tray-panel__head h2,
+.filter-tray-panel__head .modal-heading {
   font-family: var(--vm-display);
   font-size: 1.125rem;
   margin: 0;
