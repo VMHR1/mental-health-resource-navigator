@@ -41,7 +41,9 @@ function mustReplace(html, needle, replacement, label) {
   if (!html.includes(needle)) {
     throw new Error(`generate-program-pages: expected to find ${label} in dist/program.html but it was missing`);
   }
-  return html.replace(needle, replacement);
+  // Function replacement so a literal $&/$'/$` etc. in data-derived `replacement`
+  // can never be interpreted by String.replace's special-pattern substitution.
+  return html.replace(needle, () => replacement);
 }
 
 function renderProgramPage(templateSource, program, allPrograms) {
@@ -161,8 +163,7 @@ export function generateProgramPages() {
   const dataPath = join(root, 'public', 'data', 'programs.json');
   const templatePath = join(root, 'dist', 'program.html');
   if (!existsSync(templatePath)) {
-    console.warn('generate-program-pages: dist/program.html missing; skip slug generation');
-    return { count: 0 };
+    throw new Error('generate-program-pages: dist/program.html missing; cannot generate slug pages');
   }
   const data = JSON.parse(readFileSync(dataPath, 'utf8'));
   const programs = data.programs || [];
@@ -210,11 +211,14 @@ export function generateProgramPages() {
       );
     }
     const directoryListHtml = buildDirectoryListHtml(programs);
-    const filledDirectory = directorySource.replace(DIRECTORY_LIST_MARKER, directoryListHtml);
+    // Function replacement so a literal $&/$'/$` etc. in program data embedded
+    // within directoryListHtml can never be interpreted by String.replace's
+    // special-pattern substitution (see mustReplace() above for the same fix).
+    const filledDirectory = directorySource.replace(DIRECTORY_LIST_MARKER, () => directoryListHtml);
     writeFileSync(directoryPath, filledDirectory, 'utf8');
     console.log(`Directory page: dist/directory.html filled with ${programs.length} programs`);
   } else {
-    console.warn('generate-program-pages: dist/directory.html missing; skip directory list fill');
+    throw new Error('generate-program-pages: dist/directory.html missing; cannot fill directory list');
   }
 
   const sitemapBody = urls

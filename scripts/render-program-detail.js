@@ -111,6 +111,26 @@ export function bestLastVerified(program) {
 }
 
 /**
+ * Composes a disambiguating "name — organization, city" label from existing
+ * fields only (program_name is a level-of-care label in this dataset, e.g.
+ * "IOP" or "Day Treatment / PHP", so 112 programs yield only 23 distinct
+ * program_name values on their own — see C1). Segments whose backing field
+ * is absent/empty are omitted; nothing is invented. Verified 112/112 distinct
+ * across public/data/programs.json when name+organization+city are combined.
+ */
+function composeDisambiguatedName(program) {
+  const name = safeStr(program.program_name);
+  const org = safeStr(program.organization);
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  const city = safeStr(locs[0] && locs[0].city);
+
+  const parts = [name];
+  const tail = [org, city].filter(Boolean).join(', ');
+  if (tail) parts.push(tail);
+  return parts.filter(Boolean).join(' — ');
+}
+
+/**
  * Renders the unique per-program <head> fragment: title, meta description,
  * canonical, og:title/og:description/og:url, and JSON-LD (MedicalOrganization).
  * Field-mapping ported verbatim from injectSeoMeta (src/js/program-detail.js:36-93).
@@ -119,10 +139,11 @@ export function renderProgramHead(program) {
   const pid = safeStr(program.program_id);
   const pageUrl = programCanonicalUrl(pid);
   const name = safeStr(program.program_name);
-  const title = `${escapeHtml(name)} • ViableMHR`;
+  const disambiguatedName = composeDisambiguatedName(program);
+  const title = `${escapeHtml(disambiguatedName)} • ViableMHR`;
 
   const descRaw = safeStr(program.insurance_notes || program.notes || program.level_of_care).slice(0, 300);
-  const metaDescription = descRaw ? `${name} — ${descRaw}` : name;
+  const metaDescription = descRaw ? `${disambiguatedName} — ${descRaw}` : disambiguatedName;
   const metaDescriptionEsc = escapeHtml(metaDescription);
 
   const ld = {
@@ -158,17 +179,19 @@ export function renderProgramHead(program) {
 
   const jsonLd = JSON.stringify(ld).replace(/</g, '\\u003c');
 
-  const pageUrlEsc = escapeHtml(pageUrl);
-
+  // pageUrl is code-built (SITE_BASE + encodeURIComponent(pid)) from a program_id
+  // already gated by /^[a-z0-9_-]+$/i in generate-program-pages.js, not
+  // data-derived free text — escapeHtml() would needlessly entity-encode its
+  // slashes (&#x2F;) and colon, so it is emitted raw here (see I4).
   return {
     title,
     metaDescriptionEsc,
-    canonicalHref: pageUrlEsc,
+    canonicalHref: pageUrl,
     ogTitle: title,
     ogDescription: metaDescriptionEsc,
-    ogUrl: pageUrlEsc,
+    ogUrl: pageUrl,
     headHtml: [
-      `<link rel="canonical" href="${pageUrlEsc}">`,
+      `<link rel="canonical" href="${pageUrl}">`,
       `<script type="application/ld+json" id="program-jsonld">${jsonLd}</script>`,
     ].join('\n  '),
   };
@@ -192,7 +215,14 @@ function renderRelatedCard(p) {
   const care = escapeHtml(safeStr(p.level_of_care) || 'Unknown');
   const loc = escapeHtml(locLabel(p));
   const idEnc = encodeURIComponent(p.program_id || '');
-  const detailHref = escapeHtml(programPublicPath(p.program_id || ''));
+  // programPublicPath() only ever emits `/programs/{id}` where id already
+  // passed the `/^[a-z0-9_-]+$/i` filter (findRelatedPrograms only returns
+  // programs sourced from the same validated build-time list), so it is
+  // already attribute-safe; escapeHtml() would HTML-entity-encode its
+  // slashes (&#x2F;) which is harmless to browsers but breaks plain-text
+  // link audits expecting literal href="/programs/...". See buildDirectoryListHtml
+  // in scripts/generate-program-pages.js for the identical reasoning.
+  const detailHref = programPublicPath(p.program_id || '');
   return `<div class="card">
           <div class="cardTop">
             <div>
@@ -343,7 +373,7 @@ export function renderProgramBody(program, allPrograms) {
       verText += `Last verified: ${safeStr(program.last_verified)}`;
     }
 
-    const freshness = getVerificationFreshness(program.last_verified);
+    const freshness = getVerificationFreshness(bestLastVerified(program));
     const staleHtml = freshness === 'stale'
       ? `<p class="program-detail-stale-note">This listing was last verified more than 90 days ago. Call the program to confirm details are still accurate.</p>`
       : '';
