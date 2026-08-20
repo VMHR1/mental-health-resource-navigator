@@ -49,7 +49,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npx http-server dist -p 4173 -c-1',
+    command: 'npx http-server dist -p 4173 -c-1 -e html',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

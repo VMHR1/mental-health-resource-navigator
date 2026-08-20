@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Program Details • ViableMHR</title>
-  <!--viablemhr-program-base-->
-  <meta name="description" content="Detailed information about a Texas youth mental health program on ViableMHR." />
-  <!-- VMHR_CSP:eval -->
+  <title>All programs • ViableMHR</title>
+  <meta name="description" content="A plain-text index of every youth mental health program in the ViableMHR directory, grouped by level of care.">
+  <link rel="canonical" href="https://viablemhr.com/directory">
+  <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#f7f6f3">
@@ -17,103 +17,42 @@
   <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="phase1-design.css?v=18">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Program Details • ViableMHR">
-  <meta property="og:description" content="Detailed information about a Texas youth mental health program on ViableMHR.">
-  <meta property="og:url" content="https://viablemhr.com/program.html">
+  <meta property="og:title" content="All programs • ViableMHR">
+  <meta property="og:description" content="A plain-text index of every youth mental health program in the ViableMHR directory, grouped by level of care.">
+  <meta property="og:url" content="https://viablemhr.com/directory">
   <meta property="og:image" content="https://viablemhr.com/icon-192.png">
   <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
-  <!--vmhr-program-head-->
 
   <!-- Icons -->
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
-  
+
   <script defer src="security.js?v=2"></script>
-  <script type="module" src="js/data-validator.js?v=4"></script>
-  <script type="module" src="js/config/constants.js?v=4"></script>
-  <script type="module" src="js/utils/helpers.js?v=6"></script>
-  <script type="module" src="js/modules/storage.js?v=3"></script>
-  <script type="module" src="js/modules/search.js?v=14"></script>
-  <script type="module" src="js/state-manager.js?v=3"></script>
   <style>
-    .program-detail-header {
-      background: linear-gradient(135deg, rgba(79,209,197,.12), rgba(122,167,255,.12));
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-bottom: 24px;
-      border: 1px solid var(--stroke);
+    .directory-group {
+      margin-bottom: 28px;
     }
-    .program-detail-title {
-      font-size: 28px;
-      font-weight: 950;
-      margin: 0 0 8px;
-    }
-    .program-detail-org {
-      font-size: 18px;
-      color: var(--muted);
-      margin: 0 0 16px;
-    }
-    .program-detail-badges {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .program-detail-section {
-      background: var(--cardSolid);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .program-detail-section h2 {
-      margin: 0 0 12px;
+    .directory-group h2 {
       font-size: 18px;
       font-weight: 900;
+      margin: 0 0 10px;
       color: var(--ink);
     }
-    .program-detail-grid {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
+    .directory-group ul {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.7;
     }
-    .program-detail-label {
-      font-weight: 700;
-      color: var(--muted);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .program-detail-value {
-      color: var(--ink);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .related-programs {
-      margin-top: 32px;
-    }
-    .related-programs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 768px) {
-      .program-detail-grid {
-        grid-template-columns: 1fr;
-      }
-      .program-detail-label {
-        margin-bottom: 4px;
-      }
+    .directory-intro {
+      max-width: 68ch;
     }
   </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
   <div class="bg-gradient" aria-hidden="true"></div>
-  
+
   <div class="crisis-banner" role="region" aria-label="Crisis information">
     <div class="inner">
       <p class="crisis-banner__text">
@@ -140,43 +79,40 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike btn-primary" href="index.html">← Back to Search</a>
+          <a class="btnlike btn-primary" href="/">← Back to Search</a>
         </div>
       </div>
     </header>
 
     <main id="main">
-    <div id="programDetail" class="program-detail-container">
-      <!--vmhr-program-body-start-->
-      <div class="empty-state">
-        <div class="empty-icon" aria-hidden="true">⏳</div>
-        <h1>Loading program details...</h1>
-      </div>
-      <!--vmhr-program-body-end-->
-    </div>
+      <h1>All programs</h1>
+      <p class="directory-intro">This site does not rank or recommend one program as best.</p>
+      <p class="directory-intro">Programs below are grouped by level of care (groups are ordered alphabetically by name, not by ranking) and listed alphabetically by program name within each group.</p>
+
+      <!--vmhr-directory-list-->
+
+      <p style="margin-top: 24px;"><a href="/guides.html">Guides for families</a></p>
     </main>
   </div>
 
-  <script defer src="js/program-detail.js?v=4"></script>
-  
   <footer>
     <p style="margin: 0;">This directory is informational and does not provide clinical advice.</p>
     <p style="margin-top: 12px; font-size: 13px;">
-      <a href="about.html">About</a>
+      <a href="/about.html">About</a>
       <span aria-hidden="true"> • </span>
-      <a href="guides.html">Guides</a>
+      <a href="/guides.html">Guides</a>
       <span aria-hidden="true"> • </span>
-      <a href="privacy.html">Privacy Policy</a>
+      <a href="/privacy.html">Privacy Policy</a>
       <span aria-hidden="true"> • </span>
-      <a href="terms.html">Terms of Service</a>
+      <a href="/terms.html">Terms of Service</a>
     </p>
   </footer>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">
-  var sc_project=13198280; 
-  var sc_invisible=1; 
-  var sc_security="601ff835"; 
+  var sc_project=13198280;
+  var sc_invisible=1;
+  var sc_security="601ff835";
   </script>
   <script type="text/javascript"
   src="https://www.statcounter.com/counter/counter.js" async></script>
@@ -187,11 +123,3 @@
   <!-- End of Statcounter Code -->
 </body>
 </html>
-
-
-
-
-
-
-
-

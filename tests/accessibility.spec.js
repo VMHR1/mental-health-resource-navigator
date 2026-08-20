@@ -107,6 +107,14 @@ test.describe('Accessibility (axe-core)', () => {
     assertNoSeriousViolations(results, 'submit');
   });
 
+  test('directory page', async ({ page }) => {
+    await page.goto('/directory');
+    await page.waitForLoadState('networkidle');
+
+    const results = await new AxeBuilder({ page }).analyze();
+    assertNoSeriousViolations(results, 'directory');
+  });
+
   test('program slug page', async ({ page }) => {
     await page.goto('/programs/crisis-988.html');
     await page.waitForLoadState('networkidle');

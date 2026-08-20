@@ -6,6 +6,8 @@
   "level_of_care": "Outpatient",
   "service_setting": "In-person",
   "ages_served": "13+",
+  "phone": "javascript:alert(1)",
+  "website_url": "javascript:alert(1)",
   "locations": [
     {
       "city": "Dallas",

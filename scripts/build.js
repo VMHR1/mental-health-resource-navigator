@@ -48,6 +48,7 @@ function copyStaticAssets() {
       { src: 'src/html/program.html', dest: 'program.html', csp: 'eval' },
       { src: 'src/html/submit.html', dest: 'submit.html', csp: 'submit' },
       { src: 'src/html/guides.html', dest: 'guides.html', csp: 'standard' },
+      { src: 'src/html/directory.html', dest: 'directory.html', csp: 'standard' },
       { src: 'src/html/about.html', dest: 'about.html', csp: 'eval' },
       { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval' },
       { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval' },
@@ -81,7 +82,7 @@ function copyStaticAssets() {
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
-      { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
+      { src: 'public/sitemap-pages.xml', dest: 'sitemap-pages.xml' },
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
       // Keep dist/data in sync for any legacy paths or tooling that reference it
@@ -306,12 +307,12 @@ async function build() {
 build()
   .then(async () => {
     if (!isWatch) {
-      try {
-        const { generateProgramPages } = await import('./generate-program-pages.js');
-        generateProgramPages();
-      } catch (e) {
-        console.warn('Program slug page generation skipped:', e?.message || e);
-      }
+      // Intentionally NOT wrapped in a warn-and-continue try/catch: a thrown
+      // error here (e.g. a missing head/body marker in dist/program.html)
+      // means program pages would ship broken or unrendered, so it must fail
+      // the build rather than silently regress to the old loading-shell pages.
+      const { generateProgramPages } = await import('./generate-program-pages.js');
+      generateProgramPages();
     }
     console.log('Build process completed successfully');
     process.exit(0);
