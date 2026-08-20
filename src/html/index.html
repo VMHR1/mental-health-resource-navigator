@@ -50,7 +50,7 @@
   <script type="module" src="js/modules/home-phase1.js?v=7"></script>
   <script type="module" src="js/modules/flow-motion.js?v=2"></script>
   <script type="module" src="js/modules/flow-scroll.js?v=3"></script>
-  <script defer src="js/modules/pro-gate.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=3"></script>
   <script defer src="js/modules/pro-events.js?v=1"></script>
   <script defer src="js/modules/match-explain.js?v=1"></script>
   <script defer src="js/modules/friction-flags.js?v=2"></script>
@@ -59,7 +59,8 @@
   <script type="module" src="js/modules/navigator-presets.js?v=1"></script>
   <script type="module" src="js/modules/navigator-mode.js?v=1"></script>
   <script type="module" src="js/state-manager.js?v=3"></script>
-  
+
+  <script type="application/ld+json" id="website-jsonld">{"@context":"https://schema.org","@type":"WebSite","name":"ViableMHR","url":"https://viablemhr.com/"}</script>
 </head>
 
 <body>
@@ -99,15 +100,15 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike" href="guides.html">Guides</a>
-          <a class="btnlike btn-primary" href="submit.html" aria-label="Submit or update a program">Submit or update a program</a>
+          <a class="btnlike" href="/guides">Guides</a>
+          <a class="btnlike btn-primary" href="/submit" aria-label="Submit or update a program">Submit or update a program</a>
         </div>
       </div>
 
       <section class="hero-gateway" aria-labelledby="heroHeading">
         <div class="hero-gateway__head">
           <h1 id="heroHeading" class="fade-in delay-1">Find youth mental health support in North Texas.</h1>
-          <p class="hero-gateway__sub fade-in delay-2">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="guides.html">Levels of care and calling programs</a>.</p>
+          <p class="hero-gateway__sub fade-in delay-2">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="/guides">Levels of care and calling programs</a>.</p>
           <p class="hero-gateway__prompt fade-in delay-3">What kind of help are you looking for today?</p>
         </div>
 
@@ -159,7 +160,7 @@
           <div class="trust-item">
             <div class="trust-icon" aria-hidden="true">—</div>
             <div class="trust-text">
-              <strong><a href="about.html#neutrality" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">No paid rankings</a></strong>
+              <strong><a href="/about#neutrality" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">No paid rankings</a></strong>
               <span>Programs do not pay to appear higher</span>
             </div>
           </div>
@@ -174,7 +175,7 @@
             <div class="trust-icon" aria-hidden="true">◇</div>
             <div class="trust-text">
               <strong>Privacy-conscious</strong>
-              <span>No ads or marketing trackers; <a href="privacy.html#analytics" style="color: inherit; font-weight: 600;">minimal aggregate analytics</a></span>
+              <span>No ads or marketing trackers; <a href="/privacy#analytics" style="color: inherit; font-weight: 600;">minimal aggregate analytics</a></span>
             </div>
           </div>
           </div>
@@ -484,7 +485,7 @@
     <div class="filter-tray-overlay" id="filterTrayOverlay" hidden>
       <div class="filter-tray-panel" id="filterTrayPanel" role="dialog" aria-modal="true" aria-labelledby="filterTrayTitle">
         <div class="filter-tray-panel__head">
-          <h2 id="filterTrayTitle">Filters</h2>
+          <p class="modal-heading" id="filterTrayTitle">Filters</p>
           <button type="button" class="filter-tray-close" id="closeFilterTray" aria-label="Close filters">×</button>
         </div>
         <div id="filterTrayMount"></div>
@@ -639,10 +640,10 @@
         <li>Programs do not pay to appear higher.</li>
         <li>This site does not rank or recommend one program as best.</li>
         <li>Information may change. Call programs directly to confirm details.</li>
-        <li>Saved programs and search history stay on your device; we use minimal aggregate analytics (no ad tracking). <a href="privacy.html#analytics">Learn more</a></li>
+        <li>Saved programs and search history stay on your device; we use minimal aggregate analytics (no ad tracking). <a href="/privacy#analytics">Learn more</a></li>
         <li>This site is informational and is not medical advice, diagnosis, treatment, or emergency service.</li>
       </ul>
-      <p class="footer-submit-cta">Know a program we should add or update? <a href="submit.html">Submit or update a program</a> · <a href="guides.html">Guides for families</a></p>
+      <p class="footer-submit-cta">Know a program we should add or update? <a href="/submit">Submit or update a program</a> · <a href="/guides">Guides for families</a></p>
       <p class="footer-submit-cta"><a href="/directory">Browse the full directory</a> — a plain list of every program, grouped by level of care.</p>
       <p class="footer-submit-cta">Or jump straight to: <a href="/php-programs">PHP programs</a> · <a href="/iop-programs">IOP programs</a> · <a href="/residential-programs">Residential programs</a> · <a href="/crisis-resources">Crisis resources</a></p>
     </section>
@@ -653,17 +654,17 @@
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: No account required. Optional location is used only to sort results and is not stored. We use minimal aggregate page analytics—not ad or marketing trackers.</p>
       <p style="margin-top: 12px; font-size: 13px;">
-        <a href="professionals.html">For professionals</a>
+        <a href="/professionals">For professionals</a>
         <span aria-hidden="true"> • </span>
-        <a href="boards.html">Boards</a>
+        <a href="/boards">Boards</a>
         <span aria-hidden="true"> • </span>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <span aria-hidden="true"> • </span>
-        <a href="guides.html">Guides</a>
+        <a href="/guides">Guides</a>
         <span aria-hidden="true"> • </span>
-        <a href="privacy.html">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <span aria-hidden="true"> • </span>
-        <a href="terms.html">Terms of Service</a>
+        <a href="/terms">Terms of Service</a>
       </p>
       <p id="lastUpdated" class="footer-last-updated"></p>
     </footer>
@@ -674,7 +675,7 @@
   <div id="favoritesModal" class="modal" data-testid="favorites-modal" role="dialog" aria-labelledby="favoritesModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="favoritesModalTitle">Saved Programs</h2>
+        <p class="modal-heading" id="favoritesModalTitle">Saved Programs</p>
         <button type="button" class="modal-close" data-testid="favorites-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="favoritesList"></div>
@@ -688,7 +689,7 @@
   <div id="historyModal" class="modal" data-testid="history-modal" role="dialog" aria-labelledby="historyModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="historyModalTitle">Call History</h2>
+        <p class="modal-heading" id="historyModalTitle">Call History</p>
         <button type="button" class="modal-close" data-testid="history-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="historyList"></div>
@@ -699,7 +700,7 @@
   <div id="comparisonModal" class="modal" role="dialog" aria-labelledby="comparisonModalTitle" aria-hidden="true">
     <div class="modal-content comparison-modal-content">
       <div class="modal-header">
-        <h2 id="comparisonModalTitle">Compare Programs</h2>
+        <p class="modal-heading" id="comparisonModalTitle">Compare Programs</p>
         <div style="display: flex; gap: 10px; align-items: center;">
           <button type="button" id="clearComparison" class="btn-ghost" style="font-size: 12px; padding: 6px 12px;">Clear all</button>
           <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
@@ -719,7 +720,7 @@
   <div id="helpModal" class="modal" role="dialog" aria-labelledby="helpModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="helpModalTitle">Keyboard Shortcuts</h2>
+        <p class="modal-heading" id="helpModalTitle">Keyboard Shortcuts</p>
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
@@ -748,7 +749,7 @@
   <div id="locationConsentModal" class="modal" role="dialog" aria-labelledby="locationConsentModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="locationConsentModalTitle">Use Your Location</h2>
+        <p class="modal-heading" id="locationConsentModalTitle">Use Your Location</p>
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">

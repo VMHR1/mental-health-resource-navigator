@@ -6,6 +6,11 @@
   <title>Regional gap snapshot • ViableMHR</title>
   <meta name="description" content="Aggregate, non-PHI snapshot of directory health: stale-data counts, missing-field trends, and thin coverage by city and care level. Counts and buckets only." />
   <link rel="canonical" href="https://viablemhr.com/regional-snapshot">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Regional gap snapshot • ViableMHR">
+  <meta property="og:description" content="Aggregate, non-PHI snapshot of directory health: stale-data counts, missing-field trends, and thin coverage by city and care level. Counts and buckets only.">
+  <meta property="og:url" content="https://viablemhr.com/regional-snapshot">
+  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
   <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -19,7 +24,7 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
   <script defer src="security.js?v=2"></script>
-  <script defer src="js/modules/pro-gate.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=3"></script>
   <script defer src="js/modules/pro-events.js?v=1"></script>
   <style>
     .rs-main { max-width: 1000px; margin: 0 auto 56px; padding: 0 16px 48px; }
@@ -68,7 +73,7 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike" href="professionals.html">For professionals</a>
+          <a class="btnlike" href="/professionals">For professionals</a>
         </div>
       </div>
     </header>
@@ -80,11 +85,11 @@
       </p>
 
       <div id="rsContent" aria-busy="true" aria-live="polite">
-        <p class="rs-meta">Loading snapshot…</p>
+        <!--vmhr-regional-snapshot-content-->
       </div>
 
       <p style="margin-top: 24px; font-size: 13px; color: var(--muted);">
-        Methodology and review cadence are documented in our <a href="about.html#verification">published verification methodology</a>. Partners may request a quarterly PDF summary by emailing
+        Methodology and review cadence are documented in our <a href="/about#verification">published verification methodology</a>. Partners may request a quarterly PDF summary by emailing
         <a href="mailto:viablementalhealthresources@gmail.com?subject=Regional%20snapshot%20request">viablementalhealthresources@gmail.com</a>.
       </p>
     </main>
@@ -92,17 +97,17 @@
     <footer>
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px;">
-        <a href="index.html">For families</a>
+        <a href="/">For families</a>
         <span aria-hidden="true"> • </span>
-        <a href="professionals.html">For professionals</a>
+        <a href="/professionals">For professionals</a>
         <span aria-hidden="true"> • </span>
-        <a href="boards.html">Boards</a>
+        <a href="/boards">Boards</a>
         <span aria-hidden="true"> • </span>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <span aria-hidden="true"> • </span>
-        <a href="privacy.html">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <span aria-hidden="true"> • </span>
-        <a href="terms.html">Terms of Service</a>
+        <a href="/terms">Terms of Service</a>
       </p>
     </footer>
   </div>
@@ -189,6 +194,14 @@
             target.innerHTML = '<p class="rs-error">No snapshot is published yet. Check back next quarter.</p>';
             target.setAttribute('aria-busy', 'false');
           });
+      }
+
+      // Build already rendered full content (scripts/render-professional-pages.js)
+      // — skip the fetch/innerHTML wipe entirely, same convention as
+      // src/js/program-detail.js's data-prerendered check.
+      if (target.querySelector('[data-prerendered="true"]')) {
+        target.setAttribute('aria-busy', 'false');
+        return;
       }
 
       if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {
