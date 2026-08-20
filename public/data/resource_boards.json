@@ -35,13 +35,13 @@
         {
           "type": "guide_anchor",
           "label": "Understand PHP vs IOP vs outpatient",
-          "href": "guides.html#levels-of-care",
+          "href": "/guide-levels-of-care",
           "description": "Plain-language explanations of each level of care."
         },
         {
           "type": "guide_anchor",
           "label": "Family call script (printable)",
-          "href": "guides.html#what-to-ask",
+          "href": "/guide-what-to-ask",
           "description": "Questions to ask when calling a program."
         }
       ]
@@ -82,7 +82,7 @@
         {
           "type": "guide_anchor",
           "label": "What to ask about insurance",
-          "href": "guides.html#what-to-ask",
+          "href": "/guide-what-to-ask",
           "description": "Insurance questions on the call script."
         }
       ]
