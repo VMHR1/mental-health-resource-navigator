@@ -31,15 +31,15 @@ test.describe('Guides hub (Phase 6 / crawlability split)', () => {
 
     await page.goto('/guides.html');
     await page.getByRole('link', { name: 'About', exact: true }).click();
-    await expect(page).toHaveURL(/about\.html$/);
+    await expect(page).toHaveURL(/\/about$/);
 
     await page.goto('/guides.html');
     await page.getByRole('link', { name: 'Privacy', exact: true }).click();
-    await expect(page).toHaveURL(/privacy\.html$/);
+    await expect(page).toHaveURL(/\/privacy$/);
 
     await page.goto('/guides.html');
     await page.getByRole('link', { name: 'Terms', exact: true }).click();
-    await expect(page).toHaveURL(/terms\.html$/);
+    await expect(page).toHaveURL(/\/terms$/);
   });
 });
 
@@ -55,13 +55,13 @@ test.describe('Guide: How to search this directory', () => {
   });
 
   test('main page link from how-to-search section works', async ({ page }) => {
-    await page.locator('#how-to-search a[href="index.html"]').click();
+    await page.locator('#how-to-search a[href="/"]').click();
     await expect(page).toHaveURL(/\/(index\.html)?$/);
   });
 
   test('links back to the guides hub', async ({ page }) => {
     await page.getByRole('link', { name: 'All guides' }).click();
-    await expect(page).toHaveURL(/guides\.html$/);
+    await expect(page).toHaveURL(/\/guides$/);
   });
 });
 
@@ -79,7 +79,7 @@ test.describe('Guide: Understanding levels of care', () => {
 
   test('links back to the guides hub', async ({ page }) => {
     await page.getByRole('link', { name: 'All guides' }).click();
-    await expect(page).toHaveURL(/guides\.html$/);
+    await expect(page).toHaveURL(/\/guides$/);
   });
 });
 
@@ -103,6 +103,6 @@ test.describe('Guide: What to ask when you call', () => {
 
   test('links back to the guides hub', async ({ page }) => {
     await page.getByRole('link', { name: 'All guides' }).click();
-    await expect(page).toHaveURL(/guides\.html$/);
+    await expect(page).toHaveURL(/\/guides$/);
   });
 });

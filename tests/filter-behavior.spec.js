@@ -83,13 +83,13 @@ test.describe('Filter behavior and routing', () => {
   test('privacy and terms links route correctly', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('footer a[href="privacy.html"]')).toBeVisible();
-    await expect(page.locator('footer a[href="terms.html"]')).toBeVisible();
+    await expect(page.locator('footer a[href="/privacy"]')).toBeVisible();
+    await expect(page.locator('footer a[href="/terms"]')).toBeVisible();
 
-    await page.goto('/privacy.html');
-    await expect(page).toHaveURL(/privacy\.html$/);
-    await page.goto('/terms.html');
-    await expect(page).toHaveURL(/terms\.html$/);
+    await page.goto('/privacy');
+    await expect(page).toHaveURL(/\/privacy$/);
+    await page.goto('/terms');
+    await expect(page).toHaveURL(/\/terms$/);
   });
 
   test('program detail page handles valid and invalid IDs', async ({ page }) => {
