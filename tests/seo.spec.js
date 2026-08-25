@@ -123,19 +123,98 @@ test.describe('Program detail page SEO (per-program static pages)', () => {
       await expect(h1).toHaveText(name);
       await expect(h1).not.toHaveText(/loading/i);
 
-      // Meta description is program-specific, not the shared template default.
+      // Meta description is program-specific, not the shared template default,
+      // and follows the match-facts-first CTR formula: it leads with the level
+      // of care and closes with "Verified {Month YYYY}".
       const description = await page.locator('meta[name="description"]').getAttribute('content');
       expect(description).toBeTruthy();
       expect(description).not.toBe(TEMPLATE_DEFAULT_DESCRIPTION);
+      expect(description).toMatch(
+        /\bVerified (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\.$/
+      );
+      // The old formula pasted raw pipe-delimited insurance_notes into the
+      // snippet ("Plans: ... | Types: ... | ...").
+      expect(description).not.toContain('|');
+      expect(description.length).toBeLessThanOrEqual(300);
 
-      // JSON-LD parses and describes a MedicalOrganization for this program.
+      // JSON-LD parses and describes a MedicalClinic for this program.
       const jsonLdText = await page.locator('#program-jsonld').textContent();
       const jsonLd = JSON.parse(jsonLdText);
-      expect(jsonLd['@type']).toBe('MedicalOrganization');
+      expect(jsonLd['@type']).toBe('MedicalClinic');
       expect(jsonLd.name).toBe(name);
       expect(jsonLd.url).toBe(`https://viablemhr.com/programs/${id}`);
+      expect(jsonLd.medicalSpecialty).toBe('Psychiatry');
+      // dateModified is the program's best-known last_verified date, which
+      // every one of the 112 records has.
+      expect(jsonLd.dateModified).toMatch(/^\d{4}-\d{2}-\d{2}/);
+      expect(jsonLd.parentOrganization).toEqual({
+        '@type': 'Organization',
+        name: sample.organization,
+      });
+
+      // BreadcrumbList is its own block (validate-jsonld.js rejects a
+      // top-level array, so the two objects cannot share one script tag).
+      const crumbText = await page.locator('#program-breadcrumb-jsonld').textContent();
+      const crumbs = JSON.parse(crumbText);
+      expect(crumbs['@type']).toBe('BreadcrumbList');
+      expect(crumbs.itemListElement).toHaveLength(3);
+      expect(crumbs.itemListElement.map((c) => c.position)).toEqual([1, 2, 3]);
+      expect(crumbs.itemListElement[0].item).toBe('https://viablemhr.com/');
+      expect(crumbs.itemListElement[2].item).toBe(`https://viablemhr.com/programs/${id}`);
+      // Middle crumb is a hub or the directory, always extensionless.
+      expect(crumbs.itemListElement[1].item).toMatch(
+        /^https:\/\/viablemhr\.com\/(php-programs|iop-programs|residential-programs|crisis-resources|directory)$/
+      );
     });
   }
+
+  test('every program page emits all locations[] as a PostalAddress array', () => {
+    const data = JSON.parse(readFileSync(join(root, 'public', 'data', 'programs.json'), 'utf8'));
+    // Cities that stand in for "no street location" (see PSEUDO_LOCATION_CITIES
+    // in scripts/render-program-detail.js) never become a PostalAddress.
+    const PSEUDO = new Set(['Virtual', 'Multiple', 'National']);
+    const offenders = [];
+
+    for (const p of data.programs || []) {
+      if (!p.program_id || !/^[a-z0-9_-]+$/i.test(p.program_id)) continue;
+      const html = readFileSync(join(distDir, 'programs', `${p.program_id}.html`), 'utf8');
+      const m = html.match(
+        /<script type="application\/ld\+json" id="program-jsonld">([\s\S]*?)<\/script>/
+      );
+      const ld = JSON.parse(m[1]);
+      const expected = (p.locations || []).filter((l) => {
+        const city = (l.city || '').trim();
+        return city ? !PSEUDO.has(city) : Boolean((l.address || '').trim());
+      }).length;
+
+      if (expected === 0) {
+        if (ld.address !== undefined) offenders.push(`${p.program_id}: expected no address, got one`);
+        continue;
+      }
+      if (!Array.isArray(ld.address)) {
+        offenders.push(`${p.program_id}: address is not an array`);
+        continue;
+      }
+      if (ld.address.length !== expected) {
+        offenders.push(`${p.program_id}: ${ld.address.length} addresses, expected ${expected}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test('every dist/programs/*.html has a distinct meta description', () => {
+    const programsDir = join(distDir, 'programs');
+    const files = readdirSync(programsDir).filter((f) => f.endsWith('.html'));
+    expect(files.length).toBeGreaterThan(0);
+
+    const descriptions = files.map((f) => {
+      const html = readFileSync(join(programsDir, f), 'utf8');
+      const m = html.match(/<meta name="description" content="([^"]*)"/);
+      return m ? m[1] : `__MISSING_DESCRIPTION__${f}`;
+    });
+
+    expect(new Set(descriptions).size).toBe(files.length);
+  });
 
   test('every dist/programs/*.html has a distinct <title>', () => {
     const programsDir = join(root, 'dist', 'programs');
@@ -149,6 +228,84 @@ test.describe('Program detail page SEO (per-program static pages)', () => {
     });
 
     expect(new Set(titles).size).toBe(files.length);
+  });
+});
+
+test.describe('List-page ItemList JSON-LD (hubs + directory)', () => {
+  const LIST_PAGES = [
+    { file: 'php-programs.html', url: 'https://viablemhr.com/php-programs' },
+    { file: 'iop-programs.html', url: 'https://viablemhr.com/iop-programs' },
+    { file: 'residential-programs.html', url: 'https://viablemhr.com/residential-programs' },
+    { file: 'crisis-resources.html', url: 'https://viablemhr.com/crisis-resources' },
+    { file: 'directory.html', url: 'https://viablemhr.com/directory' },
+  ];
+
+  for (const { file, url } of LIST_PAGES) {
+    test(`dist/${file} has an ItemList matching its rendered links`, () => {
+      const html = readFileSync(join(distDir, file), 'utf8');
+      const m = html.match(/<script type="application\/ld\+json" id="list-jsonld">([\s\S]*?)<\/script>/);
+      expect(m, `${file} has no list-jsonld block`).not.toBeNull();
+
+      const ld = JSON.parse(m[1]);
+      expect(ld['@type']).toBe('ItemList');
+      expect(ld.url).toBe(url);
+      expect(ld.itemListElement.length).toBeGreaterThan(0);
+      expect(ld.numberOfItems).toBe(ld.itemListElement.length);
+      expect(ld.itemListElement.map((i) => i.position)).toEqual(
+        ld.itemListElement.map((_, i) => i + 1)
+      );
+
+      // Every ItemList url is an extensionless program URL, and the set matches
+      // the /programs/ links the page actually renders — the JSON-LD must not
+      // advertise a list the page does not show.
+      const listUrls = ld.itemListElement.map((i) => i.url);
+      for (const u of listUrls) {
+        expect(u).toMatch(/^https:\/\/viablemhr\.com\/programs\/[a-z0-9_-]+$/i);
+      }
+      const renderedHrefs = [...html.matchAll(/<li><a href="(\/programs\/[^"]+)"/g)].map(
+        (mm) => `https://viablemhr.com${mm[1]}`
+      );
+      expect(listUrls.sort()).toEqual(renderedHrefs.sort());
+    });
+  }
+});
+
+test.describe('sitemap-pages.xml is generated from the page manifest', () => {
+  test('lastmod values are not all one hardcoded date', () => {
+    const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
+    const lastmods = [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1]);
+    expect(lastmods.length).toBe(20);
+    for (const d of lastmods) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // The hand-maintained file had all 20 frozen at 2026-08-19; per-page git
+    // commit dates must produce more than one distinct value.
+    expect(new Set(lastmods).size).toBeGreaterThan(1);
+  });
+
+  test('changefreq values are legal sitemaps.org 0.9 values', () => {
+    const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
+    const legal = new Set(['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never']);
+    const values = [...xml.matchAll(/<changefreq>([^<]+)<\/changefreq>/g)].map((m) => m[1]);
+    expect(values.filter((v) => !legal.has(v))).toEqual([]);
+  });
+
+  test('every listed page resolves to a file the build actually wrote', () => {
+    const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const missing = locs.filter((loc) => {
+      const path = loc.replace('https://viablemhr.com', '');
+      const file = path === '/' || path === '' ? 'index.html' : `${path.replace(/^\//, '')}.html`;
+      return !existsSync(join(distDir, file));
+    });
+    expect(missing).toEqual([]);
+  });
+
+  test('noindex/shell pages stay out of the page sitemap', () => {
+    const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
+    // handoff.html is noindex, program.html is the client shell (the indexable
+    // form is /programs/{id}), 404.html is an error page, admin is never public.
+    for (const excluded of ['/handoff', '/program<', '/404', '/admin']) {
+      expect(xml).not.toContain(`https://viablemhr.com${excluded}`);
+    }
   });
 });
 
