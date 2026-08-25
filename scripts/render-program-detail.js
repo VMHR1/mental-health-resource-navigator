@@ -310,6 +310,26 @@ export function buildBreadcrumbLd(program, pageUrl, programCrumbName) {
   };
 }
 
+/**
+ * Visible breadcrumb trail for a program page. Derives its middle crumb from
+ * the SAME hubForCareLevel()/DIRECTORY_PAGE lookup buildBreadcrumbLd() uses
+ * above, so the rendered nav and the BreadcrumbList JSON-LD cannot drift.
+ *
+ * Markup/class shape mirrors renderCrumbsHtml() in
+ * scripts/generate-landing-pages.js:344 (`landing-crumbs`) so the same CSS
+ * rules apply; program.html carries a scoped copy of that rule.
+ *
+ * The current-page crumb uses the plain program name (matching the <h1>
+ * below) rather than the disambiguated "Name — Org, City" string the JSON-LD
+ * position-3 entry carries — only the two linked crumbs are load-bearing for
+ * crawlers, and the long form reads badly in a trail.
+ */
+function renderProgramCrumbsHtml(program, programName) {
+  const hub = hubForCareLevel(safeStr(program.level_of_care));
+  const mid = hub || DIRECTORY_PAGE;
+  return `<nav class="landing-crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="${mid.path}">${escapeHtml(mid.breadcrumbName)}</a> › <span aria-current="page">${escapeHtml(programName)}</span></nav>`;
+}
+
 /** JSON.stringify with `<` escaped so no data value can close the script tag. */
 function jsonLdText(obj) {
   return JSON.stringify(obj).replace(/</g, '\\u003c');
@@ -583,6 +603,7 @@ export function renderProgramBody(program, allPrograms) {
   const lastVerified = bestLastVerified(program);
 
   return `<div data-prerendered="true" data-last-verified="${escapeHtml(lastVerified)}">
+    ${renderProgramCrumbsHtml(program, name)}
     ${headerHtml}
     ${infoSectionHtml}
     ${locationSectionHtml}
