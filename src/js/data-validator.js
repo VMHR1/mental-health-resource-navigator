@@ -13,6 +13,9 @@ import {
   VALID_SERVICE_DOMAINS,
   VALID_VERIFICATION_STATUSES,
   REVERIFICATION_THRESHOLD_DAYS,
+  INSURANCE_CATEGORIES,
+  AGE_BOUND_MIN,
+  AGE_BOUND_MAX,
   validateISODate,
 } from './config/validation-schema.js?v=1';
 
@@ -82,6 +85,30 @@ function validateProgramSchema(program, index) {
     }
   }
   
+  // Derived machine-queryable fields (optional; absent is always valid).
+  // Type checks already ran off PROGRAM_SCHEMA.types above — these are the
+  // value-domain checks that mirror scripts/validate-data.js.
+  if (typeof program.age_min === 'number') {
+    if (!Number.isInteger(program.age_min) || program.age_min < AGE_BOUND_MIN || program.age_min > AGE_BOUND_MAX) {
+      errors.push(`age_min should be an integer between ${AGE_BOUND_MIN} and ${AGE_BOUND_MAX}, got: ${program.age_min}`);
+    }
+  }
+  if (typeof program.age_max === 'number') {
+    if (!Number.isInteger(program.age_max) || program.age_max < AGE_BOUND_MIN || program.age_max > AGE_BOUND_MAX) {
+      errors.push(`age_max should be an integer between ${AGE_BOUND_MIN} and ${AGE_BOUND_MAX}, got: ${program.age_max}`);
+    }
+  }
+  if (typeof program.age_min === 'number' && typeof program.age_max === 'number' && program.age_min > program.age_max) {
+    errors.push(`age_min (${program.age_min}) should be <= age_max (${program.age_max})`);
+  }
+  if (Array.isArray(program.insurance_categories)) {
+    program.insurance_categories.forEach((cat, idx) => {
+      if (!INSURANCE_CATEGORIES.includes(cat)) {
+        errors.push(`insurance_categories[${idx}]="${cat}" is not in allowlist. Valid values: ${INSURANCE_CATEGORIES.join(', ')}`);
+      }
+    });
+  }
+
   // Validate new statewide-ready fields (all optional, so only validate if present)
   if (program.service_area && typeof program.service_area === 'object') {
     const sa = program.service_area;
