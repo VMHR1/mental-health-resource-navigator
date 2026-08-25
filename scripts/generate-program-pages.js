@@ -22,6 +22,11 @@ import {
   bestLastVerified,
 } from './render-program-detail.js';
 import { fillProfessionalPages } from './render-professional-pages.js';
+import {
+  generateLandingPages,
+  buildLandingLinksHtml,
+  LANDING_SITEMAP,
+} from './generate-landing-pages.js';
 import { safeStr, escapeHtml } from '../src/js/utils/helpers.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -33,6 +38,7 @@ const HUB_LIST_MARKER = '<!--vmhr-hub-list-->';
 const BODY_START_MARKER = '<!--vmhr-program-body-start-->';
 const BODY_END_MARKER = '<!--vmhr-program-body-end-->';
 const LIST_JSONLD_MARKER = '<!--vmhr-list-jsonld-->';
+const LANDING_LINKS_MARKER = '<!--vmhr-landing-links-->';
 
 const SITE_BASE = 'https://viablemhr.com';
 
@@ -254,6 +260,26 @@ export function buildItemListJson(entries, listName, pageUrl) {
   return JSON.stringify(ld).replace(/</g, '\\u003c');
 }
 
+/**
+ * Replaces the vmhr-landing-links marker on a built hub/directory page with
+ * its cross-link block, so every generated landing page is reachable by
+ * following links from the home page and not only via the sitemap.
+ *
+ * Throws when the marker is missing: a hub that silently lost its marker would
+ * orphan its landing pages from the crawl graph without failing anything.
+ */
+function injectLandingLinks(html, relLabel, landingPages, hubPath) {
+  if (!html.includes(LANDING_LINKS_MARKER)) {
+    throw new Error(
+      `generate-program-pages: expected to find the vmhr-landing-links marker in dist/${relLabel} but it was missing`
+    );
+  }
+  const block = buildLandingLinksHtml(landingPages, hubPath);
+  // Function replacement so a literal $&/$'/$` in data-derived link text can
+  // never be interpreted by String.replace's special-pattern substitution.
+  return html.replace(LANDING_LINKS_MARKER, () => block);
+}
+
 /** Injects an ItemList block at the vmhr-list-jsonld marker of a built list page. */
 function injectListJsonLd(distPath, relLabel, entries, listName, pageUrl) {
   const source = readFileSync(distPath, 'utf8');
@@ -294,17 +320,37 @@ function sourceLastModified(srcRelPath, fallbackDate) {
  * public/sitemap-pages.xml, whose 20 `<lastmod>` values were all frozen at
  * 2026-08-19 and had no mechanical link to the pages the build actually ships.
  */
-export function buildPagesSitemap(fallbackDate) {
-  const body = sitemapPages()
-    .map(({ src, dest, sitemap }) => {
-      const loc = `${SITE_BASE}${pagePath(dest)}`;
-      return `  <url>
+export function buildPagesSitemap(fallbackDate, landingPages = []) {
+  const staticUrls = sitemapPages().map(({ src, dest, sitemap }) => ({
+    loc: `${SITE_BASE}${pagePath(dest)}`,
+    lastmod: sourceLastModified(src, fallbackDate),
+    changefreq: sitemap.changefreq,
+    priority: sitemap.priority,
+  }));
+
+  // Generated landing pages are folded into sitemap-pages.xml rather than
+  // getting a third child sitemap: they are static HTML pages built from the
+  // page pipeline, and the sitemap index deliberately has exactly two children
+  // (asserted in tests/seo.spec.js). Their <lastmod> is the newest
+  // last_verified among the programs each page lists — the same data-derived
+  // rule sitemap-programs.xml uses per program — not the template's commit
+  // date, which would be identical across all of them.
+  const landingUrls = landingPages.map((page) => ({
+    loc: page.url,
+    lastmod: page.lastmod || fallbackDate,
+    changefreq: LANDING_SITEMAP.changefreq,
+    priority: LANDING_SITEMAP.priority,
+  }));
+
+  const body = [...staticUrls, ...landingUrls]
+    .map(
+      ({ loc, lastmod, changefreq, priority }) => `  <url>
     <loc>${loc}</loc>
-    <lastmod>${sourceLastModified(src, fallbackDate)}</lastmod>
-    <changefreq>${sitemap.changefreq}</changefreq>
-    <priority>${sitemap.priority}</priority>
-  </url>`;
-    })
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`
+    )
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -354,6 +400,21 @@ export function generateProgramPages() {
     written += 1;
   }
 
+  // Programmatic landing pages (care level x city, care level x insurance
+  // category, virtual). Generated before the directory/hub fill below so the
+  // cross-link blocks those pages carry are built from the exact set of
+  // landing pages that cleared the >=3-program threshold and were written.
+  const landingPages = generateLandingPages({
+    root,
+    programs,
+    buildItemList: buildItemListJson,
+  });
+  for (const page of landingPages) {
+    console.log(
+      `Landing page: dist/${page.file} (${page.count} programs, lastmod ${page.lastmod || today})`
+    );
+  }
+
   // Fill the static directory page (dist/directory.html) with the same
   // program list, in the same data pass, so it and the per-program pages
   // never drift out of sync.
@@ -369,7 +430,10 @@ export function generateProgramPages() {
     // Function replacement so a literal $&/$'/$` etc. in program data embedded
     // within directoryListHtml can never be interpreted by String.replace's
     // special-pattern substitution (see mustReplace() above for the same fix).
-    const filledDirectory = directorySource.replace(DIRECTORY_LIST_MARKER, () => directoryListHtml);
+    let filledDirectory = directorySource.replace(DIRECTORY_LIST_MARKER, () => directoryListHtml);
+    // hubPath null = the full landing index (every care level), because
+    // /directory is the one page that lists everything.
+    filledDirectory = injectLandingLinks(filledDirectory, DIRECTORY_PAGE.file, landingPages, null);
     writeFileSync(directoryPath, filledDirectory, 'utf8');
     injectListJsonLd(
       directoryPath,
@@ -406,7 +470,13 @@ export function generateProgramPages() {
     // Function replacement so a literal $&/$'/$` etc. in program data
     // embedded within hubListHtml can never be interpreted by
     // String.replace's special-pattern substitution (see mustReplace() above).
-    const filledHub = hubSource.replace(HUB_LIST_MARKER, () => hubListHtml);
+    let filledHub = hubSource.replace(HUB_LIST_MARKER, () => hubListHtml);
+    // PHP/IOP hubs get their own city + insurance landing pages; the
+    // Residential and Crisis hubs have none of their own (no combination there
+    // clears the >=3 threshold) and fall back to hubPath null, i.e. the full
+    // index, so those hubs still open a crawl path to the landing pages.
+    const hasOwnLanding = landingPages.some((p) => p.hubPath === hub.path);
+    filledHub = injectLandingLinks(filledHub, hub.file, landingPages, hasOwnLanding ? hub.path : null);
     writeFileSync(hubPath, filledHub, 'utf8');
     injectListJsonLd(hubPath, hub.file, hubEntries, hub.listName, `${baseUrl}${hub.path}`);
     console.log(`Hub page: dist/${hub.file} filled with ${matchCount} programs + ItemList JSON-LD (${hub.label})`);
@@ -432,9 +502,9 @@ ${sitemapBody}
 
   // dist/sitemap-pages.xml is generated here from the shared page manifest,
   // replacing the hand-maintained public/sitemap-pages.xml.
-  const pagesSitemap = buildPagesSitemap(today);
+  const pagesSitemap = buildPagesSitemap(today, landingPages);
   writeFileSync(join(root, 'dist', 'sitemap-pages.xml'), pagesSitemap, 'utf8');
-  const pageUrlCount = sitemapPages().length;
+  const pageUrlCount = sitemapPages().length + landingPages.length;
 
   // Emit dist/sitemap.xml as a sitemap index referencing /sitemap-pages.xml
   // and /sitemap-programs.xml. The build copies public/sitemap.xml ->
@@ -460,7 +530,10 @@ ${sitemapBody}
 
   console.log(`Program slug pages: ${written} files → dist/programs/*.html`);
   console.log(`Sitemap: dist/sitemap-programs.xml (${written} URLs)`);
-  console.log(`Sitemap: dist/sitemap-pages.xml (${pageUrlCount} URLs, generated from scripts/page-manifest.js)`);
+  console.log(`Landing pages: ${landingPages.length} files → dist/*.html (>=3 programs each)`);
+  console.log(
+    `Sitemap: dist/sitemap-pages.xml (${pageUrlCount} URLs = ${sitemapPages().length} from scripts/page-manifest.js + ${landingPages.length} landing)`
+  );
   console.log('Sitemap index: dist/sitemap.xml (references sitemap-pages.xml + sitemap-programs.xml)');
   return { count: written };
 }

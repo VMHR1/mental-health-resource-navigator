@@ -15,9 +15,14 @@
  *                      program is /programs/{id} in sitemap-programs.xml.
  *   - `handoff.html` — `<meta name="robots" content="noindex">` (pro-gated).
  *   - `404.html`     — error page, must never be indexed.
+ *   - `landing.html` — build-time TEMPLATE only. It is copied into dist/ so it
+ *                      picks up the standard CSP injection, consumed by
+ *                      scripts/generate-landing-pages.js, and then deleted; it
+ *                      is never a page a visitor or crawler can reach.
  * Everything else carries `{ priority, changefreq }` used verbatim in the
- * generated sitemap. The resulting URL set is the same 20 URLs the
- * hand-maintained file listed.
+ * generated sitemap. That yields the same 20 static URLs the hand-maintained
+ * file listed; the programmatic landing pages are appended to the same
+ * sitemap-pages.xml by scripts/generate-landing-pages.js.
  */
 
 /** @type {{src: string, dest: string, csp: string, adminOnly?: boolean, sitemap: false | {priority: string, changefreq: string}}[]} */
@@ -49,6 +54,8 @@ export const PAGES = [
   { src: 'src/html/export.html', dest: 'export.html', csp: 'standard', sitemap: { priority: '0.4', changefreq: 'monthly' } },
   { src: 'src/html/handoff.html', dest: 'handoff.html', csp: 'standard', sitemap: false },
   { src: 'src/html/404.html', dest: '404.html', csp: 'standard', sitemap: false },
+  // Template, not a page — see the `landing.html` note in the header comment.
+  { src: 'src/html/landing.html', dest: 'landing.html', csp: 'standard', sitemap: false, template: true },
 ];
 
 /** The pages build.js should copy for this run (admin only when INCLUDE_ADMIN=1). */

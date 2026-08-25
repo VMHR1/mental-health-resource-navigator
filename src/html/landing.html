@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>IOP programs • ViableMHR</title>
-  <meta name="description" content="Intensive Outpatient (IOP) programs in the ViableMHR directory of Texas youth mental health resources.">
-  <link rel="canonical" href="https://viablemhr.com/iop-programs">
+  <title>Landing page template • ViableMHR</title>
+  <meta name="description" content="Build-time template for ViableMHR programmatic landing pages.">
+  <link rel="canonical" href="https://viablemhr.com/landing">
   <!--vmhr-list-jsonld-->
+  <!--vmhr-landing-breadcrumb-jsonld-->
   <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -18,9 +19,9 @@
   <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="phase1-design.css?v=19">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="IOP programs • ViableMHR">
-  <meta property="og:description" content="Intensive Outpatient (IOP) programs in the ViableMHR directory of Texas youth mental health resources.">
-  <meta property="og:url" content="https://viablemhr.com/iop-programs">
+  <meta property="og:title" content="Landing page template • ViableMHR">
+  <meta property="og:description" content="Build-time template for ViableMHR programmatic landing pages.">
+  <meta property="og:url" content="https://viablemhr.com/landing">
   <meta property="og:image" content="https://viablemhr.com/icon-192.png">
   <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
 
@@ -36,26 +37,24 @@
       padding-left: 20px;
       line-height: 1.7;
     }
+    .hub-list .landing-meta {
+      display: block;
+      font-size: 13px;
+      opacity: 0.8;
+    }
     .hub-intro {
       max-width: 68ch;
     }
     .hub-links {
       margin-top: 24px;
     }
-    /* Cross-links to the generated landing pages (vmhr-landing-links). */
-    .landing-links-block {
-      margin-top: 28px;
-    }
-    .landing-links-block h2 {
-      font-size: 18px;
-      font-weight: 900;
-      margin: 0 0 10px;
-      color: var(--ink);
-    }
-    .landing-links-block .hub-links {
+    .landing-crumbs {
+      font-size: 13px;
       margin: 0 0 8px;
+    }
+    .landing-note {
       max-width: 68ch;
-      line-height: 1.7;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -95,17 +94,21 @@
     </header>
 
     <main id="main">
-      <h1>Intensive Outpatient (IOP) programs</h1>
+      <!--vmhr-landing-crumbs-->
+      <h1><!--vmhr-landing-h1--></h1>
       <p class="hub-intro">This site does not rank or recommend one program as best.</p>
+      <!--vmhr-landing-intro-->
       <p class="hub-intro">Programs below are listed alphabetically by program name.</p>
 
       <ul class="hub-list">
-        <!--vmhr-hub-list-->
+        <!--vmhr-landing-list-->
       </ul>
 
-      <!--vmhr-landing-links-->
+      <!--vmhr-landing-note-->
 
-      <p class="hub-links"><a href="/directory">Browse the full directory</a> · <a href="/guide-levels-of-care">Understanding levels of care</a></p>
+      <!--vmhr-landing-siblings-->
+
+      <p class="hub-links"><a href="/directory">Browse the full directory</a> · <a href="/guide-levels-of-care">Understanding levels of care</a> · <a href="/guide-what-to-ask">What to ask when you call</a></p>
     </main>
   </div>
 
