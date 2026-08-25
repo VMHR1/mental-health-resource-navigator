@@ -468,7 +468,9 @@ test.describe('sitemap-pages.xml is generated from the page manifest', () => {
     // the count is derived from the same two producers the build uses rather
     // than re-frozen at a new literal.
     expect(lastmods.length).toBe(sitemapPages().length + LANDING_PAGES.length);
-    expect(sitemapPages().length).toBe(20);
+    // 18, not 20: boards.html and export.html are pro-gated and noindex, so
+    // they were dropped from the manifest's sitemap set.
+    expect(sitemapPages().length).toBe(18);
     for (const d of lastmods) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     // The hand-maintained file had all 20 frozen at 2026-08-19; per-page git
     // commit dates must produce more than one distinct value.
@@ -495,9 +497,10 @@ test.describe('sitemap-pages.xml is generated from the page manifest', () => {
 
   test('noindex/shell pages stay out of the page sitemap', () => {
     const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
-    // handoff.html is noindex, program.html is the client shell (the indexable
-    // form is /programs/{id}), 404.html is an error page, admin is never public.
-    for (const excluded of ['/handoff', '/program<', '/404', '/admin']) {
+    // handoff.html, export.html and boards.html are pro-gated and noindex,
+    // program.html is the client shell (the indexable form is /programs/{id}),
+    // 404.html is an error page, admin is never public.
+    for (const excluded of ['/handoff', '/export', '/boards', '/program<', '/404', '/admin']) {
       expect(xml).not.toContain(`https://viablemhr.com${excluded}`);
     }
   });
