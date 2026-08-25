@@ -29,6 +29,8 @@
     .guides-main { max-width: 920px; margin: 0 auto 56px; padding: 0 16px 48px; }
     .guides-main h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 950; margin: 0 0 12px; }
     .guides-section { margin-bottom: 24px; }
+    .guide-reviewed { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+    .guide-next-links { margin-top: 20px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -69,6 +71,8 @@
     <main id="main" class="guides-main">
       <section class="guides-section" id="what-to-ask" aria-labelledby="whatToAskHeading">
         <h1 id="whatToAskHeading">What to ask when you call</h1>
+        <!-- Review date: update this line whenever the guide's content changes materially. -->
+        <p class="guide-reviewed">Reviewed August 19, 2026 · <a href="/about">ViableMHR</a></p>
         <p class="care-levels-intro">You do not need to have everything figured out before calling. These questions can help you compare options.</p>
         <ul class="care-levels-list care-questions-list" id="callChecklist">
           <li>Are you accepting new children or adolescents?</li>
@@ -91,6 +95,7 @@
         </ul>
         <button type="button" class="btn-copy-checklist" id="copyCallChecklist">Copy checklist</button>
         <div id="copyChecklistStatus" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+        <p class="guide-next-links">To find programs to call, see the list of <a href="/php-programs">PHP programs</a>, <a href="/iop-programs">IOP programs</a>, or <a href="/residential-programs">residential programs</a> in Dallas–Fort Worth, or <a href="/directory">browse the full directory</a>.</p>
       </section>
 
       <p style="margin-top: 32px; font-size: 14px; color: var(--muted);">
