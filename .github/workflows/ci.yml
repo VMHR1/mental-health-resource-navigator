@@ -35,6 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: sitemap-pages.xml lastmod comes from per-file git log
+          # dates; a shallow clone collapses them all to the tip commit date.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -64,6 +68,10 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: sitemap-pages.xml lastmod comes from per-file git log
+          # dates; a shallow clone collapses them all to the tip commit date.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -114,6 +122,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: sitemap-pages.xml lastmod comes from per-file git log
+          # dates; a shallow clone collapses them all to the tip commit date.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
