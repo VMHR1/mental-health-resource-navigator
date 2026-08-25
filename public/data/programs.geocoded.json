@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-05-18T03:32:52.509Z",
+    "generatedAt": "2026-08-25T19:59:29.185Z",
     "last_full_verification": "2026-05-18",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
@@ -20,7 +20,7 @@
     "geocoding_attribution": "© OpenStreetMap contributors",
     "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
     "note": "Geocoded data for distance calculations. Regenerate when program addresses change.",
-    "regional_sync_at": "2026-05-18T03:32:52.509Z",
+    "regional_sync_at": "2026-08-25T19:59:29.185Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
@@ -2697,7 +2697,7 @@
           "See Children’s Health contracted insurance plans (varies by service/location); verify plan/product"
         ]
       },
-      "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/who-do-i-call",
+      "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/suicide-behaviors",
       "website_domain": "childrens.com",
       "service_domains": [
         "mental_health"
