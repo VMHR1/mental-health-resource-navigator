@@ -13,15 +13,17 @@
  *   - `admin.html`   — only built with INCLUDE_ADMIN=1, never public.
  *   - `program.html` — the client-side shell; the indexable form of every
  *                      program is /programs/{id} in sitemap-programs.xml.
- *   - `handoff.html` — `<meta name="robots" content="noindex">` (pro-gated).
+ *   - `handoff.html`, `boards.html`, `export.html`
+ *                    — `<meta name="robots" content="noindex">` (pro-gated).
  *   - `404.html`     — error page, must never be indexed.
  *   - `landing.html` — build-time TEMPLATE only. It is copied into dist/ so it
  *                      picks up the standard CSP injection, consumed by
  *                      scripts/generate-landing-pages.js, and then deleted; it
  *                      is never a page a visitor or crawler can reach.
  * Everything else carries `{ priority, changefreq }` used verbatim in the
- * generated sitemap. That yields the same 20 static URLs the hand-maintained
- * file listed; the programmatic landing pages are appended to the same
+ * generated sitemap. That yields 18 static URLs (the 20 the hand-maintained
+ * file listed, minus the two pro-gated pages above); the programmatic landing
+ * pages are appended to the same
  * sitemap-pages.xml by scripts/generate-landing-pages.js.
  */
 
@@ -44,14 +46,16 @@ export const PAGES = [
   { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval', sitemap: { priority: '0.3', changefreq: 'yearly' } },
   { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval', sitemap: { priority: '0.3', changefreq: 'yearly' } },
   { src: 'src/html/professionals.html', dest: 'professionals.html', csp: 'standard', sitemap: { priority: '0.8', changefreq: 'monthly' } },
-  { src: 'src/html/boards.html', dest: 'boards.html', csp: 'standard', sitemap: { priority: '0.7', changefreq: 'monthly' } },
+  // `<meta name="robots" content="noindex">` (pro-gated) — same reason as handoff.html.
+  { src: 'src/html/boards.html', dest: 'boards.html', csp: 'standard', sitemap: false },
   { src: 'src/html/report-outdated.html', dest: 'report-outdated.html', csp: 'standard', sitemap: { priority: '0.5', changefreq: 'monthly' } },
   // The hand-maintained file said changefreq "quarterly", which is not one of
   // the seven values the sitemaps.org 0.9 schema allows; "monthly" is the
   // nearest legal value.
   { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html', csp: 'standard', sitemap: { priority: '0.5', changefreq: 'monthly' } },
   { src: 'src/html/changelog.html', dest: 'changelog.html', csp: 'standard', sitemap: { priority: '0.4', changefreq: 'monthly' } },
-  { src: 'src/html/export.html', dest: 'export.html', csp: 'standard', sitemap: { priority: '0.4', changefreq: 'monthly' } },
+  // `<meta name="robots" content="noindex">` (pro-gated) — same reason as handoff.html.
+  { src: 'src/html/export.html', dest: 'export.html', csp: 'standard', sitemap: false },
   { src: 'src/html/handoff.html', dest: 'handoff.html', csp: 'standard', sitemap: false },
   { src: 'src/html/404.html', dest: '404.html', csp: 'standard', sitemap: false },
   // Template, not a page — see the `landing.html` note in the header comment.
