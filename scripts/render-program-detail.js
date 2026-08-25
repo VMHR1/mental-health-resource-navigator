@@ -394,6 +394,11 @@ export function renderProgramHead(program) {
     ogUrl: pageUrl,
     headHtml: [
       `<link rel="canonical" href="${pageUrl}">`,
+      // Link-preview markup only — mirrors the og: values above. src/html/program.html
+      // carries twitter:card/twitter:image statically and deliberately leaves these
+      // two to the marker so generated pages never end up with duplicate tags.
+      `<meta name="twitter:title" content="${title}">`,
+      `<meta name="twitter:description" content="${metaDescriptionEsc}">`,
       `<script type="application/ld+json" id="program-jsonld">${jsonLd}</script>`,
       `<script type="application/ld+json" id="program-breadcrumb-jsonld">${breadcrumbLd}</script>`,
     ].join('\n  '),

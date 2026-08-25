@@ -5,9 +5,10 @@ const SITE = {
   tagline: 'Texas youth mental health resources',
   geoScope: 'the Dallas–Fort Worth metro and surrounding North Texas',
   url: 'https://viablemhr.com',
-  ogImage: 'https://viablemhr.com/icon.png',
+  ogImage: 'https://viablemhr.com/og-image.png',
+  // Kept <=160 characters so search results and link previews show it whole.
   description:
-    'A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs.',
+    'Search youth mental health programs across Dallas–Fort Worth by insurance, age, and level of care — a free, neutral directory for families.',
 };
 
 const CITIES = [

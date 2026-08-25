@@ -67,6 +67,9 @@ function copyStaticAssets() {
       { src: 'public/icon-192.png', dest: 'icon-192.png' },
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
+      // Site-wide link-preview card (og:image / twitter:image). Regenerate
+      // manually with `node scripts/generate-og-image.mjs`.
+      { src: 'public/og-image.png', dest: 'og-image.png' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
       // sitemap-pages.xml is NOT copied: scripts/generate-program-pages.js
       // generates dist/sitemap-pages.xml from scripts/page-manifest.js.
