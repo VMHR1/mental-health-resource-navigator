@@ -2,8 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-08-25T19:59:29.185Z",
-    "last_full_verification": "2026-05-18",
+    "generatedAt": "2026-08-25T19:59:29.183Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,15 +14,11 @@
       "with_website_url": 112,
       "missing_website_url": 0
     },
-    "geocoded_at": "2026-01-13T04:33:43.328Z",
-    "geocoding_service": "Nominatim OpenStreetMap",
-    "geocoding_attribution": "© OpenStreetMap contributors",
-    "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
-    "note": "Geocoded data for distance calculations. Regenerate when program addresses change.",
-    "regional_sync_at": "2026-08-25T19:59:29.185Z",
+    "last_full_verification": "2026-05-18",
+    "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-08-25T19:59:29.183Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
-    "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
     "last_spot_check_fixes": "2026-05-18",
     "last_spot_check_fix_notes": "May 2026: Bricolage domain correction, BasePoint location URLs, Unity insurance re-check.",
     "audit_verified": 74,
@@ -32,7 +27,16 @@
     "audit_conflicting": 0,
     "last_internet_verification": "2026-05-18",
     "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
-    "verification_wave_count": 12
+    "verification_wave_count": 12,
+    "last_patch_applied": "2026-08-25",
+    "last_patch_run_id": "sparc-website-url-fix-2026-08-25",
+    "last_patch_notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
+    "last_patch_programs": 1,
+    "geocoded_at": "2026-08-25T21:26:22.370Z",
+    "geocoding_service": "Nominatim OpenStreetMap",
+    "geocoding_attribution": "© OpenStreetMap contributors",
+    "geocoding_terms": "https://operations.osm.org/policies/nominatim/",
+    "note": "Geocoded data for distance calculations. Regenerate when program addresses change."
   },
   "programs": [
     {
@@ -43,12 +47,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "6+",
+      "age_min": 6,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75247",
-          "address": "1341 W. Mockingbird Ln., Ste. 500"
+          "address": "1341 W. Mockingbird Ln., Ste. 500",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
         }
       ],
       "phone": "214-456-8899",
@@ -72,6 +81,10 @@
           "See Children’s Health contracted insurance plans (varies by service/location); verify plan/product"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-day-treatment-program",
       "website_domain": "childrens.com",
       "service_domains": [
@@ -101,12 +114,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "DeSoto",
           "state": "TX",
           "zip": "75115",
-          "address": "800 Kirnwood Drive"
+          "address": "800 Kirnwood Drive",
+          "geo": {
+            "lat": 32.6422773,
+            "lng": -96.8752744
+          }
         }
       ],
       "phone": "972-982-0897",
@@ -159,6 +178,12 @@
           "UnitedHealthcare"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://www.dallasbehavioral.com/",
       "website_domain": "dallasbehavioral.com",
       "service_domains": [
@@ -188,12 +213,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Richardson",
           "state": "TX",
           "zip": "75082",
-          "address": "3661 North Plano Road, Suite 2100"
+          "address": "3661 North Plano Road, Suite 2100",
+          "geo": {
+            "lat": 32.9481789,
+            "lng": -96.7297206
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -219,6 +249,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -248,12 +283,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75225",
-          "address": "8333 Douglas Ave., Ste. 350"
+          "address": "8333 Douglas Ave., Ste. 350",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
         }
       ],
       "phone": "469-777-4688",
@@ -284,6 +324,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -313,12 +356,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Richardson",
           "state": "TX",
           "zip": "75080",
-          "address": "100 N. Central Expy., Ste. 300"
+          "address": "100 N. Central Expy., Ste. 300",
+          "geo": {
+            "lat": 32.9481789,
+            "lng": -96.7297206
+          }
         }
       ],
       "phone": "469-777-4688",
@@ -349,6 +397,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -378,12 +429,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "6870 Lebanon Rd., Suite 300"
+          "address": "6870 Lebanon Rd., Suite 300",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
         }
       ],
       "phone": "469-850-2040",
@@ -408,6 +464,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -437,12 +496,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75071",
-          "address": "1820 N. Lake Forest Drive"
+          "address": "1820 N. Lake Forest Drive",
+          "geo": {
+            "lat": 33.2157179,
+            "lng": -96.6788718
+          }
         }
       ],
       "phone": "469-634-1270",
@@ -467,6 +531,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -496,12 +563,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "6110 W Parker Rd."
+          "address": "6110 W Parker Rd.",
+          "geo": {
+            "lat": 33.0453922,
+            "lng": -96.8334204
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -529,6 +601,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -558,12 +635,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75071",
-          "address": "7290 Virginia Parkway, Ste. 3100"
+          "address": "7290 Virginia Parkway, Ste. 3100",
+          "geo": {
+            "lat": 33.1976496,
+            "lng": -96.6154471
+          }
         }
       ],
       "phone": "940-360-4245",
@@ -613,6 +695,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -642,12 +728,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "6101 West Plano Parkway, Suite 240"
+          "address": "6101 West Plano Parkway, Suite 240",
+          "geo": {
+            "lat": 33.0136764,
+            "lng": -96.6925096
+          }
         }
       ],
       "phone": "469-613-3390",
@@ -697,6 +788,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -726,12 +821,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "The Colony",
           "state": "TX",
           "zip": "75056",
-          "address": "4901 Windhaven Pkwy., Ste. 200"
+          "address": "4901 Windhaven Pkwy., Ste. 200",
+          "geo": {
+            "lat": 33.0890094,
+            "lng": -96.8863922
+          }
         }
       ],
       "phone": "469-777-4688",
@@ -762,6 +862,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -791,12 +894,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "2440 Timber Ridge Dr., Suite 105"
+          "address": "2440 Timber Ridge Dr., Suite 105",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
         }
       ],
       "phone": "469-200-5353",
@@ -819,6 +928,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -847,12 +961,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75072",
-          "address": "3600 Eldorado Parkway, Building C, Suite 1"
+          "address": "3600 Eldorado Parkway, Building C, Suite 1",
+          "geo": {
+            "lat": 33.1976496,
+            "lng": -96.6154471
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -875,6 +995,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -903,12 +1028,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "4701 Old Shepard Place, Suite 200"
+          "address": "4701 Old Shepard Place, Suite 200",
+          "geo": {
+            "lat": 33.0136764,
+            "lng": -96.6925096
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -931,6 +1062,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -959,12 +1095,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75069",
-          "address": "4733 Medical Center Dr."
+          "address": "4733 Medical Center Dr.",
+          "geo": {
+            "lat": 33.1595995,
+            "lng": -96.6353237
+          }
         }
       ],
       "phone": "972-357-1749",
@@ -1004,6 +1145,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/mckinney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -1033,12 +1177,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75036",
-          "address": "8275 Judges Way, Suite 100"
+          "address": "8275 Judges Way, Suite 100",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
         }
       ],
       "phone": "972-357-1749",
@@ -1078,6 +1227,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/frisco/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -1107,12 +1259,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Denton",
           "state": "TX",
           "zip": "76210",
-          "address": "2711 Shoreline Dr., Ste. 121"
+          "address": "2711 Shoreline Dr., Ste. 121",
+          "geo": {
+            "lat": 33.1838787,
+            "lng": -97.1413417
+          }
         }
       ],
       "phone": "940-239-3578",
@@ -1162,6 +1319,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/denton/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -1191,12 +1352,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Denton",
           "state": "TX",
           "zip": "76201",
-          "address": "2012 West University Dr."
+          "address": "2012 West University Dr.",
+          "geo": {
+            "lat": 33.2301098,
+            "lng": -97.1558122
+          }
         }
       ],
       "phone": "844-963-4673",
@@ -1239,6 +1406,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
       "website_domain": "ubhdenton.com",
       "service_domains": [
@@ -1268,12 +1441,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "7+",
+      "age_min": 7,
       "locations": [
         {
           "city": "Flower Mound",
           "state": "TX",
           "zip": "75022",
-          "address": "3204 Long Prairie Road, Suite A"
+          "address": "3204 Long Prairie Road, Suite A",
+          "geo": {
+            "lat": 33.0289771,
+            "lng": -97.0695359
+          }
         }
       ],
       "phone": "469-968-5700",
@@ -1302,6 +1480,9 @@
         ],
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://bricolagebehavioral.com/partial-hospitalization-program/",
       "website_domain": "bricolagebehavioral.com",
       "service_domains": [
@@ -1331,12 +1512,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Flower Mound",
           "state": "TX",
           "zip": "75028",
-          "address": "2750 Churchill Dr., Suite 110"
+          "address": "2750 Churchill Dr., Suite 110",
+          "geo": {
+            "lat": 33.0283854,
+            "lng": -97.0867203
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -1359,6 +1546,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/flowermound",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -1387,12 +1579,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Arlington",
           "state": "TX",
           "zip": "76012",
-          "address": "1001 N. Waldrop Dr., Ste. 510"
+          "address": "1001 N. Waldrop Dr., Ste. 510",
+          "geo": {
+            "lat": 32.7355816,
+            "lng": -97.1071186
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -1418,6 +1615,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-arlington-memorial/THBHCAMH",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -1447,12 +1649,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Bedford",
           "state": "TX",
           "zip": "76022",
-          "address": "2717 Tibbets Dr."
+          "address": "2717 Tibbets Dr.",
+          "geo": {
+            "lat": 32.8345664,
+            "lng": -97.1224873
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -1478,6 +1685,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -1507,12 +1719,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76104",
-          "address": "1307 8th Ave., Floor 5"
+          "address": "1307 8th Ave., Floor 5",
+          "geo": {
+            "lat": 32.753177,
+            "lng": -97.3327459
+          }
         }
       ],
       "phone": "844-963-4673",
@@ -1555,6 +1772,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -1584,12 +1807,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Arlington",
           "state": "TX",
           "zip": "76018",
-          "address": "4935 S. Collins St."
+          "address": "4935 S. Collins St.",
+          "geo": {
+            "lat": 32.6667219,
+            "lng": -97.0902978
+          }
         }
       ],
       "phone": "682-320-2800",
@@ -1614,6 +1842,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -1643,12 +1874,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76116",
-          "address": "6421 Camp Bowie Blvd., Ste. 200"
+          "address": "6421 Camp Bowie Blvd., Ste. 200",
+          "geo": {
+            "lat": 32.753177,
+            "lng": -97.3327459
+          }
         }
       ],
       "phone": "817-841-8002",
@@ -1673,6 +1909,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -1702,12 +1941,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4232 Heritage Trace Pkwy"
+          "address": "4232 Heritage Trace Pkwy",
+          "geo": {
+            "lat": 32.9299655,
+            "lng": -97.2271249
+          }
         }
       ],
       "phone": "817-662-6179",
@@ -1763,6 +2007,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -1792,12 +2041,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Burleson",
           "state": "TX",
           "zip": "76028",
-          "address": "2915 S Burleson Blvd."
+          "address": "2915 S Burleson Blvd.",
+          "geo": {
+            "lat": 32.4784384,
+            "lng": -97.2750281
+          }
         }
       ],
       "phone": "817-662-6179",
@@ -1853,6 +2107,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -1882,12 +2141,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "9726 North Beach Street"
+          "address": "9726 North Beach Street",
+          "geo": {
+            "lat": 32.9299655,
+            "lng": -97.2271249
+          }
         }
       ],
       "phone": "817-770-0208",
@@ -1937,6 +2201,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -1967,12 +2235,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Mansfield",
           "state": "TX",
           "zip": "76063",
-          "address": "1900 Matlock Rd., Building 2"
+          "address": "1900 Matlock Rd., Building 2",
+          "geo": {
+            "lat": 32.563487,
+            "lng": -97.1420308
+          }
         }
       ],
       "phone": "817-500-5984",
@@ -2022,6 +2295,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -2052,12 +2329,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Mansfield",
           "state": "TX",
           "zip": "76063",
-          "address": "1707 Fountainview Dr."
+          "address": "1707 Fountainview Dr.",
+          "geo": {
+            "lat": 32.5646304,
+            "lng": -97.1103004
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -2080,6 +2363,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2108,12 +2396,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4561 Heritage Trace Parkway, Suite 109"
+          "address": "4561 Heritage Trace Parkway, Suite 109",
+          "geo": {
+            "lat": 32.9299655,
+            "lng": -97.2271249
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -2136,6 +2430,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/keller",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2164,12 +2463,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5–17",
+      "age_min": 5,
+      "age_max": 17,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76104",
-          "address": "801 7th Ave."
+          "address": "801 7th Ave.",
+          "geo": {
+            "lat": 32.7363748,
+            "lng": -97.3421029
+          }
         }
       ],
       "phone": "682-885-3917",
@@ -2194,6 +2499,10 @@
           "See Cook Children’s 'Insurance Plans' list (includes many commercial plans and some Medicaid/CHIP products)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
       "website_url": "https://www.cookchildrens.org/services/behavioral-health/contact-us/psychiatry-fort-worth/",
       "website_domain": "cookchildrens.org",
       "service_domains": [
@@ -2223,12 +2532,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76104",
-          "address": "1307 8th Ave., Fl. 5"
+          "address": "1307 8th Ave., Fl. 5",
+          "geo": {
+            "lat": 32.753177,
+            "lng": -97.3327459
+          }
         }
       ],
       "phone": "844-963-4673",
@@ -2269,6 +2583,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -2298,12 +2618,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Forney",
           "state": "TX",
           "zip": "75126",
-          "address": "713 W. Broad St., Suite 200"
+          "address": "713 W. Broad St., Suite 200",
+          "geo": {
+            "lat": 32.747893,
+            "lng": -96.4719289
+          }
         }
       ],
       "phone": "972-357-1749",
@@ -2343,6 +2668,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/forney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -2372,12 +2700,17 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Rockwall",
           "state": "TX",
           "zip": "75032",
-          "address": "1005 W. Ralph Hall Pkwy, Suite 201"
+          "address": "1005 W. Ralph Hall Pkwy, Suite 201",
+          "geo": {
+            "lat": 32.8923464,
+            "lng": -96.4066987
+          }
         }
       ],
       "phone": "469-545-0160",
@@ -2425,6 +2758,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -2454,12 +2791,18 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Sherman",
           "state": "TX",
           "zip": "75092",
-          "address": "1724 U.S. Highway 82 W"
+          "address": "1724 U.S. Highway 82 W",
+          "geo": {
+            "lat": 36.2452294,
+            "lng": -101.8858689
+          }
         }
       ],
       "phone": "903-870-1222",
@@ -2482,6 +2825,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/sherman",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2509,13 +2857,16 @@
       "program_name": "Virtual Day Treatment / PHP",
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Virtual",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -2553,6 +2904,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/",
       "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
@@ -2583,13 +2937,16 @@
       "program_name": "Virtual Day Treatment / PHP",
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Virtual",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "877-747-4294",
@@ -2637,6 +2994,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/",
       "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
@@ -2668,12 +3029,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75247",
-          "address": "Mockingbird Towers, 1341 W. Mockingbird Lane, Ste E1200"
+          "address": "Mockingbird Towers, 1341 W. Mockingbird Lane, Ste E1200",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
         }
       ],
       "phone": "214-456-3600",
@@ -2697,6 +3063,10 @@
           "See Children’s Health contracted insurance plans (varies by service/location); verify plan/product"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/suicide-behaviors",
       "website_domain": "childrens.com",
       "service_domains": [
@@ -2726,12 +3096,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75237",
-          "address": "4215 Gannon Lane"
+          "address": "4215 Gannon Lane",
+          "geo": {
+            "lat": 32.655938,
+            "lng": -96.8877076
+          }
         }
       ],
       "phone": "972-283-9090",
@@ -2760,6 +3135,11 @@
           "Most major private insurance plans"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://sabhc.org/iop/",
       "website_domain": "sabhc.org",
       "service_domains": [
@@ -2788,12 +3168,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Richardson",
           "state": "TX",
           "zip": "75080",
-          "address": "660 W. Campbell Road, Suite 100"
+          "address": "660 W. Campbell Road, Suite 100",
+          "geo": {
+            "lat": 32.9481789,
+            "lng": -96.7297206
+          }
         }
       ],
       "phone": "469-940-6900",
@@ -2840,12 +3225,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Richardson",
           "state": "TX",
           "zip": "75082",
-          "address": "3661 North Plano Road, Suite 2100"
+          "address": "3661 North Plano Road, Suite 2100",
+          "geo": {
+            "lat": 32.9481789,
+            "lng": -96.7297206
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -2871,6 +3261,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -2900,12 +3295,18 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "DeSoto",
           "state": "TX",
           "zip": "75115",
-          "address": "800 Kirnwood Drive"
+          "address": "800 Kirnwood Drive",
+          "geo": {
+            "lat": 32.6422773,
+            "lng": -96.8752744
+          }
         }
       ],
       "phone": "972-982-0897",
@@ -2958,6 +3359,12 @@
           "UnitedHealthcare"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
       "website_domain": "dallasbehavioral.com",
       "service_domains": [
@@ -2987,12 +3394,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75225",
-          "address": "8333 Douglas Ave., Ste. 350"
+          "address": "8333 Douglas Ave., Ste. 350",
+          "geo": {
+            "lat": 32.7762719,
+            "lng": -96.7968559
+          }
         }
       ],
       "phone": "469-777-4688",
@@ -3023,6 +3435,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3052,12 +3467,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "6870 Lebanon Rd., Suite 300"
+          "address": "6870 Lebanon Rd., Suite 300",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
         }
       ],
       "phone": "469-850-2040",
@@ -3082,6 +3502,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -3111,12 +3534,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75071",
-          "address": "1820 N. Lake Forest Drive"
+          "address": "1820 N. Lake Forest Drive",
+          "geo": {
+            "lat": 33.2157179,
+            "lng": -96.6788718
+          }
         }
       ],
       "phone": "469-634-1270",
@@ -3141,6 +3569,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -3170,12 +3601,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "5858 Main Street, Suite 101"
+          "address": "5858 Main Street, Suite 101",
+          "geo": {
+            "lat": 33.1505998,
+            "lng": -96.8238183
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -3201,6 +3637,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-frisco/THBHCFR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -3230,12 +3671,17 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "6110 W Parker Rd."
+          "address": "6110 W Parker Rd.",
+          "geo": {
+            "lat": 33.0453922,
+            "lng": -96.8334204
+          }
         }
       ],
       "phone": "682-236-6023",
@@ -3263,6 +3709,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -3292,12 +3743,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "6101 West Plano Parkway, Suite 240"
+          "address": "6101 West Plano Parkway, Suite 240",
+          "geo": null
         }
       ],
       "phone": "469-613-3390",
@@ -3347,6 +3800,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3376,12 +3833,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75071",
-          "address": "7290 Virginia Parkway, Ste. 3100"
+          "address": "7290 Virginia Parkway, Ste. 3100",
+          "geo": null
         }
       ],
       "phone": "940-360-4245",
@@ -3431,6 +3890,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3460,12 +3923,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Denton",
           "state": "TX",
           "zip": "76210",
-          "address": "2711 Shoreline Dr., Ste. 121"
+          "address": "2711 Shoreline Dr., Ste. 121",
+          "geo": null
         }
       ],
       "phone": "940-239-3578",
@@ -3515,6 +3980,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/denton/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3544,12 +4013,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Richardson",
           "state": "TX",
           "zip": "75080",
-          "address": "100 N. Central Expy., Ste. 300"
+          "address": "100 N. Central Expy., Ste. 300",
+          "geo": null
         }
       ],
       "phone": "469-777-4688",
@@ -3580,6 +4051,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3609,12 +4083,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "7+",
+      "age_min": 7,
       "locations": [
         {
           "city": "Flower Mound",
           "state": "TX",
           "zip": "75022",
-          "address": "3204 Long Prairie Road, Suite A"
+          "address": "3204 Long Prairie Road, Suite A",
+          "geo": null
         }
       ],
       "phone": "469-968-5700",
@@ -3643,6 +4119,9 @@
         ],
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
       "website_domain": "bricolagebehavioral.com",
       "service_domains": [
@@ -3672,12 +4151,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Flower Mound",
           "state": "TX",
           "zip": "75028",
-          "address": "2750 Churchill Dr., Suite 110"
+          "address": "2750 Churchill Dr., Suite 110",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -3700,6 +4182,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/flowermound",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -3728,12 +4215,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "The Colony",
           "state": "TX",
           "zip": "75056",
-          "address": "4901 Windhaven Parkway, Suite 200"
+          "address": "4901 Windhaven Parkway, Suite 200",
+          "geo": null
         }
       ],
       "phone": "469-777-4688",
@@ -3764,6 +4254,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3793,12 +4286,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Denton",
           "state": "TX",
           "zip": "76201",
-          "address": "2012 West University Dr."
+          "address": "2012 West University Dr.",
+          "geo": null
         }
       ],
       "phone": "844-963-4673",
@@ -3841,6 +4337,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
       "website_domain": "ubhdenton.com",
       "service_domains": [
@@ -3870,12 +4372,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "4701 Old Shepard Place, Suite 200"
+          "address": "4701 Old Shepard Place, Suite 200",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -3898,6 +4403,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -3926,12 +4436,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75069",
-          "address": "4733 Medical Center Dr."
+          "address": "4733 Medical Center Dr.",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -3971,6 +4483,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/mckinney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -4000,12 +4515,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75036",
-          "address": "8275 Judges Way, Suite 100"
+          "address": "8275 Judges Way, Suite 100",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -4045,6 +4562,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/frisco/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -4074,12 +4594,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75072",
-          "address": "3600 Eldorado Parkway, Building C, Suite 1"
+          "address": "3600 Eldorado Parkway, Building C, Suite 1",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -4102,6 +4625,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -4130,12 +4658,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "The Colony",
           "state": "TX",
           "zip": "75056",
-          "address": "4901 Windhaven Pkwy., Ste. 200"
+          "address": "4901 Windhaven Pkwy., Ste. 200",
+          "geo": null
         }
       ],
       "phone": "469-777-4688",
@@ -4166,6 +4696,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -4195,12 +4728,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "2440 Timber Ridge Dr., Suite 105"
+          "address": "2440 Timber Ridge Dr., Suite 105",
+          "geo": null
         }
       ],
       "phone": "469-200-5353",
@@ -4223,6 +4759,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -4251,12 +4792,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76104",
-          "address": "1307 8 Ave., Floor 5"
+          "address": "1307 8 Ave., Floor 5",
+          "geo": null
         }
       ],
       "phone": "844-963-4673",
@@ -4299,6 +4842,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -4328,12 +4877,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76116",
-          "address": "6421 Camp Bowie Blvd., Ste. 200"
+          "address": "6421 Camp Bowie Blvd., Ste. 200",
+          "geo": null
         }
       ],
       "phone": "817-841-8002",
@@ -4358,6 +4909,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -4387,12 +4941,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Arlington",
           "state": "TX",
           "zip": "76018",
-          "address": "4935 S. Collins St."
+          "address": "4935 S. Collins St.",
+          "geo": null
         }
       ],
       "phone": "682-320-2800",
@@ -4417,6 +4973,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -4446,12 +5005,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4232 Heritage Trace Pkwy"
+          "address": "4232 Heritage Trace Pkwy",
+          "geo": null
         }
       ],
       "phone": "817-662-6179",
@@ -4507,6 +5068,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -4536,12 +5102,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Burleson",
           "state": "TX",
           "zip": "76028",
-          "address": "2915 S Burlseon Blvd."
+          "address": "2915 S Burlseon Blvd.",
+          "geo": null
         }
       ],
       "phone": "817-662-6179",
@@ -4597,6 +5165,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -4626,12 +5199,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "9726 North Beach Street"
+          "address": "9726 North Beach Street",
+          "geo": null
         }
       ],
       "phone": "817-770-0208",
@@ -4681,6 +5256,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -4711,12 +5290,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Mansfield",
           "state": "TX",
           "zip": "76063",
-          "address": "1900 Matlock Rd., Building 2"
+          "address": "1900 Matlock Rd., Building 2",
+          "geo": null
         }
       ],
       "phone": "817-500-5984",
@@ -4766,6 +5347,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -4795,13 +5380,16 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Virtual",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "986-206-0414",
@@ -4841,6 +5429,11 @@
           "Medicaid (in select states)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.charliehealth.com/",
       "website": "https://www.charliehealth.com/",
       "website_domain": "charliehealth.com",
@@ -4872,13 +5465,16 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Virtual",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -4916,6 +5512,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/",
       "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
@@ -4946,13 +5545,16 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Virtual",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "877-747-4294",
@@ -5000,6 +5602,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/",
       "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
@@ -5031,12 +5637,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Forney",
           "state": "TX",
           "zip": "75126",
-          "address": "713 W. Broad St., Suite 200"
+          "address": "713 W. Broad St., Suite 200",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -5076,6 +5684,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/forney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -5105,12 +5716,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Rockwall",
           "state": "TX",
           "zip": "75032",
-          "address": "890 Rockwall Parkway, Suite 115"
+          "address": "890 Rockwall Parkway, Suite 115",
+          "geo": null
         }
       ],
       "phone": "682-236-6023",
@@ -5136,6 +5749,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -5165,12 +5783,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Rockwall",
           "state": "TX",
           "zip": "75032",
-          "address": "1005 W. Ralph Hall Pkwy, Suite 201"
+          "address": "1005 W. Ralph Hall Pkwy, Suite 201",
+          "geo": null
         }
       ],
       "phone": "469-545-0160",
@@ -5218,6 +5838,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -5247,12 +5871,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Sherman",
           "state": "TX",
           "zip": "75092",
-          "address": "1724 U.S. Highway 82 W"
+          "address": "1724 U.S. Highway 82 W",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -5275,6 +5902,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/sherman",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5303,12 +5935,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Mansfield",
           "state": "TX",
           "zip": "76063",
-          "address": "1707 Fountainview Dr."
+          "address": "1707 Fountainview Dr.",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -5331,6 +5966,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5359,12 +5999,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Keller",
           "state": "TX",
           "zip": "76244",
-          "address": "4561 Heritage Trace Parkway, Suite 109"
+          "address": "4561 Heritage Trace Parkway, Suite 109",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -5387,6 +6030,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/keller",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5415,12 +6063,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Arlington",
           "state": "TX",
           "zip": "76018",
-          "address": "3900 Arlington Highlands Blvd., Ste. 237"
+          "address": "3900 Arlington Highlands Blvd., Ste. 237",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -5458,6 +6109,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/arlington/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -5488,12 +6142,14 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "1-866-260-8000",
@@ -5535,12 +6191,14 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "877-422-5939",
@@ -5581,12 +6239,14 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "800-762-0157",
@@ -5627,12 +6287,14 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Call or Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "800-866-2465",
@@ -5675,12 +6337,14 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "877-466-0660",
@@ -5721,12 +6385,14 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Call or Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
           "state": "US",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "988",
@@ -5767,12 +6433,14 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Phone / Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
           "state": "US",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "1-866-488-7386",
@@ -5815,12 +6483,14 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "North Texas",
           "state": "TX",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "214-828-1000",
@@ -5863,12 +6533,14 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
           "state": "US",
           "zip": "",
-          "address": ""
+          "address": "",
+          "geo": null
         }
       ],
       "phone": "Text HOME to 741741",
@@ -5916,7 +6588,8 @@
           "city": "Dallas",
           "state": "TX",
           "zip": "75237",
-          "address": "4215 Gannon Lane"
+          "address": "4215 Gannon Lane",
+          "geo": null
         }
       ],
       "phone": "972-283-9090",
@@ -5962,13 +6635,15 @@
           "city": "Plano",
           "state": "TX",
           "zip": "75025",
-          "address": "7308 Alma Drive"
+          "address": "7308 Alma Drive",
+          "geo": null
         },
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75069",
-          "address": "1515 Heritage Drive, Suite 105"
+          "address": "1515 Heritage Drive, Suite 105",
+          "geo": null
         }
       ],
       "phone": "972-422-5939",
@@ -6014,7 +6689,8 @@
           "city": "Denton",
           "state": "TX",
           "zip": "76201",
-          "address": "2509 Scripture Street, Suite 100"
+          "address": "2509 Scripture Street, Suite 100",
+          "geo": null
         }
       ],
       "phone": "940-381-9965",
@@ -6055,12 +6731,15 @@
       "level_of_care": "Walk-In Outpatient",
       "service_setting": "In-person",
       "ages_served": "Child & Adolescent services available (locations vary)",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas County",
           "state": "TX",
           "zip": "",
-          "address": "Multiple locations (Westmoreland, Samuell, Grand Prairie, Skillman, Midway)"
+          "address": "Multiple locations (Westmoreland, Samuell, Grand Prairie, Skillman, Midway)",
+          "geo": null
         }
       ],
       "phone": "877-283-2121",
@@ -6101,12 +6780,15 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "Children & adolescents",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75024",
-          "address": "7609 Preston Rd, Suite P4300"
+          "address": "7609 Preston Rd, Suite P4300",
+          "geo": null
         }
       ],
       "phone": "469-303-4787",
@@ -6151,12 +6833,15 @@
       "level_of_care": "Outpatient",
       "service_setting": "In-person",
       "ages_served": "Child & Adolescent",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75230",
-          "address": "12200 Preston Road @ Cooper Aerobics Center"
+          "address": "12200 Preston Road @ Cooper Aerobics Center",
+          "geo": null
         }
       ],
       "phone": "214-549-2901",
@@ -6201,12 +6886,15 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "9–17",
+      "age_min": 9,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "5124 Corinthian Bay Drive"
+          "address": "5124 Corinthian Bay Drive",
+          "geo": null
         }
       ],
       "phone": "800-760-3934",
@@ -6236,6 +6924,10 @@
         ],
         "notes": "Insurances accepted change frequently; use CFD insurance verification."
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://www.centerfordiscovery.com/locations/plano/",
       "website_domain": "centerfordiscovery.com",
       "website": "https://www.centerfordiscovery.com/locations/plano/",
@@ -6262,12 +6954,14 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75024",
-          "address": "5120 Legacy Dr"
+          "address": "5120 Legacy Dr",
+          "geo": null
         }
       ],
       "phone": "469-613-1722",
@@ -6312,12 +7006,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14-17",
+      "age_min": 14,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75219",
-          "address": "3300 Oak Lawn Ave., Suite 102"
+          "address": "3300 Oak Lawn Ave., Suite 102",
+          "geo": null
         }
       ],
       "phone": "855-808-4213",
@@ -6360,12 +7057,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13-17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75247",
-          "address": "1341 West Mockingbird Lane, Ste 500E"
+          "address": "1341 West Mockingbird Lane, Ste 500E",
+          "geo": null
         }
       ],
       "phone": "214-456-7200",
@@ -6407,12 +7107,15 @@
       "level_of_care": "Outpatient",
       "service_setting": "In-person",
       "ages_served": "13–24",
+      "age_min": 13,
+      "age_max": 24,
       "locations": [
         {
           "city": "Dallas",
           "state": "TX",
           "zip": "75208",
-          "address": "201 S. Tyler St., Suite 100"
+          "address": "201 S. Tyler St., Suite 100",
+          "geo": null
         }
       ],
       "phone": "214-942-5166",
@@ -6455,12 +7158,15 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14-18",
+      "age_min": 14,
+      "age_max": 18,
       "locations": [
         {
           "city": "Lewisville",
           "state": "TX",
           "zip": "75067",
-          "address": "105 Kathryn Dr, Building 3, Suite D"
+          "address": "105 Kathryn Dr, Building 3, Suite D",
+          "geo": null
         }
       ],
       "phone": "844-564-0712",
@@ -6503,12 +7209,14 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75074",
-          "address": "1947 Ave K, Suite 100"
+          "address": "1947 Ave K, Suite 100",
+          "geo": null
         }
       ],
       "phone": "214-385-4264",
@@ -6550,12 +7258,15 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11-17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75071",
-          "address": "1820 N. Lake Forest Drive"
+          "address": "1820 N. Lake Forest Drive",
+          "geo": null
         }
       ],
       "phone": "469-634-1270",
@@ -6582,6 +7293,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
@@ -6610,12 +7324,15 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11-17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
           "state": "TX",
           "zip": "75034",
-          "address": "6870 Lebanon Rd., Suite 300"
+          "address": "6870 Lebanon Rd., Suite 300",
+          "geo": null
         }
       ],
       "phone": "469-850-2040",
@@ -6642,6 +7359,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
@@ -6670,24 +7390,29 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Arlington",
           "state": "TX",
           "zip": "76018",
-          "address": "3900 Arlington Highlands Blvd., Suite 237"
+          "address": "3900 Arlington Highlands Blvd., Suite 237",
+          "geo": null
         },
         {
           "city": "McKinney",
           "state": "TX",
           "zip": "75069",
-          "address": "4733 Medical Center Dr"
+          "address": "4733 Medical Center Dr",
+          "geo": null
         },
         {
           "city": "Forney",
           "state": "TX",
           "zip": "75126",
-          "address": "713 W Broad St, Suite 200"
+          "address": "713 W Broad St, Suite 200",
+          "geo": null
         }
       ],
       "phone": "972-357-1749",
@@ -6709,6 +7434,9 @@
           "Commercial (most major)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/arlington/",
       "website_domain": "basepointacademy.com",
       "website": "https://basepointacademy.com/locations/arlington/",
@@ -6736,12 +7464,15 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12-17",
+      "age_min": 12,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
           "state": "TX",
           "zip": "75093",
-          "address": "4701 Old Shepard Place, Suite 200"
+          "address": "4701 Old Shepard Place, Suite 200",
+          "geo": null
         }
       ],
       "phone": "903-870-1222",
@@ -6764,6 +7495,11 @@
           "Military (TRICARE)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "verification_source_url": "https://www.carruscare.com/",
@@ -6792,12 +7528,15 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76132",
-          "address": "7140 Oakmont Boulevard"
+          "address": "7140 Oakmont Boulevard",
+          "geo": null
         }
       ],
       "phone": "844-986-0260",
@@ -6841,12 +7580,15 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Houston",
           "state": "TX",
           "zip": "77085",
-          "address": "5629 Grapevine St"
+          "address": "5629 Grapevine St",
+          "geo": null
         }
       ],
       "phone": "888-236-4567",
@@ -6889,12 +7631,15 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13-17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Canton",
           "state": "TX",
           "zip": "75103",
-          "address": "3120 VZ County Road 2318, Ste. 100"
+          "address": "3120 VZ County Road 2318, Ste. 100",
+          "geo": null
         }
       ],
       "phone": "903-479-3933",
@@ -6938,18 +7683,22 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13–18",
+      "age_min": 13,
+      "age_max": 18,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76135",
-          "address": "7820 Hanger Cutoff Road"
+          "address": "7820 Hanger Cutoff Road",
+          "geo": null
         },
         {
           "city": "Cleburne",
           "state": "TX",
           "zip": "76031",
-          "address": "1632 E FM 4"
+          "address": "1632 E FM 4",
+          "geo": null
         }
       ],
       "phone": "866-650-5212",
@@ -6995,12 +7744,14 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76111",
-          "address": "2700 Airport Freeway"
+          "address": "2700 Airport Freeway",
+          "geo": null
         }
       ],
       "phone": "817-332-6329",
@@ -7044,12 +7795,14 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Fort Worth",
           "state": "TX",
           "zip": "76107",
-          "address": "3840 Hulen Tower North"
+          "address": "3840 Hulen Tower North",
+          "geo": null
         }
       ],
       "phone": "800-866-2465",
@@ -7094,12 +7847,14 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Longview",
           "state": "TX",
           "zip": "75601",
-          "address": "708 Glencrest Lane"
+          "address": "708 Glencrest Lane",
+          "geo": null
         }
       ],
       "phone": "903-753-7633",
