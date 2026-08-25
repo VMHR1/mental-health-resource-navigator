@@ -300,8 +300,22 @@ function injectListJsonLd(distPath, relLabel, entries, listName, pageUrl) {
  * when git is unavailable or the file has no commit yet (a new page in a dirty
  * tree, or a CI checkout with no history for it).
  */
+let warnedShallow = false;
 function sourceLastModified(srcRelPath, fallbackDate) {
   try {
+    if (!warnedShallow) {
+      warnedShallow = true;
+      const shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+        cwd: root,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+      if (shallow === 'true') {
+        console.warn(
+          'WARNING: shallow git clone — every static-page <lastmod> collapses to the tip commit date. Fetch full history (fetch-depth: 0) for real per-page dates.'
+        );
+      }
+    }
     const out = execFileSync('git', ['log', '-1', '--format=%cs', '--', srcRelPath], {
       cwd: root,
       encoding: 'utf8',
