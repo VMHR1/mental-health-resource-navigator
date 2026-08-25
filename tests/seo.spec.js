@@ -3,9 +3,25 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { sitemapPages } from '../scripts/page-manifest.js';
+import {
+  computeLandingPages,
+  LANDING_MIN_PROGRAMS,
+} from '../scripts/generate-landing-pages.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const distDir = join(root, 'dist');
+
+/**
+ * The landing-page inventory the build should have produced, computed from the
+ * same pure function scripts/generate-landing-pages.js writes from — so these
+ * assertions compare dist/ against the rule, not against a frozen list that
+ * would go stale the next time programs.json changes.
+ */
+const LANDING_PAGES = computeLandingPages(
+  JSON.parse(readFileSync(join(root, 'public', 'data', 'programs.json'), 'utf8')).programs || []
+);
 
 /** First 6 valid program ids from public/data/programs.json, in file order (deterministic). */
 function sampleProgramIds(count = 6) {
@@ -270,11 +286,174 @@ test.describe('List-page ItemList JSON-LD (hubs + directory)', () => {
   }
 });
 
+test.describe('Programmatic landing pages', () => {
+  test('sanity: the generator produced a non-trivial inventory', () => {
+    expect(LANDING_PAGES.length).toBeGreaterThan(0);
+    // Every page kind the task defines is represented by the current data.
+    const kinds = new Set(LANDING_PAGES.map((p) => p.kind));
+    expect([...kinds].sort()).toEqual(['city', 'insurance', 'virtual']);
+  });
+
+  test('slugs are unique and collide with no manifest page', () => {
+    const slugs = LANDING_PAGES.map((p) => p.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    const manifestSlugs = new Set(sitemapPages().map((p) => p.dest.replace(/\.html$/, '')));
+    expect(slugs.filter((s) => manifestSlugs.has(s))).toEqual([]);
+  });
+
+  test('thin-page guard: no page below the >=3-program threshold exists', () => {
+    // Every emitted page clears the threshold...
+    expect(LANDING_PAGES.filter((p) => p.count < LANDING_MIN_PROGRAMS)).toEqual([]);
+    // ...and nothing that failed it slipped into dist/ anyway. A combination
+    // that does not qualify must have no file at all, which is the part a
+    // "count >= 3" check on the emitted pages alone cannot catch.
+    const emitted = new Set(LANDING_PAGES.map((p) => p.file));
+    const data = JSON.parse(readFileSync(join(root, 'public', 'data', 'programs.json'), 'utf8'));
+    const cities = new Set();
+    for (const p of data.programs || []) {
+      for (const l of p.locations || []) {
+        const city = (l.city || '').trim();
+        if (city && !['Virtual', 'Multiple', 'National'].includes(city)) cities.add(city);
+      }
+    }
+    const shouldNotExist = [];
+    for (const care of ['php', 'iop']) {
+      for (const city of cities) {
+        const file = `${care}-${city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html`;
+        if (emitted.has(file)) continue;
+        if (existsSync(join(distDir, file))) shouldNotExist.push(file);
+      }
+    }
+    expect(shouldNotExist).toEqual([]);
+  });
+
+  test('the build wrote exactly the computed inventory and deleted the template', () => {
+    for (const page of LANDING_PAGES) {
+      expect(existsSync(join(distDir, page.file)), `${page.file} missing from dist/`).toBeTruthy();
+    }
+    // dist/landing.html is the build-time template; shipping it would publish
+    // an indexable page full of placeholder copy.
+    expect(existsSync(join(distDir, 'landing.html'))).toBeFalsy();
+  });
+
+  for (const page of LANDING_PAGES) {
+    test(`/${page.slug} has unique metadata, canonical, ItemList and >=3 listings`, () => {
+      const html = readFileSync(join(distDir, page.file), 'utf8');
+
+      const title = html.match(/<title>([^<]*)<\/title>/);
+      expect(title, `${page.file} has no <title>`).not.toBeNull();
+      expect(title[1]).toBe(`${page.title} • ViableMHR`);
+
+      const description = html.match(/<meta name="description" content="([^"]*)"/);
+      expect(description, `${page.file} has no meta description`).not.toBeNull();
+      expect(description[1].length).toBeGreaterThan(0);
+      expect(description[1].length).toBeLessThanOrEqual(300);
+      // Match-facts style closes with the real listing count.
+      expect(description[1]).toMatch(/\b\d+ programs? listed\.$/);
+
+      expect(html).toContain(`<link rel="canonical" href="https://viablemhr.com/${page.slug}">`);
+      expect(html).toContain(`<meta property="og:url" content="https://viablemhr.com/${page.slug}">`);
+
+      // ItemList JSON-LD matches the links the page actually renders.
+      const listMatch = html.match(
+        /<script type="application\/ld\+json" id="list-jsonld">([\s\S]*?)<\/script>/
+      );
+      expect(listMatch, `${page.file} has no list-jsonld block`).not.toBeNull();
+      const ld = JSON.parse(listMatch[1]);
+      expect(ld['@type']).toBe('ItemList');
+      expect(ld.url).toBe(`https://viablemhr.com/${page.slug}`);
+      expect(ld.numberOfItems).toBe(page.count);
+      expect(ld.numberOfItems).toBeGreaterThanOrEqual(LANDING_MIN_PROGRAMS);
+      expect(ld.itemListElement.map((i) => i.position)).toEqual(
+        ld.itemListElement.map((_, i) => i + 1)
+      );
+      const renderedHrefs = [...html.matchAll(/<li><a href="(\/programs\/[^"]+)"/g)].map(
+        (m) => `https://viablemhr.com${m[1]}`
+      );
+      expect(renderedHrefs.length).toBeGreaterThanOrEqual(LANDING_MIN_PROGRAMS);
+      expect(ld.itemListElement.map((i) => i.url).sort()).toEqual(renderedHrefs.sort());
+
+      // BreadcrumbList: Home -> parent hub (or /directory) -> this page.
+      const crumbMatch = html.match(
+        /<script type="application\/ld\+json" id="landing-breadcrumb-jsonld">([\s\S]*?)<\/script>/
+      );
+      expect(crumbMatch, `${page.file} has no breadcrumb block`).not.toBeNull();
+      const crumbs = JSON.parse(crumbMatch[1]);
+      expect(crumbs['@type']).toBe('BreadcrumbList');
+      expect(crumbs.itemListElement.map((c) => c.position)).toEqual([1, 2, 3]);
+      expect(crumbs.itemListElement[0].item).toBe('https://viablemhr.com/');
+      expect(crumbs.itemListElement[1].item).toBe(`https://viablemhr.com${page.hubPath}`);
+      expect(crumbs.itemListElement[2].item).toBe(`https://viablemhr.com/${page.slug}`);
+
+      // Intro paragraph states the real count and links into the interactive
+      // directory with the equivalent filters.
+      expect(html).toContain(`This directory lists ${page.count} `);
+      expect(html).toContain('in the searchable directory');
+
+      // Crisis banner + 988 on every generated page.
+      expect(html).toContain('988');
+
+      // Insurance pages carry the standing "confirm with the program" note and
+      // must never promise coverage.
+      if (page.kind === 'insurance') {
+        expect(html).toContain('It is not a benefits check');
+        expect(html).toContain('Confirm coverage, network status, and out-of-pocket cost directly with the program');
+      }
+    });
+  }
+
+  test('landing titles and descriptions are unique across the landing set', () => {
+    const titles = LANDING_PAGES.map((p) =>
+      readFileSync(join(distDir, p.file), 'utf8').match(/<title>([^<]*)<\/title>/)[1]
+    );
+    expect(new Set(titles).size).toBe(titles.length);
+    const descriptions = LANDING_PAGES.map(
+      (p) => readFileSync(join(distDir, p.file), 'utf8').match(/<meta name="description" content="([^"]*)"/)[1]
+    );
+    expect(new Set(descriptions).size).toBe(descriptions.length);
+  });
+
+  test('every landing page is listed in sitemap-pages.xml with a data-derived lastmod', () => {
+    const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
+    const entries = new Map(
+      [...xml.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)].map((m) => [
+        m[1],
+        m[2],
+      ])
+    );
+    for (const page of LANDING_PAGES) {
+      const loc = `https://viablemhr.com/${page.slug}`;
+      expect(entries.has(loc), `${loc} missing from sitemap-pages.xml`).toBeTruthy();
+      // lastmod is the newest last_verified among the programs the page lists,
+      // not the template's commit date.
+      expect(entries.get(loc)).toBe(page.lastmod);
+    }
+  });
+
+  test('landing pages are reachable by links from the hubs and the directory', () => {
+    const directoryHtml = readFileSync(join(distDir, 'directory.html'), 'utf8');
+    for (const page of LANDING_PAGES) {
+      expect(directoryHtml).toContain(`href="/${page.slug}"`);
+    }
+    // Each PHP/IOP landing page is also linked from its own level-of-care hub,
+    // so a crawler reaches it in 2 hops from the home page.
+    for (const page of LANDING_PAGES.filter((p) => p.kind !== 'virtual')) {
+      const hubFile = `${page.hubPath.replace(/^\//, '')}.html`;
+      expect(readFileSync(join(distDir, hubFile), 'utf8')).toContain(`href="/${page.slug}"`);
+    }
+  });
+});
+
 test.describe('sitemap-pages.xml is generated from the page manifest', () => {
   test('lastmod values are not all one hardcoded date', () => {
     const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
     const lastmods = [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1]);
-    expect(lastmods.length).toBe(20);
+    // Was a bare `toBe(20)`. sitemap-pages.xml now also carries the
+    // programmatic landing pages (see scripts/generate-landing-pages.js), so
+    // the count is derived from the same two producers the build uses rather
+    // than re-frozen at a new literal.
+    expect(lastmods.length).toBe(sitemapPages().length + LANDING_PAGES.length);
+    expect(sitemapPages().length).toBe(20);
     for (const d of lastmods) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     // The hand-maintained file had all 20 frozen at 2026-08-19; per-page git
     // commit dates must produce more than one distinct value.

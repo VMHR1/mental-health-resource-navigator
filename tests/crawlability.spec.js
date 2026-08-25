@@ -9,10 +9,16 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 import { renderProgramBody } from '../scripts/render-program-detail.js';
+import { computeLandingPages } from '../scripts/generate-landing-pages.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const distDir = join(root, 'dist');
+
+/** The landing pages the build should have written, from the same pure rule. */
+const LANDING_PAGES = computeLandingPages(
+  JSON.parse(readFileSync(join(root, 'public', 'data', 'programs.json'), 'utf8')).programs || []
+);
 
 /** Recursively list files under `dir` matching `predicate`, relative to `dir`. */
 function listFiles(dir, predicate) {
@@ -129,6 +135,16 @@ test.describe('Crawlability: no ranking/sponsorship language', () => {
   for (const hubPage of HUB_PAGES) {
     test(`no ranking/sponsorship language in dist/${hubPage} (excluding the neutrality disclaimer)`, () => {
       const html = readDist(hubPage).split(NEUTRALITY_DISCLAIMER).join('');
+      expect(html).not.toMatch(RANKING_LANGUAGE);
+    });
+  }
+
+  // Programmatic landing pages (scripts/generate-landing-pages.js). Their copy
+  // is assembled from templated strings plus program data, so they are exactly
+  // the pages most likely to grow a superlative by accident.
+  for (const page of LANDING_PAGES) {
+    test(`no ranking/sponsorship language in dist/${page.file} (excluding the neutrality disclaimer)`, () => {
+      const html = readDist(page.file).split(NEUTRALITY_DISCLAIMER).join('');
       expect(html).not.toMatch(RANKING_LANGUAGE);
     });
   }
