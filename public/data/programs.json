@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-05-18T03:32:52.509Z",
+    "generatedAt": "2026-08-25T19:59:29.183Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -16,7 +16,7 @@
     },
     "last_full_verification": "2026-05-18",
     "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-05-18T03:32:52.509Z",
+    "regional_sync_at": "2026-08-25T19:59:29.183Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -27,7 +27,11 @@
     "audit_conflicting": 0,
     "last_internet_verification": "2026-05-18",
     "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
-    "verification_wave_count": 12
+    "verification_wave_count": 12,
+    "last_patch_applied": "2026-08-25",
+    "last_patch_run_id": "sparc-website-url-fix-2026-08-25",
+    "last_patch_notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
+    "last_patch_programs": 1
   },
   "programs": [
     {
@@ -38,6 +42,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "6+",
+      "age_min": 6,
       "locations": [
         {
           "city": "Dallas",
@@ -67,6 +72,10 @@
           "See Children’s Health contracted insurance plans (varies by service/location); verify plan/product"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-day-treatment-program",
       "website_domain": "childrens.com",
       "service_domains": [
@@ -96,6 +105,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "DeSoto",
@@ -154,6 +165,12 @@
           "UnitedHealthcare"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://www.dallasbehavioral.com/",
       "website_domain": "dallasbehavioral.com",
       "service_domains": [
@@ -183,6 +200,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Richardson",
@@ -214,6 +232,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -243,6 +266,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Dallas",
@@ -279,6 +303,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -308,6 +335,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Richardson",
@@ -344,6 +372,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -373,6 +404,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
@@ -403,6 +435,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -432,6 +467,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
@@ -462,6 +498,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -491,6 +530,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Plano",
@@ -524,6 +564,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -553,6 +598,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "McKinney",
@@ -608,6 +654,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -637,6 +687,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
@@ -692,6 +743,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -721,6 +776,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "The Colony",
@@ -757,6 +813,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -786,6 +845,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
@@ -814,6 +875,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -842,6 +908,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
@@ -870,6 +938,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -898,6 +971,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
@@ -926,6 +1001,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -954,6 +1034,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
@@ -999,6 +1080,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/mckinney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -1028,6 +1112,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
@@ -1073,6 +1158,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/frisco/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -1102,6 +1190,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Denton",
@@ -1157,6 +1246,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/denton/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -1186,6 +1279,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Denton",
@@ -1234,6 +1329,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
       "website_domain": "ubhdenton.com",
       "service_domains": [
@@ -1263,6 +1364,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "7+",
+      "age_min": 7,
       "locations": [
         {
           "city": "Flower Mound",
@@ -1297,6 +1399,9 @@
         ],
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://bricolagebehavioral.com/partial-hospitalization-program/",
       "website_domain": "bricolagebehavioral.com",
       "service_domains": [
@@ -1326,6 +1431,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Flower Mound",
@@ -1354,6 +1461,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/flowermound",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -1382,6 +1494,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Arlington",
@@ -1413,6 +1526,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-arlington-memorial/THBHCAMH",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -1442,6 +1560,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Bedford",
@@ -1473,6 +1592,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -1502,6 +1626,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
@@ -1550,6 +1675,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -1579,6 +1710,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Arlington",
@@ -1609,6 +1741,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -1638,6 +1773,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Fort Worth",
@@ -1668,6 +1804,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -1697,6 +1836,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Keller",
@@ -1758,6 +1898,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -1787,6 +1932,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Burleson",
@@ -1848,6 +1994,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -1877,6 +2028,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Keller",
@@ -1932,6 +2084,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -1962,6 +2118,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Mansfield",
@@ -2017,6 +2174,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -2047,6 +2208,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Mansfield",
@@ -2075,6 +2238,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2103,6 +2271,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Keller",
@@ -2131,6 +2301,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/keller",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2159,6 +2334,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5–17",
+      "age_min": 5,
+      "age_max": 17,
       "locations": [
         {
           "city": "Fort Worth",
@@ -2189,6 +2366,10 @@
           "See Cook Children’s 'Insurance Plans' list (includes many commercial plans and some Medicaid/CHIP products)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
       "website_url": "https://www.cookchildrens.org/services/behavioral-health/contact-us/psychiatry-fort-worth/",
       "website_domain": "cookchildrens.org",
       "service_domains": [
@@ -2218,6 +2399,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
@@ -2264,6 +2446,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -2293,6 +2481,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Forney",
@@ -2338,6 +2527,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/forney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -2367,6 +2559,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Rockwall",
@@ -2420,6 +2613,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -2449,6 +2646,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Sherman",
@@ -2477,6 +2676,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/sherman",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -2504,7 +2708,9 @@
       "program_name": "Virtual Day Treatment / PHP",
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Virtual",
@@ -2548,6 +2754,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/",
       "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
@@ -2578,7 +2787,9 @@
       "program_name": "Virtual Day Treatment / PHP",
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Virtual",
@@ -2632,6 +2843,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/",
       "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
@@ -2663,6 +2878,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Dallas",
@@ -2692,7 +2908,11 @@
           "See Children’s Health contracted insurance plans (varies by service/location); verify plan/product"
         ]
       },
-      "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/who-do-i-call",
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip"
+      ],
+      "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/suicide-behaviors",
       "website_domain": "childrens.com",
       "service_domains": [
         "mental_health"
@@ -2721,6 +2941,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Dallas",
@@ -2755,6 +2976,11 @@
           "Most major private insurance plans"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://sabhc.org/iop/",
       "website_domain": "sabhc.org",
       "service_domains": [
@@ -2783,6 +3009,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Richardson",
@@ -2835,6 +3062,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Richardson",
@@ -2866,6 +3094,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -2895,6 +3128,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "DeSoto",
@@ -2953,6 +3188,12 @@
           "UnitedHealthcare"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
       "website_domain": "dallasbehavioral.com",
       "service_domains": [
@@ -2982,6 +3223,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Dallas",
@@ -3018,6 +3260,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3047,6 +3292,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
@@ -3077,6 +3323,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -3106,6 +3355,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
@@ -3136,6 +3386,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "service_domains": [
@@ -3165,6 +3418,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Frisco",
@@ -3196,6 +3450,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-frisco/THBHCFR",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -3225,6 +3484,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Plano",
@@ -3258,6 +3518,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -3287,6 +3552,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
@@ -3342,6 +3608,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/plano/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3371,6 +3641,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "McKinney",
@@ -3426,6 +3697,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/mckinney/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3455,6 +3730,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Denton",
@@ -3510,6 +3786,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/denton/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -3539,6 +3819,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14+",
+      "age_min": 14,
       "locations": [
         {
           "city": "Richardson",
@@ -3575,6 +3856,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3604,6 +3888,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "7+",
+      "age_min": 7,
       "locations": [
         {
           "city": "Flower Mound",
@@ -3638,6 +3923,9 @@
         ],
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
       "website_domain": "bricolagebehavioral.com",
       "service_domains": [
@@ -3667,6 +3955,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Flower Mound",
@@ -3695,6 +3985,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/flowermound",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -3723,6 +4018,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "The Colony",
@@ -3759,6 +4056,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -3788,6 +4088,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Denton",
@@ -3836,6 +4138,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://ubhdenton.com/treatment-services/teens/outpatient-services/",
       "website_domain": "ubhdenton.com",
       "service_domains": [
@@ -3865,6 +4173,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
@@ -3893,6 +4203,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -3921,6 +4236,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "McKinney",
@@ -3966,6 +4282,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/mckinney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -3995,6 +4314,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Frisco",
@@ -4040,6 +4360,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/frisco/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -4069,6 +4392,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
@@ -4097,6 +4422,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mckinney",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -4125,6 +4455,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "The Colony",
@@ -4161,6 +4492,9 @@
           "Magellan"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://reflectionslifestyle.com/contact/",
       "website_domain": "reflectionslifestyle.com",
       "service_domains": [
@@ -4190,6 +4524,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
@@ -4218,6 +4554,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/friscotx",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -4246,6 +4587,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "5+",
+      "age_min": 5,
       "locations": [
         {
           "city": "Fort Worth",
@@ -4294,6 +4636,12 @@
           "CHIP (under 21)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare",
+        "tricare"
+      ],
       "website_url": "https://millwoodhospital.com/locations/branches-excel-fort-worth/",
       "website_domain": "millwoodhospital.com",
       "service_domains": [
@@ -4323,6 +4671,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Fort Worth",
@@ -4353,6 +4702,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -4382,6 +4734,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Arlington",
@@ -4412,6 +4765,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "website_domain": "mesasprings.com",
       "service_domains": [
@@ -4441,6 +4797,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Keller",
@@ -4502,6 +4859,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -4531,6 +4893,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "9+",
+      "age_min": 9,
       "locations": [
         {
           "city": "Burleson",
@@ -4592,6 +4955,11 @@
           "WellPoint"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://mindabovematter.com/contact-us/",
       "website_domain": "mindabovematter.com",
       "service_domains": [
@@ -4621,6 +4989,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Keller",
@@ -4676,6 +5045,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -4706,6 +5079,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Mansfield",
@@ -4761,6 +5135,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -4790,7 +5168,9 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "8+",
+      "age_min": 8,
       "locations": [
         {
           "city": "Virtual",
@@ -4836,6 +5216,11 @@
           "Medicaid (in select states)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.charliehealth.com/",
       "website": "https://www.charliehealth.com/",
       "website_domain": "charliehealth.com",
@@ -4867,7 +5252,9 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Virtual",
@@ -4911,6 +5298,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/",
       "website": "https://basepointacademy.com/",
       "website_domain": "basepointacademy.com",
@@ -4941,7 +5331,9 @@
       "program_name": "Virtual IOP",
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "Virtual",
+      "virtual_available": true,
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Virtual",
@@ -4995,6 +5387,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/",
       "website": "https://connectionswellnessgroup.com/",
       "website_domain": "connectionswellnessgroup.com",
@@ -5026,6 +5422,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Forney",
@@ -5071,6 +5468,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/forney/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -5100,6 +5500,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "12+",
+      "age_min": 12,
       "locations": [
         {
           "city": "Rockwall",
@@ -5131,6 +5532,11 @@
           "See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "medicare"
+      ],
       "website_url": "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
       "website_domain": "texashealth.org",
       "service_domains": [
@@ -5160,6 +5566,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11+",
+      "age_min": 11,
       "locations": [
         {
           "city": "Rockwall",
@@ -5213,6 +5620,10 @@
           "Behavioral Health Systems"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://connectionswellnessgroup.com/locations/rockwall/",
       "website_domain": "connectionswellnessgroup.com",
       "service_domains": [
@@ -5242,6 +5653,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Sherman",
@@ -5270,6 +5683,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/sherman",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5298,6 +5716,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Mansfield",
@@ -5326,6 +5746,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/mansfield",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5354,6 +5779,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "8–17",
+      "age_min": 8,
+      "age_max": 17,
       "locations": [
         {
           "city": "Keller",
@@ -5382,6 +5809,11 @@
         ],
         "notes": "Location pages state in-network with most major insurance and Medicaid; call location to verify plan-specific benefits."
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/keller",
       "website_domain": "carruscarebehavioral.com",
       "service_domains": [
@@ -5410,6 +5842,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Arlington",
@@ -5453,6 +5887,9 @@
           "UMR"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/arlington/",
       "website_domain": "basepointacademy.com",
       "service_domains": [
@@ -5483,6 +5920,7 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
@@ -5530,6 +5968,7 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
@@ -5576,6 +6015,7 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone / In-community",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
@@ -5622,6 +6062,7 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Call or Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
@@ -5670,6 +6111,7 @@
       "level_of_care": "Mobile Crisis",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Multiple",
@@ -5716,6 +6158,7 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Call or Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
@@ -5762,6 +6205,7 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Phone / Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
@@ -5810,6 +6254,7 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "North Texas",
@@ -5858,6 +6303,7 @@
       "level_of_care": "Crisis Hotline",
       "service_setting": "Text",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "National",
@@ -6050,6 +6496,8 @@
       "level_of_care": "Walk-In Outpatient",
       "service_setting": "In-person",
       "ages_served": "Child & Adolescent services available (locations vary)",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas County",
@@ -6096,6 +6544,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "Children & adolescents",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
@@ -6146,6 +6596,8 @@
       "level_of_care": "Outpatient",
       "service_setting": "In-person",
       "ages_served": "Child & Adolescent",
+      "age_min": 0,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
@@ -6196,6 +6648,8 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "9–17",
+      "age_min": 9,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
@@ -6231,6 +6685,10 @@
         ],
         "notes": "Insurances accepted change frequently; use CFD insurance verification."
       },
+      "insurance_categories": [
+        "commercial",
+        "tricare"
+      ],
       "website_url": "https://www.centerfordiscovery.com/locations/plano/",
       "website_domain": "centerfordiscovery.com",
       "website": "https://www.centerfordiscovery.com/locations/plano/",
@@ -6257,6 +6715,7 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "10+",
+      "age_min": 10,
       "locations": [
         {
           "city": "Plano",
@@ -6307,6 +6766,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14-17",
+      "age_min": 14,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
@@ -6355,6 +6816,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13-17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Dallas",
@@ -6402,6 +6865,8 @@
       "level_of_care": "Outpatient",
       "service_setting": "In-person",
       "ages_served": "13–24",
+      "age_min": 13,
+      "age_max": 24,
       "locations": [
         {
           "city": "Dallas",
@@ -6450,6 +6915,8 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "14-18",
+      "age_min": 14,
+      "age_max": 18,
       "locations": [
         {
           "city": "Lewisville",
@@ -6498,6 +6965,7 @@
       "level_of_care": "Intensive Outpatient (IOP)",
       "service_setting": "In-person",
       "ages_served": "13+",
+      "age_min": 13,
       "locations": [
         {
           "city": "Plano",
@@ -6545,6 +7013,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11-17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "McKinney",
@@ -6577,6 +7047,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "website_domain": "carrolltonsprings.com",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
@@ -6605,6 +7078,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11-17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Frisco",
@@ -6637,6 +7112,9 @@
           "Most major insurance providers (in-network)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "website_domain": "carrolltonsprings.com",
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
@@ -6665,6 +7143,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Arlington",
@@ -6704,6 +7184,9 @@
           "Commercial (most major)"
         ]
       },
+      "insurance_categories": [
+        "commercial"
+      ],
       "website_url": "https://basepointacademy.com/locations/arlington/",
       "website_domain": "basepointacademy.com",
       "website": "https://basepointacademy.com/locations/arlington/",
@@ -6731,6 +7214,8 @@
       "level_of_care": "Partial Hospitalization (PHP)",
       "service_setting": "In-person",
       "ages_served": "12-17",
+      "age_min": 12,
+      "age_max": 17,
       "locations": [
         {
           "city": "Plano",
@@ -6759,6 +7244,11 @@
           "Military (TRICARE)"
         ]
       },
+      "insurance_categories": [
+        "commercial",
+        "medicaid_chip",
+        "tricare"
+      ],
       "website_url": "https://www.carruscarebehavioral.com/plano",
       "website_domain": "carruscarebehavioral.com",
       "verification_source_url": "https://www.carruscare.com/",
@@ -6787,6 +7277,8 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "11–17",
+      "age_min": 11,
+      "age_max": 17,
       "locations": [
         {
           "city": "Fort Worth",
@@ -6836,6 +7328,8 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13–17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Houston",
@@ -6884,6 +7378,8 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13-17",
+      "age_min": 13,
+      "age_max": 17,
       "locations": [
         {
           "city": "Canton",
@@ -6933,6 +7429,8 @@
       "level_of_care": "Residential",
       "service_setting": "In-person",
       "ages_served": "13–18",
+      "age_min": 13,
+      "age_max": 18,
       "locations": [
         {
           "city": "Fort Worth",
@@ -6990,6 +7488,7 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Fort Worth",
@@ -7039,6 +7538,7 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Fort Worth",
@@ -7089,6 +7589,7 @@
       "level_of_care": "Navigation",
       "service_setting": "Phone",
       "ages_served": "All ages",
+      "age_min": 0,
       "locations": [
         {
           "city": "Longview",

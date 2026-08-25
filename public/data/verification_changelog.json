@@ -1,10 +1,18 @@
 {
   "metadata": {
     "schema_version": 1,
-    "last_updated": "2026-05-25",
+    "last_updated": "2026-08-25",
     "purpose": "Human-readable log of directory verification waves. Not a per-patient or per-program audit trail; bulk events only."
   },
   "events": [
+    {
+      "date": "2026-08-25",
+      "scope": "links",
+      "programs_reviewed_count": 1,
+      "source": "Manual review of provider website",
+      "notes": "SPARC IOP (iop-childrens-sparc-dallas) website_url repointed from the generic 'who do I call' landing page to the program's own page. Link correction only; no verification date advanced.",
+      "source_run_id": "sparc-website-url-fix-2026-08-25"
+    },
     {
       "date": "2026-05-18",
       "scope": "full",

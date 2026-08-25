@@ -15,6 +15,7 @@ const rootDir = join(__dirname, '..');
 
 // Import shared validation schema
 let VALID_SERVICE_DOMAINS, REQUIRED_FIELDS, validateISODate, REVERIFICATION_THRESHOLD_DAYS;
+let INSURANCE_CATEGORIES, AGE_BOUND_MIN, AGE_BOUND_MAX;
 try {
   const schemaPath = join(rootDir, 'src', 'js', 'config', 'validation-schema.js');
   if (existsSync(schemaPath)) {
@@ -23,6 +24,9 @@ try {
     REQUIRED_FIELDS = schemaModule.PROGRAM_SCHEMA.required;
     validateISODate = schemaModule.validateISODate;
     REVERIFICATION_THRESHOLD_DAYS = schemaModule.REVERIFICATION_THRESHOLD_DAYS;
+    INSURANCE_CATEGORIES = schemaModule.INSURANCE_CATEGORIES;
+    AGE_BOUND_MIN = schemaModule.AGE_BOUND_MIN;
+    AGE_BOUND_MAX = schemaModule.AGE_BOUND_MAX;
   } else {
     throw new Error('Schema file not found');
   }
@@ -43,6 +47,9 @@ try {
     return !isNaN(date.getTime()) && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
   };
   REVERIFICATION_THRESHOLD_DAYS = 90;
+  INSURANCE_CATEGORIES = ['commercial', 'medicaid_chip', 'medicare', 'tricare', 'self_pay', 'sliding_scale'];
+  AGE_BOUND_MIN = 0;
+  AGE_BOUND_MAX = 30;
 }
 
 let errorCount = 0;
@@ -169,6 +176,46 @@ function validateProgram(program, index) {
       }
     }
   });
+
+  // ── Derived machine-queryable fields (scripts/populate-structured-fields.js) ──
+  // All three are optional. Absent never fails: an unparseable ages_served or an
+  // uncategorizable payer string is recorded by omitting the field, not by
+  // guessing a value, so "missing" is a legitimate state here.
+  const ageBound = (field) => {
+    const value = program[field];
+    if (value === undefined) return;
+    if (typeof value !== 'number' || !Number.isInteger(value)) {
+      error(`${field} must be an integer, got: ${JSON.stringify(value)}`, programId);
+      return;
+    }
+    if (value < AGE_BOUND_MIN || value > AGE_BOUND_MAX) {
+      error(`${field}=${value} is outside the sane range ${AGE_BOUND_MIN}-${AGE_BOUND_MAX}`, programId);
+    }
+  };
+  ageBound('age_min');
+  ageBound('age_max');
+  if (
+    typeof program.age_min === 'number' &&
+    typeof program.age_max === 'number' &&
+    program.age_min > program.age_max
+  ) {
+    error(`age_min (${program.age_min}) must be <= age_max (${program.age_max})`, programId);
+  }
+
+  if (program.insurance_categories !== undefined) {
+    if (!Array.isArray(program.insurance_categories)) {
+      error(`insurance_categories must be an array`, programId);
+    } else {
+      program.insurance_categories.forEach((cat, idx) => {
+        if (!INSURANCE_CATEGORIES.includes(cat)) {
+          error(
+            `insurance_categories[${idx}]="${cat}" is not in allowlist. Valid values: ${INSURANCE_CATEGORIES.join(', ')}`,
+            programId,
+          );
+        }
+      });
+    }
+  }
 
   // Validate level_of_care matches UI enum strings where applicable
   if (program.level_of_care) {
