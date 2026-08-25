@@ -100,6 +100,14 @@
       gap: 16px;
       margin-top: 16px;
     }
+    /* Visible breadcrumb above the program header. Same class/rule as the
+       landing pages (src/html/landing.html) so both trails render alike;
+       neither styles.css nor phase1-design.css defines .landing-crumbs, so
+       each page carries its own scoped copy. */
+    .landing-crumbs {
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
     @media (max-width: 768px) {
       .program-detail-grid {
         grid-template-columns: 1fr;
@@ -157,7 +165,7 @@
     </main>
   </div>
 
-  <script defer src="js/program-detail.js?v=5"></script>
+  <script defer src="js/program-detail.js?v=6"></script>
   
   <footer>
     <p style="margin: 0;">This directory is informational and does not provide clinical advice.</p>

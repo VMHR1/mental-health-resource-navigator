@@ -433,6 +433,40 @@ function renderProgramDetail(program) {
 
   root.replaceChildren();
 
+  // Visible breadcrumb, mirroring renderProgramCrumbsHtml() in
+  // scripts/render-program-detail.js. Same SEO_HUBS lookup that feeds the
+  // BreadcrumbList JSON-LD in injectSeoMeta() above, so the shell path
+  // (program.html?id=...) shows the same trail the prerendered
+  // dist/programs/{id}.html ships. Built with textContent, never innerHTML,
+  // so program names are inert.
+  const midCrumb = seoHubForCareLevel(safeStr(program.level_of_care))
+    || { path: '/directory', name: 'All programs' };
+
+  const crumbs = document.createElement('nav');
+  crumbs.className = 'landing-crumbs';
+  crumbs.setAttribute('aria-label', 'Breadcrumb');
+
+  const homeCrumb = document.createElement('a');
+  homeCrumb.href = '/';
+  homeCrumb.textContent = 'Home';
+
+  const hubCrumb = document.createElement('a');
+  hubCrumb.href = midCrumb.path;
+  hubCrumb.textContent = midCrumb.name;
+
+  const currentCrumb = document.createElement('span');
+  currentCrumb.setAttribute('aria-current', 'page');
+  currentCrumb.textContent = safeStr(program.program_name) || 'Program';
+
+  crumbs.append(
+    homeCrumb,
+    document.createTextNode(' › '),
+    hubCrumb,
+    document.createTextNode(' › '),
+    currentCrumb
+  );
+  root.appendChild(crumbs);
+
   const header = document.createElement('div');
   header.className = 'program-detail-header';
 
