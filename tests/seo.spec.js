@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
+import { execFileSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -272,6 +273,20 @@ test.describe('List-page ItemList JSON-LD (hubs + directory)', () => {
 
 test.describe('sitemap-pages.xml is generated from the page manifest', () => {
   test('lastmod values are not all one hardcoded date', () => {
+    // In a shallow clone (CI's default checkout) git log reports the tip
+    // commit date for every file, so date variety cannot be observed there.
+    // Full local checkouts and `npm run verify` still enforce it.
+    let shallow = 'false';
+    try {
+      shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+    } catch (_) {
+      /* not a git checkout at all — treat like shallow: variety unobservable */
+      shallow = 'true';
+    }
+    test.skip(shallow === 'true', 'shallow git clone: per-file commit dates unavailable');
     const xml = readFileSync(join(distDir, 'sitemap-pages.xml'), 'utf8');
     const lastmods = [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1]);
     expect(lastmods.length).toBe(20);
