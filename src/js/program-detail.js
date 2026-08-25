@@ -33,6 +33,159 @@ function getProgramIdFromLocation() {
   return '';
 }
 
+// ---------------------------------------------------------------------------
+// SEO metadata, mirroring scripts/render-program-detail.js
+//
+// This path only runs on the non-prerendered shell (program.html?id=...);
+// dist/programs/{id}.html ships the same tags baked in and the bootstrap below
+// returns early on data-prerendered="true". The two must still agree, or the
+// hydrated page would contradict the static one crawlers already indexed. Any
+// change here needs the same change in scripts/render-program-detail.js
+// (composeMetaDescription / renderProgramHead / buildBreadcrumbLd).
+// ---------------------------------------------------------------------------
+
+// Mirrors PSEUDO_LOCATION_CITIES in scripts/render-program-detail.js: cities
+// that stand in for "no street location" and must not become a PostalAddress.
+const SEO_PSEUDO_CITIES = ['Virtual', 'Multiple', 'National'];
+
+const SEO_MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** Mirrors bestLastVerified() in scripts/render-program-detail.js. */
+function seoBestLastVerified(program, safeStr) {
+  const candidates = [
+    safeStr(program.last_verified),
+    safeStr(program.accepted_insurance && program.accepted_insurance.last_verified),
+    safeStr(program.verification && program.verification.last_verified_at),
+  ].filter(Boolean);
+  for (const c of candidates) {
+    const d = new Date(c);
+    if (!Number.isNaN(d.getTime())) return c;
+  }
+  return '';
+}
+
+/** Mirrors formatVerifiedMonth(): "2026-05-18" -> "May 2026". */
+function seoFormatVerifiedMonth(dateStr) {
+  const m = /^(\d{4})-(\d{2})/.exec(dateStr || '');
+  if (!m) return '';
+  const monthIdx = Number(m[2]) - 1;
+  if (monthIdx < 0 || monthIdx > 11) return '';
+  return `${SEO_MONTH_NAMES[monthIdx]} ${m[1]}`;
+}
+
+/** Mirrors realLocations(). */
+function seoRealLocations(program, safeStr) {
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  return locs.filter((l) => {
+    const city = safeStr(l && l.city);
+    if (!city) return Boolean(safeStr(l && l.address));
+    return SEO_PSEUDO_CITIES.indexOf(city) === -1;
+  });
+}
+
+/** Mirrors insuranceCategories(). */
+function seoInsuranceCategories(program, safeStr) {
+  const types = (program.accepted_insurance && Array.isArray(program.accepted_insurance.types))
+    ? program.accepted_insurance.types
+    : [];
+  const out = [];
+  for (const raw of types) {
+    const cleaned = safeStr(raw).replace(/\s*\([^)]*\)/g, '').replace(/\s+plans$/i, '').trim();
+    if (cleaned && out.indexOf(cleaned) === -1) out.push(cleaned);
+  }
+  return out;
+}
+
+/** Mirrors placeClause(). */
+function seoPlaceClause(program, safeStr) {
+  const real = seoRealLocations(program, safeStr);
+  const first = real[0];
+  if (first) {
+    const city = safeStr(first.city);
+    const state = safeStr(first.state);
+    if (city && state) return `in ${city}, ${state}`;
+    if (city) return `in ${city}`;
+  }
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  const pseudoCities = locs.map((l) => safeStr(l && l.city));
+  const isVirtual = typeof window.hasVirtual === 'function' ? window.hasVirtual(program) : false;
+  if (pseudoCities.indexOf('Virtual') !== -1 || isVirtual) return 'online across Texas';
+  if (pseudoCities.indexOf('Multiple') !== -1) return 'across multiple Texas locations';
+  if (pseudoCities.indexOf('National') !== -1) return 'nationally';
+  return '';
+}
+
+/** Mirrors composeMetaDescription() in scripts/render-program-detail.js. */
+function seoComposeMetaDescription(program, safeStr) {
+  const TARGET_LEN = 160;
+  const HARD_CAP = 300;
+
+  const care = safeStr(program.level_of_care);
+  const lead = care || safeStr(program.program_name) || 'Youth mental health program';
+
+  const parts = [lead];
+  const org = safeStr(program.organization);
+  if (org) parts.push(`at ${org}`);
+  const ages = safeStr(program.ages_served);
+  if (ages && ages.toLowerCase() !== 'unknown') {
+    const phrase = /[A-Z]/.test(ages.slice(1)) ? ages : `${ages.charAt(0).toLowerCase()}${ages.slice(1)}`;
+    parts.push(/^\d/.test(ages) ? `for ages ${ages}` : `serving ${phrase}`);
+  }
+  const place = seoPlaceClause(program, safeStr);
+  if (place) parts.push(place);
+  const head = `${parts.join(' ')}.`;
+
+  const verifiedMonth = seoFormatVerifiedMonth(seoBestLastVerified(program, safeStr));
+  const tail = verifiedMonth ? ` Verified ${verifiedMonth}.` : '';
+
+  let insurance = '';
+  const categories = seoInsuranceCategories(program, safeStr);
+  if (categories.length) {
+    const budget = TARGET_LEN - head.length - tail.length;
+    const kept = [];
+    for (const c of categories) {
+      const candidate = ` Insurance: ${kept.concat([c]).join(', ')}.`;
+      if (candidate.length > budget) break;
+      kept.push(c);
+    }
+    if (kept.length) insurance = ` Insurance: ${kept.join(', ')}.`;
+  }
+
+  return `${head}${insurance}${tail}`.slice(0, HARD_CAP);
+}
+
+/** Mirrors composeDisambiguatedName() — used as the last breadcrumb's name. */
+function seoDisambiguatedName(program, safeStr) {
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  const tail = [safeStr(program.organization), safeStr(locs[0] && locs[0].city)].filter(Boolean).join(', ');
+  const parts = [safeStr(program.program_name)];
+  if (tail) parts.push(tail);
+  return parts.filter(Boolean).join(' — ');
+}
+
+/**
+ * Mirrors HUB_PAGES/hubForCareLevel in scripts/hub-config.js. Duplicated
+ * rather than imported because this file is a classic (non-module) script
+ * loaded by src/html/program.html and cannot import from scripts/.
+ */
+const SEO_HUBS = [
+  { path: '/php-programs', name: 'Partial Hospitalization (PHP) programs', levels: ['Partial Hospitalization (PHP)'] },
+  { path: '/iop-programs', name: 'Intensive Outpatient (IOP) programs', levels: ['Intensive Outpatient (IOP)'] },
+  { path: '/residential-programs', name: 'Residential programs', levels: ['Residential'] },
+  {
+    path: '/crisis-resources',
+    name: 'Crisis resources',
+    levels: ['Mobile Crisis', 'Crisis Hotline', 'Walk-In Crisis / Urgent', 'Psychiatric Triage'],
+  },
+];
+
+function seoHubForCareLevel(careLevel) {
+  return SEO_HUBS.find((h) => h.levels.indexOf(careLevel) !== -1) || null;
+}
+
 function injectSeoMeta(program) {
   const safeStr = window.safeStr || ((x) => (x ?? '').toString().trim());
   const pid = safeStr(program.program_id);
@@ -48,40 +201,47 @@ function injectSeoMeta(program) {
   }
   canon.href = pageUrl;
 
-  const desc = safeStr(program.insurance_notes || program.notes || program.level_of_care).slice(0, 300);
+  const desc = seoComposeMetaDescription(program, safeStr);
   let metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc && desc) metaDesc.setAttribute('content', `${safeStr(program.program_name)} — ${desc}`);
+  if (metaDesc && desc) metaDesc.setAttribute('content', desc);
 
   const ld = {
     '@context': 'https://schema.org',
-    '@type': 'MedicalOrganization',
+    '@type': 'MedicalClinic',
     name: safeStr(program.program_name) || undefined,
     url: pageUrl,
+    medicalSpecialty: 'Psychiatry',
   };
   const note = safeStr(program.insurance_notes || program.notes);
   if (note) ld.description = note.slice(0, 500);
+  const org = safeStr(program.organization);
+  if (org) ld.parentOrganization = { '@type': 'Organization', name: org };
   const phone = safeStr(program.phone);
   if (phone) ld.telephone = phone;
-  const locs = Array.isArray(program.locations) ? program.locations : [];
-  const addr = locs[0] || {};
-  if (addr && (safeStr(addr.address) || safeStr(addr.city))) {
-    ld.address = {
-      '@type': 'PostalAddress',
-      streetAddress: safeStr(addr.address) || undefined,
-      addressLocality: safeStr(addr.city) || undefined,
-      addressRegion: safeStr(addr.state) || undefined,
-      postalCode: safeStr(addr.zip) || undefined,
-    };
-  }
+
+  const addresses = seoRealLocations(program, safeStr)
+    .map((loc) => {
+      const addr = {
+        '@type': 'PostalAddress',
+        streetAddress: safeStr(loc.address) || undefined,
+        addressLocality: safeStr(loc.city) || undefined,
+        addressRegion: safeStr(loc.state) || undefined,
+        postalCode: safeStr(loc.zip) || undefined,
+      };
+      Object.keys(addr).forEach((k) => {
+        if (addr[k] === undefined) delete addr[k];
+      });
+      return addr;
+    })
+    .filter((a) => Object.keys(a).length > 1);
+  if (addresses.length) ld.address = addresses;
+
+  const lastVerified = seoBestLastVerified(program, safeStr);
+  if (lastVerified) ld.dateModified = lastVerified;
+
   Object.keys(ld).forEach((k) => {
     if (ld[k] === undefined) delete ld[k];
   });
-  if (ld.address) {
-    Object.keys(ld.address).forEach((k) => {
-      if (ld.address[k] === undefined) delete ld.address[k];
-    });
-    if (Object.keys(ld.address).length === 0) delete ld.address;
-  }
 
   let el = document.getElementById('program-jsonld');
   if (!el) {
@@ -91,6 +251,29 @@ function injectSeoMeta(program) {
     document.head.appendChild(el);
   }
   el.textContent = JSON.stringify(ld);
+
+  // Breadcrumbs go in their own block so each application/ld+json script stays
+  // a single object (scripts/validate-jsonld.js rejects a top-level array).
+  const hub = seoHubForCareLevel(safeStr(program.level_of_care));
+  const mid = hub || { path: '/directory', name: 'All programs' };
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${base}/` },
+      { '@type': 'ListItem', position: 2, name: mid.name, item: `${base}${mid.path}` },
+      { '@type': 'ListItem', position: 3, name: seoDisambiguatedName(program, safeStr), item: pageUrl },
+    ],
+  };
+
+  let crumbEl = document.getElementById('program-breadcrumb-jsonld');
+  if (!crumbEl) {
+    crumbEl = document.createElement('script');
+    crumbEl.type = 'application/ld+json';
+    crumbEl.id = 'program-breadcrumb-jsonld';
+    document.head.appendChild(crumbEl);
+  }
+  crumbEl.textContent = JSON.stringify(breadcrumbLd);
 }
 
 function findProgramById(programId) {

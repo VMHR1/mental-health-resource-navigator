@@ -24,6 +24,7 @@ import {
   newTabAccessibleLabel,
   programPublicPath,
 } from '../src/js/utils/helpers.js';
+import { hubForCareLevel, DIRECTORY_PAGE } from './hub-config.js';
 
 const SITE_BASE = 'https://viablemhr.com';
 
@@ -131,9 +132,193 @@ function composeDisambiguatedName(program) {
 }
 
 /**
+ * Cities that are placeholders for "no street location", not real localities.
+ * `public/data/programs.json` uses `Virtual` (5 rows), `Multiple` (5 rows) and
+ * `National` (3 rows) this way, always with empty `address`/`zip` — verified
+ * with a scan of the file. Emitting them as schema.org PostalAddress
+ * addressLocality would assert a city that does not exist, so they are skipped
+ * for structured data and rendered as prose in the meta description instead.
+ */
+const PSEUDO_LOCATION_CITIES = new Set(['Virtual', 'Multiple', 'National']);
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/**
+ * "2026-05-18" -> "May 2026". Parsed off the string rather than through
+ * `new Date()` so a UTC-midnight timestamp cannot roll back to the previous
+ * month when the build runs in America/Chicago.
+ */
+export function formatVerifiedMonth(dateStr) {
+  const s = safeStr(dateStr);
+  const m = /^(\d{4})-(\d{2})/.exec(s);
+  if (!m) return '';
+  const monthIdx = Number(m[2]) - 1;
+  if (monthIdx < 0 || monthIdx > 11) return '';
+  return `${MONTH_NAMES[monthIdx]} ${m[1]}`;
+}
+
+/** Real (non-pseudo) locations, i.e. the ones that can become a PostalAddress. */
+function realLocations(program) {
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  return locs.filter((l) => {
+    const city = safeStr(l && l.city);
+    if (!city) return Boolean(safeStr(l && l.address));
+    return !PSEUDO_LOCATION_CITIES.has(city);
+  });
+}
+
+/**
+ * Short, human-readable insurance categories for the meta description.
+ *
+ * Deliberately NOT `insurance_notes`, which is a pipe-delimited operator note
+ * ("Plans: ... | Types: ... | ...") that reads as machine output in a search
+ * snippet. `accepted_insurance.types` is the structured field behind it; the
+ * parenthetical qualifiers ("(many)", "(varies by plan/service area)") are
+ * stripped because they cannot be defended inside a 160-character snippet, and
+ * the result is deduped since several rows normalize to the same category.
+ * 29 of 112 programs have no `types` — those simply get no insurance clause.
+ */
+export function insuranceCategories(program) {
+  const types = (program.accepted_insurance && Array.isArray(program.accepted_insurance.types))
+    ? program.accepted_insurance.types
+    : [];
+  const out = [];
+  for (const raw of types) {
+    const cleaned = safeStr(raw)
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/\s+plans$/i, '')
+      .trim();
+    if (cleaned && !out.includes(cleaned)) out.push(cleaned);
+  }
+  return out;
+}
+
+/** Where the program is, in prose, for the meta description. */
+function placeClause(program) {
+  const real = realLocations(program);
+  const first = real[0];
+  if (first) {
+    const city = safeStr(first.city);
+    const state = safeStr(first.state);
+    if (city && state) return `in ${city}, ${state}`;
+    if (city) return `in ${city}`;
+  }
+  const locs = Array.isArray(program.locations) ? program.locations : [];
+  const pseudoCities = locs.map((l) => safeStr(l && l.city));
+  if (pseudoCities.includes('Virtual') || hasVirtual(program)) return 'online across Texas';
+  if (pseudoCities.includes('Multiple')) return 'across multiple Texas locations';
+  if (pseudoCities.includes('National')) return 'nationally';
+  return '';
+}
+
+/**
+ * Meta description built from the facts a family matches on — level of care,
+ * ages served, city — then a short insurance summary, closing with the
+ * verification month. Replaces the previous
+ * `${name} — ${insurance_notes.slice(0,300)}`, which spent the whole snippet
+ * on pipe-delimited operator notes and buried the match facts.
+ *
+ * `TARGET_LEN` (160) is the length Google typically renders before truncating;
+ * the insurance clause is the only elastic part, so it is trimmed category by
+ * category to fit and dropped entirely if even one category will not. The
+ * "Verified {Month YYYY}" tail is never sacrificed — it is the differentiator.
+ * `HARD_CAP` (300) is a last-resort clamp; nothing in the current data comes
+ * near it.
+ */
+export function composeMetaDescription(program) {
+  const TARGET_LEN = 160;
+  const HARD_CAP = 300;
+
+  const care = safeStr(program.level_of_care);
+  const lead = care || safeStr(program.program_name) || 'Youth mental health program';
+
+  const parts = [lead];
+  // The organization is what makes the sentence specific: without it the five
+  // "Mobile Crisis / all ages / multiple Texas locations" rows share one
+  // description verbatim, which is exactly the duplicate-snippet problem the
+  // old `${disambiguatedName} — ...` form avoided. Care level still leads.
+  const org = safeStr(program.organization);
+  if (org) parts.push(`at ${org}`);
+  const ages = safeStr(program.ages_served);
+  if (ages && ages.toLowerCase() !== 'unknown') {
+    // "13-17" -> "for ages 13-17"; "All ages" -> "serving all ages". Prefixing
+    // a non-numeric value with "for ages" produces "for ages All ages". The
+    // leading capital is only dropped when the rest of the value has no other
+    // capitals, so a title-cased value ("Child & Adolescent") is left alone
+    // rather than becoming "child & Adolescent".
+    const phrase = /[A-Z]/.test(ages.slice(1)) ? ages : `${ages.charAt(0).toLowerCase()}${ages.slice(1)}`;
+    parts.push(/^\d/.test(ages) ? `for ages ${ages}` : `serving ${phrase}`);
+  }
+  const place = placeClause(program);
+  if (place) parts.push(place);
+  const head = `${parts.join(' ')}.`;
+
+  const verifiedMonth = formatVerifiedMonth(bestLastVerified(program));
+  const tail = verifiedMonth ? ` Verified ${verifiedMonth}.` : '';
+
+  let insurance = '';
+  const categories = insuranceCategories(program);
+  if (categories.length) {
+    const budget = TARGET_LEN - head.length - tail.length;
+    const kept = [];
+    for (const c of categories) {
+      const candidate = ` Insurance: ${[...kept, c].join(', ')}.`;
+      if (candidate.length > budget) break;
+      kept.push(c);
+    }
+    if (kept.length) insurance = ` Insurance: ${kept.join(', ')}.`;
+  }
+
+  return `${head}${insurance}${tail}`.slice(0, HARD_CAP);
+}
+
+/** schema.org PostalAddress for one real location, with empty fields dropped. */
+function postalAddress(loc) {
+  const addr = {
+    '@type': 'PostalAddress',
+    streetAddress: safeStr(loc.address) || undefined,
+    addressLocality: safeStr(loc.city) || undefined,
+    addressRegion: safeStr(loc.state) || undefined,
+    postalCode: safeStr(loc.zip) || undefined,
+  };
+  Object.keys(addr).forEach((k) => {
+    if (addr[k] === undefined) delete addr[k];
+  });
+  return addr;
+}
+
+/**
+ * BreadcrumbList for a program page: Home -> the hub that lists this level of
+ * care (or /directory when the level of care has no hub) -> this program.
+ * Emitted as its own <script> block rather than joined with the program object
+ * into an array, because scripts/validate-jsonld.js rejects a top-level array.
+ */
+export function buildBreadcrumbLd(program, pageUrl, programCrumbName) {
+  const hub = hubForCareLevel(safeStr(program.level_of_care));
+  const mid = hub || DIRECTORY_PAGE;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE}/` },
+      { '@type': 'ListItem', position: 2, name: mid.breadcrumbName, item: `${SITE_BASE}${mid.path}` },
+      { '@type': 'ListItem', position: 3, name: programCrumbName, item: pageUrl },
+    ],
+  };
+}
+
+/** JSON.stringify with `<` escaped so no data value can close the script tag. */
+function jsonLdText(obj) {
+  return JSON.stringify(obj).replace(/</g, '\\u003c');
+}
+
+/**
  * Renders the unique per-program <head> fragment: title, meta description,
- * canonical, og:title/og:description/og:url, and JSON-LD (MedicalOrganization).
- * Field-mapping ported verbatim from injectSeoMeta (src/js/program-detail.js:36-93).
+ * canonical, og:title/og:description/og:url, and two JSON-LD blocks
+ * (MedicalClinic + BreadcrumbList).
  */
 export function renderProgramHead(program) {
   const pid = safeStr(program.program_id);
@@ -142,42 +327,39 @@ export function renderProgramHead(program) {
   const disambiguatedName = composeDisambiguatedName(program);
   const title = `${escapeHtml(disambiguatedName)} • ViableMHR`;
 
-  const descRaw = safeStr(program.insurance_notes || program.notes || program.level_of_care).slice(0, 300);
-  const metaDescription = descRaw ? `${disambiguatedName} — ${descRaw}` : disambiguatedName;
+  const metaDescription = composeMetaDescription(program);
   const metaDescriptionEsc = escapeHtml(metaDescription);
 
   const ld = {
     '@context': 'https://schema.org',
-    '@type': 'MedicalOrganization',
+    '@type': 'MedicalClinic',
     name: name || undefined,
     url: pageUrl,
+    medicalSpecialty: 'Psychiatry',
   };
   const note = safeStr(program.insurance_notes || program.notes);
   if (note) ld.description = note.slice(0, 500);
+  const org = safeStr(program.organization);
+  if (org) ld.parentOrganization = { '@type': 'Organization', name: org };
   const phone = safeStr(program.phone);
   if (phone) ld.telephone = phone;
-  const locs = Array.isArray(program.locations) ? program.locations : [];
-  const addr = locs[0] || {};
-  if (addr && (safeStr(addr.address) || safeStr(addr.city))) {
-    ld.address = {
-      '@type': 'PostalAddress',
-      streetAddress: safeStr(addr.address) || undefined,
-      addressLocality: safeStr(addr.city) || undefined,
-      addressRegion: safeStr(addr.state) || undefined,
-      postalCode: safeStr(addr.zip) || undefined,
-    };
-  }
+
+  // Every real location, not just locations[0] — a multi-site program was
+  // previously advertising only its first address to crawlers.
+  const addresses = realLocations(program)
+    .map(postalAddress)
+    .filter((a) => Object.keys(a).length > 1);
+  if (addresses.length) ld.address = addresses;
+
+  const lastVerified = bestLastVerified(program);
+  if (lastVerified) ld.dateModified = lastVerified;
+
   Object.keys(ld).forEach((k) => {
     if (ld[k] === undefined) delete ld[k];
   });
-  if (ld.address) {
-    Object.keys(ld.address).forEach((k) => {
-      if (ld.address[k] === undefined) delete ld.address[k];
-    });
-    if (Object.keys(ld.address).length === 0) delete ld.address;
-  }
 
-  const jsonLd = JSON.stringify(ld).replace(/</g, '\\u003c');
+  const jsonLd = jsonLdText(ld);
+  const breadcrumbLd = jsonLdText(buildBreadcrumbLd(program, pageUrl, disambiguatedName));
 
   // pageUrl is code-built (SITE_BASE + encodeURIComponent(pid)) from a program_id
   // already gated by /^[a-z0-9_-]+$/i in generate-program-pages.js, not
@@ -193,6 +375,7 @@ export function renderProgramHead(program) {
     headHtml: [
       `<link rel="canonical" href="${pageUrl}">`,
       `<script type="application/ld+json" id="program-jsonld">${jsonLd}</script>`,
+      `<script type="application/ld+json" id="program-breadcrumb-jsonld">${breadcrumbLd}</script>`,
     ].join('\n  '),
   };
 }

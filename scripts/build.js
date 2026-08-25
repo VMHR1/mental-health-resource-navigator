@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { applyCspToHtml } from './csp-config.js';
+import { buildPages } from './page-manifest.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,32 +43,10 @@ function copyStaticAssets() {
   try {
     // HTML files from src/html
     const includeAdmin = process.env.INCLUDE_ADMIN === '1';
-    const htmlFiles = [
-      { src: 'src/html/index.html', dest: 'index.html', csp: 'standard' },
-      ...(includeAdmin ? [{ src: 'src/html/admin.html', dest: 'admin.html', csp: 'admin' }] : []),
-      { src: 'src/html/program.html', dest: 'program.html', csp: 'eval' },
-      { src: 'src/html/submit.html', dest: 'submit.html', csp: 'submit' },
-      { src: 'src/html/guides.html', dest: 'guides.html', csp: 'standard' },
-      { src: 'src/html/guide-how-to-search.html', dest: 'guide-how-to-search.html', csp: 'standard' },
-      { src: 'src/html/guide-levels-of-care.html', dest: 'guide-levels-of-care.html', csp: 'standard' },
-      { src: 'src/html/guide-what-to-ask.html', dest: 'guide-what-to-ask.html', csp: 'standard' },
-      { src: 'src/html/directory.html', dest: 'directory.html', csp: 'standard' },
-      { src: 'src/html/php-programs.html', dest: 'php-programs.html', csp: 'standard' },
-      { src: 'src/html/iop-programs.html', dest: 'iop-programs.html', csp: 'standard' },
-      { src: 'src/html/residential-programs.html', dest: 'residential-programs.html', csp: 'standard' },
-      { src: 'src/html/crisis-resources.html', dest: 'crisis-resources.html', csp: 'standard' },
-      { src: 'src/html/about.html', dest: 'about.html', csp: 'eval' },
-      { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval' },
-      { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval' },
-      { src: 'src/html/professionals.html', dest: 'professionals.html', csp: 'standard' },
-      { src: 'src/html/boards.html', dest: 'boards.html', csp: 'standard' },
-      { src: 'src/html/report-outdated.html', dest: 'report-outdated.html', csp: 'standard' },
-      { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html', csp: 'standard' },
-      { src: 'src/html/changelog.html', dest: 'changelog.html', csp: 'standard' },
-      { src: 'src/html/export.html', dest: 'export.html', csp: 'standard' },
-      { src: 'src/html/handoff.html', dest: 'handoff.html', csp: 'standard' },
-      { src: 'src/html/404.html', dest: '404.html', csp: 'standard' }
-    ];
+    // The page list lives in scripts/page-manifest.js so the sitemap generator
+    // (scripts/generate-program-pages.js) derives dist/sitemap-pages.xml from the
+    // same list of pages this loop actually copies.
+    const htmlFiles = buildPages(includeAdmin);
     if (!includeAdmin) {
       const adminDist = join('dist', 'admin.html');
       if (existsSync(adminDist)) {
@@ -89,7 +68,8 @@ function copyStaticAssets() {
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
-      { src: 'public/sitemap-pages.xml', dest: 'sitemap-pages.xml' },
+      // sitemap-pages.xml is NOT copied: scripts/generate-program-pages.js
+      // generates dist/sitemap-pages.xml from scripts/page-manifest.js.
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
       // Keep dist/data in sync for any legacy paths or tooling that reference it
