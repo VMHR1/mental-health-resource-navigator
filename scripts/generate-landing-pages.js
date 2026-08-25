@@ -525,6 +525,10 @@ const KNOWN_OG_TITLE = '<meta property="og:title" content="Landing page template
 const KNOWN_OG_DESCRIPTION =
   '<meta property="og:description" content="Build-time template for ViableMHR programmatic landing pages.">';
 const KNOWN_OG_URL = '<meta property="og:url" content="https://viablemhr.com/landing">';
+// Link-preview markup only; mirrors og:title / og:description.
+const KNOWN_TWITTER_TITLE = '<meta name="twitter:title" content="Landing page template • ViableMHR">';
+const KNOWN_TWITTER_DESCRIPTION =
+  '<meta name="twitter:description" content="Build-time template for ViableMHR programmatic landing pages.">';
 
 const MARKERS = {
   listJsonLd: '<!--vmhr-list-jsonld-->',
@@ -594,6 +598,18 @@ export function renderLandingPage(templateSource, page, allPages, buildItemList)
     KNOWN_OG_URL,
     `<meta property="og:url" content="${page.url}">`,
     'the og:url tag'
+  );
+  html = mustReplace(
+    html,
+    KNOWN_TWITTER_TITLE,
+    `<meta name="twitter:title" content="${escapeHtml(titleTag)}">`,
+    'the twitter:title tag'
+  );
+  html = mustReplace(
+    html,
+    KNOWN_TWITTER_DESCRIPTION,
+    `<meta name="twitter:description" content="${escapeHtml(page.description)}">`,
+    'the twitter:description tag'
   );
 
   html = mustReplace(

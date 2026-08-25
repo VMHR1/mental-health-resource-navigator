@@ -186,6 +186,21 @@ function seoHubForCareLevel(careLevel) {
   return SEO_HUBS.find((h) => h.levels.indexOf(careLevel) !== -1) || null;
 }
 
+/**
+ * Sets (creating if absent) a `<meta>` tag identified by `attr` ("property" for
+ * Open Graph, "name" for twitter:*) and `key`.
+ */
+function setMetaContent(attr, key, value) {
+  if (!value) return;
+  let el = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', value);
+}
+
 function injectSeoMeta(program) {
   const safeStr = window.safeStr || ((x) => (x ?? '').toString().trim());
   const pid = safeStr(program.program_id);
@@ -204,6 +219,20 @@ function injectSeoMeta(program) {
   const desc = seoComposeMetaDescription(program, safeStr);
   let metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc && desc) metaDesc.setAttribute('content', desc);
+
+  // Social/link-preview metadata. The static shell (src/html/program.html)
+  // ships the generic template values, so without this a shared /program.html
+  // URL previews as "Program Details • ViableMHR" for every program.
+  // og:url is set to the same pageUrl as the canonical above — tests/seo.spec.js
+  // asserts og:url === canonical on every page.
+  const seoTitle = `${seoDisambiguatedName(program, safeStr)} • ViableMHR`;
+  setMetaContent('property', 'og:title', seoTitle);
+  setMetaContent('property', 'og:url', pageUrl);
+  setMetaContent('name', 'twitter:title', seoTitle);
+  if (desc) {
+    setMetaContent('property', 'og:description', desc);
+    setMetaContent('name', 'twitter:description', desc);
+  }
 
   const ld = {
     '@context': 'https://schema.org',
