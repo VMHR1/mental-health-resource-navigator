@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-08-25T19:59:29.181Z",
+    "generatedAt": "2026-08-31T17:48:51.775Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,14 +15,14 @@
       "missing_website_url": 0
     },
     "last_full_verification": "2026-05-18",
-    "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-08-25T19:59:29.181Z",
+    "last_directory_review_notes": "Automated wave 0 audit 2026-08-31 (112 of 112 programs). See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-08-31T17:48:51.775Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
     "last_spot_check_fix_notes": "May 2026: Bricolage domain correction, BasePoint location URLs, Unity insurance re-check.",
-    "audit_verified": 74,
-    "audit_partially_verified": 38,
+    "audit_verified": 84,
+    "audit_partially_verified": 28,
     "audit_unable_to_verify": 0,
     "audit_conflicting": 0,
     "last_internet_verification": "2026-05-18",
@@ -31,7 +31,9 @@
     "last_patch_applied": "2026-08-25",
     "last_patch_run_id": "sparc-website-url-fix-2026-08-25",
     "last_patch_notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
-    "last_patch_programs": 1
+    "last_patch_programs": 1,
+    "last_wave_verification": "2026-08-31",
+    "last_wave_verified": 0
   },
   "programs": [
     {
