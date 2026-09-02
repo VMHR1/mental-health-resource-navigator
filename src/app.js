@@ -2,6 +2,11 @@ import {
   state, stateManager, syncStateFromManager, syncStateToManager,
   loadEncryptedDataFn, saveEncryptedDataFn, URL_FILTER_PARAM_KEYS, STORAGE_KEYS_COMPARISON,
 } from './js/app/state.js?v=1';
+import { setRenderImpl } from './js/app/render-hook.js?v=1';
+
+// render() is a hoisted function declaration below; register it with the
+// late-binding seam here so it is bound before any DOM event can fire.
+setRenderImpl(render);
 
 // ========== Security ==========
 // Load security module (encryption, validation, etc.)
