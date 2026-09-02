@@ -409,15 +409,18 @@ document.addEventListener('click', (e) => {
     }
     // Also check the href attribute directly
     const hrefAttr = link.getAttribute('href');
-    if (hrefAttr && (hrefAttr === 'privacy.html' || hrefAttr === 'terms.html' || 
-        hrefAttr.includes('privacy.html') || hrefAttr.includes('terms.html'))) {
+    if (hrefAttr && (hrefAttr === 'privacy.html' || hrefAttr === 'terms.html' ||
+        hrefAttr.includes('privacy.html') || hrefAttr.includes('terms.html') ||
+        hrefAttr === '/privacy' || hrefAttr === '/terms' ||
+        hrefAttr.startsWith('/privacy#') || hrefAttr.startsWith('/terms#'))) {
       // Allow normal navigation for privacy/terms links - don't prevent default
       return;
     }
     // Also check the resolved href pathname as fallback
     try {
       const linkUrl = new URL(link.href);
-      if (linkUrl.pathname.endsWith('privacy.html') || linkUrl.pathname.endsWith('terms.html')) {
+      if (linkUrl.pathname.endsWith('privacy.html') || linkUrl.pathname.endsWith('terms.html') ||
+          linkUrl.pathname === '/privacy' || linkUrl.pathname === '/terms') {
         return;
       }
     } catch (e) {

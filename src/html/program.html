@@ -14,24 +14,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=11">
-  <link rel="stylesheet" href="phase1-design.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="phase1-design.css?v=19">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Program Details • ViableMHR">
   <meta property="og:description" content="Detailed information about a Texas youth mental health program on ViableMHR.">
   <meta property="og:url" content="https://viablemhr.com/program.html">
-  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
+  <meta property="og:image" content="https://viablemhr.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
-  
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Per-program title/description preview tags come from the vmhr-program-head marker below. -->
+  <meta name="twitter:image" content="https://viablemhr.com/og-image.png">
+  <meta name="twitter:image:alt" content="ViableMHR — Texas youth mental health resources">
+  <!--vmhr-program-head-->
+
   <!-- Icons -->
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
   
   <script defer src="security.js?v=2"></script>
-  <script type="module" src="js/data-validator.js?v=3"></script>
-  <script type="module" src="js/config/constants.js?v=4"></script>
-  <script type="module" src="js/utils/helpers.js?v=5"></script>
+  <script type="module" src="js/data-validator.js?v=4"></script>
+  <script type="module" src="js/config/constants.js?v=5"></script>
+  <script type="module" src="js/utils/helpers.js?v=6"></script>
   <script type="module" src="js/modules/storage.js?v=3"></script>
   <script type="module" src="js/modules/search.js?v=14"></script>
   <script type="module" src="js/state-manager.js?v=3"></script>
@@ -99,6 +106,14 @@
       gap: 16px;
       margin-top: 16px;
     }
+    /* Visible breadcrumb above the program header. Same class/rule as the
+       landing pages (src/html/landing.html) so both trails render alike;
+       neither styles.css nor phase1-design.css defines .landing-crumbs, so
+       each page carries its own scoped copy. */
+    .landing-crumbs {
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
     @media (max-width: 768px) {
       .program-detail-grid {
         grid-template-columns: 1fr;
@@ -139,33 +154,35 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike btn-primary" href="index.html">← Back to Search</a>
+          <a class="btnlike btn-primary" href="/">← Back to Search</a>
         </div>
       </div>
     </header>
 
     <main id="main">
     <div id="programDetail" class="program-detail-container">
+      <!--vmhr-program-body-start-->
       <div class="empty-state">
         <div class="empty-icon" aria-hidden="true">⏳</div>
         <h1>Loading program details...</h1>
       </div>
+      <!--vmhr-program-body-end-->
     </div>
     </main>
   </div>
 
-  <script defer src="js/program-detail.js?v=3"></script>
+  <script defer src="js/program-detail.js?v=7"></script>
   
   <footer>
     <p style="margin: 0;">This directory is informational and does not provide clinical advice.</p>
     <p style="margin-top: 12px; font-size: 13px;">
-      <a href="about.html">About</a>
+      <a href="/about">About</a>
       <span aria-hidden="true"> • </span>
-      <a href="guides.html">Guides</a>
+      <a href="/guides">Guides</a>
       <span aria-hidden="true"> • </span>
-      <a href="privacy.html">Privacy Policy</a>
+      <a href="/privacy">Privacy Policy</a>
       <span aria-hidden="true"> • </span>
-      <a href="terms.html">Terms of Service</a>
+      <a href="/terms">Terms of Service</a>
     </p>
   </footer>
 

@@ -12,7 +12,7 @@
 1. **`index.html`** (Main Search Interface)
    - **Scripts loaded (in order)**:
      - `security.js?v=2` (defer)
-     - `js/data-validator.js?v=3` (defer)
+     - `js/data-validator.js?v=4` (type="module"; imports `js/config/validation-schema.js?v=1`)
      - `js/config/constants.js?v=3` (defer)
      - `js/utils/helpers.js?v=3` (defer)
      - `js/modules/storage.js?v=3` (defer)
@@ -99,10 +99,11 @@
   - `checkDataFreshness(programs, thresholdDays)` - 90-day reverification check
   - `normalizeCityName(city)` - City name normalization
   - `normalizePhoneNumber(phone)` - Phone normalization
-- **Schema Source**: `js/config/validation-schema.js` (exported) or inline fallback
+- **Schema Source**: `js/config/validation-schema.js`, imported directly (the inline fallback was removed — it was the only schema that ever ran, since no page loaded validation-schema.js)
 - **Constants**:
   - `PROGRAM_SCHEMA` - Required/optional fields, types
   - `VALID_SERVICE_DOMAINS` - mental_health, substance_use, co_occurring, eating_disorders
+  - `VALID_VERIFICATION_STATUSES` - verified, partially_verified, unable_to_verify, conflicting_information
   - `REVERIFICATION_THRESHOLD_DAYS` - 90 days
 - **Usage**: Called during data load in `app.js`, validation scripts
 

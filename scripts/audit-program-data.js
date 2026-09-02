@@ -5,7 +5,7 @@
  */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
@@ -15,16 +15,28 @@ const DRY_RUN = process.argv.includes('--dry-run');
 
 const PROGRAMS_PATH = join(rootDir, 'public', 'data', 'programs.json');
 const REPORT_PATH = join(rootDir, 'scripts', 'data-audit-summary.json');
+// Audit reports are gitignored, so failure history needs its own committed file
+// to survive between runs — without it the two-strikes rule below has no memory.
+const URL_HEALTH_PATH = join(rootDir, 'scripts', 'state', 'url-health.json');
 const URL_REGEX = /https?:\/\/[^\s)\]"'<>]+/gi;
 const TIMEOUT_MS = 20000;
 const CONCURRENCY = 6;
 
-const VALID_STATUSES = new Set([
-  'verified',
-  'partially_verified',
-  'unable_to_verify',
-  'conflicting_information',
-]);
+// A transient outage should not be able to rewrite the directory's verification
+// status. Two defences: retry inside a run, and require failures in two
+// consecutive runs before a program is flipped to unable_to_verify.
+const FETCH_ATTEMPTS = 2;
+const RETRY_BASE_MS = 1500;
+const RETRY_JITTER_MS = 750;
+const STRIKES_BEFORE_DOWN = 2;
+
+// Was a local copy of this list, declared and never read. It is now the shared
+// allowlist and it is actually enforced below, so a typo in a classifier branch
+// fails the run instead of writing a bogus status onto every record it touches.
+const { VALID_VERIFICATION_STATUSES } = await import(
+  pathToFileURL(join(rootDir, 'src', 'js', 'config', 'validation-schema.js')).href
+);
+const VALID_STATUSES = new Set(VALID_VERIFICATION_STATUSES);
 
 const UA = {
   'User-Agent':
@@ -64,9 +76,9 @@ function collectSourceUrls(program) {
 
 const urlCache = new Map();
 
-async function fetchUrl(url, allowAlt = true) {
-  if (urlCache.has(url)) return urlCache.get(url);
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function attemptFetch(url) {
   const result = {
     url,
     ok: false,
@@ -76,6 +88,7 @@ async function fetchUrl(url, allowAlt = true) {
     error: null,
     note: null,
     botBlocked: false,
+    attempts: 1,
   };
 
   try {
@@ -95,20 +108,45 @@ async function fetchUrl(url, allowAlt = true) {
       result.html = (await res.text()).slice(0, 500000);
     }
     result.ok = res.status >= 200 && res.status < 400;
-    if (res.status === 403) {
+
+    // 403/429 mean "we were refused", not "the page is fine". They used to be
+    // coerced to ok with no marker, so a site that blocks bots read as a healthy
+    // verification. They are now bot_blocked: not counted as a broken link, not
+    // counted as a successful verification, and routed to the manual queue.
+    if (res.status === 403 || res.status === 429) {
       result.botBlocked = true;
-      result.ok = true;
-      result.note = '403 bot protection';
-    }
-    if (res.status === 429) {
-      result.ok = true;
-      result.note = '429 rate limited';
+      result.ok = false;
+      result.note = res.status === 403 ? '403 bot protection' : '429 rate limited';
     }
   } catch (e) {
     result.error = e.name === 'AbortError' ? 'timeout' : e.message;
   }
 
-  if (!result.ok && allowAlt) {
+  return result;
+}
+
+// Retry only what can plausibly succeed on a second try. A 404 is an answer;
+// a timeout, a connection error, a 5xx or a rate-limit is noise.
+function isTransient(result) {
+  if (result.ok) return false;
+  if (result.error) return true;
+  if (result.status === 429) return true;
+  return typeof result.status === 'number' && result.status >= 500;
+}
+
+async function fetchUrl(url, allowAlt = true) {
+  if (urlCache.has(url)) return urlCache.get(url);
+
+  let result = await attemptFetch(url);
+  for (let attempt = 2; attempt <= FETCH_ATTEMPTS && isTransient(result); attempt++) {
+    // Jitter so a whole wave of URLs on one host does not retry in lockstep.
+    await sleep(RETRY_BASE_MS * (attempt - 1) + Math.floor(Math.random() * RETRY_JITTER_MS));
+    const retry = await attemptFetch(url);
+    retry.attempts = attempt;
+    result = retry;
+  }
+
+  if (!result.ok && !result.botBlocked && allowAlt) {
     const alt = url.includes('://www.')
       ? url.replace('://www.', '://')
       : url.replace('://', '://www.');
@@ -166,11 +204,30 @@ function insuranceNeedsCall(program) {
   );
 }
 
+// Failure history carried between runs. Only URLs whose most recent check failed
+// are kept; a URL is dropped the moment it succeeds again.
+const priorHealth = existsSync(URL_HEALTH_PATH)
+  ? JSON.parse(readFileSync(URL_HEALTH_PATH, 'utf8'))
+  : { urls: {} };
+const priorUrls = priorHealth.urls || {};
+const nextHealthUrls = {};
+const checkedUrls = new Set();
+
+function strikesFor(url, result) {
+  if (result.ok) return 0;
+  return (priorUrls[url]?.consecutive_failures || 0) + 1;
+}
+
 function classifyProgram(program, urlResults, signals) {
   const issues = [];
-  const urlIssues = urlResults.filter((r) => !r.ok);
-  if (urlIssues.length > 0) {
-    issues.push(`broken_urls:${urlIssues.map((u) => u.url).join(',')}`);
+  // A URL that is down for the first time is a warning, not a verdict. Only a
+  // URL that also failed the previous run is treated as genuinely broken.
+  const urlIssues = urlResults.filter((r) => !r.ok && !r.botBlocked);
+  const confirmedDown = urlIssues.filter((r) => r.strikes >= STRIKES_BEFORE_DOWN);
+  const firstStrike = urlIssues.filter((r) => r.strikes < STRIKES_BEFORE_DOWN);
+  const blocked = urlResults.filter((r) => r.botBlocked);
+  if (confirmedDown.length > 0) {
+    issues.push(`broken_urls:${confirmedDown.map((u) => u.url).join(',')}`);
   }
 
   const websiteHost = program.website_url ? host(program.website_url) : null;
@@ -187,14 +244,46 @@ function classifyProgram(program, urlResults, signals) {
     issues.push('hostname_mismatch');
   }
 
-  const botBlocked = urlResults.some((r) => r.botBlocked);
+  const botBlocked = blocked.length > 0;
   const thinHtml = urlResults.some((r) => r.ok && (!r.html || r.html.length < 500));
 
   if (issues.some((i) => i.startsWith('broken_urls'))) {
     return {
       status: 'unable_to_verify',
-      notes: `Could not reach source URL(s). ${issues.join('; ')}`,
+      notes:
+        `Could not reach source URL(s) in ${STRIKES_BEFORE_DOWN} consecutive runs. ${issues.join('; ')}`,
       needsManual: true,
+      manualReasons: ['source_url_down_two_consecutive_runs'],
+    };
+  }
+
+  // Held cases: this run learned nothing about the program, so it must not
+  // overwrite what the last successful run established. The caller keeps the
+  // prior status and prior last_verified and records why.
+  if (firstStrike.length > 0) {
+    return {
+      status: 'partially_verified',
+      notes:
+        `Source URL(s) failed this run only (strike 1 of ${STRIKES_BEFORE_DOWN}): ` +
+        `${firstStrike.map((u) => `${u.url} (${u.status || u.error})`).join('; ')}. ` +
+        'Prior verification held pending the next run.',
+      needsManual: true,
+      manualReasons: ['url_failed_single_run'],
+      hold: true,
+      holdReason: 'url_failed_single_run',
+    };
+  }
+
+  if (botBlocked) {
+    return {
+      status: 'partially_verified',
+      notes:
+        `Source site refused the automated fetch (${blocked.map((u) => u.note || u.status).join('; ')}). ` +
+        'This is not a verification — check the page in a browser. Prior verification held.',
+      needsManual: true,
+      manualReasons: ['site_blocks_automated_checks'],
+      hold: true,
+      holdReason: 'bot_blocked',
     };
   }
 
@@ -215,8 +304,10 @@ function classifyProgram(program, urlResults, signals) {
   if (insuranceNeedsCall(program)) {
     manualReasons.push('insurance_requires_phone_confirmation');
   }
-  if (botBlocked || thinHtml) {
-    manualReasons.push('site_blocks_automated_checks');
+  // botBlocked already returned above; a page that answers 200 with almost no
+  // HTML is the other shape of "the fetch told us nothing".
+  if (thinHtml) {
+    manualReasons.push('source_page_returned_no_readable_content');
   }
   if (!phoneOk && program.phone && !crisis) {
     manualReasons.push('phone_not_confirmed_on_source_page');
@@ -235,7 +326,7 @@ function classifyProgram(program, urlResults, signals) {
     if (insStatus === 'varies_by_service') {
       parts.push('Insurance varies by service/location; confirm with provider.');
     }
-    if (botBlocked) parts.push('Site returned 403 to automated fetch; manual browser check advised.');
+    if (thinHtml) parts.push('Source page returned no readable content; manual browser check advised.');
 
     return {
       status: 'partially_verified',
@@ -267,7 +358,23 @@ async function auditProgram(program) {
   const sourceUrls = collectSourceUrls(program);
   const urlResults = [];
   for (const url of sourceUrls) {
-    urlResults.push(await fetchUrl(url));
+    const result = await fetchUrl(url);
+    // strikesFor reads the committed prior-run history, so this is the same
+    // number no matter which program reaches the URL first.
+    const strikes = strikesFor(url, result);
+    checkedUrls.add(url);
+    if (strikes > 0) {
+      nextHealthUrls[url] = {
+        consecutive_failures: strikes,
+        last_status: result.status,
+        last_error: result.error,
+        last_note: result.note,
+        bot_blocked: result.botBlocked,
+        first_failed_at: priorUrls[url]?.first_failed_at || AUDIT_DATE,
+        last_checked: AUDIT_DATE,
+      };
+    }
+    urlResults.push({ ...result, strikes });
   }
 
   const primary =
@@ -284,6 +391,12 @@ async function auditProgram(program) {
   const city = program.locations?.[0]?.city;
   const cityOnPage = city && html && html.toLowerCase().includes(city.toLowerCase());
 
+  // Folded in from the retired verify-all-programs.js: whether the organization
+  // name appears on its own source page. Reported, not scored — a page can be
+  // legitimately branded differently from the record's organization field.
+  const orgRoot = (program.organization || '').split(/[’']/)[0].toLowerCase().slice(0, 12);
+  const orgOnPage = Boolean(orgRoot && html && html.toLowerCase().includes(orgRoot));
+
   const classification = classifyProgram(program, urlResults, { phoneOnPage, cityOnPage });
 
   return {
@@ -296,17 +409,69 @@ async function auditProgram(program) {
       status: r.status,
       note: r.note,
       error: r.error,
+      attempts: r.attempts,
+      bot_blocked: r.botBlocked,
+      consecutive_failures: r.strikes,
     })),
-    signals: { phone_on_page: phoneOnPage, city_on_page: cityOnPage },
+    signals: {
+      phone_on_page: Boolean(phoneOnPage),
+      city_on_page: Boolean(cityOnPage),
+      org_on_page: orgOnPage,
+    },
     verification_status: classification.status,
     verification_notes: classification.notes,
     needs_manual: classification.needsManual,
     manual_reasons: classification.manualReasons || [],
+    hold: Boolean(classification.hold),
+    hold_reason: classification.holdReason || null,
   };
 }
 
 const data = JSON.parse(readFileSync(PROGRAMS_PATH, 'utf8'));
-const programs = data.programs;
+const allPrograms = data.programs;
+
+// --wave N limits the run to one rolling verification wave (see
+// scripts/assign-verification-waves.js) so the scheduled job re-verifies a
+// slice each week instead of the whole directory at once.
+//
+// Anything approaching expiry is always included regardless of wave, so a
+// skipped or failed run can never let a program quietly cross 90 days.
+const CATCH_UP_DAYS = 80;
+
+function waveArg() {
+  const i = process.argv.indexOf('--wave');
+  if (i === -1 || i === process.argv.length - 1) return null;
+  const n = Number(process.argv[i + 1]);
+  return Number.isInteger(n) ? n : null;
+}
+
+const WAVE = waveArg();
+let programs = allPrograms;
+
+if (WAVE !== null) {
+  const ageInDays = (p) => {
+    const raw = p.last_verified || p.verification?.last_verified_at;
+    const d = raw ? new Date(raw) : null;
+    if (!d || Number.isNaN(d.getTime())) return Infinity;
+    return Math.floor((new Date(AUDIT_DATE) - d) / 86400000);
+  };
+  const inWave = [];
+  const catchUp = [];
+  for (const p of allPrograms) {
+    if (p.verification_wave === WAVE) inWave.push(p);
+    else if (ageInDays(p) >= CATCH_UP_DAYS) catchUp.push(p);
+  }
+  programs = [...inWave, ...catchUp];
+  console.log(
+    `Wave ${WAVE}: ${inWave.length} program(s) due` +
+    (catchUp.length ? `, plus ${catchUp.length} catch-up (>=${CATCH_UP_DAYS}d old)` : '') +
+    ` of ${allPrograms.length} total.`,
+  );
+  if (programs.length === 0) {
+    console.log('Nothing due in this wave. Exiting without changes.');
+    process.exit(0);
+  }
+}
 
 console.log(`Auditing ${programs.length} programs (audit date: ${AUDIT_DATE})...\n`);
 
@@ -321,6 +486,13 @@ const byStatus = {
 const needsManual = [];
 
 for (const r of auditResults) {
+  if (!VALID_STATUSES.has(r.verification_status)) {
+    console.error(
+      `✗ ${r.program_id}: classifier produced status "${r.verification_status}", ` +
+        `which is not in the allowlist (${[...VALID_STATUSES].join(', ')}). Refusing to write.`,
+    );
+    process.exit(1);
+  }
   byStatus[r.verification_status].push(r.program_id);
   if (r.needs_manual) {
     needsManual.push({
@@ -352,6 +524,29 @@ if (!DRY_RUN) {
       if (!shouldUpdate && !FORCE) return p;
 
       const sourceUrls = audit.source_urls;
+
+      // A held run learned nothing: the source refused the fetch, or failed for
+      // the first time and is one strike short of being called down. Stamping
+      // AUDIT_DATE here would advertise a verification that did not happen, so
+      // last_verified and the prior status are both left alone and the reason is
+      // recorded for the manual queue.
+      if (audit.hold) {
+        return {
+          ...p,
+          verification: {
+            ...(p.verification || {}),
+            last_verified_at: p.verification?.last_verified_at || p.last_verified || null,
+            source_urls: sourceUrls,
+            status: p.verification?.status || 'partially_verified',
+            notes: audit.verification_notes,
+            audited_at: new Date().toISOString(),
+            last_attempted_at: AUDIT_DATE,
+            hold_reason: audit.hold_reason,
+            signals: audit.signals,
+          },
+        };
+      }
+
       const next = {
         ...p,
         last_verified: AUDIT_DATE,
@@ -373,19 +568,80 @@ if (!DRY_RUN) {
       return next;
     });
     if (rel.endsWith('programs.json')) {
+      // Count from the file as written, not from this run's results. A wave run
+      // touches a slice of the directory, so run-scoped counts would describe
+      // ~9 programs while appearing to describe all of them — the drift that
+      // left these counters reading 74/38 against an actual 105/6/1.
+      const tally = { verified: 0, partially_verified: 0, unable_to_verify: 0, conflicting_information: 0 };
+      for (const p of fileData.programs) {
+        const s = p.verification?.status;
+        if (s && s in tally) tally[s]++;
+      }
+
       fileData.metadata = {
         ...fileData.metadata,
-        last_full_verification: AUDIT_DATE,
-        last_directory_review_notes: `Automated data audit ${AUDIT_DATE}. See scripts/data-audit-summary.json.`,
-        audit_verified: byStatus.verified.length,
-        audit_partially_verified: byStatus.partially_verified.length,
-        audit_unable_to_verify: byStatus.unable_to_verify.length,
-        audit_conflicting: byStatus.conflicting_information.length,
+        last_directory_review_notes: WAVE === null
+          ? `Automated data audit ${AUDIT_DATE}. See scripts/data-audit-summary.json.`
+          : `Automated wave ${WAVE} audit ${AUDIT_DATE} (${programs.length} of ${fileData.programs.length} programs). See scripts/data-audit-summary.json.`,
+        audit_verified: tally.verified,
+        audit_partially_verified: tally.partially_verified,
+        audit_unable_to_verify: tally.unable_to_verify,
+        audit_conflicting: tally.conflicting_information,
       };
+
+      // Only a full sweep may claim a full verification.
+      if (WAVE === null) {
+        fileData.metadata.last_full_verification = AUDIT_DATE;
+      } else {
+        fileData.metadata.last_wave_verification = AUDIT_DATE;
+        fileData.metadata.last_wave_verified = WAVE;
+      }
     }
     writeFileSync(path, `${JSON.stringify(fileData, null, 2)}\n`, 'utf8');
     console.log(`Updated ${rel}`);
   }
+}
+
+// Carry forward history for URLs this run never touched (a wave run checks a
+// slice), keep the ones that failed again, and drop the ones that recovered.
+// Entries for URLs no longer referenced by any program are pruned against the
+// whole directory, not just the audited slice — otherwise a URL that was fixed
+// by editing the record would keep its failure history forever.
+const liveUrls = new Set(allPrograms.flatMap(collectSourceUrls));
+const nextHealth = {};
+const stale = [];
+for (const [url, record] of Object.entries(priorUrls)) {
+  if (checkedUrls.has(url)) continue;
+  if (!liveUrls.has(url)) {
+    stale.push(url);
+    continue;
+  }
+  nextHealth[url] = record;
+}
+Object.assign(nextHealth, nextHealthUrls);
+
+const recovered = [...checkedUrls].filter((u) => priorUrls[u] && !nextHealthUrls[u]);
+const held = auditResults.filter((r) => r.hold);
+
+if (!DRY_RUN) {
+  writeFileSync(
+    URL_HEALTH_PATH,
+    `${JSON.stringify(
+      {
+        _comment: priorHealth._comment,
+        updated_at: AUDIT_DATE,
+        urls: nextHealth,
+      },
+      null,
+      2,
+    )}\n`,
+    'utf8',
+  );
+  console.log(
+    `Updated scripts/state/url-health.json (${Object.keys(nextHealth).length} URL(s) with open failures` +
+      (stale.length ? `, ${stale.length} pruned as no longer referenced` : '') +
+      ')',
+  );
 }
 
 const report = {
@@ -398,7 +654,28 @@ const report = {
     conflicting_information: byStatus.conflicting_information.length,
     unable_to_verify: byStatus.unable_to_verify.length,
     needs_manual_phone_or_email: needsManual.length,
+    held_pending_next_run: held.length,
   },
+  url_health: {
+    strikes_before_down: STRIKES_BEFORE_DOWN,
+    urls_with_open_failures: Object.keys(nextHealth).length,
+    first_strike_this_run: Object.entries(nextHealthUrls)
+      .filter(([, r]) => r.consecutive_failures < STRIKES_BEFORE_DOWN)
+      .map(([url]) => url),
+    confirmed_down: Object.entries(nextHealthUrls)
+      .filter(([, r]) => r.consecutive_failures >= STRIKES_BEFORE_DOWN)
+      .map(([url]) => url),
+    bot_blocked: Object.entries(nextHealthUrls)
+      .filter(([, r]) => r.bot_blocked)
+      .map(([url]) => url),
+    recovered_this_run: recovered,
+  },
+  held_programs: held.map((r) => ({
+    program_id: r.program_id,
+    organization: r.organization,
+    hold_reason: r.hold_reason,
+    notes: r.verification_notes,
+  })),
   fully_verified: byStatus.verified,
   partially_verified: byStatus.partially_verified,
   conflicting_information: byStatus.conflicting_information,
@@ -416,7 +693,21 @@ const report = {
 writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
 console.log(`\nReport: ${REPORT_PATH}`);
 console.log('Summary:', report.summary);
+console.log('URL health:', {
+  open_failures: report.url_health.urls_with_open_failures,
+  first_strike: report.url_health.first_strike_this_run.length,
+  confirmed_down: report.url_health.confirmed_down.length,
+  bot_blocked: report.url_health.bot_blocked.length,
+  recovered: recovered.length,
+});
+
+if (held.length > 0) {
+  console.log(`\n--- Held (prior verification kept, nothing re-verified) ---`);
+  for (const r of report.held_programs) {
+    console.log(`${r.program_id}: ${r.hold_reason}`);
+  }
+}
 
 if (DRY_RUN) {
-  console.log('\n(dry run — no data files modified)');
+  console.log('\n(dry run — no data files or URL health state modified)');
 }

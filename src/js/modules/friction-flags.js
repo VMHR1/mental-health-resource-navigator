@@ -104,6 +104,7 @@ const VMHRFrictionFlags = (function () {
     const insuranceNotes = safe(insurance.notes) || safe(program.insurance_notes);
     if (
       insuranceStatus === 'not_listed'
+      || insuranceStatus === 'not_listed_on_website'
       || insuranceStatus === 'contact_for_info'
       || insuranceStatus === 'unclear'
       || (!types.length && !plans.length && !insuranceNotes)

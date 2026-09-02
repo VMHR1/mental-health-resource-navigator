@@ -3,6 +3,14 @@ name: Update Playwright Snapshots
 on:
   workflow_dispatch:
 
+# Declared explicitly because this workflow pushes commits. Without this it
+# inherits the repository's default workflow permissions, and when that
+# default is read-only the push fails with "Permission denied to
+# github-actions[bot]" after the whole ~10-minute suite has already run
+# (run #4: commit f813f45 was created, then the push 403'd).
+permissions:
+  contents: write
+
 jobs:
   update-snapshots:
     runs-on: ubuntu-latest
@@ -31,13 +39,21 @@ jobs:
       - name: Update snapshots
         run: npx playwright test --update-snapshots
 
+      # Paths are scoped to `tests` rather than a `tests/**/*-snapshots/*.png`
+      # glob. Bash without globstar expands `**` as a single `*`, so that
+      # pattern required three path segments while snapshots live two deep
+      # (tests/<spec>-snapshots/<file>.png). It matched nothing, so this step
+      # always reported no changes and the commit below was always skipped —
+      # the workflow succeeded while doing nothing.
       - name: Check for snapshot changes
         id: check-changes
         run: |
-          if [ -n "$(git status --porcelain tests/**/*-snapshots/*.png)" ]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+          if [ -n "$(git status --porcelain -- tests)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            git status --short -- tests
           else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No snapshot changes."
           fi
 
       - name: Commit and push snapshot updates
@@ -45,7 +61,13 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add tests/**/*-snapshots/*.png
+          git add -- tests
           git commit -m "Update Playwright snapshots (Linux baselines)"
-          git push
+          # The suite takes ~17 minutes, so the ref can move while it runs and
+          # a plain push would be rejected as non-fast-forward — losing the
+          # regenerated baselines after all that work. Rebase onto whatever
+          # landed meanwhile; snapshots touch only tests/, so conflicts with
+          # other work are not expected.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
 

@@ -1,66 +1,23 @@
 // ========== Data Validator ==========
 // Comprehensive data validation for programs.json
-// Uses shared schema from js/config/validation-schema.js if available
-
-// Use shared schema if available, otherwise define inline (for backward compatibility)
-const PROGRAM_SCHEMA = window.PROGRAM_SCHEMA || {
-  required: ['program_id', 'organization', 'program_name', 'level_of_care', 'service_domains'],
-  optional: [
-    'entry_type', 'service_setting', 'ages_served', 'locations', 'phone',
-    'website_url', 'website', 'website_domain', 'notes', 'transportation_available',
-    'insurance_notes', 'verification_source', 'verification_source_url', 'last_verified', 'accepting_new_patients',
-    'waitlist_status', 'accepted_insurance',
-    // New statewide-ready fields (all optional for backward compatibility)
-    'primary_county', 'service_area', 'geo', 'verification', 'sud_services'
-  ],
-  types: {
-    program_id: 'string',
-    organization: 'string',
-    program_name: 'string',
-    level_of_care: 'string',
-    entry_type: 'string',
-    service_setting: 'string',
-    ages_served: 'string',
-    locations: 'array',
-    phone: 'string',
-    website_url: 'string',
-    website: 'string',
-    website_domain: 'string',
-    notes: 'string',
-    transportation_available: 'string',
-    insurance_notes: 'string',
-    verification_source: 'string',
-    verification_source_url: 'string',
-    last_verified: 'string',
-    accepting_new_patients: 'string',
-    waitlist_status: 'string',
-    accepted_insurance: 'object',
-    // New field types (all optional, backward compatible)
-    primary_county: 'string',
-    service_area: 'object',
-    geo: 'object',
-    verification: 'object',
-    service_domains: 'array',
-    sud_services: 'array'
-  }
-};
-
-const VALID_SERVICE_DOMAINS = window.VALID_SERVICE_DOMAINS || [
-  'mental_health',
-  'substance_use',
-  'co_occurring',
-  'eating_disorders',
-];
-
-const REVERIFICATION_THRESHOLD_DAYS = window.REVERIFICATION_THRESHOLD_DAYS || 90;
-
-const validateISODate = window.validateISODate || function(dateString) {
-  if (!dateString || typeof dateString !== 'string') return false;
-  const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
-  if (!ISO_DATE_REGEX.test(dateString)) return false;
-  const date = new Date(dateString);
-  return !isNaN(date.getTime()) && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
-};
+//
+// The schema lives in js/config/validation-schema.js and is imported directly.
+// This file used to read window.PROGRAM_SCHEMA with an inline fallback, but
+// validation-schema.js is loaded by no HTML page (grep "validation-schema"
+// across src/html/), so the window value was always undefined and the "fallback"
+// was the only schema that ever ran. It had drifted: it predated every Phase 9B
+// intake field and validated verification.sources, a key the data does not have
+// (records carry verification.source_urls — see public/data/programs.json).
+import {
+  PROGRAM_SCHEMA,
+  VALID_SERVICE_DOMAINS,
+  VALID_VERIFICATION_STATUSES,
+  REVERIFICATION_THRESHOLD_DAYS,
+  INSURANCE_CATEGORIES,
+  AGE_BOUND_MIN,
+  AGE_BOUND_MAX,
+  validateISODate,
+} from './config/validation-schema.js?v=1';
 
 function validateProgramSchema(program, index) {
   const errors = [];
@@ -128,6 +85,30 @@ function validateProgramSchema(program, index) {
     }
   }
   
+  // Derived machine-queryable fields (optional; absent is always valid).
+  // Type checks already ran off PROGRAM_SCHEMA.types above — these are the
+  // value-domain checks that mirror scripts/validate-data.js.
+  if (typeof program.age_min === 'number') {
+    if (!Number.isInteger(program.age_min) || program.age_min < AGE_BOUND_MIN || program.age_min > AGE_BOUND_MAX) {
+      errors.push(`age_min should be an integer between ${AGE_BOUND_MIN} and ${AGE_BOUND_MAX}, got: ${program.age_min}`);
+    }
+  }
+  if (typeof program.age_max === 'number') {
+    if (!Number.isInteger(program.age_max) || program.age_max < AGE_BOUND_MIN || program.age_max > AGE_BOUND_MAX) {
+      errors.push(`age_max should be an integer between ${AGE_BOUND_MIN} and ${AGE_BOUND_MAX}, got: ${program.age_max}`);
+    }
+  }
+  if (typeof program.age_min === 'number' && typeof program.age_max === 'number' && program.age_min > program.age_max) {
+    errors.push(`age_min (${program.age_min}) should be <= age_max (${program.age_max})`);
+  }
+  if (Array.isArray(program.insurance_categories)) {
+    program.insurance_categories.forEach((cat, idx) => {
+      if (!INSURANCE_CATEGORIES.includes(cat)) {
+        errors.push(`insurance_categories[${idx}]="${cat}" is not in allowlist. Valid values: ${INSURANCE_CATEGORIES.join(', ')}`);
+      }
+    });
+  }
+
   // Validate new statewide-ready fields (all optional, so only validate if present)
   if (program.service_area && typeof program.service_area === 'object') {
     const sa = program.service_area;
@@ -165,14 +146,23 @@ function validateProgramSchema(program, index) {
         errors.push(`verification.last_verified_at should be a valid ISO 8601 date, got: ${ver.last_verified_at}`);
       }
     }
-    if (ver.sources && !Array.isArray(ver.sources)) {
-      errors.push('verification.sources should be an array');
-    } else if (ver.sources) {
-      ver.sources.forEach((src, idx) => {
-        if (typeof src !== 'object' || !src.name || !src.type) {
-          errors.push(`verification.sources[${idx}] should have name and type fields`);
+    // Records write verification.source_urls: an array of URL strings
+    // (scripts/audit-program-data.js). The old check looked for a
+    // verification.sources array of {name, type} objects, which no record has
+    // ever carried, so it could never fire.
+    if (ver.source_urls !== undefined && !Array.isArray(ver.source_urls)) {
+      errors.push('verification.source_urls should be an array');
+    } else if (Array.isArray(ver.source_urls)) {
+      ver.source_urls.forEach((src, idx) => {
+        if (typeof src !== 'string' || src.trim() === '') {
+          errors.push(`verification.source_urls[${idx}] should be a non-empty URL string`);
         }
       });
+    }
+    if (ver.status !== undefined && !VALID_VERIFICATION_STATUSES.includes(ver.status)) {
+      errors.push(
+        `verification.status="${ver.status}" is not in allowlist. Valid values: ${VALID_VERIFICATION_STATUSES.join(', ')}`,
+      );
     }
   }
   

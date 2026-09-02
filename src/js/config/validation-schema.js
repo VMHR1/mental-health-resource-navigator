@@ -38,6 +38,19 @@ export const PROGRAM_SCHEMA = {
     'last_successful_contact_method', // enum: phone | email | web_form | unknown
     'provider_attestation_at', // ISO date
     'provider_attestation_email_domain', // domain only — never a person's address
+    // Machine-queryable normalizations of existing display fields (additive —
+    // the display/provenance fields they derive from are never modified).
+    // Populated by scripts/populate-structured-fields.js.
+    'age_min',                 // number — lower bound parsed from ages_served
+    'age_max',                 // number — upper bound; ABSENT (not null) when
+                               //   ages_served is open-ended ("11+", "All ages").
+                               //   Nothing in this schema is nullable-by-value:
+                               //   optional fields are simply omitted, so an
+                               //   unknown bound is an absent key.
+    'insurance_categories',    // array of INSURANCE_CATEGORIES values, derived
+                               //   from accepted_insurance.types[]
+    // Operations metadata — not user-facing, never rendered.
+    'verification_wave',       // rolling re-verification slot (see scripts/assign-verification-waves.js)
   ],
   types: {
     program_id: 'string',
@@ -96,6 +109,10 @@ export const PROGRAM_SCHEMA = {
     last_successful_contact_method: 'string',
     provider_attestation_at: 'string',
     provider_attestation_email_domain: 'string',
+    age_min: 'number',
+    age_max: 'number',
+    insurance_categories: 'array',
+    verification_wave: 'number',
   }
 };
 
@@ -119,6 +136,49 @@ export const VALID_LEVELS_OF_CARE = [
   'Walk-In Outpatient',
 ];
 
+// URL slug per level of care. Keys must stay in lockstep with
+// VALID_LEVELS_OF_CARE — the slugs are meant to be stable in URLs, so rename a
+// display string without renaming its slug rather than the other way round.
+export const CARE_LEVEL_SLUGS = {
+  'Partial Hospitalization (PHP)': 'php',
+  'Intensive Outpatient (IOP)': 'iop',
+  'Outpatient': 'outpatient',
+  'Navigation': 'navigation',
+  'Residential': 'residential',
+  'Crisis Hotline': 'crisis-hotline',
+  'Mobile Crisis': 'mobile-crisis',
+  'Psychiatric Triage': 'psychiatric-triage',
+  'Walk-In Crisis / Urgent': 'walk-in-crisis',
+  'Walk-In Outpatient': 'walk-in-outpatient',
+};
+
+// Controlled vocabulary for the derived `insurance_categories` field.
+// A payer string that maps to none of these is left uncategorized and reported
+// for human review — never guessed (scripts/populate-structured-fields.js).
+export const INSURANCE_CATEGORIES = [
+  'commercial',
+  'medicaid_chip',
+  'medicare',
+  'tricare',
+  'self_pay',
+  'sliding_scale',
+];
+
+// Sanity bounds for the derived age fields. This is a youth-focused directory;
+// anything outside this range means the parse went wrong, not that a program
+// serves 90-year-olds.
+export const AGE_BOUND_MIN = 0;
+export const AGE_BOUND_MAX = 30;
+
+// verification.status values written by scripts/audit-program-data.js.
+// Pro-gated surfaces only — families never see this field (see CLAUDE.md).
+export const VALID_VERIFICATION_STATUSES = [
+  'verified',
+  'partially_verified',
+  'unable_to_verify',
+  'conflicting_information',
+];
+
 export const REVERIFICATION_THRESHOLD_DAYS = 90;
 
 // ISO 8601 date validation regex (YYYY-MM-DD or full ISO format)
@@ -129,7 +189,8 @@ export function validateISODate(dateString) {
   if (!ISO_DATE_REGEX.test(dateString)) return false;
   
   const date = new Date(dateString);
-  return !isNaN(date.getTime()) && dateString === date.toISOString().split('T')[0] || dateString === date.toISOString();
+  return !isNaN(date.getTime())
+    && (dateString === date.toISOString().split('T')[0] || dateString === date.toISOString());
 }
 
 // Export for both browser and Node.js
@@ -137,18 +198,16 @@ if (typeof window !== 'undefined') {
   window.PROGRAM_SCHEMA = PROGRAM_SCHEMA;
   window.VALID_SERVICE_DOMAINS = VALID_SERVICE_DOMAINS;
   window.VALID_LEVELS_OF_CARE = VALID_LEVELS_OF_CARE;
+  window.CARE_LEVEL_SLUGS = CARE_LEVEL_SLUGS;
+  window.INSURANCE_CATEGORIES = INSURANCE_CATEGORIES;
+  window.VALID_VERIFICATION_STATUSES = VALID_VERIFICATION_STATUSES;
   window.REVERIFICATION_THRESHOLD_DAYS = REVERIFICATION_THRESHOLD_DAYS;
   window.validateISODate = validateISODate;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    PROGRAM_SCHEMA,
-    VALID_SERVICE_DOMAINS,
-    VALID_LEVELS_OF_CARE,
-    REVERIFICATION_THRESHOLD_DAYS,
-    validateISODate,
-    ISO_DATE_REGEX
-  };
-}
+// No CommonJS block here on purpose. Node-side consumers (scripts/validate-data.js,
+// scripts/apply-patches.js) load this file with `await import()`, and the browser
+// loads it as a real ES module through data-validator.js. A `module.exports`
+// fallback would only make esbuild warn (commonjs-variable-in-esm) on every build
+// for a branch nothing reaches.
 

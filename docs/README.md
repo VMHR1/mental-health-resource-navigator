@@ -36,6 +36,7 @@ See `performance/` for mobile performance and stutter investigations.
 - Runtime security (CSP, console errors, handoff): `security/RUNTIME_SECURITY_GUIDE.md`
 - Operations/admin: `operations/`
 - Submit-to-publish runbook: `operations/SUBMIT_TO_PUBLISH_RUNBOOK.md`
+- **Data freshness & accuracy automation plan (approved, unimplemented):** `operations/DATA_FRESHNESS_AUTOMATION_PLAN.md`
 - Deploy & admin verification: `operations/DEPLOY_AND_ADMIN_VERIFICATION.md`
 - Manual a11y checklist (Phase 4): `operations/MANUAL_A11Y_CHECKLIST.md`
 - Launch QA checklist (Phase 6): `operations/QA_LAUNCH_CHECKLIST.md`

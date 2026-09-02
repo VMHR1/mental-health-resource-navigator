@@ -5,13 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Guides for families • ViableMHR</title>
   <meta name="description" content="How to search the ViableMHR directory, understand levels of care for youth mental health, and questions to ask when you call programs in North Texas." />
-  <link rel="canonical" href="https://viablemhr.com/guides.html">
+  <link rel="canonical" href="https://viablemhr.com/guides">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Guides for families • ViableMHR">
   <meta property="og:description" content="How to search the directory, understand levels of care, and questions to ask when you call youth mental health programs in North Texas.">
-  <meta property="og:url" content="https://viablemhr.com/guides.html">
-  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
+  <meta property="og:url" content="https://viablemhr.com/guides">
+  <meta property="og:image" content="https://viablemhr.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Guides for families • ViableMHR">
+  <meta name="twitter:description" content="How to search the directory, understand levels of care, and questions to ask when you call youth mental health programs in North Texas.">
+  <meta name="twitter:image" content="https://viablemhr.com/og-image.png">
+  <meta name="twitter:image:alt" content="ViableMHR — Texas youth mental health resources">
   <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -19,8 +26,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11">
-  <link rel="stylesheet" href="phase1-design.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="phase1-design.css?v=19">
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
@@ -66,8 +73,8 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike" href="index.html">Back to search</a>
-          <a class="btnlike btn-primary" href="submit.html" aria-label="Submit or update a program">Submit or update a program</a>
+          <a class="btnlike" href="/">Back to search</a>
+          <a class="btnlike btn-primary" href="/submit" aria-label="Submit or update a program">Submit or update a program</a>
         </div>
       </div>
     </header>
@@ -87,135 +94,37 @@
 
       <section class="guides-section" id="how-to-search" aria-labelledby="howToSearchHeading">
         <h2 id="howToSearchHeading">How to search this directory</h2>
-        <p>Type naturally — we read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from your words. Open <strong>More filters</strong> on the home page for insurance and other options.</p>
-        <ul class="search-tips-list" style="margin: 16px 0;">
-          <li><strong>Location:</strong> Plano, Dallas, Frisco (includes nearby counties and telehealth when listed)</li>
-          <li><strong>Care level:</strong> PHP, IOP, outpatient, partial hospitalization, day treatment, residential</li>
-          <li><strong>Age:</strong> <code>14</code>, <code>13 and up</code>, <code>16 year old</code></li>
-          <li><strong>Insurance:</strong> any listed plan — <code>accepts Cigna</code>, <code>BCBS</code>, <code>UHC</code>, <code>BHS</code>, <code>Medicaid</code>, <code>sliding scale</code></li>
-          <li><strong>Crisis:</strong> type <em>crisis support</em> or use the preset or “Show crisis resources” chip</li>
-        </ul>
-        <p class="search-tips-examples-label">Try an example on the home page:</p>
-        <p style="color: var(--muted); font-size: 14px; margin-top: 8px;">Use the search box on <a href="index.html">the main page</a> with phrases like “IOP in Plano”, “PHP for age 14”, or “virtual therapy”.</p>
+        <p>How to search by city, level of care, age, insurance, and crisis support, with example phrases to try on the home page.</p>
+        <p><a class="btnlike btn-primary" href="/guide-how-to-search">Read: How to search this directory</a></p>
       </section>
 
       <section class="guides-section" id="levels-of-care" aria-labelledby="levelsHeading">
         <h2 id="levelsHeading">Understanding levels of care</h2>
-        <p class="care-levels-intro">Programs use different names, and services vary. These descriptions are general starting points. Confirm details directly with each program.</p>
-        <div class="care-levels-grid care-levels-grid--cards" style="margin-top: 16px;">
-          <div class="care-level-card">
-            <h3>Outpatient</h3>
-            <p>Regular mental health appointments such as therapy, counseling, psychiatry, medication management, psychological evaluation, or safety planning. In standard outpatient care, youth usually leave the same day after the appointment.</p>
-          </div>
-          <div class="care-level-card">
-            <h3>IOP — Intensive Outpatient</h3>
-            <p>More structured than standard weekly outpatient therapy. Youth generally live at home while attending treatment multiple days per week.</p>
-          </div>
-          <div class="care-level-card">
-            <h3>PHP — Partial Hospitalization / Day Program</h3>
-            <p>Structured daytime treatment. Usually more intensive than IOP. Youth typically attend during the day and return home afterward.</p>
-          </div>
-          <div class="care-level-card">
-            <h3>Inpatient</h3>
-            <p>Short-term 24-hour hospital-based care for acute safety concerns, stabilization, severe symptoms, or close monitoring. Many acute stays are around a week, but length of stay varies.</p>
-          </div>
-          <div class="care-level-card">
-            <h3>Residential</h3>
-            <p>Live-in treatment setting where the youth temporarily lives at the program. Usually longer-term than inpatient hospitalization, often weeks to months or longer depending on clinical needs and program type.</p>
-          </div>
-          <div class="care-level-card">
-            <h3>Care Navigation</h3>
-            <p>Help understanding options, finding possible programs, and preparing questions. Not diagnosis, treatment, or emergency care.</p>
-          </div>
-        </div>
-        <h3 class="care-levels-heading" style="margin-top: 28px;">Questions to ask programs about level of care</h3>
-        <ul class="care-levels-list care-questions-list">
-          <li>What level of care do you provide?</li>
-          <li>Do you offer assessments or intake screenings?</li>
-          <li>How often does the program meet?</li>
-          <li>Does the youth return home each day?</li>
-          <li>Is this hospital-based, outpatient, or live-in care?</li>
-          <li>How long do families usually participate?</li>
-          <li>What happens if symptoms worsen?</li>
-          <li>How is family involved?</li>
-        </ul>
-        <p class="care-levels-disclaimer">This information is general and may vary by program. It is not medical advice, diagnosis, treatment, or emergency care. Confirm details directly with each program. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
+        <p>What outpatient, IOP, PHP, inpatient, residential, and care navigation usually mean, plus questions to ask programs about level of care.</p>
+        <p><a class="btnlike btn-primary" href="/guide-levels-of-care">Read: Understanding levels of care</a></p>
       </section>
 
       <section class="guides-section" id="what-to-ask" aria-labelledby="whatToAskHeading">
         <h2 id="whatToAskHeading">What to ask when you call</h2>
-        <p class="care-levels-intro">You do not need to have everything figured out before calling. These questions can help you compare options.</p>
-        <ul class="care-levels-list care-questions-list" id="callChecklist">
-          <li>Are you accepting new children or adolescents?</li>
-          <li>What ages do you serve?</li>
-          <li>What levels of care do you offer?</li>
-          <li>Do you offer outpatient, IOP, PHP, inpatient, residential, or care navigation?</li>
-          <li>Do you accept my insurance?</li>
-          <li>Is prior authorization required?</li>
-          <li>What is the intake process?</li>
-          <li>How soon could an intake happen?</li>
-          <li>What is the program schedule?</li>
-          <li>Is this standard outpatient, intensive outpatient, day treatment, hospital-based care, or live-in treatment?</li>
-          <li>Is family involvement included?</li>
-          <li>Do you provide medication management?</li>
-          <li>Do you support co-occurring substance-use concerns?</li>
-          <li>Do you support eating-disorder concerns?</li>
-          <li>What happens if symptoms worsen after hours?</li>
-          <li>What costs should we expect?</li>
-          <li>What should we bring or prepare before intake?</li>
-        </ul>
-        <button type="button" class="btn-copy-checklist" id="copyCallChecklist">Copy checklist</button>
-        <div id="copyChecklistStatus" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+        <p>A copyable checklist of questions about ages served, levels of care, insurance, intake, and cost to ask when you call a program.</p>
+        <p><a class="btnlike btn-primary" href="/guide-what-to-ask">Read: What to ask when you call</a></p>
       </section>
 
       <p style="margin-top: 32px; font-size: 14px; color: var(--muted);">
-        <a href="index.html">Return to program search</a>
+        <a href="/">Return to program search</a>
         <span aria-hidden="true"> · </span>
-        <a href="professionals.html">For professionals</a>
+        <a href="/professionals">For professionals</a>
         <span aria-hidden="true"> · </span>
-        <a href="boards.html">Boards</a>
+        <a href="/boards">Boards</a>
         <span aria-hidden="true"> · </span>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <span aria-hidden="true"> · </span>
-        <a href="privacy.html">Privacy</a>
+        <a href="/privacy">Privacy</a>
         <span aria-hidden="true"> · </span>
-        <a href="terms.html">Terms</a>
+        <a href="/terms">Terms</a>
       </p>
     </main>
   </div>
-
-  <script>
-    (function () {
-      var btn = document.getElementById('copyCallChecklist');
-      var list = document.getElementById('callChecklist');
-      var status = document.getElementById('copyChecklistStatus');
-      if (!btn || !list) return;
-      function announce(msg) {
-        if (status) status.textContent = msg;
-      }
-      btn.addEventListener('click', function () {
-        var text = Array.prototype.map.call(list.querySelectorAll('li'), function (li) {
-          return '• ' + li.textContent.trim();
-        }).join('\n');
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () {
-            btn.textContent = 'Copied';
-            announce('Checklist copied to clipboard.');
-            setTimeout(function () {
-              btn.textContent = 'Copy checklist';
-              if (status) status.textContent = '';
-            }, 2000);
-          }).catch(function () {
-            btn.textContent = 'Copy not available';
-            announce('Could not copy checklist.');
-          });
-        } else {
-          btn.textContent = 'Copy not available';
-          announce('Copy is not available in this browser.');
-        }
-      });
-    })();
-  </script>
 
   <!-- Default Statcounter code for Business Website http://viablemhr.com -->
   <script type="text/javascript">

@@ -1,0 +1,5 @@
+{
+  "_comment": "Committed failure history for scripts/audit-program-data.js. Only URLs that failed their most recent check appear here; a URL is deleted from this file the moment it succeeds. A program is not flipped to unable_to_verify until a URL has failed in two consecutive runs (consecutive_failures >= 2), so a single transient outage cannot rewrite the directory's verification status. Audit reports are gitignored, which is why this history has to live in its own committed file.",
+  "updated_at": null,
+  "urls": {}
+}

@@ -1,0 +1,163 @@
+name: Data Freshness
+
+# Re-verifies one rolling wave of the directory each week and opens a PR with
+# the result. Deliberately never pushes to updated-main: Cloudflare Pages
+# deploys that branch without waiting for CI, and SUBMIT_TO_PUBLISH_RUNBOOK.md
+# requires human review before program data ships.
+
+on:
+  schedule:
+    # Cron is UTC only. 11:00 UTC = 06:00 CDT (summer) / 05:00 CST (winter).
+    # The project operates on America/Chicago; the hour drifts by one across DST.
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+    inputs:
+      wave:
+        description: 'Wave to verify (0-11). Leave blank to derive from the ISO week.'
+        required: false
+        type: string
+      full:
+        description: 'Audit every program instead of one wave (slow).'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-freshness
+  cancel-in-progress: false
+
+jobs:
+  verify-wave:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine wave
+        id: wave
+        run: |
+          if [ "${{ inputs.full }}" = "true" ]; then
+            echo "args=" >> "$GITHUB_OUTPUT"
+            echo "label=full sweep" >> "$GITHUB_OUTPUT"
+          else
+            WAVE="${{ inputs.wave }}"
+            if [ -z "$WAVE" ]; then
+              WAVE=$(node -e '
+                const c = Number(process.env.WAVE_COUNT || 12);
+                // ISO week number, so the wave advances once per week and wraps.
+                const d = new Date();
+                const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+                t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+                const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+                const week = Math.ceil(((t - yearStart) / 86400000 + 1) / 7);
+                process.stdout.write(String(week % c));
+              ')
+            fi
+            echo "args=--wave $WAVE" >> "$GITHUB_OUTPUT"
+            echo "label=wave $WAVE" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          WAVE_COUNT: '12'
+
+      - name: Audit program data (${{ steps.wave.outputs.label }})
+        run: node scripts/audit-program-data.js ${{ steps.wave.outputs.args }} --force
+
+      - name: Sync regional mirrors
+        run: npm run sync-regional-data
+
+      - name: Validate
+        run: |
+          npm run validate-data
+          npm run validate-filters
+
+      - name: Build
+        run: npm run build
+
+      - name: Detect data changes
+        id: diff
+        run: |
+          if git diff --quiet -- public/data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No data changes from this run."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- public/data
+          fi
+
+      - name: Open pull request
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          DATE=$(date -u +%Y-%m-%d)
+          BRANCH="data-freshness/${DATE}-${{ github.run_number }}"
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add public/data
+          git commit -m "data: automated re-verification (${{ steps.wave.outputs.label }}, ${DATE})"
+          git push -u origin "$BRANCH"
+
+          # Summary table from the audit report, if the script produced one.
+          SUMMARY=$(node -e '
+            const fs = require("fs");
+            const p = "scripts/data-audit-summary.json";
+            if (!fs.existsSync(p)) { process.stdout.write("_No audit summary produced._"); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(p, "utf8"));
+            const s = r.summary || {};
+            const rows = Object.entries(s).map(([k, v]) => `| ${k} | ${v} |`).join("\n");
+            process.stdout.write(
+              `| status | count |\n| --- | --- |\n${rows}\n\nPrograms audited: **${r.programs_total ?? "?"}**`
+            );
+          ')
+
+          cat > /tmp/pr-body.md <<EOF
+          Automated re-verification of **${{ steps.wave.outputs.label }}**.
+
+          ${SUMMARY}
+
+          Programs are re-verified on a rolling 12-week cycle (see
+          \`scripts/assign-verification-waves.js\`) so the directory never expires as
+          one cohort. Anything within 10 days of the 90-day limit is swept in
+          regardless of wave.
+
+          **Review before merging.** A \`verified\` status means the source URL
+          resolved and the phone/city strings appeared on the page — it does not
+          confirm intake hours, waitlist, or whether the program is accepting new
+          patients. Check the diff for status downgrades and changed URLs.
+
+          CI (\`npm run verify\`) runs on this PR. Merging deploys to production.
+
+          ---
+          _Generated by [Claude Code](https://claude.ai/code)_
+          EOF
+
+          gh pr create \
+            --title "data: automated re-verification (${{ steps.wave.outputs.label }}, ${DATE})" \
+            --body-file /tmp/pr-body.md \
+            --base updated-main \
+            --head "$BRANCH"
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-audit-report
+          path: |
+            scripts/data-audit-summary.json
+          retention-days: 30
+          if-no-files-found: ignore

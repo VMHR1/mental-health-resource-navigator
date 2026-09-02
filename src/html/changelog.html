@@ -5,7 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Verification changelog • ViableMHR</title>
   <meta name="description" content="History of directory verification waves for ViableMHR. Bulk events only; not a per-patient audit." />
-  <link rel="canonical" href="https://viablemhr.com/changelog.html">
+  <link rel="canonical" href="https://viablemhr.com/changelog">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Verification changelog • ViableMHR">
+  <meta property="og:description" content="History of directory verification waves for ViableMHR. Bulk events only; not a per-patient audit.">
+  <meta property="og:url" content="https://viablemhr.com/changelog">
+  <meta property="og:image" content="https://viablemhr.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Verification changelog • ViableMHR">
+  <meta name="twitter:description" content="History of directory verification waves for ViableMHR. Bulk events only; not a per-patient audit.">
+  <meta name="twitter:image" content="https://viablemhr.com/og-image.png">
+  <meta name="twitter:image:alt" content="ViableMHR — Texas youth mental health resources">
   <!-- VMHR_CSP:standard -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -13,13 +26,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="phase1-design.css?v=19">
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
   <script defer src="security.js?v=2"></script>
-  <script defer src="js/modules/pro-gate.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=3"></script>
   <style>
     .cl-main { max-width: 900px; margin: 0 auto 56px; padding: 0 16px 48px; }
     .cl-main h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); font-weight: 950; margin: 0 0 10px; }
@@ -50,7 +63,7 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike" href="professionals.html">For professionals</a>
+          <a class="btnlike" href="/professionals">For professionals</a>
         </div>
       </div>
     </header>
@@ -61,24 +74,24 @@
         A bulk log of when the directory has been verified, and how. We re-verify the directory on a 90-day cycle; this page shows recent waves and what each one covered. Detailed program-level history is not published here.
       </p>
       <div id="changelogContent" aria-busy="true" aria-live="polite">
-        <p class="cl-lead">Loading changelog…</p>
+        <!--vmhr-changelog-content-->
       </div>
     </main>
 
     <footer>
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px;">
-        <a href="index.html">For families</a>
+        <a href="/">For families</a>
         <span aria-hidden="true"> • </span>
-        <a href="professionals.html">For professionals</a>
+        <a href="/professionals">For professionals</a>
         <span aria-hidden="true"> • </span>
-        <a href="boards.html">Boards</a>
+        <a href="/boards">Boards</a>
         <span aria-hidden="true"> • </span>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <span aria-hidden="true"> • </span>
-        <a href="privacy.html">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <span aria-hidden="true"> • </span>
-        <a href="terms.html">Terms of Service</a>
+        <a href="/terms">Terms of Service</a>
       </p>
     </footer>
   </div>
@@ -123,6 +136,14 @@
             target.innerHTML = '<p class="cl-lead">We could not load the changelog right now.</p>';
             target.setAttribute('aria-busy', 'false');
           });
+      }
+
+      // Build already rendered full content (scripts/render-professional-pages.js)
+      // — skip the fetch/innerHTML wipe entirely, same convention as
+      // src/js/program-detail.js's data-prerendered check.
+      if (target.querySelector('[data-prerendered="true"]')) {
+        target.setAttribute('aria-busy', 'false');
+        return;
       }
 
       if (window.VMHRProGate && typeof window.VMHRProGate.runWhenUnlocked === 'function') {

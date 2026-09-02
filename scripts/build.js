@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { applyCspToHtml } from './csp-config.js';
+import { buildPages } from './page-manifest.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,6 +24,7 @@ const buildOptions = {
     'src/js/utils/helpers.js',
     'src/js/utils/location-match.js',
     'src/js/config/constants.js',
+    'src/js/config/validation-schema.js',
     'src/js/state-manager.js',
     'src/js/data-validator.js'
   ],
@@ -41,24 +43,10 @@ function copyStaticAssets() {
   try {
     // HTML files from src/html
     const includeAdmin = process.env.INCLUDE_ADMIN === '1';
-    const htmlFiles = [
-      { src: 'src/html/index.html', dest: 'index.html', csp: 'standard' },
-      ...(includeAdmin ? [{ src: 'src/html/admin.html', dest: 'admin.html', csp: 'admin' }] : []),
-      { src: 'src/html/program.html', dest: 'program.html', csp: 'eval' },
-      { src: 'src/html/submit.html', dest: 'submit.html', csp: 'submit' },
-      { src: 'src/html/guides.html', dest: 'guides.html', csp: 'standard' },
-      { src: 'src/html/about.html', dest: 'about.html', csp: 'eval' },
-      { src: 'src/html/privacy.html', dest: 'privacy.html', csp: 'eval' },
-      { src: 'src/html/terms.html', dest: 'terms.html', csp: 'eval' },
-      { src: 'src/html/professionals.html', dest: 'professionals.html', csp: 'standard' },
-      { src: 'src/html/boards.html', dest: 'boards.html', csp: 'standard' },
-      { src: 'src/html/report-outdated.html', dest: 'report-outdated.html', csp: 'standard' },
-      { src: 'src/html/regional-snapshot.html', dest: 'regional-snapshot.html', csp: 'standard' },
-      { src: 'src/html/changelog.html', dest: 'changelog.html', csp: 'standard' },
-      { src: 'src/html/export.html', dest: 'export.html', csp: 'standard' },
-      { src: 'src/html/handoff.html', dest: 'handoff.html', csp: 'standard' },
-      { src: 'src/html/404.html', dest: '404.html', csp: 'standard' }
-    ];
+    // The page list lives in scripts/page-manifest.js so the sitemap generator
+    // (scripts/generate-program-pages.js) derives dist/sitemap-pages.xml from the
+    // same list of pages this loop actually copies.
+    const htmlFiles = buildPages(includeAdmin);
     if (!includeAdmin) {
       const adminDist = join('dist', 'admin.html');
       if (existsSync(adminDist)) {
@@ -79,8 +67,12 @@ function copyStaticAssets() {
       { src: 'public/icon-192.png', dest: 'icon-192.png' },
       { src: 'public/icon.svg', dest: 'icon.svg' },
       { src: 'public/brand-mark.svg', dest: 'brand-mark.svg' },
+      // Site-wide link-preview card (og:image / twitter:image). Regenerate
+      // manually with `node scripts/generate-og-image.mjs`.
+      { src: 'public/og-image.png', dest: 'og-image.png' },
       { src: 'public/robots.txt', dest: 'robots.txt' },
-      { src: 'public/sitemap.xml', dest: 'sitemap.xml' },
+      // sitemap-pages.xml is NOT copied: scripts/generate-program-pages.js
+      // generates dist/sitemap-pages.xml from scripts/page-manifest.js.
       { src: 'public/data/programs.json', dest: 'programs.json' },
       { src: 'public/data/programs.geocoded.json', dest: 'programs.geocoded.json' },
       // Keep dist/data in sync for any legacy paths or tooling that reference it
@@ -105,7 +97,11 @@ function copyStaticAssets() {
     if (!existsSync('dist')) {
       mkdirSync('dist', { recursive: true });
     }
-    
+
+    // Collected so a failed copy fails the build instead of silently shipping
+    // an incomplete dist.
+    const copyErrors = [];
+
     // Copy HTML files
     let copiedCount = 0;
     htmlFiles.forEach(({ src, dest, csp }) => {
@@ -113,10 +109,13 @@ function copyStaticAssets() {
         try {
           let html = readFileSync(src, 'utf8');
           html = applyCspToHtml(html, csp || 'standard');
-          writeFileSync(join('dist', dest), html);
+          const destPath = join('dist', dest);
+          mkdirSync(dirname(destPath), { recursive: true });
+          writeFileSync(destPath, html);
           copiedCount++;
         } catch (error) {
           console.error(`Error copying ${src}:`, error.message);
+          copyErrors.push(`${src} -> ${dest}: ${error.message}`);
         }
       } else {
         console.warn(`Warning: ${src} not found, skipping`);
@@ -127,10 +126,17 @@ function copyStaticAssets() {
     staticFiles.forEach(({ src, dest }) => {
       if (existsSync(src)) {
         try {
-          writeFileSync(join('dist', dest), readFileSync(src, 'utf8'));
+          // Nested destinations (data/*.json) need their directory created first.
+          // Without this every data/ copy fails with ENOENT on a clean build,
+          // and because the error was only logged the build still exited 0 —
+          // shipping a dist with no data files.
+          const destPath = join('dist', dest);
+          mkdirSync(dirname(destPath), { recursive: true });
+          writeFileSync(destPath, readFileSync(src, 'utf8'));
           copiedCount++;
         } catch (error) {
           console.error(`Error copying ${src}:`, error.message);
+          copyErrors.push(`${src} -> ${dest}: ${error.message}`);
         }
       } else {
         console.warn(`Warning: ${src} not found, skipping`);
@@ -216,6 +222,15 @@ function copyStaticAssets() {
     }
     
     console.log(`Static assets copied (${copiedCount} files)`);
+
+    // A copy failure means the deployed site is missing a file it fetches at
+    // runtime. Previously these were logged and ignored, so the build exited 0
+    // and shipped a dist whose pro pages could never render.
+    if (copyErrors.length > 0) {
+      throw new Error(
+        `${copyErrors.length} static asset(s) failed to copy:\n  ${copyErrors.join('\n  ')}`,
+      );
+    }
   } catch (error) {
     console.error('Error in copyStaticAssets:', error);
     throw error;
@@ -282,12 +297,12 @@ async function build() {
 build()
   .then(async () => {
     if (!isWatch) {
-      try {
-        const { generateProgramPages } = await import('./generate-program-pages.js');
-        generateProgramPages();
-      } catch (e) {
-        console.warn('Program slug page generation skipped:', e?.message || e);
-      }
+      // Intentionally NOT wrapped in a warn-and-continue try/catch: a thrown
+      // error here (e.g. a missing head/body marker in dist/program.html)
+      // means program pages would ship broken or unrendered, so it must fail
+      // the build rather than silently regress to the old loading-shell pages.
+      const { generateProgramPages } = await import('./generate-program-pages.js');
+      generateProgramPages();
     }
     console.log('Build process completed successfully');
     process.exit(0);

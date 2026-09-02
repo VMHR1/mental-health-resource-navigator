@@ -205,7 +205,7 @@ function resolveVerificationUrl(program) {
 function programPublicPath(programId) {
   const id = safeStr(programId);
   if (!id) return '/program.html';
-  return `/programs/${encodeURIComponent(id)}.html`;
+  return `/programs/${encodeURIComponent(id)}`;
 }
 
 function newTabSrHtml() {

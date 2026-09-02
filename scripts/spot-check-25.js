@@ -1,13 +1,22 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
-const report = JSON.parse(
-  readFileSync(join(rootDir, 'scripts/full-program-verification-report.json'), 'utf8'),
-);
+// Reads the audit report written by scripts/audit-program-data.js. It used to
+// read full-program-verification-report.json from verify-all-programs.js, which
+// was retired (dead REVIEW_DATE skip logic; 403/429 coerced to "ok").
+const REPORT_PATH = join(rootDir, 'scripts/data-audit-summary.json');
+if (!existsSync(REPORT_PATH)) {
+  console.error(
+    'scripts/data-audit-summary.json not found.\n' +
+      'Generate it first: node scripts/audit-program-data.js --dry-run',
+  );
+  process.exit(1);
+}
+const report = JSON.parse(readFileSync(REPORT_PATH, 'utf8'));
 const data = JSON.parse(readFileSync(join(rootDir, 'public/data/programs.json'), 'utf8'));
 
 const UA = {
@@ -28,7 +37,10 @@ async function fetchHtml(url) {
   try {
     const r = await fetch(url, { headers: UA, redirect: 'follow', signal: AbortSignal.timeout(20000) });
     const html = (await r.text()).slice(0, 600000);
-    return { ok: r.ok || r.status === 403, status: r.status, url: r.url, html };
+    // 403/429 mean the site refused us, not that the page checks out. This is a
+    // manual-review tool, so a refusal has to surface rather than read as OK.
+    const botBlocked = r.status === 403 || r.status === 429;
+    return { ok: r.ok, botBlocked, status: r.status, url: r.url, html };
   } catch (e) {
     return { ok: false, error: e.message, html: '' };
   }
@@ -61,8 +73,17 @@ function checkInHtml(html, program) {
 
 const results = [];
 
-for (const { program_id } of report.needs_attention) {
+const queue = report.needs_manual_confirmation || [];
+if (queue.length === 0) {
+  console.log('No programs in the audit report need manual confirmation. Nothing to spot-check.');
+}
+
+for (const { program_id } of queue) {
   const program = data.programs.find((p) => p.program_id === program_id);
+  if (!program) {
+    console.warn(`Skipping ${program_id}: not in programs.json`);
+    continue;
+  }
   const urls = [
     program.verification_source?.match(/https?:\/\/[^\s;]+/)?.[0],
     program.website_url,
@@ -77,10 +98,12 @@ for (const { program_id } of report.needs_attention) {
 
   const combinedHtml = fetches.map((f) => f.html).join('\n');
   const checks = checkInHtml(combinedHtml, program);
-  const statusOk = fetches.every((f) => f.ok || f.status === 403 || f.status === 429);
+  const statusOk = fetches.every((f) => f.ok);
+  const botBlocked = fetches.some((f) => f.botBlocked);
 
   const issues = [];
-  if (!statusOk) issues.push('url_unreachable');
+  if (botBlocked) issues.push('bot_blocked_check_in_browser');
+  else if (!statusOk) issues.push('url_unreachable');
   if (!checks.phoneOk && program.phone && !program.phone.includes('Text')) issues.push('phone_unverified');
   if (!checks.cityOk) issues.push('city_unverified');
   if (!checks.addrOk && program.locations?.[0]?.address) issues.push('address_unverified');

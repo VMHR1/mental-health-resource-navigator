@@ -165,7 +165,7 @@
           <p class="pro-gate__error" id="proGateError" hidden></p>
           <div class="pro-gate__actions">
             <button type="submit" class="btnlike btn-primary" id="proGateSubmit">Continue</button>
-            <a class="btnlike" href="index.html">Back to family search</a>
+            <a class="btnlike" href="/">Back to family search</a>
           </div>
         </form>
         <p class="pro-gate__note">Family search stays open. This gate is temporary while we evaluate the professional layer.</p>

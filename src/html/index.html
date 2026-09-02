@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ViableMHR — Texas Youth Mental Health Resources</title>
-  <meta name="description" content="A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs." />
+  <meta name="description" content="Search youth mental health programs across Dallas–Fort Worth by insurance, age, and level of care — a free, neutral directory for families." />
   <link rel="canonical" href="https://viablemhr.com/">
   <!-- TODO(security): move CSP fully to _headers and remove unsafe-inline after inline analytics snippets are migrated to external scripts. -->
   <!-- VMHR_CSP:standard -->
@@ -19,24 +19,31 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="ViableMHR — Texas Youth Mental Health Resources">
-  <meta property="og:description" content="A neutral directory of adolescent and youth mental health programs in the Dallas–Fort Worth metro and surrounding North Texas. Filter by level of care, location, and needs.">
+  <meta property="og:description" content="Search youth mental health programs across Dallas–Fort Worth by insurance, age, and level of care — a free, neutral directory for families.">
   <meta property="og:url" content="https://viablemhr.com/">
-  <meta property="og:image" content="https://viablemhr.com/icon-192.png">
+  <meta property="og:image" content="https://viablemhr.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="ViableMHR — Texas youth mental health resources">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ViableMHR — Texas Youth Mental Health Resources">
+  <meta name="twitter:description" content="Search youth mental health programs across Dallas–Fort Worth by insurance, age, and level of care — a free, neutral directory for families.">
+  <meta name="twitter:image" content="https://viablemhr.com/og-image.png">
+  <meta name="twitter:image:alt" content="ViableMHR — Texas youth mental health resources">
   
   <!-- Icons -->
   <link rel="icon" href="/brand-mark.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="manifest" href="/site.webmanifest">
   
-  <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="phase1-design.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="phase1-design.css?v=19">
   <!-- Defer non-critical JS to avoid blocking first paint. Order is preserved. -->
   <script defer src="security.js?v=2"></script>
-  <script type="module" src="js/data-validator.js?v=3"></script>
-  <script type="module" src="js/config/constants.js?v=6"></script>
+  <script type="module" src="js/data-validator.js?v=4"></script>
+  <script type="module" src="js/config/constants.js?v=7"></script>
   <script type="module" src="js/utils/location-match.js?v=1"></script>
-  <script type="module" src="js/utils/helpers.js?v=5"></script>
+  <script type="module" src="js/utils/helpers.js?v=6"></script>
   <script type="module" src="js/modules/storage.js?v=3"></script>
   <script type="module" src="js/modules/search.js?v=14"></script>
   <script type="module" src="js/modules/empty-state.js?v=1"></script>
@@ -50,16 +57,17 @@
   <script type="module" src="js/modules/home-phase1.js?v=7"></script>
   <script type="module" src="js/modules/flow-motion.js?v=2"></script>
   <script type="module" src="js/modules/flow-scroll.js?v=3"></script>
-  <script defer src="js/modules/pro-gate.js?v=2"></script>
+  <script defer src="js/modules/pro-gate.js?v=3"></script>
   <script defer src="js/modules/pro-events.js?v=1"></script>
   <script type="module" src="js/modules/match-explain.js?v=2"></script>
-  <script type="module" src="js/modules/friction-flags.js?v=2"></script>
+  <script type="module" src="js/modules/friction-flags.js?v=3"></script>
   <script type="module" src="js/modules/handoff-completeness.js?v=2"></script>
   <script type="module" src="js/modules/handoff-print.js?v=3"></script>
   <script type="module" src="js/modules/navigator-presets.js?v=1"></script>
   <script type="module" src="js/modules/navigator-mode.js?v=1"></script>
   <script type="module" src="js/state-manager.js?v=3"></script>
-  
+
+  <script type="application/ld+json" id="website-jsonld">{"@context":"https://schema.org","@type":"WebSite","name":"ViableMHR","url":"https://viablemhr.com/","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://viablemhr.com/?q={search_term_string}"},"query-input":"required name=search_term_string"}}</script>
 </head>
 
 <body>
@@ -99,15 +107,15 @@
           </div>
         </div>
         <div class="header-actions">
-          <a class="btnlike" href="guides.html">Guides</a>
-          <a class="btnlike btn-primary" href="submit.html" aria-label="Submit or update a program">Submit or update a program</a>
+          <a class="btnlike" href="/guides">Guides</a>
+          <a class="btnlike btn-primary" href="/submit" aria-label="Submit or update a program">Submit or update a program</a>
         </div>
       </div>
 
       <section class="hero-gateway" aria-labelledby="heroHeading">
         <div class="hero-gateway__head">
           <h1 id="heroHeading" class="fade-in delay-1">Find youth mental health support in North Texas.</h1>
-          <p class="hero-gateway__sub fade-in delay-2">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="guides.html">Levels of care and calling programs</a>.</p>
+          <p class="hero-gateway__sub fade-in delay-2">Search North Texas youth programs by need, location, and insurance—not medical advice. <a href="/guides">Levels of care and calling programs</a>.</p>
           <p class="hero-gateway__prompt fade-in delay-3">What kind of help are you looking for today?</p>
         </div>
 
@@ -159,7 +167,7 @@
           <div class="trust-item">
             <div class="trust-icon" aria-hidden="true">—</div>
             <div class="trust-text">
-              <strong><a href="about.html#neutrality" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">No paid rankings</a></strong>
+              <strong><a href="/about#neutrality" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">No paid rankings</a></strong>
               <span>Programs do not pay to appear higher</span>
             </div>
           </div>
@@ -174,7 +182,7 @@
             <div class="trust-icon" aria-hidden="true">◇</div>
             <div class="trust-text">
               <strong>Privacy-conscious</strong>
-              <span>No ads or marketing trackers; <a href="privacy.html#analytics" style="color: inherit; font-weight: 600;">minimal aggregate analytics</a></span>
+              <span>No ads or marketing trackers; <a href="/privacy#analytics" style="color: inherit; font-weight: 600;">minimal aggregate analytics</a></span>
             </div>
           </div>
           </div>
@@ -247,7 +255,7 @@
         </div>
         <p class="guided-unsure-hint" id="guidedUnsureHint" hidden>
           Not sure about program type? That's okay—search will show all levels. Programs can help determine fit during intake.
-          <a href="guides.html#levels-of-care">Learn about levels of care</a>
+          <a href="/guide-levels-of-care">Learn about levels of care</a>
         </p>
         <div id="guidedHelperOutput" class="care-helper-output" role="status" aria-live="polite"></div>
         <p class="care-helper-disclaimer">This is not medical advice or a diagnosis. Programs can help determine fit during intake. If someone is in immediate physical danger, call 911. For suicidal thoughts, emotional distress, substance-use crisis, or mental health crisis, call or text 988.</p>
@@ -297,7 +305,7 @@
         <details class="search-tips search-tips--compact" id="searchTips">
           <summary>How to search</summary>
           <div class="search-tips-body" id="searchTipsText">
-            <p>We read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from natural language; open <strong>More filters</strong> for insurance and more. <a href="guides.html#how-to-search">Full how-to guide</a>.</p>
+            <p>We read <strong>city</strong>, <strong>level of care</strong>, and <strong>age</strong> from natural language; open <strong>More filters</strong> for insurance and more. <a href="/guide-how-to-search">Full how-to guide</a>.</p>
             <p class="search-tips-examples-label">Try an example:</p>
             <div class="search-examples" data-testid="search-examples">
               <button type="button" class="search-example-chip" data-search-example="IOP in Plano">IOP in Plano</button>
@@ -484,7 +492,7 @@
     <div class="filter-tray-overlay" id="filterTrayOverlay" hidden>
       <div class="filter-tray-panel" id="filterTrayPanel" role="dialog" aria-modal="true" aria-labelledby="filterTrayTitle">
         <div class="filter-tray-panel__head">
-          <h2 id="filterTrayTitle">Filters</h2>
+          <p class="modal-heading" id="filterTrayTitle">Filters</p>
           <button type="button" class="filter-tray-close" id="closeFilterTray" aria-label="Close filters">×</button>
         </div>
         <div id="filterTrayMount"></div>
@@ -540,7 +548,7 @@
           </button>
         </div>
         <div class="results-actions-overflow">
-          <button type="button" class="btn-icon btn-results-more" id="resultsMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="resultsMoreMenu" data-testid="results-more-btn">
+          <button type="button" class="btn-icon btn-results-more" id="resultsMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="resultsMoreMenu" data-testid="results-more-btn" title="More results actions" aria-label="More results actions">
             <span class="icon" aria-hidden="true">⋯</span>
             <span class="btn-text">More</span>
           </button>
@@ -591,7 +599,7 @@
           <button data-action="broaden-search" class="btn-primary" type="button" data-testid="empty-broaden-search">
             Broaden search
           </button>
-          <a href="guides.html#what-to-ask" class="empty-state-link">Not sure what to ask? See questions for programs.</a>
+          <a href="/guide-what-to-ask" class="empty-state-link">Not sure what to ask? See questions for programs.</a>
         </div>
         <p class="empty-state-tip" id="emptyStateTip">Tip: Try a nearby ZIP or city, or remove age or location filters.</p>
       </div>
@@ -602,9 +610,9 @@
       <h2 id="homeGuideCtaHeading">Guides for families</h2>
       <p>Orientation and call checklists live on a separate page so you can focus on search and results here.</p>
       <ul class="home-guide-cta-list">
-        <li><a href="guides.html#how-to-search">How to search this directory</a></li>
-        <li><a href="guides.html#levels-of-care">Understanding levels of care</a></li>
-        <li><a href="guides.html#what-to-ask">What to ask when you call</a> (copyable checklist)</li>
+        <li><a href="/guide-how-to-search">How to search this directory</a></li>
+        <li><a href="/guide-levels-of-care">Understanding levels of care</a></li>
+        <li><a href="/guide-what-to-ask">What to ask when you call</a> (copyable checklist)</li>
       </ul>
     </section>
 
@@ -639,10 +647,12 @@
         <li>Programs do not pay to appear higher.</li>
         <li>This site does not rank or recommend one program as best.</li>
         <li>Information may change. Call programs directly to confirm details.</li>
-        <li>Saved programs and search history stay on your device; we use minimal aggregate analytics (no ad tracking). <a href="privacy.html#analytics">Learn more</a></li>
+        <li>Saved programs and search history stay on your device; we use minimal aggregate analytics (no ad tracking). <a href="/privacy#analytics">Learn more</a></li>
         <li>This site is informational and is not medical advice, diagnosis, treatment, or emergency service.</li>
       </ul>
-      <p class="footer-submit-cta">Know a program we should add or update? <a href="submit.html">Submit or update a program</a> · <a href="guides.html">Guides for families</a></p>
+      <p class="footer-submit-cta">Know a program we should add or update? <a href="/submit">Submit or update a program</a> · <a href="/guides">Guides for families</a></p>
+      <p class="footer-submit-cta"><a href="/directory">Browse the full directory</a> — a plain list of every program, grouped by level of care.</p>
+      <p class="footer-submit-cta">Or jump straight to: <a href="/php-programs">PHP programs</a> · <a href="/iop-programs">IOP programs</a> · <a href="/residential-programs">Residential programs</a> · <a href="/crisis-resources">Crisis resources</a></p>
     </section>
 
     </main>
@@ -651,17 +661,17 @@
       <p>This directory is informational and does not provide clinical advice. If someone is in immediate physical danger, call 911. For crisis support, call or text 988.</p>
       <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">Privacy: No account required. Optional location is used only to sort results and is not stored. We use minimal aggregate page analytics—not ad or marketing trackers.</p>
       <p style="margin-top: 12px; font-size: 13px;">
-        <a href="professionals.html">For professionals</a>
+        <a href="/professionals">For professionals</a>
         <span aria-hidden="true"> • </span>
-        <a href="boards.html">Boards</a>
+        <a href="/boards">Boards</a>
         <span aria-hidden="true"> • </span>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <span aria-hidden="true"> • </span>
-        <a href="guides.html">Guides</a>
+        <a href="/guides">Guides</a>
         <span aria-hidden="true"> • </span>
-        <a href="privacy.html">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <span aria-hidden="true"> • </span>
-        <a href="terms.html">Terms of Service</a>
+        <a href="/terms">Terms of Service</a>
       </p>
       <p id="lastUpdated" class="footer-last-updated"></p>
     </footer>
@@ -672,7 +682,7 @@
   <div id="favoritesModal" class="modal" data-testid="favorites-modal" role="dialog" aria-labelledby="favoritesModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="favoritesModalTitle">Saved Programs</h2>
+        <p class="modal-heading" id="favoritesModalTitle">Saved Programs</p>
         <button type="button" class="modal-close" data-testid="favorites-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="favoritesList"></div>
@@ -686,7 +696,7 @@
   <div id="historyModal" class="modal" data-testid="history-modal" role="dialog" aria-labelledby="historyModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="historyModalTitle">Call History</h2>
+        <p class="modal-heading" id="historyModalTitle">Call History</p>
         <button type="button" class="modal-close" data-testid="history-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="historyList"></div>
@@ -697,7 +707,7 @@
   <div id="comparisonModal" class="modal" role="dialog" aria-labelledby="comparisonModalTitle" aria-hidden="true">
     <div class="modal-content comparison-modal-content">
       <div class="modal-header">
-        <h2 id="comparisonModalTitle">Compare Programs</h2>
+        <p class="modal-heading" id="comparisonModalTitle">Compare Programs</p>
         <div style="display: flex; gap: 10px; align-items: center;">
           <button type="button" id="clearComparison" class="btn-ghost" style="font-size: 12px; padding: 6px 12px;">Clear all</button>
           <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
@@ -717,7 +727,7 @@
   <div id="helpModal" class="modal" role="dialog" aria-labelledby="helpModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="helpModalTitle">Keyboard Shortcuts</h2>
+        <p class="modal-heading" id="helpModalTitle">Keyboard Shortcuts</p>
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
@@ -746,7 +756,7 @@
   <div id="locationConsentModal" class="modal" role="dialog" aria-labelledby="locationConsentModalTitle" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="locationConsentModalTitle">Use Your Location</h2>
+        <p class="modal-heading" id="locationConsentModalTitle">Use Your Location</p>
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">

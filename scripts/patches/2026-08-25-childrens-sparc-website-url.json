@@ -1,0 +1,19 @@
+{
+  "verified_on": "2026-08-25",
+  "source": "website",
+  "run_id": "sparc-website-url-fix-2026-08-25",
+  "notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
+  "changelog": {
+    "scope": "links",
+    "source": "Manual review of provider website",
+    "notes": "SPARC IOP (iop-childrens-sparc-dallas) website_url repointed from the generic 'who do I call' landing page to the program's own page. Link correction only; no verification date advanced."
+  },
+  "patches": {
+    "iop-childrens-sparc-dallas": {
+      "fields": {
+        "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/suicide-behaviors"
+      },
+      "stamp_verified": false
+    }
+  }
+}

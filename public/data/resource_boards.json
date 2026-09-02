@@ -35,13 +35,13 @@
         {
           "type": "guide_anchor",
           "label": "Understand PHP vs IOP vs outpatient",
-          "href": "guides.html#levels-of-care",
+          "href": "/guide-levels-of-care",
           "description": "Plain-language explanations of each level of care."
         },
         {
           "type": "guide_anchor",
           "label": "Family call script (printable)",
-          "href": "guides.html#what-to-ask",
+          "href": "/guide-what-to-ask",
           "description": "Questions to ask when calling a program."
         }
       ]
@@ -56,13 +56,13 @@
         {
           "type": "internal_search",
           "label": "Programs accepting Medicaid / CHIP",
-          "href": "index.html?mode=navigator&insurance=bucket%3Amedicaid",
+          "href": "/?mode=navigator&insurance=bucket%3Amedicaid",
           "description": "Filtered list of programs that list Medicaid or CHIP."
         },
         {
           "type": "internal_search",
           "label": "Self-pay or sliding scale",
-          "href": "index.html?mode=navigator&insurance=bucket%3Aself_pay",
+          "href": "/?mode=navigator&insurance=bucket%3Aself_pay",
           "description": "Programs that list self-pay or sliding-scale options."
         },
         {
@@ -82,7 +82,7 @@
         {
           "type": "guide_anchor",
           "label": "What to ask about insurance",
-          "href": "guides.html#what-to-ask",
+          "href": "/guide-what-to-ask",
           "description": "Insurance questions on the call script."
         }
       ]

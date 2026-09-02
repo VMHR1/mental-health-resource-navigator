@@ -44,7 +44,9 @@ Thumbs.db
 playwright-report/
 test-results/
 
-# Generated verification reports (regenerate with scripts/verify-*.js)
+# Generated verification reports (regenerate with the scripts in scripts/).
+# scripts/state/url-health.json is deliberately NOT here — the two-strikes rule
+# in audit-program-data.js needs failure history that survives between runs.
 scripts/full-program-verification-report.json
 scripts/link-verification-report.json
 scripts/spot-check-25-report.json
