@@ -1,3 +1,8 @@
+import {
+  state, stateManager, syncStateFromManager, syncStateToManager,
+  loadEncryptedDataFn, saveEncryptedDataFn, URL_FILTER_PARAM_KEYS, STORAGE_KEYS_COMPARISON,
+} from './js/app/state.js?v=1';
+
 // ========== Security ==========
 // Load security module (encryption, validation, etc.)
 // Security functions are available globally after security.js loads
@@ -6,22 +11,8 @@
 // All debug code has been removed
 
 // ========== State Management ==========
-// Initialize StateManager instance
-let stateManager = null;
-if (typeof window.getStateManager === 'function') {
-  stateManager = window.getStateManager();
-} else {
-  console.error('getStateManager not available. Make sure js/state-manager.js is loaded.');
-}
-
-// Legacy state variables - kept for backward compatibility during migration
-// These will be gradually replaced with stateManager.getState() / stateManager.setState()
-let programs = [];
-let ready = false;
-/** When false, treatment cards and results chrome stay hidden until Find Programs or Browse all. */
-let resultsUnlocked = false;
-
-const URL_FILTER_PARAM_KEYS = ['q', 'loc', 'care', 'age', 'insurance', 'crisis', 'virtual', 'sort'];
+// Legacy state variables now live in js/app/state.js as `state.<name>`;
+// they are still mutated in place so behavior is unchanged.
 
 function hasURLFilterParams() {
   const params = new URLSearchParams(window.location.search);
@@ -29,30 +20,30 @@ function hasURLFilterParams() {
 }
 
 function isResultsUnlocked() {
-  return resultsUnlocked;
+  return state.resultsUnlocked;
 }
 
 function unlockResults() {
-  if (resultsUnlocked) return;
-  resultsUnlocked = true;
+  if (state.resultsUnlocked) return;
+  state.resultsUnlocked = true;
   updateResultsVisibility();
 }
 
 function lockResults() {
-  if (!resultsUnlocked) return;
-  resultsUnlocked = false;
+  if (!state.resultsUnlocked) return;
+  state.resultsUnlocked = false;
   updateResultsVisibility();
 }
 
 function updateResultsVisibility() {
-  document.body.classList.toggle('is-results-unlocked', resultsUnlocked);
+  document.body.classList.toggle('is-results-unlocked', state.resultsUnlocked);
   const awaiting = document.getElementById('resultsAwaiting');
-  if (awaiting) awaiting.hidden = resultsUnlocked;
+  if (awaiting) awaiting.hidden = state.resultsUnlocked;
 }
 
 function getDirectoryProgramCount() {
-  if (!ready || !programs.length) return null;
-  return programs.filter((p) => !isCrisis(p)).length;
+  if (!state.ready || !state.programs.length) return null;
+  return state.programs.filter((p) => !isCrisis(p)).length;
 }
 
 function updateResultsAwaitingCopy() {
@@ -90,7 +81,7 @@ function updateResultsAwaitingPanel() {
   const countEl = document.getElementById('awaitingProgramCount');
   if (!countEl) return;
 
-  if (!ready) {
+  if (!state.ready) {
     countEl.textContent = '…';
     return;
   }
@@ -106,7 +97,7 @@ function renderResultsLocked() {
 
   if (els.treatmentGrid) {
     els.treatmentGrid.innerHTML = '';
-    els.treatmentGrid.dataset.state = ready ? 'idle' : 'loading';
+    els.treatmentGrid.dataset.state = state.ready ? 'idle' : 'loading';
     els.treatmentGrid.style.display = '';
   }
 
@@ -120,7 +111,7 @@ function renderResultsLocked() {
 
   const resultsIntro = document.getElementById('resultsIntro');
   if (resultsIntro) {
-    resultsIntro.textContent = ready
+    resultsIntro.textContent = state.ready
       ? 'Search or browse all to see program matches.'
       : 'Loading programs…';
   }
@@ -141,98 +132,8 @@ function browseAllPrograms() {
   }
 }
 
-let openId = null;
-let currentSort = window.DEFAULT_SORT || 'relevance';
-let userLocation = null; // { lat, lng } - kept in memory only, never stored
-let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
-let availableFilters = {
-  hasCounty: false,
-  hasServiceDomains: false,
-  hasSUD: false,
-  hasVerification: false,
-  hasServiceArea: false
-};
-
-// Statewide filter state (with safe defaults)
-let selectedCounty = null;
-let selectedServiceDomains = [];
-let selectedSudServices = [];
-let verificationRecencyDays = null;
-
-// Sync legacy variables with StateManager
-function syncStateFromManager() {
-  if (!stateManager) return;
-  const state = stateManager.getState();
-  programs = state.programs || [];
-  ready = state.ready || false;
-  openId = state.openId || null;
-  currentSort = state.currentSort || window.DEFAULT_SORT || 'relevance';
-  userLocation = state.userLocation || null;
-  geocodedPrograms = state.geocodedPrograms || null;
-  availableFilters = state.availableFilters || {
-    hasCounty: false,
-    hasServiceDomains: false,
-    hasSUD: false,
-    hasVerification: false,
-    hasServiceArea: false
-  };
-  selectedCounty = state.selectedCounty || null;
-  selectedServiceDomains = state.selectedServiceDomains || [];
-  selectedSudServices = state.selectedSudServices || [];
-  verificationRecencyDays = state.verificationRecencyDays || null;
-}
-
-// Sync StateManager with legacy variables
-function syncStateToManager() {
-  if (!stateManager) return;
-  stateManager.setState({
-    programs,
-    ready,
-    openId,
-    currentSort,
-    userLocation,
-    geocodedPrograms,
-    availableFilters,
-    selectedCounty,
-    selectedServiceDomains,
-    selectedSudServices,
-    verificationRecencyDays
-  });
-}
-
 // Initial sync from StateManager (load persisted state)
 syncStateFromManager();
-
-// Use unified storage functions from js/modules/storage.js
-// These are loaded before app.js and available on window object
-const loadEncryptedDataFn =
-  (typeof window.loadEncryptedData === 'function')
-    ? window.loadEncryptedData
-    : async (key, defaultValue = []) => {
-        try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue)); }
-        catch { return defaultValue; }
-      };
-
-const saveEncryptedDataFn =
-  (typeof window.saveEncryptedData === 'function')
-    ? window.saveEncryptedData
-    : async (key, data) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      };
-
-// Initialize encrypted storage
-let favorites = new Set();
-let recentSearches = [];
-let callHistory = [];
-let customLists = {}; // { listName: Set<programIds> }
-let programNotes = {}; // { programId: note }
-let programTags = {}; // { programId: [tags] }
-let userPreferences = {
-  defaultSort: window.DEFAULT_SORT || 'relevance',
-  defaultView: 'grid',
-  showCrisisByDefault: false,
-  itemsPerPage: 20
-};
 
 async function initializeEncryptedStorage() {
   const STORAGE_KEYS = window.STORAGE_KEYS || {
@@ -244,19 +145,19 @@ async function initializeEncryptedStorage() {
     PROGRAM_TAGS: 'programTags'
   };
   
-  favorites = new Set(await loadEncryptedDataFn(STORAGE_KEYS.FAVORITES, []));
-  recentSearches = await loadEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, []);
-  callHistory = await loadEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, []);
-  customLists = await loadEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, {});
-  programNotes = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, {});
-  programTags = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, {});
+  state.favorites = new Set(await loadEncryptedDataFn(STORAGE_KEYS.FAVORITES, []));
+  state.recentSearches = await loadEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, []);
+  state.callHistory = await loadEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, []);
+  state.customLists = await loadEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, {});
+  state.programNotes = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, {});
+  state.programTags = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, {});
   const prefs = await loadEncryptedDataFn('userPreferences', {});
-  userPreferences = { ...userPreferences, ...prefs };
+  state.userPreferences = { ...state.userPreferences, ...prefs };
   
   // Apply preferences (els might not be initialized yet, so check)
-  if (userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
-    currentSort = userPreferences.defaultSort;
-    els.sortSelect.value = currentSort;
+  if (state.userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
+    state.currentSort = state.userPreferences.defaultSort;
+    els.sortSelect.value = state.currentSort;
   }
 }
 
@@ -266,17 +167,14 @@ initializeEncryptedStorage();
 // ========== Performance Optimizations ==========
 // All performance code is now in js/modules/performance.js
 // Initialize performance optimizations (text scale detection, banner offset, etc.)
-let performanceModule = null;
-let updateCrisisBannerOffset = null;
-
 if (typeof window.initPerformanceOptimizations === 'function') {
   const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  performanceModule = window.initPerformanceOptimizations({ isCoarsePointer });
-  updateCrisisBannerOffset = performanceModule.updateCrisisBannerOffset;
+  state.performanceModule = window.initPerformanceOptimizations({ isCoarsePointer });
+  state.updateCrisisBannerOffset = state.performanceModule.updateCrisisBannerOffset;
             } else {
   console.error('initPerformanceOptimizations not available. Make sure js/modules/performance.js is loaded.');
   // Fallback: minimal updateCrisisBannerOffset function
-  updateCrisisBannerOffset = function() {
+  state.updateCrisisBannerOffset = function() {
   const banner = document.querySelector('.crisis-banner');
     if (banner) {
     const h = banner.getBoundingClientRect().height;
@@ -285,26 +183,19 @@ if (typeof window.initPerformanceOptimizations === 'function') {
   };
 }
 
-const STORAGE_KEYS_COMPARISON = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
-let comparisonSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS_COMPARISON.COMPARISON) || '[]'));
-
-const programDataMap = new Map();
-window.programDataMap = programDataMap;
-window.comparisonSet = comparisonSet;
+window.programDataMap = state.programDataMap;
+window.comparisonSet = state.comparisonSet;
 
 // ========== Autocomplete Indexes ==========
-// Avoid O(n^2) behavior in autocomplete by pre-indexing organizations.
-let orgProgramsIndex = new Map(); // key: lowercased organization name -> Program[]
-
 function buildAutocompleteIndexes(list){
-  orgProgramsIndex = new Map();
+  state.orgProgramsIndex = new Map();
   for (const p of list || []) {
     const org = safeStr(p.organization).trim();
     if (!org) continue;
     const key = org.toLowerCase();
-    const arr = orgProgramsIndex.get(key);
+    const arr = state.orgProgramsIndex.get(key);
     if (arr) arr.push(p);
-    else orgProgramsIndex.set(key, [p]);
+    else state.orgProgramsIndex.set(key, [p]);
   }
 }
 
@@ -335,7 +226,7 @@ function readSearchQuery() {
 if (typeof window !== 'undefined') {
   window.refreshEls = refreshEls;
   window.readSearchQuery = readSearchQuery;
-  window.getAppReady = () => ready;
+  window.getAppReady = () => state.ready;
   window.isResultsUnlocked = isResultsUnlocked;
   window.unlockResults = unlockResults;
   window.lockResults = lockResults;
@@ -467,9 +358,9 @@ document.addEventListener('click', (e) => {
     // Update button state
     const card = favoriteBtn.closest('.card');
     if (card) {
-      const program = programDataMap.get(id);
+      const program = state.programDataMap.get(id);
       if (program) {
-        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        const idx = Array.from(state.programDataMap.keys()).indexOf(id);
         if (typeof appCreateCard === 'function') {
           const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
@@ -497,9 +388,9 @@ document.addEventListener('click', (e) => {
     const card = compareCheckbox.closest('.card');
     if (card) {
       const id = card.dataset.id;
-      const program = programDataMap.get(id);
+      const program = state.programDataMap.get(id);
       if (program) {
-        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        const idx = Array.from(state.programDataMap.keys()).indexOf(id);
         if (typeof appCreateCard === 'function') {
           const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
@@ -732,10 +623,10 @@ function getFilterModuleBindings(showCrisis) {
       verificationRecency: els.verificationRecency?.value || '',
       exactMatch: qEl?.dataset.exactMatch === 'true',
       matchType: qEl?.dataset.matchType || '',
-      selectedCounty,
-      selectedServiceDomains,
-      selectedSudServices,
-      verificationRecencyDays
+      selectedCounty: state.selectedCounty,
+      selectedServiceDomains: state.selectedServiceDomains,
+      selectedSudServices: state.selectedSudServices,
+      verificationRecencyDays: state.verificationRecencyDays
     },
     options: {
       safeStr: window.safeStr,
@@ -747,8 +638,8 @@ function getFilterModuleBindings(showCrisis) {
       hasVirtual: window.hasVirtual,
       locLabel: window.locLabel,
       featureFlags: window.FEATURE_FLAGS || {},
-      programs,
-      ready
+      programs: state.programs,
+      ready: state.ready
     }
   };
 }
@@ -782,14 +673,14 @@ function matchesFiltersFallback(p) {
 // ========== Call Tracking ==========
 async function trackCallAttempt(program) {
   const sanitize = typeof window.sanitizeText === 'function' ? window.sanitizeText : (s) => s;
-  callHistory.unshift({
+  state.callHistory.unshift({
     program: sanitize(program.program_name),
     org: sanitize(program.organization),
     timestamp: new Date().toISOString()
   });
-  callHistory = callHistory.slice(0, 20);
+  state.callHistory = state.callHistory.slice(0, 20);
   const STORAGE_KEYS = window.STORAGE_KEYS || { CALL_HISTORY: 'callHistory' };
-  await saveEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, callHistory);
+  await saveEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, state.callHistory);
   
   showCallConfirmation(program);
 }
@@ -871,22 +762,22 @@ function toggleModalCardDetails(cardEl) {
 function toggleOpen(id){
   if (!id) return;
   
-  const nextOpenId = (openId === id) ? null : id;
+  const nextOpenId = (state.openId === id) ? null : id;
 
   // Close previously open card
-  if (openId && openId !== nextOpenId){
-    const prev = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+  if (state.openId && state.openId !== nextOpenId){
+    const prev = document.querySelector(`.card[data-id="${CSS.escape(state.openId)}"]`);
     if (prev) {
       setCardOpen(prev, false);
     }
   }
 
-  openId = nextOpenId;
+  state.openId = nextOpenId;
   syncStateToManager(); // Sync with StateManager
 
   // Open new card if needed
-  if (openId){
-    const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
+  if (state.openId){
+    const cur = document.querySelector(`.card[data-id="${CSS.escape(state.openId)}"]`);
     if (cur) {
       // Only scroll on main page cards, not inside modals
       const isInModal = cur.closest('.modal');
@@ -915,18 +806,18 @@ function toggleOpen(id){
 const appCreateCard = (p, idx) => {
   const fn = window.createCard; // from render.js
   if (typeof fn === 'function') {
-  const state = {
-    getOpenId: () => openId,
-    getUserLocation: () => userLocation,
-    getCurrentSort: () => currentSort
+  const stateAccessors = {
+    getOpenId: () => state.openId,
+    getUserLocation: () => state.userLocation,
+    getCurrentSort: () => state.currentSort
   };
     return fn(p, idx, {
     els,
-    state,
+    state: stateAccessors,
     isFavorite,
-    comparisonSet,
-    programDataMap,
-    allPrograms: programs
+    comparisonSet: state.comparisonSet,
+    programDataMap: state.programDataMap,
+    allPrograms: state.programs
   });
   } else {
     console.error('createCard not available. Make sure js/modules/render.js is loaded.');
@@ -957,10 +848,10 @@ function announceToScreenReader(message, priority = 'polite') {
 const callUpdateStats = () => {
   const fn = window.updateStats; // from render.js
   if (typeof fn === 'function') {
-    fn(programs, els, updateFavoritesCount);
+    fn(state.programs, els, updateFavoritesCount);
   } else {
     console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
-    if (els.programCount) els.programCount.textContent = programs.length;
+    if (els.programCount) els.programCount.textContent = state.programs.length;
     updateFavoritesCount();
   }
 };
@@ -972,33 +863,33 @@ function updateBadgeCount(el, count) {
 }
 
 function updateFavoritesCount() {
-  const count = favorites.size;
+  const count = state.favorites.size;
   updateBadgeCount(els.favoritesCount, count);
   updateBadgeCount(document.getElementById('favoritesCountMenu'), count);
 }
 
 function updateComparisonCount() {
-  const count = comparisonSet.size;
+  const count = state.comparisonSet.size;
   updateBadgeCount(document.getElementById('comparisonCount'), count);
   updateBadgeCount(document.getElementById('comparisonCountMenu'), count);
 }
 
 function saveComparison() {
   const STORAGE_KEYS = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
-  localStorage.setItem(STORAGE_KEYS.COMPARISON, JSON.stringify(Array.from(comparisonSet)));
+  localStorage.setItem(STORAGE_KEYS.COMPARISON, JSON.stringify(Array.from(state.comparisonSet)));
   updateComparisonCount();
 }
 
 function toggleComparison(programId) {
-  if (comparisonSet.has(programId)) {
-    comparisonSet.delete(programId);
+  if (state.comparisonSet.has(programId)) {
+    state.comparisonSet.delete(programId);
     callShowToast('Removed from comparison', 'success');
   } else {
-    if (comparisonSet.size >= 3) {
+    if (state.comparisonSet.size >= 3) {
       callShowToast('Maximum 3 programs can be compared', 'error');
       return;
     }
-    comparisonSet.add(programId);
+    state.comparisonSet.add(programId);
     callShowToast('Added to comparison', 'success');
   }
   saveComparison();
@@ -1011,7 +902,7 @@ function toggleComparison(programId) {
 }
 
 function isInComparison(programId) {
-  return comparisonSet.has(programId);
+  return state.comparisonSet.has(programId);
 }
 
 // renderComparison wrapper - uses const to avoid overwriting window.renderComparison
@@ -1020,8 +911,8 @@ const callRenderComparison = () => {
   if (typeof fn === 'function') {
     fn({
       els,
-      comparisonSet,
-      programDataMap
+      comparisonSet: state.comparisonSet,
+      programDataMap: state.programDataMap
     });
   } else {
     console.error('renderComparison not available. Make sure js/modules/render.js is loaded.');
@@ -1030,7 +921,7 @@ const callRenderComparison = () => {
 
 async function saveFavorites() {
   const STORAGE_KEYS = window.STORAGE_KEYS || { FAVORITES: 'favorites' };
-  await saveEncryptedDataFn(STORAGE_KEYS.FAVORITES, Array.from(favorites));
+  await saveEncryptedDataFn(STORAGE_KEYS.FAVORITES, Array.from(state.favorites));
   updateFavoritesCount();
 }
 
@@ -1047,11 +938,11 @@ async function toggleFavorite(programId) {
     return;
   }
   
-  if (favorites.has(sanitizedId)) {
-    favorites.delete(sanitizedId);
+  if (state.favorites.has(sanitizedId)) {
+    state.favorites.delete(sanitizedId);
     callShowToast('Removed from saved programs', 'success');
   } else {
-    favorites.add(sanitizedId);
+    state.favorites.add(sanitizedId);
     callShowToast('Saved to your programs', 'success');
   }
   await saveFavorites();
@@ -1059,85 +950,85 @@ async function toggleFavorite(programId) {
 }
 
 function isFavorite(programId) {
-  return favorites.has(programId);
+  return state.favorites.has(programId);
 }
 
 async function saveProgramNote(programId, note) {
   if (!note || note.trim() === '') {
-    delete programNotes[programId];
+    delete state.programNotes[programId];
   } else {
-    programNotes[programId] = typeof window.sanitizeText === 'function' 
+    state.programNotes[programId] = typeof window.sanitizeText === 'function' 
       ? window.sanitizeText(note, 500)
       : note.substring(0, 500);
   }
   const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_NOTES: 'programNotes' };
-  await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, programNotes);
+  await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, state.programNotes);
 }
 
 function getProgramNote(programId) {
-  return programNotes[programId] || '';
+  return state.programNotes[programId] || '';
 }
 
 async function addProgramTag(programId, tag) {
-  if (!programTags[programId]) {
-    programTags[programId] = [];
+  if (!state.programTags[programId]) {
+    state.programTags[programId] = [];
   }
   const sanitizedTag = typeof window.sanitizeText === 'function'
     ? window.sanitizeText(tag, 50)
     : tag.substring(0, 50);
-  if (!programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
-    programTags[programId].push(sanitizedTag);
+  if (!state.programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
+    state.programTags[programId].push(sanitizedTag);
     const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
-    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, state.programTags);
   }
 }
 
 async function removeProgramTag(programId, tag) {
-  if (programTags[programId]) {
-    programTags[programId] = programTags[programId].filter(t => t !== tag);
-    if (programTags[programId].length === 0) {
-      delete programTags[programId];
+  if (state.programTags[programId]) {
+    state.programTags[programId] = state.programTags[programId].filter(t => t !== tag);
+    if (state.programTags[programId].length === 0) {
+      delete state.programTags[programId];
     }
     const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
-    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, state.programTags);
   }
 }
 
 function getProgramTags(programId) {
-  return programTags[programId] || [];
+  return state.programTags[programId] || [];
 }
 
 async function createCustomList(listName) {
   const sanitizedName = typeof window.sanitizeText === 'function'
     ? window.sanitizeText(listName, 50)
     : listName.substring(0, 50);
-  if (sanitizedName.trim() && !customLists[sanitizedName]) {
-    customLists[sanitizedName] = [];
+  if (sanitizedName.trim() && !state.customLists[sanitizedName]) {
+    state.customLists[sanitizedName] = [];
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
     return sanitizedName;
   }
   return null;
 }
 
 async function addToCustomList(listName, programId) {
-  if (customLists[listName] && !customLists[listName].includes(programId)) {
-    customLists[listName].push(programId);
+  if (state.customLists[listName] && !state.customLists[listName].includes(programId)) {
+    state.customLists[listName].push(programId);
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
   }
 }
 
 async function removeFromCustomList(listName, programId) {
-  if (customLists[listName]) {
-    customLists[listName] = customLists[listName].filter(id => id !== programId);
+  if (state.customLists[listName]) {
+    state.customLists[listName] = state.customLists[listName].filter(id => id !== programId);
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
   }
 }
 
 function isInCustomList(listName, programId) {
-  return customLists[listName] && customLists[listName].includes(programId);
+  return state.customLists[listName] && state.customLists[listName].includes(programId);
 }
 
 // showToast wrapper - uses const to avoid overwriting window.showToast
@@ -1189,7 +1080,7 @@ function sortProgramsLocal(list) {
     DISTANCE: 'distance'
   };
   
-  switch(currentSort) {
+  switch(state.currentSort) {
     case SORT_OPTIONS.NAME:
       sorted.sort((a, b) => {
         const nameA = safeStr(a.program_name || a.organization).toLowerCase();
@@ -1212,7 +1103,7 @@ function sortProgramsLocal(list) {
       });
       break;
     case SORT_OPTIONS.DISTANCE:
-      if (userLocation && typeof window.calculateProgramDistance === 'function') {
+      if (state.userLocation && typeof window.calculateProgramDistance === 'function') {
         // Separate virtual and in-person programs
         const inPerson = [];
         const virtual = [];
@@ -1228,7 +1119,7 @@ function sortProgramsLocal(list) {
         
         // Calculate distances for in-person programs
         const withDistances = inPerson.map(program => {
-          const distance = window.calculateProgramDistance(program, userLocation.lat, userLocation.lng);
+          const distance = window.calculateProgramDistance(program, state.userLocation.lat, state.userLocation.lng);
           return { program, distance };
         });
         
@@ -1272,7 +1163,7 @@ function sortProgramsLocal(list) {
 }
 
 function shareProgram(programId) {
-  const program = programDataMap.get(programId);
+  const program = state.programDataMap.get(programId);
   if (!program) return;
   
   // Validate programId to prevent injection
@@ -1419,18 +1310,18 @@ function clearAllFilters(options = {}) {
   if (els.showCrisisTop) els.showCrisisTop.checked = false;
 
   if (els.serviceDomain) els.serviceDomain.value = '';
-  selectedServiceDomains = [];
+  state.selectedServiceDomains = [];
   if (els.sudServices) {
     Array.from(els.sudServices.options).forEach((opt) => {
       opt.selected = false;
     });
     if (typeof syncChipsToSelect === 'function') syncChipsToSelect('sudServices');
   }
-  selectedSudServices = [];
+  state.selectedSudServices = [];
   if (els.county) els.county.value = '';
-  selectedCounty = null;
+  state.selectedCounty = null;
   if (els.verificationRecency) els.verificationRecency.value = '';
-  verificationRecencyDays = null;
+  state.verificationRecencyDays = null;
 
   if (stateManager) {
     stateManager.setState({
@@ -1438,11 +1329,11 @@ function clearAllFilters(options = {}) {
       selectedServiceDomains: [],
       selectedSudServices: [],
       verificationRecencyDays: null,
-      openId: closeCards ? null : openId,
+      openId: closeCards ? null : state.openId,
     });
   }
   if (closeCards) {
-    openId = null;
+    state.openId = null;
   }
 
   syncStateToManager();
@@ -1623,7 +1514,7 @@ function broadenSearchOneStep() {
       break;
     case 'verificationRecency':
       if (els.verificationRecency) els.verificationRecency.value = '';
-      verificationRecencyDays = null;
+      state.verificationRecencyDays = null;
       if (stateManager) stateManager.setState({ verificationRecencyDays: null });
       syncStateToManager();
       break;
@@ -1632,7 +1523,7 @@ function broadenSearchOneStep() {
         Array.from(els.sudServices.options).forEach((opt) => {
           opt.selected = false;
         });
-        selectedSudServices = [];
+        state.selectedSudServices = [];
         if (typeof syncChipsToSelect === 'function') syncChipsToSelect('sudServices');
         if (stateManager) stateManager.setState({ selectedSudServices: [] });
         syncStateToManager();
@@ -1640,13 +1531,13 @@ function broadenSearchOneStep() {
       break;
     case 'serviceDomain':
       if (els.serviceDomain) els.serviceDomain.value = '';
-      selectedServiceDomains = [];
+      state.selectedServiceDomains = [];
       if (stateManager) stateManager.setState({ selectedServiceDomains: [] });
       syncStateToManager();
       break;
     case 'county':
       if (els.county) els.county.value = '';
-      selectedCounty = null;
+      state.selectedCounty = null;
       if (stateManager) stateManager.setState({ selectedCounty: null });
       syncStateToManager();
       break;
@@ -1688,7 +1579,7 @@ function applyPresetConfig(config) {
   if (config.showCrisis && els.showCrisis) els.showCrisis.checked = true;
   if (config.serviceDomain && els.serviceDomain) {
     els.serviceDomain.value = config.serviceDomain;
-    selectedServiceDomains = [config.serviceDomain];
+    state.selectedServiceDomains = [config.serviceDomain];
   }
 }
 
@@ -1774,7 +1665,7 @@ function fallbackCopy(text) {
 }
 
 function printProgram(programId) {
-  const program = programDataMap.get(programId);
+  const program = state.programDataMap.get(programId);
   if (!program) return;
   
   const printWindow = window.open('', '_blank');
@@ -1824,27 +1715,22 @@ function isValidRecentSearchQuery(query) {
 async function addRecentSearch(query) {
   if (!isValidRecentSearchQuery(query)) return;
   const trimmed = sanitizeText(query.trim(), 200);
-  recentSearches = recentSearches.filter(s => s !== trimmed);
-  recentSearches.unshift(trimmed);
-  recentSearches = recentSearches.slice(0, 5); // Reduced from 10 to 5
+  state.recentSearches = state.recentSearches.filter(s => s !== trimmed);
+  state.recentSearches.unshift(trimmed);
+  state.recentSearches = state.recentSearches.slice(0, 5); // Reduced from 10 to 5
   const STORAGE_KEYS = window.STORAGE_KEYS || { RECENT_SEARCHES: 'recentSearches' };
-  await saveEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, recentSearches);
+  await saveEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, state.recentSearches);
   renderRecentSearches();
 }
-
-/** Bumped on each render; stale async renders must not overwrite the UI. */
-let renderGeneration = 0;
-
-let recentSearchesPanelOpen = false;
 
 function renderRecentSearches() {
   const container = document.getElementById('recentSearchesContainer')
     || document.querySelector('.recent-searches');
   if (!container) return;
 
-  const validRecent = recentSearches.filter(isValidRecentSearchQuery);
+  const validRecent = state.recentSearches.filter(isValidRecentSearchQuery);
   const queryEmpty = !els.q?.value?.trim();
-  const shouldShow = validRecent.length > 0 && (recentSearchesPanelOpen || queryEmpty);
+  const shouldShow = validRecent.length > 0 && (state.recentSearchesPanelOpen || queryEmpty);
 
   if (!shouldShow) {
     container.style.display = 'none';
@@ -1882,7 +1768,7 @@ function renderRecentSearches() {
 
 if (typeof window !== 'undefined') {
   window.setRecentSearchesPanelOpen = (open) => {
-    recentSearchesPanelOpen = !!open;
+    state.recentSearchesPanelOpen = !!open;
     renderRecentSearches();
   };
   window.renderRecentSearches = renderRecentSearches;
@@ -1895,9 +1781,9 @@ function renderFavorites() {
     return;
   }
 
-  const favoritePrograms = programs.filter(p => {
-    const id = stableIdFor(p, programs.indexOf(p));
-    return favorites.has(id);
+  const favoritePrograms = state.programs.filter(p => {
+    const id = stableIdFor(p, state.programs.indexOf(p));
+    return state.favorites.has(id);
   });
   
   if (favoritePrograms.length === 0) {
@@ -1994,9 +1880,9 @@ function renderFavorites() {
 
 // Print/Export saved programs list
 function exportFavorites() {
-  const favoritePrograms = programs.filter(p => {
-    const id = stableIdFor(p, programs.indexOf(p));
-    return favorites.has(id);
+  const favoritePrograms = state.programs.filter(p => {
+    const id = stableIdFor(p, state.programs.indexOf(p));
+    return state.favorites.has(id);
   });
   
   if (favoritePrograms.length === 0) {
@@ -2088,12 +1974,12 @@ function renderCallHistory() {
     return;
   }
 
-  if (callHistory.length === 0) {
+  if (state.callHistory.length === 0) {
     els.historyList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">No call history yet. Call buttons will appear here after you use them.</p>';
     return;
   }
   
-  els.historyList.innerHTML = callHistory.map(call => {
+  els.historyList.innerHTML = state.callHistory.map(call => {
     const date = new Date(call.timestamp);
     return `
       <div class="card" style="margin-bottom: 12px;">
@@ -2111,19 +1997,12 @@ function renderCallHistory() {
   }).join('');
 }
 
-// Progressive loading state
-let progressiveLoadState = {
-  allItems: [],
-  displayedCount: 20,
-  isLoading: false
-};
-
 function renderProgressive(activeList, isCrisisList = false, appendOnly = false) {
   if (!els.treatmentGrid) return;
   
   const existingCards = appendOnly ? els.treatmentGrid.querySelectorAll('.card').length : 0;
   const startIndex = appendOnly ? existingCards : 0;
-  const toDisplay = activeList.slice(startIndex, progressiveLoadState.displayedCount);
+  const toDisplay = activeList.slice(startIndex, state.progressiveLoadState.displayedCount);
   if (!appendOnly) {
     els.treatmentGrid.innerHTML = "";
   }
@@ -2147,17 +2026,17 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
   
   // Show "Load More" button if there are more items
   const loadMoreBtn = document.getElementById('loadMoreBtn');
-  if (activeList.length > progressiveLoadState.displayedCount) {
+  if (activeList.length > state.progressiveLoadState.displayedCount) {
     if (!loadMoreBtn) {
       const btn = document.createElement('button');
       btn.id = 'loadMoreBtn';
       btn.className = 'btn-primary';
-      btn.textContent = `Load More (${activeList.length - progressiveLoadState.displayedCount} remaining)`;
+      btn.textContent = `Load More (${activeList.length - state.progressiveLoadState.displayedCount} remaining)`;
       btn.style.margin = '20px auto';
       btn.style.display = 'block';
       btn.addEventListener('click', () => {
-        progressiveLoadState.displayedCount = Math.min(
-          progressiveLoadState.displayedCount + 20,
+        state.progressiveLoadState.displayedCount = Math.min(
+          state.progressiveLoadState.displayedCount + 20,
           activeList.length
         );
         // Use requestIdleCallback for progressive loading if available
@@ -2170,7 +2049,7 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
       });
       els.treatmentGrid.parentElement.appendChild(btn);
     } else {
-      loadMoreBtn.textContent = `Load More (${activeList.length - progressiveLoadState.displayedCount} remaining)`;
+      loadMoreBtn.textContent = `Load More (${activeList.length - state.progressiveLoadState.displayedCount} remaining)`;
       loadMoreBtn.style.display = 'block';
     }
   } else if (loadMoreBtn) {
@@ -2179,10 +2058,10 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
 }
 
 function render(){
-  if (!ready) {
+  if (!state.ready) {
     if (els.treatmentGrid) els.treatmentGrid.dataset.state = 'loading';
     updateResultsAwaitingPanel();
-    if (!resultsUnlocked) renderResultsLocked();
+    if (!state.resultsUnlocked) renderResultsLocked();
     return;
   }
 
@@ -2191,12 +2070,12 @@ function render(){
     return;
   }
 
-  if (!resultsUnlocked) {
+  if (!state.resultsUnlocked) {
     renderResultsLocked();
     return;
   }
 
-  const generation = ++renderGeneration;
+  const generation = ++state.renderGeneration;
   refreshEls();
   const showCrisis = els.showCrisis?.checked || false;
   const { filters: filterSnapshot, options: filterOptions } = getFilterModuleBindings(showCrisis);
@@ -2205,7 +2084,7 @@ function render(){
     ? (p) => window.matchesFilters(p, filterSnapshot, filterOptions)
     : matchesFiltersFallback;
 
-  const filtered = programs.filter(filterFn);
+  const filtered = state.programs.filter(filterFn);
 
   const treatment = filtered.filter(p => !isCrisis(p));
   const crisis = filtered.filter(p => isCrisis(p));
@@ -2241,7 +2120,7 @@ function render(){
     
     // Sort by relevance score (highest first) when sort is "relevance"
     const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
-    if (currentSort === SORT_OPTIONS.RELEVANCE) {
+    if (state.currentSort === SORT_OPTIONS.RELEVANCE) {
       scoredPrograms.sort((a, b) => b.score - a.score);
       activeList = scoredPrograms.map(sp => sp.program);
     } else {
@@ -2253,7 +2132,7 @@ function render(){
               safeStr: window.safeStr,
               locLabel: window.locLabel,
               calculateProgramDistance: window.calculateProgramDistance,
-              userLocation: userLocation,
+              userLocation: state.userLocation,
               SORT_OPTIONS: window.SORT_OPTIONS || {
                 RELEVANCE: 'relevance',
                 NAME: 'name',
@@ -2262,7 +2141,7 @@ function render(){
                 DISTANCE: 'distance'
               }
             };
-            return window.sortPrograms(list, currentSort, options);
+            return window.sortPrograms(list, state.currentSort, options);
           }
         : sortProgramsLocal; // Fallback to local function
       activeList = sortFn(activeList);
@@ -2276,7 +2155,7 @@ function render(){
             safeStr: window.safeStr,
             locLabel: window.locLabel,
             calculateProgramDistance: window.calculateProgramDistance,
-            userLocation: userLocation,
+            userLocation: state.userLocation,
             SORT_OPTIONS: window.SORT_OPTIONS || {
               RELEVANCE: 'relevance',
               NAME: 'name',
@@ -2285,22 +2164,22 @@ function render(){
               DISTANCE: 'distance'
             }
           };
-          return window.sortPrograms(list, currentSort, options);
+          return window.sortPrograms(list, state.currentSort, options);
         }
       : sortProgramsLocal; // Fallback to local function
     activeList = sortFn(activeList);
   }
   
   // Store for progressive loading
-  progressiveLoadState.allItems = activeList;
-  progressiveLoadState.displayedCount = Math.min(20, activeList.length);
+  state.progressiveLoadState.allItems = activeList;
+  state.progressiveLoadState.displayedCount = Math.min(20, activeList.length);
 
-  if (openId){
-    const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === openId);
-    if (!stillExists) openId = null;
+  if (state.openId){
+    const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === state.openId);
+    if (!stillExists) state.openId = null;
   }
 
-  if (generation !== renderGeneration) {
+  if (generation !== state.renderGeneration) {
     return;
   }
 
@@ -2411,10 +2290,6 @@ function syncTopToggles(){
 }
 
 // ========== Autocomplete ==========
-let autocompleteSuggestions = [];
-let autocompleteSelectedIndex = -1;
-let autocompleteVisible = false;
-
 function generateAutocompleteSuggestions(query) {
   if (!query || query.length < 2) return [];
   
@@ -2423,7 +2298,7 @@ function generateAutocompleteSuggestions(query) {
   const seen = new Set();
   
   // Recent searches
-  recentSearches.forEach(search => {
+  state.recentSearches.forEach(search => {
     if (search.toLowerCase().includes(q) && !seen.has(search)) {
       suggestions.push({ type: 'recent', text: search });
       seen.add(search);
@@ -2431,11 +2306,11 @@ function generateAutocompleteSuggestions(query) {
   });
   
   // Program names and organizations - search ALL programs, not just first 50
-  if (ready && programs.length > 0) {
+  if (state.ready && state.programs.length > 0) {
     const exactMatches = [];
     const fuzzyMatches = [];
     
-    programs.forEach(p => {
+    state.programs.forEach(p => {
       const programName = safeStr(p.program_name);
       const orgName = safeStr(p.organization);
       
@@ -2455,7 +2330,7 @@ function generateAutocompleteSuggestions(query) {
       if (orgName && orgName !== programName) {
         const orgLower = orgName.toLowerCase();
         // Collect all programs for this organization
-        const orgPrograms = orgProgramsIndex.get(orgLower) || [];
+        const orgPrograms = state.orgProgramsIndex.get(orgLower) || [];
         
         if (orgLower === q) {
           exactMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: true });
@@ -2527,13 +2402,13 @@ function renderAutocomplete(suggestions) {
     container.style.display = 'none';
     input.setAttribute('aria-expanded', 'false');
     updateAutocompleteActiveDescendant(-1);
-    autocompleteVisible = false;
+    state.autocompleteVisible = false;
     return;
   }
   
-  autocompleteSuggestions = suggestions;
-  autocompleteSelectedIndex = -1;
-  autocompleteVisible = true;
+  state.autocompleteSuggestions = suggestions;
+  state.autocompleteSelectedIndex = -1;
+  state.autocompleteVisible = true;
   input.setAttribute('aria-expanded', 'true');
   updateAutocompleteActiveDescendant(-1);
   
@@ -2573,7 +2448,7 @@ function renderAutocomplete(suggestions) {
     if (indexAttr !== null) {
       const index = parseInt(indexAttr, 10);
       // Use autocompleteSuggestions instead of suggestions parameter
-      if (!isNaN(index) && index >= 0 && index < autocompleteSuggestions.length) {
+      if (!isNaN(index) && index >= 0 && index < state.autocompleteSuggestions.length) {
         e.preventDefault();
         e.stopPropagation();
         selectSuggestion(index);
@@ -2605,14 +2480,14 @@ function setSelectedSuggestion(index) {
     item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
   });
   
-  autocompleteSelectedIndex = index;
+  state.autocompleteSelectedIndex = index;
   updateAutocompleteActiveDescendant(index);
 }
 
 function selectSuggestion(index) {
-  if (index < 0 || index >= autocompleteSuggestions.length) return;
+  if (index < 0 || index >= state.autocompleteSuggestions.length) return;
   
-  const suggestion = autocompleteSuggestions[index];
+  const suggestion = state.autocompleteSuggestions[index];
   
   // For organization suggestions, use the exact organization name from the database
   // This ensures case-sensitive matching works correctly
@@ -2640,7 +2515,7 @@ function selectSuggestion(index) {
   }
   els.q.setAttribute('aria-expanded', 'false');
   updateAutocompleteActiveDescendant(-1);
-  autocompleteVisible = false;
+  state.autocompleteVisible = false;
   
   // Clear any previous search state and trigger fresh search
   // Use a small delay to ensure the input value is set
@@ -2666,8 +2541,8 @@ function hideAutocomplete() {
     els.q.setAttribute('aria-expanded', 'false');
     updateAutocompleteActiveDescendant(-1);
   }
-  autocompleteVisible = false;
-  autocompleteSelectedIndex = -1;
+  state.autocompleteVisible = false;
+  state.autocompleteSelectedIndex = -1;
 }
 
 // ========== Mobile Swipe Gestures ==========
@@ -2795,70 +2670,70 @@ function bind(){
   }
     
   // Setup state accessors - use StateManager if available, fallback to legacy variables
-  const state = {
-    getReady: () => stateManager ? stateManager.getState('ready') : ready,
-    getOpenId: () => stateManager ? stateManager.getState('openId') : openId,
+  const stateAccessors = {
+    getReady: () => stateManager ? stateManager.getState('ready') : state.ready,
+    getOpenId: () => stateManager ? stateManager.getState('openId') : state.openId,
     setOpenId: (id) => {
       if (stateManager) {
         stateManager.setState({ openId: id });
-        openId = id; // Update local variable directly
+        state.openId = id; // Update local variable directly
       } else {
-        openId = id;
+        state.openId = id;
       }
     },
-    getCurrentSort: () => stateManager ? stateManager.getState('currentSort') : currentSort,
+    getCurrentSort: () => stateManager ? stateManager.getState('currentSort') : state.currentSort,
     setCurrentSort: (sort) => {
       if (stateManager) {
         stateManager.setState({ currentSort: sort });
-        currentSort = sort; // Update local variable directly
+        state.currentSort = sort; // Update local variable directly
       } else {
-        currentSort = sort;
+        state.currentSort = sort;
       }
     },
-    getUserLocation: () => stateManager ? stateManager.getState('userLocation') : userLocation,
+    getUserLocation: () => stateManager ? stateManager.getState('userLocation') : state.userLocation,
     setUserLocation: (loc) => {
       if (stateManager) {
         stateManager.setState({ userLocation: loc });
-        userLocation = loc; // Update local variable directly
+        state.userLocation = loc; // Update local variable directly
       } else {
-        userLocation = loc;
+        state.userLocation = loc;
       }
     },
-    getPrograms: () => stateManager ? stateManager.getState('programs') : programs,
-    getSelectedCounty: () => stateManager ? stateManager.getState('selectedCounty') : selectedCounty,
+    getPrograms: () => stateManager ? stateManager.getState('programs') : state.programs,
+    getSelectedCounty: () => stateManager ? stateManager.getState('selectedCounty') : state.selectedCounty,
     setSelectedCounty: (county) => {
       if (stateManager) {
         stateManager.setState({ selectedCounty: county });
-        selectedCounty = county; // Update local variable directly
+        state.selectedCounty = county; // Update local variable directly
       } else {
-        selectedCounty = county;
+        state.selectedCounty = county;
       }
     },
-    getSelectedServiceDomains: () => stateManager ? stateManager.getState('selectedServiceDomains') : selectedServiceDomains,
+    getSelectedServiceDomains: () => stateManager ? stateManager.getState('selectedServiceDomains') : state.selectedServiceDomains,
     setSelectedServiceDomains: (domains) => {
       if (stateManager) {
         stateManager.setState({ selectedServiceDomains: domains });
-        selectedServiceDomains = domains; // Update local variable directly
+        state.selectedServiceDomains = domains; // Update local variable directly
       } else {
-        selectedServiceDomains = domains;
+        state.selectedServiceDomains = domains;
       }
     },
-    getSelectedSudServices: () => stateManager ? stateManager.getState('selectedSudServices') : selectedSudServices,
+    getSelectedSudServices: () => stateManager ? stateManager.getState('selectedSudServices') : state.selectedSudServices,
     setSelectedSudServices: (services) => {
       if (stateManager) {
         stateManager.setState({ selectedSudServices: services });
-        selectedSudServices = services; // Update local variable directly
+        state.selectedSudServices = services; // Update local variable directly
       } else {
-        selectedSudServices = services;
+        state.selectedSudServices = services;
       }
     },
-    getVerificationRecencyDays: () => stateManager ? stateManager.getState('verificationRecencyDays') : verificationRecencyDays,
+    getVerificationRecencyDays: () => stateManager ? stateManager.getState('verificationRecencyDays') : state.verificationRecencyDays,
     setVerificationRecencyDays: (days) => {
       if (stateManager) {
         stateManager.setState({ verificationRecencyDays: days });
-        verificationRecencyDays = days; // Update local variable directly
+        state.verificationRecencyDays = days; // Update local variable directly
         } else {
-        verificationRecencyDays = days;
+        state.verificationRecencyDays = days;
       }
     }
   };
@@ -2903,18 +2778,18 @@ function bind(){
     },
     setupPrivacyControls,
     setCardOpen,
-    getAutocompleteVisible: () => autocompleteVisible,
-    getAutocompleteSuggestions: () => autocompleteSuggestions,
-    getAutocompleteSelectedIndex: () => autocompleteSelectedIndex,
+    getAutocompleteVisible: () => state.autocompleteVisible,
+    getAutocompleteSuggestions: () => state.autocompleteSuggestions,
+    getAutocompleteSelectedIndex: () => state.autocompleteSelectedIndex,
     clearComparison: () => {
-      comparisonSet.clear();
+      state.comparisonSet.clear();
       saveComparison();
     }
   };
   
   refreshEls();
   // Call events module setup
-  window.setupEventHandlers({ els, callbacks, state });
+  window.setupEventHandlers({ els, callbacks, state: stateAccessors });
   
   // Make scheduleRender accessible globally (set by events module)
   // window.scheduleRenderFn is set inside setupEventHandlers
@@ -2957,10 +2832,10 @@ function setupPrivacyControls() {
         localStorage.removeItem('securityLog');
         
         // Reset in memory
-        favorites.clear();
-        recentSearches = [];
-        callHistory = [];
-        comparisonSet.clear();
+        state.favorites.clear();
+        state.recentSearches = [];
+        state.callHistory = [];
+        state.comparisonSet.clear();
         
         // Update UI
         updateFavoritesCount();
@@ -2979,10 +2854,10 @@ function setupPrivacyControls() {
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
       const userData = {
-        favorites: Array.from(favorites),
-        recentSearches: recentSearches,
-        callHistory: callHistory,
-        comparison: Array.from(comparisonSet),
+        favorites: Array.from(state.favorites),
+        recentSearches: state.recentSearches,
+        callHistory: state.callHistory,
+        comparison: Array.from(state.comparisonSet),
         exportedAt: new Date().toISOString()
       };
       
@@ -3021,13 +2896,13 @@ async function loadGeocodedData() {
     const response = await fetch('programs.geocoded.json');
     if (response.ok) {
       const data = await response.json();
-      geocodedPrograms = new Map();
+      state.geocodedPrograms = new Map();
       if (data.programs && Array.isArray(data.programs)) {
         data.programs.forEach(program => {
-          geocodedPrograms.set(program.program_id, program);
+          state.geocodedPrograms.set(program.program_id, program);
         });
       }
-      console.log(`Loaded ${geocodedPrograms.size} geocoded programs`);
+      console.log(`Loaded ${state.geocodedPrograms.size} geocoded programs`);
       return true;
     } else {
       console.warn('Geocoded data file not found (this is okay if not yet generated)');
@@ -3040,12 +2915,12 @@ async function loadGeocodedData() {
 }
 
 function mergeGeocodedData(programs) {
-  if (!geocodedPrograms || geocodedPrograms.size === 0) {
+  if (!state.geocodedPrograms || state.geocodedPrograms.size === 0) {
     return programs;
   }
   
   return programs.map(program => {
-    const geocoded = geocodedPrograms.get(program.program_id);
+    const geocoded = state.geocodedPrograms.get(program.program_id);
     if (geocoded && geocoded.locations) {
       const merged = { ...program };
       merged.locations = program.locations.map((loc, idx) => {
@@ -3181,7 +3056,7 @@ function applyFeatureFlagsToUI() {
       if (sudServicesSelect) {
         // Clear all selected options
         Array.from(sudServicesSelect.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
+        state.selectedSudServices = [];
         syncChipsToSelect('sudServices');
       }
     }
@@ -3212,22 +3087,22 @@ function updateFilterVisibility() {
   
   // Check if any advanced filter is available AND enabled by feature flags
   const hasAnyAdvancedFilter = 
-    (flags.STATEWIDE_MODE && availableFilters.hasCounty) ||
-    (flags.SHOW_SUD_FILTERS && (availableFilters.hasServiceDomains || availableFilters.hasSUD)) ||
-    (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ||
-    availableFilters.hasServiceArea; // Service area is always available if present
+    (flags.STATEWIDE_MODE && state.availableFilters.hasCounty) ||
+    (flags.SHOW_SUD_FILTERS && (state.availableFilters.hasServiceDomains || state.availableFilters.hasSUD)) ||
+    (flags.SHOW_VERIFICATION_FILTERS && state.availableFilters.hasVerification) ||
+    state.availableFilters.hasServiceArea; // Service area is always available if present
   
   extendedSection.style.display = hasAnyAdvancedFilter ? 'block' : 'none';
   
   // Show/hide individual filter groups (respect both data availability and feature flags)
   const countyGroup = document.getElementById('countyFilterGroup');
   if (countyGroup) {
-    countyGroup.style.display = (flags.STATEWIDE_MODE && availableFilters.hasCounty) ? 'block' : 'none';
+    countyGroup.style.display = (flags.STATEWIDE_MODE && state.availableFilters.hasCounty) ? 'block' : 'none';
   }
   
   const serviceDomainGroup = document.getElementById('serviceDomainFilterGroup');
   if (serviceDomainGroup) {
-    serviceDomainGroup.style.display = (flags.SHOW_SUD_FILTERS && (availableFilters.hasServiceDomains || availableFilters.hasSUD)) ? 'block' : 'none';
+    serviceDomainGroup.style.display = (flags.SHOW_SUD_FILTERS && (state.availableFilters.hasServiceDomains || state.availableFilters.hasSUD)) ? 'block' : 'none';
   }
   
   // Substance Use Services filter - only visible when:
@@ -3237,7 +3112,7 @@ function updateFilterVisibility() {
   const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
   if (sudServicesGroup) {
     const isSubstanceUseSelected = els.serviceDomain && els.serviceDomain.value === 'substance_use';
-    const shouldShow = flags.SHOW_SUD_FILTERS && availableFilters.hasSUD && isSubstanceUseSelected;
+    const shouldShow = flags.SHOW_SUD_FILTERS && state.availableFilters.hasSUD && isSubstanceUseSelected;
     
     if (shouldShow) {
       sudServicesGroup.style.display = 'block';
@@ -3246,7 +3121,7 @@ function updateFilterVisibility() {
       // Clear selections when hiding
       if (els.sudServices) {
         Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
+        state.selectedSudServices = [];
         syncChipsToSelect('sudServices');
       }
     }
@@ -3254,7 +3129,7 @@ function updateFilterVisibility() {
   
   const verificationGroup = document.getElementById('verificationFilterGroup');
   if (verificationGroup) {
-    verificationGroup.style.display = (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ? 'block' : 'none';
+    verificationGroup.style.display = (flags.SHOW_VERIFICATION_FILTERS && state.availableFilters.hasVerification) ? 'block' : 'none';
   }
   
   // Apply feature flags to ensure disabled filters are hidden and cleared
@@ -3299,7 +3174,7 @@ function updateActiveFilterChips() {
       label: `County: ${els.county.options[els.county.selectedIndex]?.text || els.county.value}`,
       removeFn: () => {
         els.county.value = '';
-        selectedCounty = null;
+        state.selectedCounty = null;
         if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
@@ -3319,7 +3194,7 @@ function updateActiveFilterChips() {
       label: `Service Type: ${domainLabels[els.serviceDomain.value] || els.serviceDomain.value}`,
       removeFn: () => {
         els.serviceDomain.value = '';
-        selectedServiceDomains = [];
+        state.selectedServiceDomains = [];
         if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
@@ -3346,7 +3221,7 @@ function updateActiveFilterChips() {
         label: `Substance Use Services: ${labels}`,
         removeFn: () => {
           Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-          selectedSudServices = [];
+          state.selectedSudServices = [];
           syncChipsToSelect('sudServices');
           if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
           else render();
@@ -3367,7 +3242,7 @@ function updateActiveFilterChips() {
       label: `Verified: ${recencyLabels[els.verificationRecency.value] || els.verificationRecency.value}`,
       removeFn: () => {
         els.verificationRecency.value = '';
-        verificationRecencyDays = null;
+        state.verificationRecencyDays = null;
         if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
         else render();
       }
@@ -3470,7 +3345,7 @@ function clearActiveFilterChip(chipType) {
     case 'parsedDomain':
       if (els.serviceDomain) {
         els.serviceDomain.value = '';
-        selectedServiceDomains = [];
+        state.selectedServiceDomains = [];
       }
       break;
     default:
@@ -3541,7 +3416,7 @@ function hideLocationConsent() {
 
 async function handleNearMeClick() {
   // Always clear previous location to ensure fresh consent every time
-  userLocation = null;
+  state.userLocation = null;
   syncStateToManager();
 
   // Always show consent modal first (privacy-first approach)
@@ -3565,9 +3440,9 @@ async function handleLocationConsentAllow() {
       return;
     }
 
-    userLocation = await locationPromise;
+    state.userLocation = await locationPromise;
 
-    if (!userLocation) {
+    if (!state.userLocation) {
       callShowToast('Failed to get location', 'error');
       return;
     }
@@ -3576,7 +3451,7 @@ async function handleLocationConsentAllow() {
 
     // Set sort to distance
     const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-    currentSort = SORT_OPTIONS.DISTANCE;
+    state.currentSort = SORT_OPTIONS.DISTANCE;
     if (els.sortSelect) {
       els.sortSelect.value = SORT_OPTIONS.DISTANCE;
     }
@@ -3600,8 +3475,8 @@ async function handleLocationConsentAllow() {
 
 function revertDistanceSortWithoutLocation() {
   const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-  if (userLocation || currentSort !== SORT_OPTIONS.DISTANCE) return;
-  currentSort = SORT_OPTIONS.RELEVANCE;
+  if (state.userLocation || state.currentSort !== SORT_OPTIONS.DISTANCE) return;
+  state.currentSort = SORT_OPTIONS.RELEVANCE;
   if (els.sortSelect) {
     els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
   }
@@ -3621,13 +3496,13 @@ function handleLocationConsentCancel() {
 // TDPSA Compliance: Stop sharing location (right to opt-out)
 function handleStopLocationSharing() {
   // Clear location data (TDPSA: right to delete personal data)
-  userLocation = null;
+  state.userLocation = null;
   syncStateToManager();
 
   // Reset sort if it was set to distance
   const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-  if (currentSort === SORT_OPTIONS.DISTANCE) {
-    currentSort = SORT_OPTIONS.RELEVANCE;
+  if (state.currentSort === SORT_OPTIONS.DISTANCE) {
+    state.currentSort = SORT_OPTIONS.RELEVANCE;
     if (els.sortSelect) {
       els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
     }
@@ -3651,7 +3526,7 @@ function handleStopLocationSharing() {
 function updateLocationButtonVisibility() {
   if (!els.nearMeBtn || !els.stopLocationBtn) return;
   
-  if (userLocation) {
+  if (state.userLocation) {
     // Location is active: show stop button, hide near me button
     els.nearMeBtn.style.display = 'none';
     els.stopLocationBtn.style.display = 'inline-flex';
@@ -3680,15 +3555,15 @@ function updateLastUpdatedDisplay() {
   const lastUpdatedEl = document.getElementById('lastUpdated');
   if (!lastUpdatedEl) return;
 
-  if (!programsMetadata) {
+  if (!state.programsMetadata) {
     lastUpdatedEl.textContent = '';
     return;
   }
 
   const dateStr =
-    programsMetadata.last_full_verification ||
-    programsMetadata.generatedAt ||
-    programsMetadata.generated_at;
+    state.programsMetadata.last_full_verification ||
+    state.programsMetadata.generatedAt ||
+    state.programsMetadata.generated_at;
   const date = parseMetadataDate(dateStr);
   if (date) {
     const formatted = date.toLocaleDateString('en-US', {
@@ -3703,12 +3578,6 @@ function updateLastUpdatedDisplay() {
   lastUpdatedEl.textContent = 'Verification dates are shown on each program listing.';
 }
 
-// Store metadata for display
-let programsMetadata = null;
-
-// Dev-only regression guard: track if we've already warned about display:grid issue
-let didWarnDisplayGrid = false;
-
 // Dev-only: Check if treatmentGrid has display:grid (would break flex layout)
 // This warns once per page load if the computed display becomes "grid" instead of "flex"
 function checkTreatmentGridDisplayRegression() {
@@ -3721,12 +3590,12 @@ function checkTreatmentGridDisplayRegression() {
   );
   
   // Set flag BEFORE any checks to prevent multiple runs, even if check doesn't trigger warning
-  if (!isDev || didWarnDisplayGrid || !els.treatmentGrid) {
+  if (!isDev || state.didWarnDisplayGrid || !els.treatmentGrid) {
     return;
   }
   
   // Mark as checked immediately to prevent re-running (set BEFORE getComputedStyle)
-  didWarnDisplayGrid = true;
+  state.didWarnDisplayGrid = true;
   
   const computedDisplay = window.getComputedStyle(els.treatmentGrid).display;
   if (computedDisplay === 'grid') {
@@ -4070,7 +3939,7 @@ async function loadPrograms(retryCount = 0){
     
     // Store metadata for display
     if (data.metadata) {
-      programsMetadata = data.metadata;
+      state.programsMetadata = data.metadata;
     }
     
     // Handle both array format (programs.json) and object format (regional data)
@@ -4159,35 +4028,35 @@ async function loadPrograms(retryCount = 0){
     let loadedPrograms = programsArray.map(p => normalizeProgramData(p, normalizeCity));
     
     // Set programs first (before async geocoded data merge)
-    programs = loadedPrograms;
-    programDataMap.clear();
-    programs.forEach(p => programDataMap.set(p.program_id, p));
+    state.programs = loadedPrograms;
+    state.programDataMap.clear();
+    state.programs.forEach(p => state.programDataMap.set(p.program_id, p));
     if (typeof window.dispatchEvent === 'function') {
-      window.dispatchEvent(new CustomEvent('vmhr:programs-ready', { detail: { count: programs.length } }));
+      window.dispatchEvent(new CustomEvent('vmhr:programs-ready', { detail: { count: state.programs.length } }));
     }
     syncStateToManager(); // Sync with StateManager (programs -> StateManager)
-    console.log('Programs loaded:', programs.length, 'Ready:', ready);
+    console.log('Programs loaded:', state.programs.length, 'Ready:', state.ready);
     
     // Update available filters after programs are loaded
-    availableFilters = computeAvailableFilters(programs);
+    state.availableFilters = computeAvailableFilters(state.programs);
     updateFilterVisibility();
     
     // Apply feature flags to UI on initial load
     applyFeatureFlagsToUI();
 
     // Build autocomplete indexes to avoid O(n^2) behavior
-    buildAutocompleteIndexes(programs);
+    buildAutocompleteIndexes(state.programs);
 
-    buildLocationOptions(programs);
-    buildSearchCities(programs);
-    buildInsuranceOptions(programs);
+    buildLocationOptions(state.programs);
+    buildSearchCities(state.programs);
+    buildInsuranceOptions(state.programs);
     if (typeof window.registerInsurancePlansFromData === 'function') {
-      window.registerInsurancePlansFromData(programs);
+      window.registerInsurancePlansFromData(state.programs);
     }
     callUpdateStats();
     updateComparisonCount();
-    ready = true;
-    openId = null;
+    state.ready = true;
+    state.openId = null;
     syncStateToManager(); // Sync with StateManager
     
     // Initialize button visibility (TDPSA: ensure opt-out is visible when needed)
@@ -4201,28 +4070,28 @@ async function loadPrograms(retryCount = 0){
     render();
     
     // Update crisis banner offset after initial render
-    updateCrisisBannerOffset();
+    state.updateCrisisBannerOffset();
     
     // Dev-only: Check for display regression after initial render
     checkTreatmentGridDisplayRegression();
     
     // Try to load and merge geocoded data (non-blocking, after initial render)
     loadGeocodedData().then(() => {
-      if (geocodedPrograms && geocodedPrograms.size > 0) {
-        programs = mergeGeocodedData(programs);
-        programDataMap.clear();
-        programs.forEach(p => programDataMap.set(p.program_id, p));
+      if (state.geocodedPrograms && state.geocodedPrograms.size > 0) {
+        state.programs = mergeGeocodedData(state.programs);
+        state.programDataMap.clear();
+        state.programs.forEach(p => state.programDataMap.set(p.program_id, p));
         syncStateToManager(); // Sync with StateManager
         // Rebuild autocomplete indexes after merge
-        buildAutocompleteIndexes(programs);
+        buildAutocompleteIndexes(state.programs);
         // Recompute available filters after geocoded data merge
-        availableFilters = computeAvailableFilters(programs);
+        state.availableFilters = computeAvailableFilters(state.programs);
         updateFilterVisibility();
         
         // Re-apply feature flags after geocoded data merge
         applyFeatureFlagsToUI();
         // Re-render with geocoded data
-        if (ready) {
+        if (state.ready) {
           render();
         }
       }
@@ -4261,11 +4130,11 @@ async function loadPrograms(retryCount = 0){
     }
     announceToScreenReader(errorMessage, 'assertive');
     
-    ready = true;
-    programs = [];
-    buildLocationOptions(programs);
-    buildInsuranceOptions(programs);
-    openId = null;
+    state.ready = true;
+    state.programs = [];
+    buildLocationOptions(state.programs);
+    buildInsuranceOptions(state.programs);
+    state.openId = null;
     syncStateToManager(); // Sync with StateManager
     render();
   }
@@ -4278,23 +4147,23 @@ if('serviceWorker' in navigator) {
       // Silent fail - service worker is optional enhancement
     });
     // Update banner offset after fonts and layout settle
-    updateCrisisBannerOffset();
+    state.updateCrisisBannerOffset();
   });
 }
 
 // Update banner offset when DOM is ready (before fonts may load)
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateCrisisBannerOffset);
+  document.addEventListener('DOMContentLoaded', state.updateCrisisBannerOffset);
 } else {
   // DOM already ready
-  updateCrisisBannerOffset();
+  state.updateCrisisBannerOffset();
 }
 // Handle call/text tracking via event delegation
 document.addEventListener('click', (e) => {
   const callBtn = e.target.closest('[data-program-id]');
   if (callBtn && callBtn.href && (callBtn.href.startsWith('tel:') || callBtn.href.startsWith('sms:'))) {
     const programId = callBtn.dataset.programId;
-    const program = programDataMap.get(programId);
+    const program = state.programDataMap.get(programId);
     if (program) trackCallAttempt(program);
   }
 });
@@ -4333,7 +4202,7 @@ document.addEventListener('click', (e) => {
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
     syncTopToggles();
-    openId = null;
+    state.openId = null;
     render();
     const t = document.getElementById("treatmentSection");
     if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
@@ -4380,8 +4249,8 @@ function updateURLState() {
   
   // Add sort
   const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
-  if (currentSort && currentSort !== SORT_OPTIONS.RELEVANCE) {
-    params.set('sort', currentSort);
+  if (state.currentSort && state.currentSort !== SORT_OPTIONS.RELEVANCE) {
+    params.set('sort', state.currentSort);
   }
   
   // Update URL without reload
@@ -4458,8 +4327,8 @@ function loadURLState() {
   
   // Load sort
   if (params.has('sort') && els.sortSelect) {
-    currentSort = params.get('sort');
-    els.sortSelect.value = currentSort;
+    state.currentSort = params.get('sort');
+    els.sortSelect.value = state.currentSort;
   }
   
   // Sync chips after loading URL state
@@ -4480,7 +4349,7 @@ function loadURLState() {
       // Clear selections if not substance_use
       if (els.sudServices && !isSubstanceUse) {
         Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
+        state.selectedSudServices = [];
         syncChipsToSelect('sudServices');
       }
     }
@@ -4493,7 +4362,7 @@ function handleURLParams() {
   let programId = params.get('program');
   
   // Load filter state from URL
-  if (ready) {
+  if (state.ready) {
     loadURLState();
   }
   
@@ -4517,12 +4386,12 @@ function handleURLParams() {
     }
   }
   
-  if (programId && ready) {
+  if (programId && state.ready) {
     // Find and open the program
-    programs.forEach((p, idx) => {
+    state.programs.forEach((p, idx) => {
       const id = stableIdFor(p, idx);
       if (id === programId) {
-        openId = id;
+        state.openId = id;
         render();
         setTimeout(() => {
           const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
@@ -4543,15 +4412,15 @@ bind();
 initSwipeGestures();
 
 // Clear location on page load (privacy-first: never persist location)
-userLocation = null;
+state.userLocation = null;
 
 // Clear location when page unloads (extra privacy measure)
 window.addEventListener('beforeunload', () => {
-  userLocation = null;
+  state.userLocation = null;
 });
 
 loadPrograms().then(() => {
-  recentSearches = recentSearches.filter(isValidRecentSearchQuery);
+  state.recentSearches = state.recentSearches.filter(isValidRecentSearchQuery);
   // Clear any stale dataset attributes on initial load if q is empty
   if (els.q && (!els.q.value || !els.q.value.trim())) {
     delete els.q.dataset.exactMatch;
