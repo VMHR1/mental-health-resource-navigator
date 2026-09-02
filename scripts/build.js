@@ -18,6 +18,7 @@ const shouldMinify = process.argv.includes('--minify') || process.env.NODE_ENV =
 const buildOptions = {
   entryPoints: [
     'src/app.js',
+    'src/js/app/*.js',
     'src/js/modules/search.js',
     'src/js/modules/empty-state.js',
     'src/js/modules/storage.js',
