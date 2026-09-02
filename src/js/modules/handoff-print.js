@@ -3,8 +3,8 @@
 // Always renders the static Backup Plan and Crisis blocks, plus per-program
 // match summary and operational caveats. No PHI fields, no patient names.
 
-(function () {
-  if (typeof window === 'undefined') return;
+const VMHRHandoffPrint = (function () {
+  if (typeof window === 'undefined') return undefined;
 
   let cachedCopy = null;
   let copyPromise = null;
@@ -412,9 +412,16 @@
     return loadHandoffCopy().then((copy) => renderPacketBody(list, copy, evaluation, sc));
   }
 
-  window.VMHRHandoffPrint = {
+  return {
     openPacket,
     renderPreview,
     loadHandoffCopy,
   };
 })();
+
+export { VMHRHandoffPrint };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.VMHRHandoffPrint = VMHRHandoffPrint;
+}

@@ -2,8 +2,8 @@
 // Operational caveats surfaced on the card; never change search order.
 // Do NOT introduce quality scores or sorting based on these flags.
 
-(function () {
-  if (typeof window === 'undefined') return;
+const VMHRFrictionFlags = (function () {
+  if (typeof window === 'undefined') return undefined;
 
   function safe(x) {
     return (x == null ? '' : String(x)).trim();
@@ -170,9 +170,16 @@
     </div>`;
   }
 
-  window.VMHRFrictionFlags = {
+  return {
     FLAG_DEFINITIONS,
     computeFlags,
     renderFlagBadgesHtml,
   };
 })();
+
+export { VMHRFrictionFlags };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.VMHRFrictionFlags = VMHRFrictionFlags;
+}
