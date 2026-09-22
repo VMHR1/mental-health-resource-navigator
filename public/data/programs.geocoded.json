@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-08-25T19:59:29.183Z",
+    "generatedAt": "2026-08-31T17:48:51.783Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -16,7 +16,7 @@
     },
     "last_full_verification": "2026-05-18",
     "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-08-25T19:59:29.183Z",
+    "regional_sync_at": "2026-08-31T17:48:51.783Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -65,10 +65,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Children’s Health contracted insurance plans (varies by service/location); verify plan/product | Types: Commercial (many), Medicaid/CHIP (some), Other government programs (varies) | Children’s Health directs families to its billing/insurance resources and contracted plans; confirm plan/product and department.",
       "verification_source": "Children’s Health Day Treatment Program page: https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-day-treatment-program",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.childrens.com/patient-families/billing-and-insurance",
         "plans": [],
         "types": [
@@ -91,17 +91,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-day-treatment-program",
           "https://www.childrens.com/patient-families/billing-and-insurance"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -133,10 +134,10 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Cigna, ComPsych, Magellan, Medicare, Medicaid, Molina, Optum, Superior, TRICARE, UMR, UnitedHealthcare | Types: Commercial, Medicare, Medicaid/CHIP plans (listed), Military (TRICARE) | Dallas Behavioral lists accepted insurance providers; confirm plan/product and authorization requirements.",
       "verification_source": "Dallas Behavioral official site (assessment line): https://www.dallasbehavioral.com/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.dallasbehavioral.com/programs/",
         "plans": [
           "Aetna",
@@ -190,17 +191,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.dallasbehavioral.com/",
           "https://www.dallasbehavioral.com/programs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -231,10 +233,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "Texas Health Behavioral Health Center Richardson page: https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -260,17 +262,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
-        "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page. City not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -301,12 +304,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -333,17 +336,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -374,12 +378,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -406,17 +410,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -447,12 +452,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/frisco-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -473,17 +478,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/frisco-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 0
@@ -514,12 +520,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -540,17 +546,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/mckinney-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 8
@@ -581,12 +588,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -612,17 +619,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -653,12 +661,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/mckinney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -705,17 +713,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/mckinney/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -746,12 +755,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/plano/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/plano/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -798,17 +807,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/plano/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -839,12 +849,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -871,17 +881,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 7
@@ -913,12 +924,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/friscotx",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/friscotx",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/friscotx",
         "plans": [],
         "types": [
@@ -939,16 +950,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/friscotx"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.291Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -980,12 +992,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mckinney",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/mckinney",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/mckinney",
         "plans": [],
         "types": [
@@ -1006,16 +1018,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mckinney"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 7
@@ -1047,12 +1060,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/plano",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "plans": [],
         "types": [
@@ -1073,16 +1086,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -1113,12 +1127,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy McKinney: https://basepointacademy.com/locations/mckinney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -1154,17 +1168,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/mckinney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -1195,12 +1210,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Frisco: https://basepointacademy.com/locations/frisco/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/frisco/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -1236,17 +1251,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/frisco/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -1277,12 +1293,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/denton/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/denton/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -1329,17 +1345,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/denton/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -1424,12 +1441,15 @@
           "https://millwoodhospital.com/admissions/insurance-information/"
         ],
         "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
     },
@@ -1459,12 +1479,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid; verify via bricolagebehavioral.com/insurance-verification/",
       "verification_source": "Bricolage Behavioral Health PHP: https://bricolagebehavioral.com/partial-hospitalization-program/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://bricolagebehavioral.com/partial-hospitalization-program/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://bricolagebehavioral.com/frequently-asked-questions/",
         "plans": [
           "Aetna",
@@ -1489,17 +1509,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://bricolagebehavioral.com/partial-hospitalization-program/",
           "https://bricolagebehavioral.com/frequently-asked-questions/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -1531,12 +1552,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/flowermound",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/flowermound",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/flowermound",
         "plans": [],
         "types": [
@@ -1557,16 +1578,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/flowermound"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -1597,10 +1619,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-arlington-memorial/THBHCAMH",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -1626,17 +1648,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-arlington-memorial/THBHCAMH",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -1667,10 +1690,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -1696,17 +1719,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -1790,12 +1814,15 @@
           "https://millwoodhospital.com/admissions/insurance-information/"
         ],
         "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
     },
@@ -1825,12 +1852,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Mesa Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mesasprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -1851,17 +1878,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
           "https://www.mesasprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -1892,12 +1920,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Mesa Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mesasprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -1918,17 +1946,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
           "https://www.mesasprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -1959,10 +1988,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield, ChampVA, Cigna, Magellan, Meritain Health, Optum, TRICARE, UMR, UnitedHealthcare, Aetna Better Health, Ambetter from Superior HealthPlan, Cook Children’s Health Plan, Molina Medicaid, Parkland Community Health Plan, Superior HealthPlan, WellPoint | Types: Commercial, Medicaid/CHIP plans (listed), Military/Veterans (TRICARE, ChampVA)",
       "verification_source": "https://mindabovematter.com/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mindabovematter.com/help-faqs",
         "plans": [
           "Aetna",
@@ -2018,17 +2047,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mindabovematter.com/contact-us/",
           "https://www.mindabovematter.com/help-faqs"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -2059,10 +2089,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield, ChampVA, Cigna, Magellan, Meritain Health, Optum, TRICARE, UMR, UnitedHealthcare, Aetna Better Health, Ambetter from Superior HealthPlan, Cook Children’s Health Plan, Molina Medicaid, Parkland Community Health Plan, Superior HealthPlan, WellPoint | Types: Commercial, Medicaid/CHIP plans (listed), Military/Veterans (TRICARE, ChampVA)",
       "verification_source": "https://mindabovematter.com/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mindabovematter.com/help-faqs",
         "plans": [
           "Aetna",
@@ -2118,17 +2148,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mindabovematter.com/contact-us/",
           "https://www.mindabovematter.com/help-faqs"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -2159,12 +2190,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/keller/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -2211,7 +2242,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/",
           "https://connectionswellnessgroup.com/locations/keller/",
@@ -2219,10 +2250,11 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -2253,12 +2285,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/mansfield/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -2305,7 +2337,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/",
           "https://connectionswellnessgroup.com/locations/mansfield/",
@@ -2313,10 +2345,11 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -2348,12 +2381,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mansfield",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/mansfield",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/mansfield",
         "plans": [],
         "types": [
@@ -2374,16 +2407,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mansfield"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -2415,12 +2449,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/keller",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/keller",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/keller",
         "plans": [],
         "types": [
@@ -2441,16 +2475,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/keller"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.371Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -2482,10 +2517,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Cook Children’s 'Insurance Plans' list (includes many commercial plans and some Medicaid/CHIP products) | Types: Commercial (many), Medicaid/CHIP (some products) | Cook Children’s recommends contacting the insurer to verify coverage; not all products are contracted for each listed plan.",
       "verification_source": "https://www.cookchildrens.org/services/behavioral-health/contact-us/psychiatry-fort-worth/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.cookchildrens.org/patients-families/billing-insurance/insurance-plans/",
         "plans": [
           "Medicaid"
@@ -2509,17 +2544,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.cookchildrens.org/services/behavioral-health/contact-us/psychiatry-fort-worth/",
           "https://www.cookchildrens.org/patients-families/billing-insurance/insurance-plans/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -2601,12 +2637,15 @@
           "https://millwoodhospital.com/admissions/insurance-information/"
         ],
         "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 11
     },
@@ -2636,12 +2675,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Forney: https://basepointacademy.com/locations/forney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/forney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -2677,17 +2716,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/forney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -2718,10 +2758,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/rockwall/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -2768,17 +2808,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/rockwall/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 7
@@ -2810,12 +2851,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/sherman",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/sherman",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/sherman",
         "plans": [],
         "types": [
@@ -2836,16 +2877,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/sherman"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 7
@@ -2874,10 +2916,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Virtual: https://basepointacademy.com/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -2915,17 +2957,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -2954,10 +2997,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
@@ -3006,17 +3049,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/services/virtual-care/",
           "https://connectionswellnessgroup.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -3047,10 +3091,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Children’s Health contracted insurance plans (varies by service/location); verify plan/product | Types: Commercial (many), Medicaid/CHIP (some), Other government programs (varies) | Children’s Health directs families to its billing/insurance resources and contracted plans; confirm plan/product and department.",
       "verification_source": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/who-do-i-call",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.childrens.com/patient-families/billing-and-insurance",
         "plans": [],
         "types": [
@@ -3073,17 +3117,19 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/who-do-i-call",
+          "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/suicide-behaviors",
           "https://www.childrens.com/patient-families/billing-and-insurance"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -3114,10 +3160,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Medicaid, Medicare, Most major private insurance plans | Types: Commercial (most major), Medicaid, Medicare | SABHC lists payment options including Medicaid, Medicare, and most major private insurance.",
       "verification_source": "https://sabhc.org/iop/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://sabhc.org/iop/",
         "plans": [
           "Medicaid",
@@ -3146,16 +3192,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://sabhc.org/iop/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -3208,12 +3255,15 @@
           "https://unitybehavioral.com/services"
         ],
         "status": "partially_verified",
-        "notes": "Phone and Richardson address confirmed on contact page. Insurance not published online—call to verify. PHP not yet offered per services page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://unitybehavioral.com/services (404). Prior verification held pending the next run.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
-        }
+          "city_on_page": true,
+          "org_on_page": true
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 3
     },
@@ -3243,10 +3293,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -3272,17 +3322,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-cityline/THBHCR",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
-        "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page. City not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": true
         }
       },
       "verification_wave": 9
@@ -3314,10 +3365,10 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Cigna, ComPsych, Magellan, Medicare, Medicaid, Molina, Optum, Superior, TRICARE, UMR, UnitedHealthcare | Types: Commercial, Medicare, Medicaid/CHIP plans (listed), Military (TRICARE) | Dallas Behavioral lists accepted insurance providers; confirm plan/product and authorization requirements.",
       "verification_source": "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.dallasbehavioral.com/programs/",
         "plans": [
           "Aetna",
@@ -3371,17 +3422,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.dallasbehavioral.com/programs/intensive-outpatient-care",
           "https://www.dallasbehavioral.com/programs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 10
@@ -3412,12 +3464,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -3444,17 +3496,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -3485,12 +3538,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/frisco-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -3511,17 +3564,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/frisco-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 4
@@ -3552,12 +3606,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -3578,17 +3632,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/mckinney-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 8
@@ -3619,10 +3674,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-frisco/THBHCFR",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -3648,17 +3703,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-frisco/THBHCFR",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -3689,12 +3745,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -3720,17 +3776,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-plano/THBHP",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -3758,12 +3815,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/plano/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/plano/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -3810,17 +3867,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/plano/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -3848,12 +3906,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/mckinney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -3900,17 +3958,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/mckinney/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -3938,12 +3997,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/denton/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/denton/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -3990,17 +4049,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/denton/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -4028,12 +4088,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -4060,17 +4120,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -4098,12 +4159,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid.",
       "verification_source": "Bricolage Behavioral Health IOP: https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://bricolagebehavioral.com/frequently-asked-questions/",
         "plans": [
           "Aetna",
@@ -4128,17 +4189,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
           "https://bricolagebehavioral.com/frequently-asked-questions/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -4167,12 +4229,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/flowermound",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/flowermound",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/flowermound",
         "plans": [],
         "types": [
@@ -4193,16 +4255,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/flowermound"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 6
@@ -4231,12 +4294,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -4263,17 +4326,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -4355,12 +4419,15 @@
           "https://millwoodhospital.com/admissions/insurance-information/"
         ],
         "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
     },
@@ -4388,12 +4455,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/plano",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "plans": [],
         "types": [
@@ -4414,16 +4481,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -4451,12 +4519,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy McKinney: https://basepointacademy.com/locations/mckinney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -4492,17 +4560,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/mckinney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -4530,12 +4599,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Frisco: https://basepointacademy.com/locations/frisco/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/frisco/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -4571,17 +4640,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/frisco/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -4610,12 +4680,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mckinney",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/mckinney",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/mckinney",
         "plans": [],
         "types": [
@@ -4636,16 +4706,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mckinney"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -4673,12 +4744,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -4705,17 +4776,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -4744,12 +4816,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/friscotx",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/friscotx",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/friscotx",
         "plans": [],
         "types": [
@@ -4770,16 +4842,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/friscotx"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 11
@@ -4860,12 +4933,15 @@
           "https://millwoodhospital.com/admissions/insurance-information/"
         ],
         "status": "verified",
-        "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
     },
@@ -4892,12 +4968,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Mesa Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mesasprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -4918,17 +4994,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.mesasprings.com/locations/innovations-locations/fort-worth-camp-bowie-blvd/",
           "https://www.mesasprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -4956,12 +5033,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Mesa Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mesasprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -4982,17 +5059,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.mesasprings.com/locations/innovations-locations/arlington-tx/",
           "https://www.mesasprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 10
@@ -5020,10 +5098,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield, ChampVA, Cigna, Magellan, Meritain Health, Optum, TRICARE, UMR, UnitedHealthcare, Aetna Better Health, Ambetter from Superior HealthPlan, Cook Children’s Health Plan, Molina Medicaid, Parkland Community Health Plan, Superior HealthPlan, WellPoint | Types: Commercial, Medicaid/CHIP plans (listed), Military/Veterans (TRICARE, ChampVA)",
       "verification_source": "https://mindabovematter.com/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mindabovematter.com/help-faqs",
         "plans": [
           "Aetna",
@@ -5079,17 +5157,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mindabovematter.com/contact-us/",
           "https://www.mindabovematter.com/help-faqs"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -5117,10 +5196,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield, ChampVA, Cigna, Magellan, Meritain Health, Optum, TRICARE, UMR, UnitedHealthcare, Aetna Better Health, Ambetter from Superior HealthPlan, Cook Children’s Health Plan, Molina Medicaid, Parkland Community Health Plan, Superior HealthPlan, WellPoint | Types: Commercial, Medicaid/CHIP plans (listed), Military/Veterans (TRICARE, ChampVA)",
       "verification_source": "https://mindabovematter.com/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.mindabovematter.com/help-faqs",
         "plans": [
           "Aetna",
@@ -5176,17 +5255,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mindabovematter.com/contact-us/",
           "https://www.mindabovematter.com/help-faqs"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -5214,12 +5294,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/keller/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -5266,7 +5346,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/",
           "https://connectionswellnessgroup.com/locations/keller/",
@@ -5274,10 +5354,11 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 9
@@ -5305,12 +5386,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://connectionswellnessgroup.com/locations/mansfield/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -5357,7 +5438,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/",
           "https://connectionswellnessgroup.com/locations/mansfield/",
@@ -5365,10 +5446,11 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -5397,10 +5479,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: UnitedHealthcare, Cigna, Blue Cross Blue Shield, Aetna, Anthem, Humana, TRICARE, Medicaid (in select states) | Types: Commercial (most major), Military (TRICARE), Medicaid (select states) | Charlie Health FAQ lists major in-network insurers; Medicaid coverage depends on state/program—verify with admissions.",
       "verification_source": "https://www.charliehealth.com/contact-us",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.charliehealth.com/faqs",
         "plans": [
           "Aetna",
@@ -5442,7 +5524,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.charliehealth.com/contact-us",
           "https://www.charliehealth.com/",
@@ -5450,10 +5532,11 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 7
@@ -5482,10 +5565,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Virtual: https://basepointacademy.com/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -5523,17 +5606,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -5562,10 +5646,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/services/virtual-care/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/",
         "plans": [
           "Aetna",
@@ -5614,17 +5698,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/services/virtual-care/",
           "https://connectionswellnessgroup.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 5
@@ -5652,12 +5737,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Forney: https://basepointacademy.com/locations/forney/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://basepointacademy.com/locations/forney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -5693,17 +5778,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/forney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -5731,10 +5817,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -5760,17 +5846,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-rockwall/THBHCRW",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 10
@@ -5798,10 +5885,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/rockwall/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -5848,17 +5935,18 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/rockwall/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -5887,12 +5975,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/sherman",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/sherman",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/sherman",
         "plans": [],
         "types": [
@@ -5913,16 +6001,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/sherman"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Phone not found on fetched source page.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
+          "phone_on_page": false,
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 3
@@ -5951,12 +6040,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mansfield",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/mansfield",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/mansfield",
         "plans": [],
         "types": [
@@ -5977,16 +6066,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mansfield"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -6015,12 +6105,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/keller",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.carruscarebehavioral.com/keller",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/keller",
         "plans": [],
         "types": [
@@ -6041,16 +6131,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/keller"
         ],
-        "status": "verified",
-        "notes": "Phone, address, ages, and insurance language confirmed on official Carrus Care location page.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Some fields could not be confirmed automatically.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 10
@@ -6079,10 +6170,10 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Arlington: https://basepointacademy.com/locations/arlington/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -6119,17 +6210,18 @@
       ],
       "website": "https://basepointacademy.com/locations/arlington/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/arlington/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -6174,12 +6266,15 @@
           "https://dallascityhall.com/departments/officeemergencymanagement/Pages/RIGHT-Care-Program.aspx"
         ],
         "status": "verified",
-        "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://dallascityhall.com/departments/officeemergencymanagement/Pages/RIGHT-Care-Program.aspx (fetch failed). Prior verification held pending the next run.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": false
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 2
     },
@@ -6206,10 +6301,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.lifepathsystems.org/get-help/crisis-services/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.lifepathsystems.org/get-help/crisis-services/",
       "website_domain": "lifepathsystems.org",
@@ -6217,16 +6312,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.lifepathsystems.org/get-help/crisis-services/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -6254,10 +6350,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
       "website_domain": "dentoncounty.gov",
@@ -6265,16 +6361,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": false
+          "city_on_page": false,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -6302,12 +6399,12 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://mhmrtarrant.org/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://mhmrtarrant.org/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://mhmrtarrant.org/",
       "website_domain": "mhmrtarrant.org",
@@ -6315,16 +6412,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mhmrtarrant.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": false
+          "city_on_page": false,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -6352,10 +6450,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.lakesregional.org/get-help/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.lakesregional.org/get-help/",
       "website_domain": "lakesregional.org",
@@ -6363,16 +6461,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.lakesregional.org/get-help/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -6400,10 +6499,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "Official 988 Lifeline site: https://988lifeline.org/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://988lifeline.org/",
       "website_domain": "988lifeline.org",
@@ -6411,16 +6510,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://988lifeline.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": false,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 10
@@ -6448,12 +6548,12 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.thetrevorproject.org/get-help/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.thetrevorproject.org/get-help/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.thetrevorproject.org/get-help/",
       "website_domain": "thetrevorproject.org",
@@ -6461,16 +6561,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.thetrevorproject.org/get-help/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 3
@@ -6498,12 +6599,12 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.sccenter.org/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.sccenter.org/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.sccenter.org/",
       "website_domain": "sccenter.org",
@@ -6511,16 +6612,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.sccenter.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -6548,12 +6650,12 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.crisistextline.org/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "website": "https://www.crisistextline.org/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.crisistextline.org/",
       "website_domain": "crisistextline.org",
@@ -6561,16 +6663,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.crisistextline.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": false,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 5
@@ -6597,10 +6700,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://sabhc.org/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://sabhc.org/contact-us/",
       "website_domain": "sabhc.org",
@@ -6608,16 +6711,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://sabhc.org/contact-us/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -6651,10 +6755,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.lifepathsystems.org/connect-with-us/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.lifepathsystems.org/connect-with-us/contact-us/",
       "website_domain": "lifepathsystems.org",
@@ -6662,16 +6766,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.lifepathsystems.org/connect-with-us/contact-us/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 4
@@ -6698,10 +6803,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments",
       "website_domain": "dentoncounty.gov",
@@ -6709,16 +6814,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.dentoncounty.gov/466/Involuntary-Mental-Health-Commitments"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 0
@@ -6747,10 +6853,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.metrocareservices.org/contact-us/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.metrocareservices.org/contact-us/",
       "website_domain": "metrocareservices.org",
@@ -6758,16 +6864,17 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.metrocareservices.org/contact-us/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -6796,13 +6903,13 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts insurance per Children’s Health; contracted plans vary by service—confirm at childrens.com billing/insurance.",
       "verification_source": "Children's Health Eating Disorders: https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/eating-disorders",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "eating_disorders"
       ],
       "accepted_insurance": {
         "status": "varies_by_service",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.childrens.com/patient-families/billing-and-insurance",
         "notes": "Contracted plans vary; verify plan/product with Children’s Health billing."
       },
@@ -6810,17 +6917,18 @@
       "website_domain": "childrens.com",
       "website": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/eating-disorders",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/eating-disorders",
           "https://www.childrens.com/patient-families/billing-and-insurance"
         ],
-        "status": "verified",
-        "notes": "Program line, Plano address, and levels of care confirmed on childrens.com May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Insurance varies by service/location; confirm with provider.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -6866,15 +6974,19 @@
       "verification": {
         "last_verified_at": "2026-05-18",
         "source_urls": [
-          "https://www.walkerwellness.com/about-us/",
-          "https://www.walkerwellness.com/contact-us/"
+          "https://www.walkerwellness.com/contact-us/",
+          "https://www.walkerwellness.com/about-us/"
         ],
         "status": "partially_verified",
-        "notes": "Address confirmed on contact/about pages. Phone widely published; call for insurance and adolescent program fit.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
     },
@@ -6902,13 +7014,13 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Beacon, HealthNet, Humana, Optum, TRICARE (per location page; list changes—verify).",
       "verification_source": "Center for Discovery Plano: https://www.centerfordiscovery.com/locations/plano/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "eating_disorders"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.centerfordiscovery.com/locations/plano/",
         "plans": [
           "Blue Cross Blue Shield",
@@ -6932,16 +7044,17 @@
       "website_domain": "centerfordiscovery.com",
       "website": "https://www.centerfordiscovery.com/locations/plano/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.centerfordiscovery.com/locations/plano/"
         ],
         "status": "verified",
-        "notes": "Address, phone, ages 9–17, residential level, and sample payer list confirmed on centerfordiscovery.com May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -6989,12 +7102,15 @@
           "https://www.eatingrecoverycenter.com/child-adolescent"
         ],
         "status": "verified",
-        "notes": "5120 Legacy Dr Plano address and 469-613-1722 confirmed on eatingrecoverycenter.com May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Source site refused the automated fetch (429 rate limited; 429 rate limited). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
     },
@@ -7022,29 +7138,34 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Call 855-808-4213 for insurance verification and program eligibility.",
       "verification_source": "Eating Disorder Solutions locations: https://eatingdisordersolutions.com/locations/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "verification_source_url": "https://www.eatingdisordersolutions.com",
       "service_domains": [
         "eating_disorders"
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://eatingdisordersolutions.com/locations/",
         "notes": "Insurance verification required; primary residential campus in Weatherford."
       },
       "website_url": "https://eatingdisordersolutions.com/locations/dallas/",
       "website_domain": "eatingdisordersolutions.com",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://eatingdisordersolutions.com/locations/",
+          "https://www.eatingdisordersolutions.com",
           "https://eatingdisordersolutions.com/locations/dallas/"
         ],
-        "status": "unable_to_verify",
-        "notes": "Oak Lawn Dallas address and adolescent IOP could not be confirmed on official website; provider directs DFW families to Weatherford residential campus.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
-        "signals": {}
+        "status": "partially_verified",
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
+        "signals": {
+          "phone_on_page": true,
+          "city_on_page": true,
+          "org_on_page": true
+        }
       },
       "website": "https://eatingdisordersolutions.com/locations/",
       "verification_wave": 9
@@ -7073,28 +7194,29 @@
       "transportation_available": "Unknown",
       "insurance_notes": "See Children's Health contracted insurance plans",
       "verification_source": "Children's Health Teen Recovery Program: https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/teen-recovery-program",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "varies_by_service",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/teen-recovery-program",
       "website_domain": "childrens.com",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.childrens.com/specialties-services/specialty-centers-and-programs/psychiatry-and-psychology/conditions-and-programs/teen-recovery-program"
         ],
-        "status": "verified",
-        "notes": "Teen Recovery IOP ages 13–17 confirmed on Children’s Health program page May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Insurance varies by service/location; confirm with provider.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 2
@@ -7123,28 +7245,30 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Youth180 contact: https://www.youth180tx.org/contactus",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.youth180tx.org/contactus",
       "website_domain": "youth180tx.org",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.youth180tx.org/contactus",
+          "https://www.youth180tx.org/",
           "https://www.youth180tx.org/clinical"
         ],
-        "status": "verified",
-        "notes": "Phone, address, and clinical services confirmed on youth180tx.org May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "website": "https://www.youth180tx.org/",
@@ -7174,13 +7298,13 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts private insurance and sliding fee scale per third-party directories; call 844-564-0712 to verify your plan.",
       "verification_source": "Grace Counseling adolescent IOP: https://www.grace-counseling.com/addiction-treatment-center-programs-tx/iop-for-adolescents/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.grace-counseling.com/addiction-treatment-center-programs-tx/iop-for-adolescents/",
         "notes": "Confirm in-network plans with admissions; sliding scale may be available."
       },
@@ -7189,15 +7313,20 @@
       "verification_source_url": "https://www.grace-counseling.com/",
       "website": "https://www.grace-counseling.com/addiction-treatment-center-programs-tx/iop-for-adolescents/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.grace-counseling.com/addiction-treatment-center-programs-tx/iop-for-adolescents/",
+          "https://www.grace-counseling.com/",
           "https://www.grace-counseling.com/about-grace-counseling/grace-counseling-locations/lewisville/"
         ],
         "status": "partially_verified",
-        "notes": "IOP for adolescents confirmed via Grace Counseling program pages; insurance requires call.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
-        "signals": {}
+        "notes": "Phone not found on fetched source page. City not found on fetched source page. Insurance details require call to admissions. Source page returned no readable content; manual browser check advised.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
+        "signals": {
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        }
       },
       "verification_wave": 7
     },
@@ -7224,27 +7353,28 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Imagine Programs: https://imagineprograms.net/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://imagineprograms.net/",
       "website_domain": "imagineprograms.net",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://imagineprograms.net/"
         ],
-        "status": "verified",
-        "notes": "Phone, address, and hours confirmed on imagineprograms.net May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "website": "https://imagineprograms.net/",
@@ -7274,14 +7404,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -7301,17 +7431,18 @@
       "website": "https://www.carrolltonsprings.com/locations/mckinney-tx/",
       "data_quality": "Verified on official provider site",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/mckinney-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 0
@@ -7340,14 +7471,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/frisco-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -7367,17 +7498,18 @@
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "data_quality": "Verified on official provider site",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/frisco-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 4
@@ -7420,14 +7552,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Arlington: https://basepointacademy.com/locations/arlington/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://basepointacademy.com/insurance/",
         "notes": "BasePoint states in-network with most major insurance; verify plan and authorization.",
         "types": [
@@ -7441,17 +7573,18 @@
       "website_domain": "basepointacademy.com",
       "website": "https://basepointacademy.com/locations/arlington/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://basepointacademy.com/locations/arlington/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
-        "notes": "Location and insurance pages on basepointacademy.com verified May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "notes": "Core fields match official source URLs fetched during audit.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 9
@@ -7480,14 +7613,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Accepts all insurance including Medicaid and Tricare",
       "verification_source": "https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-05-18",
+        "last_verified": "2026-08-31",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "types": [
           "Commercial (all)",
@@ -7505,17 +7638,18 @@
       "verification_source_url": "https://www.carruscare.com/",
       "website": "https://www.carruscarebehavioral.com/plano",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano",
           "https://www.carruscare.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 8
@@ -7544,7 +7678,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Fort Behavioral adolescent program: https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "verification_source_url": "https://www.fortbehavioral.com/",
       "service_domains": [
         "co_occurring",
@@ -7555,20 +7689,25 @@
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/",
       "website_domain": "fortbehavioral.com",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/",
+          "https://www.fortbehavioral.com/",
           "https://fortbehavioral.com/contact-fort-behavioral-health-texas/"
         ],
         "status": "partially_verified",
-        "notes": "Program and address confirmed on fortbehavioral.com; insurance requires call.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
-        "signals": {}
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
+        "signals": {
+          "phone_on_page": true,
+          "city_on_page": true,
+          "org_on_page": true
+        }
       },
       "verification_wave": 4
     },
@@ -7596,7 +7735,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Cenikor Odyssey House adolescent services: https://www.cenikor.org/adolescent-services/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
@@ -7606,20 +7745,24 @@
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.cenikor.org/adolescent-services/",
       "website_domain": "cenikor.org",
       "website": "https://www.cenikor.org/adolescent-services/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.cenikor.org/adolescent-services/"
         ],
         "status": "partially_verified",
-        "notes": "Adolescent services page confirms ages 13–17; call admissions for Houston/Odyssey House placement and insurance.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
-        "signals": {}
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
+        "signals": {
+          "phone_on_page": true,
+          "city_on_page": true,
+          "org_on_page": false
+        }
       },
       "verification_wave": 0
     },
@@ -7647,7 +7790,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Contact for insurance information",
       "verification_source": "Sundown Ranch contact: https://sundownranchinc.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
@@ -7656,21 +7799,22 @@
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://sundownranchinc.com/contact/",
       "website_domain": "sundownranchinc.com",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://sundownranchinc.com/contact/"
         ],
-        "status": "verified",
-        "notes": "Phone and Canton address confirmed on sundownranchinc.com May 2026.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
+        "status": "partially_verified",
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": true
         }
       },
       "verification_wave": 1
@@ -7706,7 +7850,7 @@
       "transportation_available": "Unknown",
       "insurance_notes": "States most major insurance, Medicaid, TRICARE on third-party profiles—call 866-650-5212 to verify.",
       "verification_source": "Clearfork Academy: https://clearforkacademy.com/contact/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
@@ -7718,21 +7862,27 @@
       ],
       "accepted_insurance": {
         "status": "contact_for_info",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://clearforkacademy.com/",
       "website_domain": "clearforkacademy.com",
       "website": "https://www.clearforkacademy.com/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://clearforkacademy.com/contact/",
+          "https://clearforkacademy.com/",
+          "https://www.clearforkacademy.com/",
           "https://clearforkacademy.com/admissions/"
         ],
         "status": "partially_verified",
-        "notes": "Phone and Fort Worth address align with clearforkacademy.com; insurance and gender-specific campus—call admissions.",
-        "audited_at": "2026-05-18T03:32:52.292Z",
-        "signals": {}
+        "notes": "Insurance details require call to admissions.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
+        "signals": {
+          "phone_on_page": true,
+          "city_on_page": true,
+          "org_on_page": true
+        }
       },
       "verification_wave": 3
     },
@@ -7778,12 +7928,15 @@
           "https://www.recoverycouncil.org"
         ],
         "status": "verified",
-        "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
-          "phone_on_page": true,
-          "city_on_page": true
-        }
+          "phone_on_page": false,
+          "city_on_page": false,
+          "org_on_page": false
+        },
+        "last_attempted_at": "2026-08-31",
+        "hold_reason": "bot_blocked"
       },
       "verification_wave": 0
     },
@@ -7810,7 +7963,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "MHMR of Tarrant County substance use / OSAR: https://mhmrtarrant.org/addiction-services/",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
@@ -7819,22 +7972,23 @@
       ],
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://mhmrtarrant.org/addiction-services/",
       "website_domain": "mhmrtarrant.org",
       "website": "https://mhmrtarrant.org/addiction-services/",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://mhmrtarrant.org/addiction-services/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 9
@@ -7862,7 +8016,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
-      "last_verified": "2026-05-18",
+      "last_verified": "2026-08-31",
       "service_domains": [
         "substance_use"
       ],
@@ -7871,21 +8025,22 @@
       ],
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-05-18"
+        "last_verified": "2026-08-31"
       },
       "website_url": "https://www.etcada.com",
       "website_domain": "etcada.com",
       "verification": {
-        "last_verified_at": "2026-05-18",
+        "last_verified_at": "2026-08-31",
         "source_urls": [
           "https://www.etcada.com"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-05-18T03:14:56.143Z",
+        "audited_at": "2026-08-31T17:48:34.372Z",
         "signals": {
           "phone_on_page": true,
-          "city_on_page": true
+          "city_on_page": true,
+          "org_on_page": false
         }
       },
       "verification_wave": 11
