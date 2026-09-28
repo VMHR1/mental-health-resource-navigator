@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-09-28T01:22:09.440Z",
+    "generatedAt": "2026-09-28T18:21:57.802Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -16,7 +16,7 @@
     },
     "last_full_verification": "2026-05-18",
     "last_directory_review_notes": "Automated data audit 2026-05-18. See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-09-28T01:22:09.440Z",
+    "regional_sync_at": "2026-09-28T18:21:57.802Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -1442,13 +1442,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -1690,10 +1690,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans) | Types: Commercial, Medicare (incl. Medicare Advantage), Medicaid/CHIP (varies by plan/service area) | Texas Health publishes an extensive accepted-insurance list; confirm plan/product and facility/physician network before scheduling.",
       "verification_source": "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted",
         "plans": [
           "Medicare"
@@ -1719,14 +1719,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.texashealth.org/Locations/texas-health-heb/THBHHEB",
           "https://www.texashealth.org/Costs-and-Billing/Insurance-Plans-Accepted"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -1815,13 +1815,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -2381,12 +2381,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mansfield",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "website": "https://www.carruscarebehavioral.com/mansfield",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://www.carruscarebehavioral.com/mansfield",
         "plans": [],
         "types": [
@@ -2407,13 +2407,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mansfield"
         ],
         "status": "partially_verified",
         "notes": "Some fields could not be confirmed automatically.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -2638,13 +2638,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 11
@@ -3160,10 +3160,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Medicaid, Medicare, Most major private insurance plans | Types: Commercial (most major), Medicaid, Medicare | SABHC lists payment options including Medicaid, Medicare, and most major private insurance.",
       "verification_source": "https://sabhc.org/iop/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://sabhc.org/iop/",
         "plans": [
           "Medicaid",
@@ -3192,13 +3192,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://sabhc.org/iop/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -3256,13 +3256,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source URL(s) failed this run only (strike 1 of 2): https://unitybehavioral.com/services (404). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
           "org_on_page": true
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 3
@@ -3538,12 +3538,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/frisco-tx/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -3564,14 +3564,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/frisco-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -4159,12 +4159,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid.",
       "verification_source": "Bricolage Behavioral Health IOP: https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "website": "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://bricolagebehavioral.com/frequently-asked-questions/",
         "plans": [
           "Aetna",
@@ -4189,14 +4189,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
           "https://bricolagebehavioral.com/frequently-asked-questions/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -4420,13 +4420,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -4519,12 +4519,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy McKinney: https://basepointacademy.com/locations/mckinney/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "website": "https://basepointacademy.com/locations/mckinney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -4560,14 +4560,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://basepointacademy.com/locations/mckinney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -4934,13 +4934,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -5098,10 +5098,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Blue Cross Blue Shield, ChampVA, Cigna, Magellan, Meritain Health, Optum, TRICARE, UMR, UnitedHealthcare, Aetna Better Health, Ambetter from Superior HealthPlan, Cook Children’s Health Plan, Molina Medicaid, Parkland Community Health Plan, Superior HealthPlan, WellPoint | Types: Commercial, Medicaid/CHIP plans (listed), Military/Veterans (TRICARE, ChampVA)",
       "verification_source": "https://mindabovematter.com/contact-us/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://www.mindabovematter.com/help-faqs",
         "plans": [
           "Aetna",
@@ -5157,14 +5157,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://mindabovematter.com/contact-us/",
           "https://www.mindabovematter.com/help-faqs"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -6267,13 +6267,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 2
@@ -6599,12 +6599,12 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.sccenter.org/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "website": "https://www.sccenter.org/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-09-21"
+        "last_verified": "2026-09-28"
       },
       "website_url": "https://www.sccenter.org/",
       "website_domain": "sccenter.org",
@@ -6612,13 +6612,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.sccenter.org/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -6755,10 +6755,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "https://www.lifepathsystems.org/connect-with-us/contact-us/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-09-21"
+        "last_verified": "2026-09-28"
       },
       "website_url": "https://www.lifepathsystems.org/connect-with-us/contact-us/",
       "website_domain": "lifepathsystems.org",
@@ -6766,13 +6766,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.lifepathsystems.org/connect-with-us/contact-us/"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -6979,13 +6979,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.767Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
@@ -7103,13 +7103,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (429 rate limited; 429 rate limited). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.768Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
@@ -7471,14 +7471,14 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Most major insurance providers (in-network) | Types: Commercial (most major), Out-of-network sometimes possible | Carrollton Springs states it is in-network with most major insurers and can sometimes work out-of-network; call to confirm coverage.",
       "verification_source": "https://www.carrolltonsprings.com/locations/frisco-tx/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-28",
       "service_domains": [
         "co_occurring",
         "substance_use"
       ],
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-09-28",
         "source_url": "https://www.carrolltonsprings.com/resources/accepted-insurance/",
         "plans": [],
         "types": [
@@ -7498,14 +7498,14 @@
       "website": "https://www.carrolltonsprings.com/locations/frisco-tx/",
       "data_quality": "Verified on official provider site",
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-09-28",
         "source_urls": [
           "https://www.carrolltonsprings.com/locations/frisco-tx/",
           "https://www.carrolltonsprings.com/resources/accepted-insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.768Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -7702,13 +7702,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source URL(s) failed this run only (strike 1 of 2): https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/ (500). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.768Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 4
@@ -7931,13 +7931,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.768Z",
+        "audited_at": "2026-09-28T18:21:52.983Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-09-28",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 0

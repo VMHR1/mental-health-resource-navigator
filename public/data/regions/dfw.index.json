@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-09-28T01:22:09.436Z",
+    "generatedAt": "2026-09-28T18:21:57.793Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,8 +15,8 @@
       "missing_website_url": 0
     },
     "last_full_verification": "2026-05-18",
-    "last_directory_review_notes": "Automated wave 3 audit 2026-09-21 (112 of 112 programs). See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-09-28T01:22:09.436Z",
+    "last_directory_review_notes": "Automated wave 4 audit 2026-09-28 (21 of 112 programs). See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-09-28T18:21:57.793Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -32,8 +32,8 @@
     "last_patch_run_id": "bricolage-notes-cleanup-2026-09-27",
     "last_patch_notes": "Copy correction on both Bricolage records: removes outdated domain-history text from the top-level notes and from accepted_insurance.notes, which program pages show to families. Schedule and insurance sentences are the existing text, unchanged. Both listings already point to the correct site (website_url/accepted_insurance.source_url). stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed.",
     "last_patch_programs": 2,
-    "last_wave_verification": "2026-09-21",
-    "last_wave_verified": 3
+    "last_wave_verification": "2026-09-28",
+    "last_wave_verified": 4
   },
   "programs": [
     {
