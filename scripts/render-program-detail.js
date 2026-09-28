@@ -4,8 +4,14 @@
  * Mirrors the client-side rendering in src/js/program-detail.js
  * (renderProgramDetail / injectSeoMeta / findRelatedPrograms) so that
  * dist/programs/{id}.html ships full, unique, crawlable HTML instead of
- * an empty loading shell. A later PR makes the client JS skip
- * re-rendering when it sees data-prerendered="true" on the root element.
+ * an empty loading shell. The client JS skips re-rendering when it sees
+ * data-prerendered="true" on the root element.
+ *
+ * Prerender-only sections (spec 2.5, docs/superpowers/specs/
+ * 2026-09-27-program-page-content-design.md): the level-of-care explainer
+ * and "Questions to ask when you call" are rendered here only; the client
+ * fallback (program.html?id=...) mirrors just the insurance, age and
+ * transportation display.
  *
  * NOTE: src/js/utils/helpers.js's safeUrl() dereferences window.location
  * unguarded, so it cannot be imported here — safeHttpUrl() below is a
@@ -25,6 +31,15 @@ import {
   programPublicPath,
 } from '../src/js/utils/helpers.js';
 import { hubForCareLevel, DIRECTORY_PAGE } from './hub-config.js';
+import { explainerFor } from './level-of-care-copy.js';
+import {
+  insuranceChipLabels,
+  insurancePlanNames,
+  insuranceDisplayNote,
+  ageFitLine,
+  showTransportation,
+  callQuestions,
+} from './program-display.js';
 
 const SITE_BASE = 'https://viablemhr.com';
 
@@ -57,6 +72,17 @@ function safeMapsHref(mapsUrl) {
     /* ignore */
   }
   return '';
+}
+
+/**
+ * Same-site absolute path only ("/guide-levels-of-care"): no scheme, no
+ * protocol-relative "//host", no query/fragment tricks. Used for the
+ * explainer's guide link, which is code-owned copy but still goes through a
+ * check like every other emitted href.
+ */
+function safeSitePath(p) {
+  const s = safeStr(p);
+  return /^\/[a-z0-9][a-z0-9/_-]*$/i.test(s) ? s : '';
 }
 
 // programPublicPath is imported from helpers.js above and re-exported here
@@ -412,9 +438,97 @@ function section(titleText, innerHtml) {
     </div>`;
 }
 
-function gridRow(labelText, valueHtml) {
+function gridRow(labelText, valueHtml, valueClass = '') {
+  const cls = valueClass ? `program-detail-value ${valueClass}` : 'program-detail-value';
   return `<div class="program-detail-label">${escapeHtml(labelText)}</div>
-        <div class="program-detail-value">${valueHtml}</div>`;
+        <div class="${cls}">${valueHtml}</div>`;
+}
+
+/** Plan names shown before the "Show all N plans" disclosure. */
+const VISIBLE_PLAN_COUNT = 8;
+
+/**
+ * "Plans listed on their website:" plus the names (Ruling 10). Past
+ * VISIBLE_PLAN_COUNT the rest go in a native <details> so no JS is needed.
+ * Mirrored by buildPlanNames() in src/js/program-detail.js.
+ */
+function planNamesHtml(names) {
+  if (!names.length) return '';
+  const list = (items) =>
+    `<ul class="program-detail-plan-list" role="list">${items.map((n) => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`;
+  const visible = names.slice(0, VISIBLE_PLAN_COUNT);
+  const rest = names.slice(VISIBLE_PLAN_COUNT);
+  const more = rest.length
+    ? `<details class="program-detail-plans-more"><summary><span class="program-detail-plans-closed">Show all ${names.length} plans</span><span class="program-detail-plans-open">Show fewer</span></summary>${list(rest)}</details>`
+    : '';
+  return `<div class="program-detail-plans"><p class="program-detail-plans-label">Plans listed on their website:</p>${list(visible)}${more}</div>`;
+}
+
+/**
+ * Inner HTML of the Insurance row: category chips (spec 1.2), then the named
+ * plans (Ruling 10), then one readable sentence. Mirrored in src/js/program-detail.js (displayInsurance*).
+ * Falls back to "Unknown" — the row's previous empty-data value — so the row
+ * is never blank.
+ */
+function insuranceValueHtml(program) {
+  const chips = insuranceChipLabels(program);
+  const sentence = insuranceDisplayNote(program);
+
+  const parts = [];
+  if (chips.length) {
+    const items = chips.map((c) => `<li class="badge program-detail-chip">${escapeHtml(c)}</li>`).join('');
+    parts.push(`<ul class="program-detail-chips" role="list" aria-label="Insurance types">${items}</ul>`);
+  }
+  const plans = planNamesHtml(insurancePlanNames(program));
+  if (plans) parts.push(plans);
+  if (sentence) parts.push(`<p class="program-detail-insurance-note">${escapeHtml(sentence)}</p>`);
+  if (!parts.length) parts.push(`<p class="program-detail-insurance-note">Unknown</p>`);
+  return parts.join('');
+}
+
+/** "What [level] means for your family" (spec 1.1). Prerender-only. */
+function explainerSectionHtml(program) {
+  const ex = explainerFor(safeStr(program.level_of_care));
+  if (!ex) return '';
+  // safeSitePath() only passes [a-z0-9/_-], which is attribute-safe as-is;
+  // escapeHtml() would entity-encode the slashes (&#x2F;) and break plain-text
+  // link audits, the same reasoning as programPublicPath() in renderRelatedCard.
+  const href = safeSitePath(ex.guideHref);
+  const linkHtml = href
+    ? `<a class="program-detail-explainer-link" href="${href}">Learn more about levels of care <span aria-hidden="true">→</span></a>`
+    : '';
+  return `<div class="program-detail-section program-detail-explainer">
+      <h2>${escapeHtml(ex.title)}</h2>
+      <p class="program-detail-explainer-body">${escapeHtml(ex.body)}</p>
+      ${linkHtml}
+    </div>`;
+}
+
+/** The "What to ask when you call" guide (src/html/guide-what-to-ask.html). */
+const WHAT_TO_ASK_GUIDE = '/guide-what-to-ask';
+
+/**
+ * "Questions to ask when you call" (spec 1.4). Prerender-only. No Phase 2
+ * facts are published yet, so every topic question shows. callQuestions()
+ * returns [] for non-Treatment entries (crisis lines etc.), and then the whole
+ * section is omitted. Ends with a link to the fuller what-to-ask guide.
+ */
+function questionsSectionHtml(program) {
+  const questions = callQuestions(program, new Set());
+  if (!questions.length) return '';
+  const items = questions.map((q) => `<li>${escapeHtml(q)}</li>`).join('\n        ');
+  // Same attribute-safe reasoning as the explainer link above.
+  const guide = safeSitePath(WHAT_TO_ASK_GUIDE);
+  const moreLink = guide
+    ? `<a class="program-detail-questions-link" href="${guide}">More questions to ask <span aria-hidden="true">→</span></a>`
+    : '';
+  return `<div class="program-detail-section program-detail-questions">
+      <h2>Questions to ask when you call</h2>
+      <ul class="program-detail-question-list" role="list">
+        ${items}
+      </ul>
+      ${moreLink}
+    </div>`;
 }
 
 function renderRelatedCard(p) {
@@ -451,8 +565,9 @@ function renderRelatedCard(p) {
 
 /**
  * Renders the full program detail article, mirroring renderProgramDetail's
- * DOM structure/classes (src/js/program-detail.js:191-497) so existing CSS
- * applies unchanged. Root element carries data-prerendered="true" and
+ * DOM structure/classes (src/js/program-detail.js, renderProgramDetail) so
+ * the same CSS applies to both paths. The explainer and questions sections
+ * are prerender-only (see the file header). Root element carries data-prerendered="true" and
  * data-last-verified so a later client-side patch can skip re-rendering.
  */
 export function renderProgramBody(program, allPrograms) {
@@ -511,7 +626,7 @@ export function renderProgramBody(program, allPrograms) {
   const infoGrid = [
     gridRow('Level of Care', escapeHtml(safeStr(program.level_of_care) || 'Unknown')),
     gridRow('Service Setting', escapeHtml(safeStr(program.service_setting) || 'Unknown')),
-    gridRow('Ages Served', escapeHtml(safeStr(program.ages_served) || 'Unknown')),
+    gridRow('Ages Served', escapeHtml(ageFitLine(program))),
     gridRow('Entry Type', escapeHtml(safeStr(program.entry_type) || 'Unknown')),
   ].join('\n      ');
   const infoSectionHtml = section('Program Information', `<div class="program-detail-grid">
@@ -549,10 +664,11 @@ export function renderProgramBody(program, allPrograms) {
       ${contactRows.join('\n      ')}
       </div>`);
 
-  const accessRows = [
-    gridRow('Insurance', escapeHtml(safeStr(program.insurance_notes) || 'Unknown')),
-    gridRow('Transportation', escapeHtml(safeStr(program.transportation_available) || 'Unknown')),
-  ];
+  const accessRows = [gridRow('Insurance', insuranceValueHtml(program), 'program-detail-insurance')];
+  // Unknown / N/A transportation carries no information, so the row is omitted (spec 1.5).
+  if (showTransportation(program)) {
+    accessRows.push(gridRow('Transportation', escapeHtml(safeStr(program.transportation_available))));
+  }
   if (program.accepting_new_patients) {
     accessRows.push(gridRow('Accepting Patients', escapeHtml(safeStr(program.accepting_new_patients))));
   }
@@ -611,10 +727,12 @@ export function renderProgramBody(program, allPrograms) {
     ${renderProgramCrumbsHtml(program, name)}
     ${headerHtml}
     ${infoSectionHtml}
+    ${explainerSectionHtml(program)}
     ${locationSectionHtml}
     ${contactSectionHtml}
     ${accessSectionHtml}
     ${notesSectionHtml}
+    ${questionsSectionHtml(program)}
     ${verificationSectionHtml}
     ${relatedSectionHtml}
     </div>`;

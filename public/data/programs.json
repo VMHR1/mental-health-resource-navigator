@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-09-21T16:45:03.948Z",
+    "generatedAt": "2026-09-28T01:22:09.439Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -16,7 +16,7 @@
     },
     "last_full_verification": "2026-05-18",
     "last_directory_review_notes": "Automated wave 3 audit 2026-09-21 (112 of 112 programs). See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-09-21T16:45:03.948Z",
+    "regional_sync_at": "2026-09-28T01:22:09.439Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -28,10 +28,10 @@
     "last_internet_verification": "2026-05-18",
     "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
     "verification_wave_count": 12,
-    "last_patch_applied": "2026-08-25",
-    "last_patch_run_id": "sparc-website-url-fix-2026-08-25",
-    "last_patch_notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
-    "last_patch_programs": 1,
+    "last_patch_applied": "2026-09-27",
+    "last_patch_run_id": "bricolage-notes-cleanup-2026-09-27",
+    "last_patch_notes": "Copy correction on both Bricolage records: removes outdated domain-history text from the top-level notes and from accepted_insurance.notes, which program pages show to families. Schedule and insurance sentences are the existing text, unchanged. Both listings already point to the correct site (website_url/accepted_insurance.source_url). stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed.",
+    "last_patch_programs": 2,
     "last_wave_verification": "2026-09-21",
     "last_wave_verified": 3
   },
@@ -1396,7 +1396,7 @@
         }
       ],
       "phone": "469-968-5700",
-      "notes": "PHP Mon–Fri 9:30am–3:30pm. Prior bricolagewellness.com URL was invalid (domain hijacked); corrected to bricolagebehavioral.com May 2026.",
+      "notes": "PHP Mon–Fri 9:30am–3:30pm.",
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid; verify via bricolagebehavioral.com/insurance-verification/",
       "verification_source": "Bricolage Behavioral Health PHP: https://bricolagebehavioral.com/partial-hospitalization-program/",
@@ -1419,7 +1419,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"
@@ -3961,7 +3961,7 @@
         }
       ],
       "phone": "469-968-5700",
-      "notes": "IOP Mon/Wed/Fri 9:30am–12:30pm. Canonical site bricolagebehavioral.com (May 2026).",
+      "notes": "IOP Mon/Wed/Fri 9:30am–12:30pm.",
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Ambetter, Blue Cross Blue Shield, Baylor Scott & White, Cigna, Humana, UnitedHealthcare | Types: Commercial (in-network) | Does not accept Medicaid.",
       "verification_source": "Bricolage Behavioral Health IOP: https://bricolagebehavioral.com/our-services/intensive-outpatient-therapy/",
@@ -3984,7 +3984,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"

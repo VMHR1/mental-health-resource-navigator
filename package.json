@@ -14,6 +14,7 @@
     "validate-filters": "node scripts/validate-filters.js",
     "validate-data": "node scripts/validate-data.js",
     "validate-jsonld": "node scripts/validate-jsonld.js",
+    "test:unit": "node --test tests/unit/*.test.js",
     "sync-regional-data": "node scripts/sync-regional-data.js",
     "assign-waves": "node scripts/assign-verification-waves.js",
     "spot-check-attention": "node scripts/spot-check-25.js",
