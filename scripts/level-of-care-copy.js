@@ -6,7 +6,7 @@
  * General statements about each care level only — never claims about a
  * specific program. Informational, not medical advice.
  *
- * STATUS: DRAFT wording, pending owner (Jared) approval before Phase 1 ships.
+ * STATUS: Approved by owner (Jared), 2026-09-27. Wording changes need his review.
  *
  * The 10 raw `level_of_care` values in public/data/programs.json map to 7
  * explainers. A value with no mapping returns null (renders no explainer);
