@@ -1,0 +1,20 @@
+{
+  "verified_on": "2026-09-27",
+  "source": "website",
+  "run_id": "bricolage-insurance-notes-2026-09-27",
+  "notes": "Removes an internal operations note (\"Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026).\") from accepted_insurance.notes on both Bricolage records, which program pages now show to families in the Insurance row. The remaining insurance sentence is the existing text, unchanged. Copy correction only: stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed. The canonical-domain fact stays in website_url/accepted_insurance.source_url.",
+  "patches": {
+    "php-bricolage-flower-mound": {
+      "accepted_insurance": {
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
+      },
+      "stamp_verified": false
+    },
+    "iop-bricolage-flower-mound": {
+      "accepted_insurance": {
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
+      },
+      "stamp_verified": false
+    }
+  }
+}

@@ -1397,7 +1397,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"
@@ -3921,7 +3921,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"

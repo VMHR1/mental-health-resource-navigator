@@ -28,10 +28,10 @@
     "last_internet_verification": "2026-05-18",
     "last_internet_verification_notes": "Manual verification against official provider websites; see scripts/internet-verification-report-may2026.json",
     "verification_wave_count": 12,
-    "last_patch_applied": "2026-08-25",
-    "last_patch_run_id": "sparc-website-url-fix-2026-08-25",
-    "last_patch_notes": "Corrects the SPARC IOP website_url from the generic Children's Health 'who-do-i-call' page to the program's own suicide-and-self-harm-behaviors page. The destination was confirmed locally in July 2026 but never committed; the exact confirmation date was not recorded, so verified_on is the date this patch was applied and stamp_verified is false. This patch does NOT claim a re-verification and does not advance last_verified.",
-    "last_patch_programs": 1
+    "last_patch_applied": "2026-09-27",
+    "last_patch_run_id": "bricolage-insurance-notes-2026-09-27",
+    "last_patch_notes": "Removes an internal operations note (\"Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026).\") from accepted_insurance.notes on both Bricolage records, which program pages now show to families in the Insurance row. The remaining insurance sentence is the existing text, unchanged. Copy correction only: stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed. The canonical-domain fact stays in website_url/accepted_insurance.source_url.",
+    "last_patch_programs": 2
   },
   "programs": [
     {
@@ -1397,7 +1397,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"
@@ -3921,7 +3921,7 @@
         "types": [
           "Commercial (in-network)"
         ],
-        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid. Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026)."
+        "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "insurance_categories": [
         "commercial"
