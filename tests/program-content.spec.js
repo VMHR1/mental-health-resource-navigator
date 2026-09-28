@@ -1,8 +1,8 @@
 /**
  * Program page content (spec docs/superpowers/specs/2026-09-27-program-page-content-design.md,
  * Phase 1): level-of-care explainer, insurance chips + readable sentence,
- * age-fit line, hidden unknown transportation, and "Questions to ask when you
- * call". Runs against the built dist/ — `rm -rf dist && npm run build` first.
+ * named plans, age-fit line, hidden unknown transportation, and "Questions to
+ * ask when you call". Runs against the built dist/ — `rm -rf dist && npm run build` first.
  *
  * Two render paths are covered:
  *  - prerendered /programs/{id} pages (scripts/render-program-detail.js), and
@@ -16,6 +16,31 @@ import { BASELINE_QUESTIONS, TOPIC_QUESTIONS } from '../scripts/program-display.
 const TREATMENT_QUESTIONS = [...BASELINE_QUESTIONS, ...Object.values(TOPIC_QUESTIONS)];
 
 const PHP_ID = 'php-changes-frisco';
+
+/** 17 plans_raw names on its website FAQ: 8 shown, 9 behind "Show all 17 plans". */
+const MANY_PLANS_ID = 'php-mind-above-matter-keller';
+
+/** Shared by both render paths: the named-plans line (Ruling 10). */
+async function expectManyPlans(page) {
+  const plans = page.locator('.program-detail-insurance .program-detail-plans');
+  await expect(plans.locator('.program-detail-plans-label')).toHaveText('Plans listed on their website:');
+  const visible = plans.locator(':scope > .program-detail-plan-list li');
+  await expect(visible).toHaveCount(8);
+  await expect(visible.first()).toHaveText('Aetna');
+  await expect(visible.filter({ hasText: /^ChampVA$/ })).toHaveCount(1);
+
+  const more = plans.locator('details.program-detail-plans-more');
+  await expect(more.locator('summary .program-detail-plans-closed')).toHaveText('Show all 17 plans');
+  await expect(more.locator('summary .program-detail-plans-closed')).toBeVisible();
+  await expect(more.locator('summary .program-detail-plans-open')).toBeHidden();
+  const hidden = more.locator('.program-detail-plan-list li', { hasText: /^Parkland Community Health Plan$/ });
+  await expect(hidden).toBeHidden();
+  await more.locator('summary').click();
+  await expect(hidden).toBeVisible();
+  await expect(more.locator('.program-detail-plan-list li')).toHaveCount(9);
+  await expect(more.locator('summary .program-detail-plans-open')).toHaveText('Show fewer');
+  await expect(more.locator('summary .program-detail-plans-closed')).toBeHidden();
+}
 
 /** The value cell of the grid row whose label is exactly `labelText`. */
 function rowValue(page, labelText) {
@@ -49,12 +74,24 @@ test.describe('prerendered program pages', () => {
     const questions = page.locator('.program-detail-questions');
     await expect(questions.getByRole('heading', { name: 'Questions to ask when you call' })).toBeVisible();
     await expect(questions.locator('li')).toHaveText(TREATMENT_QUESTIONS);
+    await expect(questions.getByRole('list')).toHaveCount(1);
+    await expect(questions.getByRole('link', { name: /More questions to ask/ })).toHaveAttribute('href', '/guide-what-to-ask');
+    await expect(insurance.locator('ul.program-detail-chips')).toHaveAttribute('role', 'list');
+
+    // Only a generic "Most major insurance providers" entry: no named-plans line.
+    await expect(insurance.locator('.program-detail-plans')).toHaveCount(0);
 
     // Section order: explainer right after Program Information, questions right before Verification.
     const headings = await root.locator(':scope > .program-detail-section > h2').allTextContents();
     const at = (t) => headings.indexOf(t);
     expect(at('What PHP means for your family')).toBe(at('Program Information') + 1);
     expect(at('Questions to ask when you call')).toBe(at('Verification') - 1);
+  });
+
+  test('named plans from the website list, long lists collapsed behind <details>', async ({ page }) => {
+    await page.goto(`/programs/${MANY_PLANS_ID}`);
+    await expect(page.locator('#programDetail [data-prerendered="true"]')).toHaveCount(1);
+    await expectManyPlans(page);
   });
 
   test('crisis page reads "Not billed to insurance" and has no questions section', async ({ page }) => {
@@ -101,6 +138,14 @@ test.describe('client fallback (program.html?id=)', () => {
     // Spec 2.5: explainer and questions are prerender-only.
     await expect(page.locator('.program-detail-explainer')).toHaveCount(0);
     await expect(page.locator('.program-detail-questions')).toHaveCount(0);
+  });
+
+  test('fallback shows the same named-plans line', async ({ page }) => {
+    await page.goto(`/program.html?id=${MANY_PLANS_ID}`);
+    await expect(page.locator('#programDetail .program-detail-title')).toBeVisible();
+    await expect(page.locator('#programDetail [data-prerendered="true"]')).toHaveCount(0);
+    await expectManyPlans(page);
+    await expect(page.locator('.program-detail-insurance ul.program-detail-chips')).toHaveAttribute('role', 'list');
   });
 
   test('crisis fallback reads "Not billed to insurance"', async ({ page }) => {

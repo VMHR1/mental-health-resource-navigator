@@ -310,8 +310,9 @@ function injectSeoMeta(program) {
 //
 // Duplicated rather than imported because this file is a classic (non-module)
 // script loaded by src/html/program.html and cannot import from scripts/. Any
-// change to insuranceChipLabels / insuranceSentence / insuranceDisplayNote /
-// ageFitLine / showTransportation there needs the same change here, and vice versa.
+// change to insuranceChipLabels / insurancePlanNames / insuranceSentence /
+// insuranceDisplayNote / ageFitLine / showTransportation there needs the same
+// change here, and vice versa.
 //
 // Intentionally PRERENDER-ONLY (spec 2.5, docs/superpowers/specs/
 // 2026-09-27-program-page-content-design.md): the level-of-care explainer
@@ -335,6 +336,54 @@ function displayInsuranceChipLabels(program) {
   return DISPLAY_INSURANCE_CHIPS
     .filter((pair) => cats.indexOf(pair[0]) !== -1)
     .map((pair) => pair[1]);
+}
+
+/** Mirrors splitPlanList() in scripts/program-display.js: top-level commas only. */
+function displaySplitPlanList(text) {
+  const out = [];
+  let depth = 0;
+  let current = '';
+  for (const ch of text) {
+    if (ch === '(') depth += 1;
+    else if (ch === ')') depth = Math.max(0, depth - 1);
+    if (ch === ',' && depth === 0) {
+      out.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  out.push(current);
+  return out;
+}
+
+/**
+ * Mirrors insurancePlanNames() in scripts/program-display.js: plans_raw, else
+ * plans, else the "Plans:" segment of insurance_notes; trimmed, de-duplicated
+ * (case-insensitive), generic "Most …"/"See …" phrases dropped.
+ */
+function displayInsurancePlanNames(program) {
+  const nonEmpty = (v) => (Array.isArray(v) && v.length ? v : null);
+  const accepted = program && program.accepted_insurance;
+  let source = (accepted && (nonEmpty(accepted.plans_raw) || nonEmpty(accepted.plans))) || null;
+  if (!source) {
+    const raw = program && typeof program.insurance_notes === 'string' ? program.insurance_notes : '';
+    const segment = raw.split('|').map((s) => s.trim()).find((s) => /^plans\s*:/i.test(s));
+    source = segment ? displaySplitPlanList(segment.replace(/^plans\s*:/i, '')) : [];
+  }
+
+  const seen = new Set();
+  const names = [];
+  source.forEach((entry) => {
+    if (typeof entry !== 'string') return;
+    const name = entry.trim();
+    if (!name || /^(most|see)\b/i.test(name)) return;
+    const key = name.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    names.push(name);
+  });
+  return names;
 }
 
 /** Mirrors insuranceSentence() in scripts/program-display.js. */
@@ -386,6 +435,54 @@ function displayShowTransportation(program) {
   return ['', 'unknown', 'n/a'].indexOf(value.trim().toLowerCase()) === -1;
 }
 
+/** Mirrors VISIBLE_PLAN_COUNT in scripts/render-program-detail.js. */
+const DISPLAY_VISIBLE_PLAN_COUNT = 8;
+
+/**
+ * "Plans listed on their website:" block, mirroring planNamesHtml() in
+ * scripts/render-program-detail.js (same classes, same native <details>).
+ * Returns null when there are no names. Built with textContent.
+ */
+function buildPlanNames(names) {
+  if (!names.length) return null;
+  const list = (items) => {
+    const ul = document.createElement('ul');
+    ul.className = 'program-detail-plan-list';
+    ul.setAttribute('role', 'list');
+    items.forEach((n) => {
+      const li = document.createElement('li');
+      li.textContent = n;
+      ul.appendChild(li);
+    });
+    return ul;
+  };
+  const wrap = document.createElement('div');
+  wrap.className = 'program-detail-plans';
+  const label = document.createElement('p');
+  label.className = 'program-detail-plans-label';
+  label.textContent = 'Plans listed on their website:';
+  wrap.appendChild(label);
+  wrap.appendChild(list(names.slice(0, DISPLAY_VISIBLE_PLAN_COUNT)));
+  const rest = names.slice(DISPLAY_VISIBLE_PLAN_COUNT);
+  if (rest.length) {
+    const details = document.createElement('details');
+    details.className = 'program-detail-plans-more';
+    const summary = document.createElement('summary');
+    const closed = document.createElement('span');
+    closed.className = 'program-detail-plans-closed';
+    closed.textContent = `Show all ${names.length} plans`;
+    const open = document.createElement('span');
+    open.className = 'program-detail-plans-open';
+    open.textContent = 'Show fewer';
+    summary.appendChild(closed);
+    summary.appendChild(open);
+    details.appendChild(summary);
+    details.appendChild(list(rest));
+    wrap.appendChild(details);
+  }
+  return wrap;
+}
+
 /**
  * Insurance row value, mirroring insuranceValueHtml() in
  * scripts/render-program-detail.js (same classes). Built with textContent.
@@ -396,6 +493,7 @@ function buildInsuranceValue(program) {
   if (chips.length) {
     const list = document.createElement('ul');
     list.className = 'program-detail-chips';
+    list.setAttribute('role', 'list');
     list.setAttribute('aria-label', 'Insurance types');
     chips.forEach((label) => {
       const li = document.createElement('li');
@@ -405,8 +503,10 @@ function buildInsuranceValue(program) {
     });
     frag.appendChild(list);
   }
+  const plans = buildPlanNames(displayInsurancePlanNames(program));
+  if (plans) frag.appendChild(plans);
   const note = displayInsuranceNote(program);
-  if (note || !chips.length) {
+  if (note || (!chips.length && !plans)) {
     const p = document.createElement('p');
     p.className = 'program-detail-insurance-note';
     p.textContent = note || 'Unknown';

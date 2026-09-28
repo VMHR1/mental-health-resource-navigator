@@ -34,6 +34,7 @@ import { hubForCareLevel, DIRECTORY_PAGE } from './hub-config.js';
 import { explainerFor } from './level-of-care-copy.js';
 import {
   insuranceChipLabels,
+  insurancePlanNames,
   insuranceDisplayNote,
   ageFitLine,
   showTransportation,
@@ -443,9 +444,29 @@ function gridRow(labelText, valueHtml, valueClass = '') {
         <div class="${cls}">${valueHtml}</div>`;
 }
 
+/** Plan names shown before the "Show all N plans" disclosure. */
+const VISIBLE_PLAN_COUNT = 8;
+
 /**
- * Inner HTML of the Insurance row: category chips (spec 1.2) over one
- * readable sentence. Mirrored in src/js/program-detail.js (displayInsurance*).
+ * "Plans listed on their website:" plus the names (Ruling 10). Past
+ * VISIBLE_PLAN_COUNT the rest go in a native <details> so no JS is needed.
+ * Mirrored by buildPlanNames() in src/js/program-detail.js.
+ */
+function planNamesHtml(names) {
+  if (!names.length) return '';
+  const list = (items) =>
+    `<ul class="program-detail-plan-list" role="list">${items.map((n) => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`;
+  const visible = names.slice(0, VISIBLE_PLAN_COUNT);
+  const rest = names.slice(VISIBLE_PLAN_COUNT);
+  const more = rest.length
+    ? `<details class="program-detail-plans-more"><summary><span class="program-detail-plans-closed">Show all ${names.length} plans</span><span class="program-detail-plans-open">Show fewer</span></summary>${list(rest)}</details>`
+    : '';
+  return `<div class="program-detail-plans"><p class="program-detail-plans-label">Plans listed on their website:</p>${list(visible)}${more}</div>`;
+}
+
+/**
+ * Inner HTML of the Insurance row: category chips (spec 1.2), then the named
+ * plans (Ruling 10), then one readable sentence. Mirrored in src/js/program-detail.js (displayInsurance*).
  * Falls back to "Unknown" — the row's previous empty-data value — so the row
  * is never blank.
  */
@@ -456,8 +477,10 @@ function insuranceValueHtml(program) {
   const parts = [];
   if (chips.length) {
     const items = chips.map((c) => `<li class="badge program-detail-chip">${escapeHtml(c)}</li>`).join('');
-    parts.push(`<ul class="program-detail-chips" aria-label="Insurance types">${items}</ul>`);
+    parts.push(`<ul class="program-detail-chips" role="list" aria-label="Insurance types">${items}</ul>`);
   }
+  const plans = planNamesHtml(insurancePlanNames(program));
+  if (plans) parts.push(plans);
   if (sentence) parts.push(`<p class="program-detail-insurance-note">${escapeHtml(sentence)}</p>`);
   if (!parts.length) parts.push(`<p class="program-detail-insurance-note">Unknown</p>`);
   return parts.join('');
@@ -481,21 +504,30 @@ function explainerSectionHtml(program) {
     </div>`;
 }
 
+/** The "What to ask when you call" guide (src/html/guide-what-to-ask.html). */
+const WHAT_TO_ASK_GUIDE = '/guide-what-to-ask';
+
 /**
  * "Questions to ask when you call" (spec 1.4). Prerender-only. No Phase 2
  * facts are published yet, so every topic question shows. callQuestions()
  * returns [] for non-Treatment entries (crisis lines etc.), and then the whole
- * section is omitted.
+ * section is omitted. Ends with a link to the fuller what-to-ask guide.
  */
 function questionsSectionHtml(program) {
   const questions = callQuestions(program, new Set());
   if (!questions.length) return '';
   const items = questions.map((q) => `<li>${escapeHtml(q)}</li>`).join('\n        ');
+  // Same attribute-safe reasoning as the explainer link above.
+  const guide = safeSitePath(WHAT_TO_ASK_GUIDE);
+  const moreLink = guide
+    ? `<a class="program-detail-questions-link" href="${guide}">More questions to ask <span aria-hidden="true">→</span></a>`
+    : '';
   return `<div class="program-detail-section program-detail-questions">
       <h2>Questions to ask when you call</h2>
-      <ul class="program-detail-question-list">
+      <ul class="program-detail-question-list" role="list">
         ${items}
       </ul>
+      ${moreLink}
     </div>`;
 }
 
