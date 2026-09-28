@@ -310,8 +310,8 @@ function injectSeoMeta(program) {
 //
 // Duplicated rather than imported because this file is a classic (non-module)
 // script loaded by src/html/program.html and cannot import from scripts/. Any
-// change to insuranceChipLabels / insuranceSentence / ageFitLine /
-// showTransportation there needs the same change here, and vice versa.
+// change to insuranceChipLabels / insuranceSentence / insuranceDisplayNote /
+// ageFitLine / showTransportation there needs the same change here, and vice versa.
 //
 // Intentionally PRERENDER-ONLY (spec 2.5, docs/superpowers/specs/
 // 2026-09-27-program-page-content-design.md): the level-of-care explainer
@@ -352,8 +352,8 @@ function displayInsuranceSentence(program) {
 }
 
 /**
- * Mirrors NOT_BILLED_RAW / NOT_BILLED_LABEL in scripts/render-program-detail.js:
- * the crisis-row literal reads as a code, so it is shown as a statement.
+ * Mirrors insuranceDisplayNote() in scripts/program-display.js: the crisis-row
+ * literal reads as a code, so it is shown as a statement.
  */
 function displayInsuranceNote(program) {
   const sentence = displayInsuranceSentence(program);

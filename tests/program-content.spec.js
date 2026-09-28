@@ -10,6 +10,10 @@
  *    which only gets the insurance, age and transportation changes (spec 2.5).
  */
 import { test, expect } from '@playwright/test';
+import { BASELINE_QUESTIONS, TOPIC_QUESTIONS } from '../scripts/program-display.js';
+
+/** No Phase 2 facts are published yet, so a treatment page shows every question. */
+const TREATMENT_QUESTIONS = [...BASELINE_QUESTIONS, ...Object.values(TOPIC_QUESTIONS)];
 
 const PHP_ID = 'php-changes-frisco';
 
@@ -44,8 +48,7 @@ test.describe('prerendered program pages', () => {
     // 1.4 questions list (Treatment Program: baseline + all topic questions).
     const questions = page.locator('.program-detail-questions');
     await expect(questions.getByRole('heading', { name: 'Questions to ask when you call' })).toBeVisible();
-    await expect(questions.locator('li')).toHaveCount(7);
-    await expect(questions.locator('li').first()).toHaveText('Do you have openings right now, or is there a waitlist?');
+    await expect(questions.locator('li')).toHaveText(TREATMENT_QUESTIONS);
 
     // Section order: explainer right after Program Information, questions right before Verification.
     const headings = await root.locator(':scope > .program-detail-section > h2').allTextContents();
@@ -54,11 +57,12 @@ test.describe('prerendered program pages', () => {
     expect(at('Questions to ask when you call')).toBe(at('Verification') - 1);
   });
 
-  test('crisis page reads "Not billed to insurance" and shows only baseline questions', async ({ page }) => {
+  test('crisis page reads "Not billed to insurance" and has no questions section', async ({ page }) => {
     await page.goto('/programs/crisis-mcot-ntbha');
     const insurance = page.locator('.program-detail-insurance');
     await expect(insurance).toHaveText('Not billed to insurance');
-    await expect(page.locator('.program-detail-questions li')).toHaveCount(2);
+    await expect(page.locator('.program-detail-questions')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Questions to ask when you call' })).toHaveCount(0);
     await expect(page.locator('.program-detail-explainer h2')).toHaveText('What in-person crisis care means for your family');
   });
 

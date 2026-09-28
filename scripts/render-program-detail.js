@@ -34,7 +34,7 @@ import { hubForCareLevel, DIRECTORY_PAGE } from './hub-config.js';
 import { explainerFor } from './level-of-care-copy.js';
 import {
   insuranceChipLabels,
-  insuranceSentence,
+  insuranceDisplayNote,
   ageFitLine,
   showTransportation,
   callQuestions,
@@ -443,10 +443,6 @@ function gridRow(labelText, valueHtml, valueClass = '') {
         <div class="${cls}">${valueHtml}</div>`;
 }
 
-/** Crisis rows carry this literal; families read it as a statement, not a code. */
-const NOT_BILLED_RAW = 'N/A (not an insurance-billed service)';
-const NOT_BILLED_LABEL = 'Not billed to insurance';
-
 /**
  * Inner HTML of the Insurance row: category chips (spec 1.2) over one
  * readable sentence. Mirrored in src/js/program-detail.js (displayInsurance*).
@@ -455,8 +451,7 @@ const NOT_BILLED_LABEL = 'Not billed to insurance';
  */
 function insuranceValueHtml(program) {
   const chips = insuranceChipLabels(program);
-  const raw = insuranceSentence(program);
-  const sentence = raw === NOT_BILLED_RAW ? NOT_BILLED_LABEL : raw;
+  const sentence = insuranceDisplayNote(program);
 
   const parts = [];
   if (chips.length) {
@@ -488,7 +483,9 @@ function explainerSectionHtml(program) {
 
 /**
  * "Questions to ask when you call" (spec 1.4). Prerender-only. No Phase 2
- * facts are published yet, so every topic question shows.
+ * facts are published yet, so every topic question shows. callQuestions()
+ * returns [] for non-Treatment entries (crisis lines etc.), and then the whole
+ * section is omitted.
  */
 function questionsSectionHtml(program) {
   const questions = callQuestions(program, new Set());

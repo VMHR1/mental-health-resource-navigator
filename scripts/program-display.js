@@ -51,6 +51,21 @@ export function insuranceSentence(program) {
     .join(' ');
 }
 
+// The 16 Crisis Service rows carry this literal in insurance_notes. It reads
+// as a data code, so pages show it as a plain statement instead.
+const NOT_BILLED_RAW = 'N/A (not an insurance-billed service)';
+const NOT_BILLED_LABEL = 'Not billed to insurance';
+
+/**
+ * The insurance sentence as shown on program pages: insuranceSentence() with
+ * the crisis "not billed" literal reworded. Returns '' when nothing readable
+ * remains. Mirrored by displayInsuranceNote() in src/js/program-detail.js.
+ */
+export function insuranceDisplayNote(program) {
+  const sentence = insuranceSentence(program);
+  return sentence === NOT_BILLED_RAW ? NOT_BILLED_LABEL : sentence;
+}
+
 // --- Ages (spec 1.3) --------------------------------------------------------
 
 const AGES_UNKNOWN = 'Ages served not published — ask when you call.';
@@ -112,12 +127,14 @@ export const TOPIC_QUESTIONS = Object.freeze({
 /**
  * Checklist for the program page. Treatment Programs get the baseline plus a
  * question for every topic not in `publishedTopics`. Crisis Services (and any
- * other entry type) get the baseline only, since no Phase 2 fact will answer
- * the topic questions for them.
+ * other entry type) get an empty list and the page renders no questions
+ * section: a 24/7, not-insurance-billed crisis line has no waitlist or
+ * network to ask about (controller ruling 2026-09-27, overrides spec 1.4's
+ * "baseline only" for crisis pages).
  */
 export function callQuestions(program, publishedTopics = new Set()) {
+  if (program?.entry_type !== 'Treatment Program') return [];
   const questions = [...BASELINE_QUESTIONS];
-  if (program?.entry_type !== 'Treatment Program') return questions;
   for (const [topic, question] of Object.entries(TOPIC_QUESTIONS)) {
     if (!publishedTopics.has(topic)) questions.push(question);
   }

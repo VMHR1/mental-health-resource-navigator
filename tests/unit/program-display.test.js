@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   insuranceSentence,
+  insuranceDisplayNote,
   insuranceChipLabels,
   ageFitLine,
   showTransportation,
@@ -9,6 +10,21 @@ import {
   BASELINE_QUESTIONS,
   TOPIC_QUESTIONS,
 } from '../../scripts/program-display.js';
+
+// --- insuranceDisplayNote (spec 1.2, crisis rewording) ----------------------
+
+test('insuranceDisplayNote: rewords the crisis "not billed" literal', () => {
+  assert.equal(
+    insuranceDisplayNote({ insurance_notes: 'N/A (not an insurance-billed service)' }),
+    'Not billed to insurance',
+  );
+});
+
+test('insuranceDisplayNote: passes any other sentence through unchanged', () => {
+  const p = { insurance_notes: 'Plans: Aetna | Types: Commercial | Call to verify plan.' };
+  assert.equal(insuranceDisplayNote(p), 'Call to verify plan.');
+  assert.equal(insuranceDisplayNote({}), '');
+});
 
 // --- insuranceSentence (spec 1.2) -------------------------------------------
 
@@ -167,8 +183,14 @@ test('callQuestions: all topics published leaves baseline only', () => {
   assert.deepEqual(callQuestions(treatment, new Set(TOPICS)), [...BASELINE_QUESTIONS]);
 });
 
-test('callQuestions: Crisis Service gets baseline only', () => {
-  assert.deepEqual(callQuestions(crisis, new Set()), [...BASELINE_QUESTIONS]);
+test('callQuestions: Crisis Service gets no questions at all', () => {
+  assert.deepEqual(callQuestions(crisis, new Set()), []);
+});
+
+test('callQuestions: any non-Treatment entry type (or none) gets no questions', () => {
+  assert.deepEqual(callQuestions({ entry_type: 'Navigation' }), []);
+  assert.deepEqual(callQuestions({}), []);
+  assert.deepEqual(callQuestions(null), []);
 });
 
 test('callQuestions: missing publishedTopics is treated as empty', () => {
@@ -176,7 +198,10 @@ test('callQuestions: missing publishedTopics is treated as empty', () => {
 });
 
 test('callQuestions: returns a fresh array each call', () => {
-  const a = callQuestions(crisis, new Set());
+  const a = callQuestions(treatment, new Set());
   a.push('mutated');
-  assert.equal(callQuestions(crisis, new Set()).length, 2);
+  assert.equal(callQuestions(treatment, new Set()).length, 7);
+  const c = callQuestions(crisis, new Set());
+  c.push('mutated');
+  assert.deepEqual(callQuestions(crisis, new Set()), []);
 });
