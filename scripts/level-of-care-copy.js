@@ -22,7 +22,7 @@ const EXPLAINERS = {
       'A partial hospitalization program (PHP) is one of the most intensive kinds of care where your child still sleeps at home. ' +
       'Many programs run for most of the weekday, often about five to six hours a day, several days a week. ' +
       'A typical day mixes group therapy, individual or family sessions, and check-ins with a psychiatrist or nurse, and some programs include time for schoolwork. ' +
-      'PHP is often used as a step down after a hospital stay, or to give a teen more support in the hope of avoiding one.',
+      'PHP is often used as a step down after a hospital stay, or to give your child more support in the hope of avoiding one.',
   },
   iop: {
     title: 'What IOP means for your family',
@@ -30,13 +30,13 @@ const EXPLAINERS = {
       'An intensive outpatient program (IOP) gives more support than a weekly therapy visit while your child keeps up with school and home life. ' +
       'Many programs meet a few days a week for about three hours at a time, often in the afternoon or evening. ' +
       'Sessions are usually built around group therapy, with regular family involvement and check-ins about medication. ' +
-      'Teens often move into IOP after PHP or a hospital stay, or start here when weekly therapy is not enough.',
+      'Children and teens often move into IOP after PHP or a hospital stay, or start here when weekly therapy is not enough.',
   },
   residential: {
     title: 'What residential treatment means for your family',
     body:
       'In residential treatment, your child lives at the program and has care and supervision around the clock. ' +
-      'It is typically for teens who need more support than they can safely get while living at home. ' +
+      'It is typically for children and teens who need more support than they can safely get while living at home. ' +
       'Days usually follow a set routine of therapy, school, and daily activities, with family sessions and visits built in. ' +
       "Stays often last several weeks to a few months, depending on the program and your child's needs.",
   },
