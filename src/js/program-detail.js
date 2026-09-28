@@ -305,6 +305,116 @@ function injectSeoMeta(program) {
   crumbEl.textContent = JSON.stringify(breadcrumbLd);
 }
 
+// ---------------------------------------------------------------------------
+// Display helpers, mirroring scripts/program-display.js
+//
+// Duplicated rather than imported because this file is a classic (non-module)
+// script loaded by src/html/program.html and cannot import from scripts/. Any
+// change to insuranceChipLabels / insuranceSentence / ageFitLine /
+// showTransportation there needs the same change here, and vice versa.
+//
+// Intentionally PRERENDER-ONLY (spec 2.5, docs/superpowers/specs/
+// 2026-09-27-program-page-content-design.md): the level-of-care explainer
+// ("What [level] means for your family") and "Questions to ask when you call"
+// are rendered by scripts/render-program-detail.js only. This fallback path
+// (program.html?id=...) gets the insurance, age and transportation display.
+// ---------------------------------------------------------------------------
+
+/** Mirrors INSURANCE_CHIPS in scripts/program-display.js. */
+const DISPLAY_INSURANCE_CHIPS = [
+  ['commercial', 'Commercial'],
+  ['medicaid_chip', 'Medicaid/CHIP'],
+  ['tricare', 'TRICARE'],
+  ['medicare', 'Medicare'],
+];
+
+/** Mirrors insuranceChipLabels() in scripts/program-display.js. */
+function displayInsuranceChipLabels(program) {
+  const cats = program && program.insurance_categories;
+  if (!Array.isArray(cats)) return [];
+  return DISPLAY_INSURANCE_CHIPS
+    .filter((pair) => cats.indexOf(pair[0]) !== -1)
+    .map((pair) => pair[1]);
+}
+
+/** Mirrors insuranceSentence() in scripts/program-display.js. */
+function displayInsuranceSentence(program) {
+  const accepted = program && program.accepted_insurance && program.accepted_insurance.notes;
+  if (typeof accepted === 'string' && accepted.trim()) return accepted.trim();
+
+  const raw = program && program.insurance_notes;
+  if (typeof raw !== 'string') return '';
+  return raw
+    .split('|')
+    .map((s) => s.trim())
+    .filter((s) => s && !/^(plans|types)\s*:/i.test(s))
+    .join(' ');
+}
+
+/**
+ * Mirrors NOT_BILLED_RAW / NOT_BILLED_LABEL in scripts/render-program-detail.js:
+ * the crisis-row literal reads as a code, so it is shown as a statement.
+ */
+function displayInsuranceNote(program) {
+  const sentence = displayInsuranceSentence(program);
+  return sentence === 'N/A (not an insurance-billed service)' ? 'Not billed to insurance' : sentence;
+}
+
+/** Mirrors ageFitLine() in scripts/program-display.js. */
+function displayAgeFitLine(program) {
+  const ageNumber = (v) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null);
+  const min = ageNumber(program && program.age_min);
+  const max = ageNumber(program && program.age_max);
+  const lo = min && min > 0 ? min : null;
+
+  if (lo !== null && max !== null) {
+    return lo === max ? `Serves age ${lo}` : `Serves ages ${lo}–${max}`;
+  }
+  if (lo !== null) return `Serves ages ${lo} and up`;
+  if (max !== null) return `Serves ages ${max} and under`;
+  if (min === 0) return 'Serves all ages';
+
+  const text = program && typeof program.ages_served === 'string' ? program.ages_served.trim() : '';
+  if (text && text.toLowerCase() !== 'unknown') return `Ages served: ${text}`;
+  return 'Ages served not published — ask when you call.';
+}
+
+/** Mirrors showTransportation() in scripts/program-display.js. */
+function displayShowTransportation(program) {
+  const value = program && program.transportation_available;
+  if (typeof value !== 'string') return false;
+  return ['', 'unknown', 'n/a'].indexOf(value.trim().toLowerCase()) === -1;
+}
+
+/**
+ * Insurance row value, mirroring insuranceValueHtml() in
+ * scripts/render-program-detail.js (same classes). Built with textContent.
+ */
+function buildInsuranceValue(program) {
+  const frag = document.createDocumentFragment();
+  const chips = displayInsuranceChipLabels(program);
+  if (chips.length) {
+    const list = document.createElement('ul');
+    list.className = 'program-detail-chips';
+    list.setAttribute('aria-label', 'Insurance types');
+    chips.forEach((label) => {
+      const li = document.createElement('li');
+      li.className = 'badge program-detail-chip';
+      li.textContent = label;
+      list.appendChild(li);
+    });
+    frag.appendChild(list);
+  }
+  const note = displayInsuranceNote(program);
+  if (note || !chips.length) {
+    const p = document.createElement('p');
+    p.className = 'program-detail-insurance-note';
+    p.textContent = note || 'Unknown';
+    frag.appendChild(p);
+  }
+  return frag;
+}
+
 function findProgramById(programId) {
   return programs.find((p) => {
     if (p.program_id === programId) return true;
@@ -374,13 +484,13 @@ function appendSection(container, titleText) {
   return section;
 }
 
-function appendGridRow(grid, labelText, valueContent) {
+function appendGridRow(grid, labelText, valueContent, valueClass) {
   const label = document.createElement('div');
   label.className = 'program-detail-label';
   label.textContent = labelText;
 
   const value = document.createElement('div');
-  value.className = 'program-detail-value';
+  value.className = valueClass ? `program-detail-value ${valueClass}` : 'program-detail-value';
   if (typeof valueContent === 'string') {
     value.textContent = valueContent;
   } else if (valueContent instanceof Node) {
@@ -535,9 +645,12 @@ function renderProgramDetail(program) {
   infoGrid.className = 'program-detail-grid';
   appendGridRow(infoGrid, 'Level of Care', safeStr(program.level_of_care) || 'Unknown');
   appendGridRow(infoGrid, 'Service Setting', safeStr(program.service_setting) || 'Unknown');
-  appendGridRow(infoGrid, 'Ages Served', safeStr(program.ages_served) || 'Unknown');
+  appendGridRow(infoGrid, 'Ages Served', displayAgeFitLine(program));
   appendGridRow(infoGrid, 'Entry Type', safeStr(program.entry_type) || 'Unknown');
   infoSection.appendChild(infoGrid);
+
+  // The level-of-care explainer follows here on prerendered pages only
+  // (scripts/render-program-detail.js explainerSectionHtml, spec 2.5).
 
   if (addresses.length > 0) {
     const locSection = appendSection(root, addresses.length > 1 ? 'Locations' : 'Location');
@@ -607,8 +720,11 @@ function renderProgramDetail(program) {
   const accessSection = appendSection(root, 'Insurance & Access');
   const accessGrid = document.createElement('div');
   accessGrid.className = 'program-detail-grid';
-  appendGridRow(accessGrid, 'Insurance', safeStr(program.insurance_notes) || 'Unknown');
-  appendGridRow(accessGrid, 'Transportation', safeStr(program.transportation_available) || 'Unknown');
+  appendGridRow(accessGrid, 'Insurance', buildInsuranceValue(program), 'program-detail-insurance');
+  // Unknown / N/A transportation carries no information, so the row is omitted.
+  if (displayShowTransportation(program)) {
+    appendGridRow(accessGrid, 'Transportation', safeStr(program.transportation_available));
+  }
 
   if (program.accepting_new_patients) {
     appendGridRow(accessGrid, 'Accepting Patients', safeStr(program.accepting_new_patients));
@@ -625,6 +741,9 @@ function renderProgramDetail(program) {
     notesVal.textContent = safeStr(program.notes);
     notesSection.appendChild(notesVal);
   }
+
+  // "Questions to ask when you call" sits here on prerendered pages only
+  // (scripts/render-program-detail.js questionsSectionHtml, spec 2.5).
 
   if (program.verification_source || program.last_verified) {
     const verSection = appendSection(root, 'Verification');

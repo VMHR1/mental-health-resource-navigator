@@ -97,6 +97,77 @@
       font-size: 14px;
       line-height: 1.6;
     }
+    /* Insurance row: category chips over one readable sentence. Chips reuse
+       .badge (styles.css) for shape and weight; only the list reset and the
+       tint live here. */
+    .program-detail-chips {
+      list-style: none;
+      margin: 0 0 8px;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .program-detail-chip.badge {
+      font-size: 12px;
+      background: var(--vm-accent-soft, rgba(42, 157, 143, .1));
+      border-color: rgba(42, 157, 143, .28);
+      color: var(--vm-accent-deep, #1a655c);
+    }
+    .program-detail-insurance-note {
+      margin: 0;
+    }
+    /* Level-of-care explainer: general copy about the care level (not this
+       program), so it is set apart with a soft accent tint. */
+    .program-detail-explainer {
+      background: linear-gradient(135deg, rgba(42, 157, 143, .07), rgba(42, 157, 143, .02)), var(--cardSolid);
+      border-color: rgba(42, 157, 143, .22);
+    }
+    .program-detail-explainer-body {
+      margin: 0 0 12px;
+      max-width: 68ch;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .program-detail-explainer-link {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--vm-accent-deep, #1a655c);
+      text-decoration: none;
+    }
+    .program-detail-explainer-link:hover,
+    .program-detail-explainer-link:focus-visible {
+      text-decoration: underline;
+    }
+    /* "Questions to ask when you call": an empty-box checklist, so a parent
+       can print the page or tick through it on the phone. */
+    .program-detail-question-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .program-detail-question-list li {
+      position: relative;
+      padding-left: 30px;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .program-detail-question-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(42, 157, 143, .55);
+      border-radius: 5px;
+      background: var(--cardSolid);
+    }
     .related-programs {
       margin-top: 32px;
     }
@@ -171,7 +242,7 @@
     </main>
   </div>
 
-  <script defer src="js/program-detail.js?v=7"></script>
+  <script defer src="js/program-detail.js?v=8"></script>
   
   <footer>
     <p style="margin: 0;">This directory is informational and does not provide clinical advice.</p>
