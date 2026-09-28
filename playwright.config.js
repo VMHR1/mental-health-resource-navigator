@@ -6,6 +6,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  // tests/unit holds `node --test` unit tests (npm run test:unit). Playwright's
+  // default testMatch also matches *.test.js, so without this it would load them.
+  testIgnore: '**/unit/**',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,

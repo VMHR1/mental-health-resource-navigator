@@ -57,6 +57,9 @@ jobs:
       - name: Validate filters and smart search
         run: npm run validate-filters
 
+      - name: Unit tests
+        run: npm run test:unit
+
   e2e:
     name: E2E (shard ${{ matrix.shard }}/4)
     needs: fast
