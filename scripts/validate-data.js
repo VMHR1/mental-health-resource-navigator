@@ -8,6 +8,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
+import { explainerFor } from './level-of-care-copy.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -240,6 +241,14 @@ function validateProgram(program, index) {
       // Warning only, not error, as custom levels may be valid
       console.warn(
         `⚠ [${programId}] level_of_care "${program.level_of_care}" not in standard UI enum (may be valid)`,
+      );
+    }
+
+    // Warning only: a care level with no explainer renders no "What [level]
+    // means for your family" section. Add it to scripts/level-of-care-copy.js.
+    if (!explainerFor(program.level_of_care)) {
+      console.warn(
+        `⚠ [${programId}] level_of_care "${program.level_of_care}" has no explainer in scripts/level-of-care-copy.js (page renders without one)`,
       );
     }
   }
