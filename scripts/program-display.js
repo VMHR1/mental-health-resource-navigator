@@ -29,8 +29,9 @@ export function insuranceChipLabels(program) {
   return INSURANCE_CHIPS.filter(([key]) => cats.includes(key)).map(([, label]) => label);
 }
 
-// `insurance_notes` is often "Plans: … | Types: … | free text". The Plans and
-// Types segments duplicate the chips/plan list, so only free text is kept.
+// `insurance_notes` is often "Plans: … | Types: … | free text". The Types
+// segment duplicates the chips and the Plans segment is shown separately by
+// insurancePlanNames(), so only free text is kept here.
 const SCAFFOLD_SEGMENT = /^(plans|types)\s*:/i;
 
 /**
@@ -66,7 +67,72 @@ export function insuranceDisplayNote(program) {
   return sentence === NOT_BILLED_RAW ? NOT_BILLED_LABEL : sentence;
 }
 
-// --- Ages (spec 1.3) --------------------------------------------------------
+// Entries like "Most major commercial insurance" or "See Texas Health 'Insurance
+// Plans Accepted' list (…)" describe coverage rather than name a plan. They sit
+// badly under "Plans listed on their website:", and every record carrying one
+// already says the same thing in its insurance sentence, so they are dropped.
+const GENERIC_PLAN_ENTRY = /^(most|see)\b/i;
+
+/** Split on commas that are not inside parentheses. */
+function splitPlanList(text) {
+  const out = [];
+  let depth = 0;
+  let current = '';
+  for (const ch of text) {
+    if (ch === '(') depth += 1;
+    else if (ch === ')') depth = Math.max(0, depth - 1);
+    if (ch === ',' && depth === 0) {
+      out.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  out.push(current);
+  return out;
+}
+
+function nonEmptyArray(value) {
+  return Array.isArray(value) && value.length ? value : null;
+}
+
+/**
+ * Named insurance plans for the "Plans listed on their website:" line
+ * (controller Ruling 10). Source, first one present wins:
+ *   1. accepted_insurance.plans_raw — the plan names as the program's website
+ *      spells them;
+ *   2. accepted_insurance.plans — the normalized matching vocabulary, used only
+ *      when there is no raw list (it is lossy: it turns "See Texas Health …
+ *      list (many commercial, Medicare Advantage, …)" into just "Medicare");
+ *   3. the "Plans:" segment of insurance_notes, split on top-level commas.
+ * Then: trimmed, empties and case-insensitive duplicates dropped, generic
+ * "Most …"/"See …" phrases dropped. Returns [] when nothing is named.
+ * Mirrored by displayInsurancePlanNames() in src/js/program-detail.js.
+ */
+export function insurancePlanNames(program) {
+  const accepted = program?.accepted_insurance;
+  let source = nonEmptyArray(accepted?.plans_raw) || nonEmptyArray(accepted?.plans);
+  if (!source) {
+    const raw = typeof program?.insurance_notes === 'string' ? program.insurance_notes : '';
+    const segment = raw.split('|').map((s) => s.trim()).find((s) => /^plans\s*:/i.test(s));
+    source = segment ? splitPlanList(segment.replace(/^plans\s*:/i, '')) : [];
+  }
+
+  const seen = new Set();
+  const names = [];
+  for (const entry of source) {
+    if (typeof entry !== 'string') continue;
+    const name = entry.trim();
+    if (!name || GENERIC_PLAN_ENTRY.test(name)) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    names.push(name);
+  }
+  return names;
+}
+
+// --- Ages (spec 1.3)--------------------------------------------------------
 
 const AGES_UNKNOWN = 'Ages served not published — ask when you call.';
 

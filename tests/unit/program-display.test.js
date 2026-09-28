@@ -4,6 +4,7 @@ import {
   insuranceSentence,
   insuranceDisplayNote,
   insuranceChipLabels,
+  insurancePlanNames,
   ageFitLine,
   showTransportation,
   callQuestions,
@@ -204,4 +205,69 @@ test('callQuestions: returns a fresh array each call', () => {
   const c = callQuestions(crisis, new Set());
   c.push('mutated');
   assert.deepEqual(callQuestions(crisis, new Set()), []);
+});
+
+// --- insurancePlanNames (Ruling 10: named plans under the chips) ------------
+
+test('insurancePlanNames: prefers accepted_insurance.plans_raw (website spelling)', () => {
+  const p = {
+    accepted_insurance: {
+      plans: ['Champva', 'Medicaid'],
+      plans_raw: ['ChampVA', 'Molina Medicaid'],
+    },
+    insurance_notes: 'Plans: Something Else | Types: Commercial',
+  };
+  assert.deepEqual(insurancePlanNames(p), ['ChampVA', 'Molina Medicaid']);
+});
+
+test('insurancePlanNames: falls back to accepted_insurance.plans when plans_raw is missing or empty', () => {
+  const plans = ['Aetna', 'Cigna'];
+  assert.deepEqual(insurancePlanNames({ accepted_insurance: { plans } }), plans);
+  assert.deepEqual(insurancePlanNames({ accepted_insurance: { plans, plans_raw: [] } }), plans);
+});
+
+test('insurancePlanNames: parses the Plans: segment of insurance_notes when no array exists', () => {
+  const p = { insurance_notes: 'Plans: Aetna, Cigna ,, Humana | Types: Commercial | Call to verify.' };
+  assert.deepEqual(insurancePlanNames(p), ['Aetna', 'Cigna', 'Humana']);
+});
+
+test('insurancePlanNames: does not split on commas inside parentheses', () => {
+  const p = {
+    insurance_notes:
+      'Plans: Aetna, UnitedHealthcare (incl. UMR, All Savers, etc.), Humana | Types: Commercial',
+  };
+  assert.deepEqual(insurancePlanNames(p), ['Aetna', 'UnitedHealthcare (incl. UMR, All Savers, etc.)', 'Humana']);
+});
+
+test('insurancePlanNames: trims, drops empties and case-insensitive duplicates', () => {
+  const p = { accepted_insurance: { plans_raw: [' Aetna ', '', 'aetna', 'Cigna', null, 'Cigna'] } };
+  assert.deepEqual(insurancePlanNames(p), ['Aetna', 'Cigna']);
+});
+
+test('insurancePlanNames: drops generic "Most …" / "See …" phrases that are not plan names', () => {
+  assert.deepEqual(
+    insurancePlanNames({ accepted_insurance: { plans_raw: ['Most major insurance providers (in-network)'] } }),
+    [],
+  );
+  assert.deepEqual(
+    insurancePlanNames({ insurance_notes: 'Plans: Most major commercial insurance, Medicaid | Types: Commercial' }),
+    ['Medicaid'],
+  );
+  assert.deepEqual(
+    insurancePlanNames({
+      accepted_insurance: {
+        plans: ['Medicare'],
+        plans_raw: ["See Texas Health 'Insurance Plans Accepted' list (many commercial, Medicare Advantage, and Medicaid/CHIP plans)"],
+      },
+    }),
+    [],
+    'a lossy normalized `plans` must not stand in for a generic raw entry',
+  );
+});
+
+test('insurancePlanNames: [] when nothing is published', () => {
+  assert.deepEqual(insurancePlanNames({}), []);
+  assert.deepEqual(insurancePlanNames(null), []);
+  assert.deepEqual(insurancePlanNames({ insurance_notes: 'N/A (not an insurance-billed service)' }), []);
+  assert.deepEqual(insurancePlanNames({ insurance_notes: 'Types: Commercial | Call.' }), []);
 });
