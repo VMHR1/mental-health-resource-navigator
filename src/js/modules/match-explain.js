@@ -2,8 +2,8 @@
 // Transparent, rule-based "why this result appears" for each card.
 // No score, no ML, no opaque ranking — purely echoes the filter logic.
 
-(function () {
-  if (typeof window === 'undefined') return;
+const VMHRMatchExplain = (function () {
+  if (typeof window === 'undefined') return undefined;
 
   function safe(x) {
     return (x == null ? '' : String(x)).trim();
@@ -214,9 +214,16 @@
     </div>`;
   }
 
-  window.VMHRMatchExplain = {
+  return {
     explainMatch,
     renderMatchExplainHtml,
     readFilterSnapshot,
   };
 })();
+
+export { VMHRMatchExplain };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.VMHRMatchExplain = VMHRMatchExplain;
+}

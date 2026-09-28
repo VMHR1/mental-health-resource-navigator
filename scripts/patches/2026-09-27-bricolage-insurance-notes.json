@@ -1,16 +1,22 @@
 {
   "verified_on": "2026-09-27",
   "source": "website",
-  "run_id": "bricolage-insurance-notes-2026-09-27",
-  "notes": "Removes an internal operations note (\"Prior bricolagewellness.com domain was hijacked—canonical site is bricolagebehavioral.com (May 2026).\") from accepted_insurance.notes on both Bricolage records, which program pages now show to families in the Insurance row. The remaining insurance sentence is the existing text, unchanged. Copy correction only: stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed. The canonical-domain fact stays in website_url/accepted_insurance.source_url.",
+  "run_id": "bricolage-notes-cleanup-2026-09-27",
+  "notes": "Copy correction on both Bricolage records: removes outdated domain-history text from the top-level notes and from accepted_insurance.notes, which program pages show to families. Schedule and insurance sentences are the existing text, unchanged. Both listings already point to the correct site (website_url/accepted_insurance.source_url). stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed.",
   "patches": {
     "php-bricolage-flower-mound": {
+      "fields": {
+        "notes": "PHP Mon–Fri 9:30am–3:30pm."
+      },
       "accepted_insurance": {
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },
       "stamp_verified": false
     },
     "iop-bricolage-flower-mound": {
+      "fields": {
+        "notes": "IOP Mon/Wed/Fri 9:30am–12:30pm."
+      },
       "accepted_insurance": {
         "notes": "In-network commercial plans listed on provider FAQ; does not accept Medicaid."
       },

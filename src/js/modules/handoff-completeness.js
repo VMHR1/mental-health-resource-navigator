@@ -2,8 +2,8 @@
 // Pre-export checks for the discharge handoff packet.
 // Returns an aggregate status used by the comparison modal UI and the print template.
 
-(function () {
-  if (typeof window === 'undefined') return;
+const VMHRHandoffCompleteness = (function () {
+  if (typeof window === 'undefined') return undefined;
 
   function safe(x) {
     return (x == null ? '' : String(x)).trim();
@@ -238,10 +238,17 @@
     }
   }
 
-  window.VMHRHandoffCompleteness = {
+  return {
     evaluatePacket,
     renderStatusBannerHtml,
     statusToAnalyticsToken,
     updateHandoffStatus,
   };
 })();
+
+export { VMHRHandoffCompleteness };
+
+// For classic-script (non-module) consumers not yet converted
+if (typeof window !== 'undefined') {
+  window.VMHRHandoffCompleteness = VMHRHandoffCompleteness;
+}
