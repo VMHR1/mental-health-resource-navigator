@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-09-28T01:22:09.436Z",
+    "generatedAt": "2026-10-19T17:18:32.914Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,8 +15,8 @@
       "missing_website_url": 0
     },
     "last_full_verification": "2026-05-18",
-    "last_directory_review_notes": "Automated wave 3 audit 2026-09-21 (112 of 112 programs). See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-09-28T01:22:09.436Z",
+    "last_directory_review_notes": "Automated wave 7 audit 2026-10-19 (17 of 112 programs). See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-10-19T17:18:32.914Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -32,8 +32,8 @@
     "last_patch_run_id": "bricolage-notes-cleanup-2026-09-27",
     "last_patch_notes": "Copy correction on both Bricolage records: removes outdated domain-history text from the top-level notes and from accepted_insurance.notes, which program pages show to families. Schedule and insurance sentences are the existing text, unchanged. Both listings already point to the correct site (website_url/accepted_insurance.source_url). stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed.",
     "last_patch_programs": 2,
-    "last_wave_verification": "2026-09-21",
-    "last_wave_verified": 3
+    "last_wave_verification": "2026-10-19",
+    "last_wave_verified": 7
   },
   "programs": [
     {
@@ -802,12 +802,12 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Aetna, Evernorth (Cigna/Evernorth), Cigna, Magellan | Types: Commercial | Reflections shows major insurer networks on its site; confirm plan/product and authorization requirements with admissions.",
       "verification_source": "https://reflectionslifestyle.com/contact/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-10-19",
       "website": "https://reflectionslifestyle.com/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-10-19",
         "source_url": "https://reflectionslifestyle.com/",
         "plans": [
           "Aetna",
@@ -834,14 +834,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-10-19",
         "source_urls": [
           "https://reflectionslifestyle.com/contact/",
           "https://reflectionslifestyle.com/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -937,12 +937,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mckinney",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-10-19",
       "website": "https://www.carruscarebehavioral.com/mckinney",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-10-19",
         "source_url": "https://www.carruscarebehavioral.com/mckinney",
         "plans": [],
         "types": [
@@ -963,13 +963,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-10-19",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mckinney"
         ],
         "status": "partially_verified",
         "notes": "Phone not found on fetched source page.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
@@ -1367,13 +1367,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -1720,13 +1720,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -2503,13 +2503,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 11
@@ -2615,10 +2615,10 @@
       "transportation_available": "Unknown",
       "insurance_notes": "Plans: Blue Cross Blue Shield, Aetna, Cigna, TRICARE, Magellan, Humana, Optum, UnitedHealthcare (incl. UMR, All Savers, United Shared Services, etc.), Baylor Scott & White Health Plan, Bright HealthCare, Behavioral Health Systems | Types: Commercial, Military (TRICARE) | Connections notes they do not accept Oscar plans; TRICARE PHP/IOP may require referral for in-network benefits.",
       "verification_source": "https://connectionswellnessgroup.com/locations/rockwall/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-10-19",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-10-19",
         "source_url": "https://connectionswellnessgroup.com/faqs/",
         "plans": [
           "Aetna",
@@ -2665,14 +2665,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-10-19",
         "source_urls": [
           "https://connectionswellnessgroup.com/locations/rockwall/",
           "https://connectionswellnessgroup.com/faqs/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -2704,12 +2704,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/sherman",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-10-19",
       "website": "https://www.carruscarebehavioral.com/sherman",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-10-19",
         "source_url": "https://www.carruscarebehavioral.com/sherman",
         "plans": [],
         "types": [
@@ -2730,13 +2730,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-10-19",
         "source_urls": [
           "https://www.carruscarebehavioral.com/sherman"
         ],
         "status": "partially_verified",
         "notes": "Phone not found on fetched source page.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
@@ -3095,13 +3095,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source URL(s) failed this run only (strike 1 of 2): https://unitybehavioral.com/services (404). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
           "org_on_page": true
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 3
@@ -4223,13 +4223,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -4730,13 +4730,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -5268,10 +5268,10 @@
       "transportation_available": "N/A",
       "insurance_notes": "Plans: UnitedHealthcare, Cigna, Blue Cross Blue Shield, Aetna, Anthem, Humana, TRICARE, Medicaid (in select states) | Types: Commercial (most major), Military (TRICARE), Medicaid (select states) | Charlie Health FAQ lists major in-network insurers; Medicaid coverage depends on state/program—verify with admissions.",
       "verification_source": "https://www.charliehealth.com/contact-us",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-10-19",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-10-19",
         "source_url": "https://www.charliehealth.com/faqs",
         "plans": [
           "Aetna",
@@ -5313,7 +5313,7 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-10-19",
         "source_urls": [
           "https://www.charliehealth.com/contact-us",
           "https://www.charliehealth.com/",
@@ -5321,7 +5321,7 @@
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -6046,13 +6046,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 2
@@ -6743,13 +6743,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
@@ -6865,13 +6865,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (429 rate limited; 429 rate limited). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
@@ -7078,13 +7078,15 @@
           "https://www.grace-counseling.com/about-grace-counseling/grace-counseling-locations/lewisville/"
         ],
         "status": "partially_verified",
-        "notes": "Phone not found on fetched source page. City not found on fetched source page. Insurance details require call to admissions. Source page returned no readable content; manual browser check advised.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://www.grace-counseling.com/addiction-treatment-center-programs-tx/iop-for-adolescents/ (fetch failed); https://www.grace-counseling.com/ (fetch failed); https://www.grace-counseling.com/about-grace-counseling/grace-counseling-locations/lewisville/ (fetch failed). Prior verification held pending the next run.",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
-        }
+        },
+        "last_attempted_at": "2026-10-19",
+        "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 7
     },
@@ -7451,14 +7453,14 @@
           "https://fortbehavioral.com/contact-fort-behavioral-health-texas/"
         ],
         "status": "partially_verified",
-        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/ (500). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/ (500); https://fortbehavioral.com/contact-fort-behavioral-health-texas/ (500). Prior verification held pending the next run.",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 4
@@ -7676,13 +7678,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-10-19T17:18:13.505Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-10-19",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 0
