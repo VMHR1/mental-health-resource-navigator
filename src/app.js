@@ -1,3 +1,23 @@
+import {
+  state, stateManager, syncStateFromManager, syncStateToManager,
+  loadEncryptedDataFn, saveEncryptedDataFn, URL_FILTER_PARAM_KEYS, STORAGE_KEYS_COMPARISON,
+} from './js/app/state.js?v=1';
+import { setRenderImpl } from './js/app/render-hook.js?v=1';
+import { els, refreshEls, readSearchQuery } from './js/app/dom.js?v=1';
+import { getCardProgramName, setExpandBtnA11y, setCardOpen, toggleModalCardDetails, toggleOpen } from './js/app/card-management.js?v=1';
+import { buildLocationOptions, buildSearchCities, buildInsuranceOptions } from './js/app/select-options.js?v=1';
+import { callShowToast, callShowModal, callHideModal } from './js/app/ui-feedback.js?v=1';
+import { requestUserLocation, showLocationConsent, hideLocationConsent, handleNearMeClick, handleLocationConsentAllow, revertDistanceSortWithoutLocation, handleLocationConsentCancel, handleStopLocationSharing, updateLocationButtonVisibility } from './js/app/geolocation.js?v=1';
+import { syncTopToggles, syncChipsToSelect, syncSelectToChips, initChipMultiSelects } from './js/app/filter-sync.js?v=1';
+import { updateURLState, loadURLState, handleURLParams } from './js/app/url-state.js?v=1';
+import { clearAllFilters, getFilterContextForEmptyState, updateEmptyStateDisplay, broadenSearchOneStep } from './js/app/app-empty-state.js?v=1';
+import { applyFeatureFlagsToUI, updateFilterVisibility, updateActiveFilterChips, clearActiveFilterChip } from './js/app/filter-visibility.js?v=1';
+import { hasURLFilterParams, isResultsUnlocked, unlockResults, lockResults, updateResultsVisibility, getDirectoryProgramCount, updateResultsAwaitingCopy, updateResultsAwaitingPanel, renderResultsLocked, browseAllPrograms } from './js/app/results-gate.js?v=1';
+
+// render() is a hoisted function declaration below; register it with the
+// late-binding seam here so it is bound before any DOM event can fire.
+setRenderImpl(render);
+
 // ========== Security ==========
 // Load security module (encryption, validation, etc.)
 // Security functions are available globally after security.js loads
@@ -6,233 +26,11 @@
 // All debug code has been removed
 
 // ========== State Management ==========
-// Initialize StateManager instance
-let stateManager = null;
-if (typeof window.getStateManager === 'function') {
-  stateManager = window.getStateManager();
-} else {
-  console.error('getStateManager not available. Make sure js/state-manager.js is loaded.');
-}
-
-// Legacy state variables - kept for backward compatibility during migration
-// These will be gradually replaced with stateManager.getState() / stateManager.setState()
-let programs = [];
-let ready = false;
-/** When false, treatment cards and results chrome stay hidden until Find Programs or Browse all. */
-let resultsUnlocked = false;
-
-const URL_FILTER_PARAM_KEYS = ['q', 'loc', 'care', 'age', 'insurance', 'crisis', 'virtual', 'sort'];
-
-function hasURLFilterParams() {
-  const params = new URLSearchParams(window.location.search);
-  return URL_FILTER_PARAM_KEYS.some((key) => params.has(key));
-}
-
-function isResultsUnlocked() {
-  return resultsUnlocked;
-}
-
-function unlockResults() {
-  if (resultsUnlocked) return;
-  resultsUnlocked = true;
-  updateResultsVisibility();
-}
-
-function lockResults() {
-  if (!resultsUnlocked) return;
-  resultsUnlocked = false;
-  updateResultsVisibility();
-}
-
-function updateResultsVisibility() {
-  document.body.classList.toggle('is-results-unlocked', resultsUnlocked);
-  const awaiting = document.getElementById('resultsAwaiting');
-  if (awaiting) awaiting.hidden = resultsUnlocked;
-}
-
-function getDirectoryProgramCount() {
-  if (!ready || !programs.length) return null;
-  return programs.filter((p) => !isCrisis(p)).length;
-}
-
-function updateResultsAwaitingCopy() {
-  const title = document.getElementById('awaitingTitle');
-  const lead = document.getElementById('awaitingLead');
-  if (!title || !lead) return;
-
-  const intent = document.body.dataset.intent || '';
-  const copyByIntent = {
-    treatment: {
-      title: 'Search to see programs that fit',
-      lead: 'Enter a city, care level, or age in the search box, then click Find Programs. Or use Browse all to see every listing.',
-    },
-    guidance: {
-      title: 'Answer a few questions, then search',
-      lead: 'Use the guided fields in search, then click Find Programs. Browse all shows the full directory without filters.',
-    },
-    crisis: {
-      title: 'Search crisis resources when you are ready',
-      lead: 'For immediate help, use 911 or 988 above. To browse crisis programs here, search and click Find Programs, or browse all.',
-    },
-  };
-
-  const copy = copyByIntent[intent] || {
-    title: 'Programs appear after you search',
-    lead: 'Click Find Programs after you set filters, use Browse all for the full list, or pick a specialized program type below to see matches right away.',
-  };
-
-  title.textContent = copy.title;
-  lead.textContent = copy.lead;
-}
-
-function updateResultsAwaitingPanel() {
-  updateResultsAwaitingCopy();
-  const countEl = document.getElementById('awaitingProgramCount');
-  if (!countEl) return;
-
-  if (!ready) {
-    countEl.textContent = '…';
-    return;
-  }
-
-  const count = getDirectoryProgramCount();
-  countEl.textContent = count != null ? String(count) : '—';
-}
-
-function renderResultsLocked() {
-  refreshEls();
-  updateResultsAwaitingPanel();
-  updateActiveFilterChips();
-
-  if (els.treatmentGrid) {
-    els.treatmentGrid.innerHTML = '';
-    els.treatmentGrid.dataset.state = ready ? 'idle' : 'loading';
-    els.treatmentGrid.style.display = '';
-  }
-
-  if (els.treatmentEmpty) {
-    els.treatmentEmpty.style.display = 'none';
-  }
-
-  if (els.treatmentCount) {
-    els.treatmentCount.textContent = '—';
-  }
-
-  const resultsIntro = document.getElementById('resultsIntro');
-  if (resultsIntro) {
-    resultsIntro.textContent = ready
-      ? 'Search or browse all to see program matches.'
-      : 'Loading programs…';
-  }
-
-  if (window.flowMotion) {
-    window.flowMotion.setTreatmentGridState(0);
-  }
-}
-
-function browseAllPrograms() {
-  clearAllFilters({ updateUrl: true, closeCards: true });
-  unlockResults();
-  render();
-  const grid = document.getElementById('treatmentGrid');
-  if (grid) {
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-    grid.scrollIntoView({ behavior: motion, block: 'start' });
-  }
-}
-
-let openId = null;
-let currentSort = window.DEFAULT_SORT || 'relevance';
-let userLocation = null; // { lat, lng } - kept in memory only, never stored
-let geocodedPrograms = null; // Loaded from programs.geocoded.json if available
-let availableFilters = {
-  hasCounty: false,
-  hasServiceDomains: false,
-  hasSUD: false,
-  hasVerification: false,
-  hasServiceArea: false
-};
-
-// Statewide filter state (with safe defaults)
-let selectedCounty = null;
-let selectedServiceDomains = [];
-let selectedSudServices = [];
-let verificationRecencyDays = null;
-
-// Sync legacy variables with StateManager
-function syncStateFromManager() {
-  if (!stateManager) return;
-  const state = stateManager.getState();
-  programs = state.programs || [];
-  ready = state.ready || false;
-  openId = state.openId || null;
-  currentSort = state.currentSort || window.DEFAULT_SORT || 'relevance';
-  userLocation = state.userLocation || null;
-  geocodedPrograms = state.geocodedPrograms || null;
-  availableFilters = state.availableFilters || {
-    hasCounty: false,
-    hasServiceDomains: false,
-    hasSUD: false,
-    hasVerification: false,
-    hasServiceArea: false
-  };
-  selectedCounty = state.selectedCounty || null;
-  selectedServiceDomains = state.selectedServiceDomains || [];
-  selectedSudServices = state.selectedSudServices || [];
-  verificationRecencyDays = state.verificationRecencyDays || null;
-}
-
-// Sync StateManager with legacy variables
-function syncStateToManager() {
-  if (!stateManager) return;
-  stateManager.setState({
-    programs,
-    ready,
-    openId,
-    currentSort,
-    userLocation,
-    geocodedPrograms,
-    availableFilters,
-    selectedCounty,
-    selectedServiceDomains,
-    selectedSudServices,
-    verificationRecencyDays
-  });
-}
+// Legacy state variables now live in js/app/state.js as `state.<name>`;
+// they are still mutated in place so behavior is unchanged.
 
 // Initial sync from StateManager (load persisted state)
 syncStateFromManager();
-
-// Use unified storage functions from js/modules/storage.js
-// These are loaded before app.js and available on window object
-const loadEncryptedDataFn =
-  (typeof window.loadEncryptedData === 'function')
-    ? window.loadEncryptedData
-    : async (key, defaultValue = []) => {
-        try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue)); }
-        catch { return defaultValue; }
-      };
-
-const saveEncryptedDataFn =
-  (typeof window.saveEncryptedData === 'function')
-    ? window.saveEncryptedData
-    : async (key, data) => {
-        localStorage.setItem(key, JSON.stringify(data));
-      };
-
-// Initialize encrypted storage
-let favorites = new Set();
-let recentSearches = [];
-let callHistory = [];
-let customLists = {}; // { listName: Set<programIds> }
-let programNotes = {}; // { programId: note }
-let programTags = {}; // { programId: [tags] }
-let userPreferences = {
-  defaultSort: window.DEFAULT_SORT || 'relevance',
-  defaultView: 'grid',
-  showCrisisByDefault: false,
-  itemsPerPage: 20
-};
 
 async function initializeEncryptedStorage() {
   const STORAGE_KEYS = window.STORAGE_KEYS || {
@@ -244,19 +42,19 @@ async function initializeEncryptedStorage() {
     PROGRAM_TAGS: 'programTags'
   };
   
-  favorites = new Set(await loadEncryptedDataFn(STORAGE_KEYS.FAVORITES, []));
-  recentSearches = await loadEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, []);
-  callHistory = await loadEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, []);
-  customLists = await loadEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, {});
-  programNotes = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, {});
-  programTags = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, {});
+  state.favorites = new Set(await loadEncryptedDataFn(STORAGE_KEYS.FAVORITES, []));
+  state.recentSearches = await loadEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, []);
+  state.callHistory = await loadEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, []);
+  state.customLists = await loadEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, {});
+  state.programNotes = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, {});
+  state.programTags = await loadEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, {});
   const prefs = await loadEncryptedDataFn('userPreferences', {});
-  userPreferences = { ...userPreferences, ...prefs };
+  state.userPreferences = { ...state.userPreferences, ...prefs };
   
   // Apply preferences (els might not be initialized yet, so check)
-  if (userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
-    currentSort = userPreferences.defaultSort;
-    els.sortSelect.value = currentSort;
+  if (state.userPreferences.defaultSort && typeof els !== 'undefined' && els.sortSelect) {
+    state.currentSort = state.userPreferences.defaultSort;
+    els.sortSelect.value = state.currentSort;
   }
 }
 
@@ -266,17 +64,14 @@ initializeEncryptedStorage();
 // ========== Performance Optimizations ==========
 // All performance code is now in js/modules/performance.js
 // Initialize performance optimizations (text scale detection, banner offset, etc.)
-let performanceModule = null;
-let updateCrisisBannerOffset = null;
-
 if (typeof window.initPerformanceOptimizations === 'function') {
   const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  performanceModule = window.initPerformanceOptimizations({ isCoarsePointer });
-  updateCrisisBannerOffset = performanceModule.updateCrisisBannerOffset;
+  state.performanceModule = window.initPerformanceOptimizations({ isCoarsePointer });
+  state.updateCrisisBannerOffset = state.performanceModule.updateCrisisBannerOffset;
             } else {
   console.error('initPerformanceOptimizations not available. Make sure js/modules/performance.js is loaded.');
   // Fallback: minimal updateCrisisBannerOffset function
-  updateCrisisBannerOffset = function() {
+  state.updateCrisisBannerOffset = function() {
   const banner = document.querySelector('.crisis-banner');
     if (banner) {
     const h = banner.getBoundingClientRect().height;
@@ -285,115 +80,29 @@ if (typeof window.initPerformanceOptimizations === 'function') {
   };
 }
 
-const STORAGE_KEYS_COMPARISON = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
-let comparisonSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS_COMPARISON.COMPARISON) || '[]'));
-
-const programDataMap = new Map();
-window.programDataMap = programDataMap;
-window.comparisonSet = comparisonSet;
+window.programDataMap = state.programDataMap;
+window.comparisonSet = state.comparisonSet;
 
 // ========== Autocomplete Indexes ==========
-// Avoid O(n^2) behavior in autocomplete by pre-indexing organizations.
-let orgProgramsIndex = new Map(); // key: lowercased organization name -> Program[]
-
 function buildAutocompleteIndexes(list){
-  orgProgramsIndex = new Map();
+  state.orgProgramsIndex = new Map();
   for (const p of list || []) {
     const org = safeStr(p.organization).trim();
     if (!org) continue;
     const key = org.toLowerCase();
-    const arr = orgProgramsIndex.get(key);
+    const arr = state.orgProgramsIndex.get(key);
     if (arr) arr.push(p);
-    else orgProgramsIndex.set(key, [p]);
+    else state.orgProgramsIndex.set(key, [p]);
   }
-}
-
-// ========== DOM Elements ==========
-/** Live DOM refs — re-query when disconnected (e.g. hot reload) so filters match visible inputs. */
-function refreshEls() {
-  const ids = [
-    'q', 'loc', 'age', 'care', 'showCrisis', 'onlyVirtual', 'showCrisisTop', 'onlyVirtualTop',
-    'reset', 'resetTop', 'viewAll', 'treatmentSection', 'treatmentGrid', 'treatmentCount',
-    'totalCount', 'resultsLabel', 'sectionTitle', 'treatmentEmpty', 'loadWarn', 'smartSearchBtn',
-    'showAdvanced', 'advancedFilters', 'viewCrisisResources', 'viewTreatmentOptions',
-    'programCount', 'sortSelect', 'viewFavorites', 'viewHistory', 'favoritesCount',
-    'favoritesModal', 'historyModal', 'favoritesList', 'historyList', 'insurance', 'county',
-    'serviceDomain', 'sudServices', 'verificationRecency',
-  ];
-  ids.forEach((id) => {
-    const live = document.getElementById(id);
-    if (live) els[id] = live;
-  });
-}
-
-function readSearchQuery() {
-  refreshEls();
-  const qEl = els.q || document.getElementById('q');
-  return safeStr(qEl?.value || '').trim();
 }
 
 if (typeof window !== 'undefined') {
   window.refreshEls = refreshEls;
-  window.readSearchQuery = readSearchQuery;
-  window.getAppReady = () => ready;
+  window.getAppReady = () => state.ready;
   window.isResultsUnlocked = isResultsUnlocked;
   window.unlockResults = unlockResults;
-  window.lockResults = lockResults;
-  window.browseAllPrograms = browseAllPrograms;
   window.updateResultsAwaitingCopy = updateResultsAwaitingCopy;
 }
-
-const els = {
-  q: document.getElementById("q"),
-  loc: document.getElementById("loc"),
-  age: document.getElementById("age"),
-  care: document.getElementById("care"),
-  showCrisis: document.getElementById("showCrisis"),
-  onlyVirtual: document.getElementById("onlyVirtual"),
-  showCrisisTop: document.getElementById("showCrisisTop"),
-  onlyVirtualTop: document.getElementById("onlyVirtualTop"),
-  reset: document.getElementById("reset"),
-  resetTop: document.getElementById("resetTop"),
-  viewAll: document.getElementById("viewAll"),
-  treatmentSection: document.getElementById("treatmentSection"),
-  treatmentGrid: document.getElementById("treatmentGrid"),
-  treatmentCount: document.getElementById("treatmentCount"),
-  totalCount: document.getElementById("totalCount"),
-  resultsLabel: document.getElementById("resultsLabel"),
-  sectionTitle: document.getElementById("sectionTitle"),
-  treatmentEmpty: document.getElementById("treatmentEmpty"),
-  loadWarn: document.getElementById("loadWarn"),
-  smartSearchBtn: document.getElementById("smartSearchBtn"),
-  showAdvanced: document.getElementById("showAdvanced"),
-  advancedFilters: document.getElementById("advancedFilters"),
-  viewCrisisResources: document.getElementById("viewCrisisResources"),
-  viewTreatmentOptions: document.getElementById("viewTreatmentOptions"),
-  programCount: document.getElementById("programCount"),
-  sortSelect: document.getElementById("sortSelect"),
-  viewFavorites: document.getElementById("viewFavorites"),
-  viewHistory: document.getElementById("viewHistory"),
-  favoritesCount: document.getElementById("favoritesCount"),
-  favoritesModal: document.getElementById("favoritesModal"),
-  historyModal: document.getElementById("historyModal"),
-  favoritesList: document.getElementById("favoritesList"),
-  historyList: document.getElementById("historyList"),
-  toast: document.getElementById("toast"),
-  insurance: document.getElementById("insurance"),
-  county: document.getElementById("county"),
-  serviceDomain: document.getElementById("serviceDomain"),
-  sudServices: document.getElementById("sudServices"),
-  verificationRecency: document.getElementById("verificationRecency"),
-  viewComparison: document.getElementById("viewComparison"),
-  comparisonModal: document.getElementById("comparisonModal"),
-  comparisonList: document.getElementById("comparisonList"),
-  helpModal: document.getElementById("helpModal"),
-  shareFilters: document.getElementById("shareFilters"),
-  nearMeBtn: document.getElementById("nearMeBtn"),
-  stopLocationBtn: document.getElementById("stopLocationBtn"),
-  locationConsentModal: document.getElementById("locationConsentModal"),
-  locationConsentAllow: document.getElementById("locationConsentAllow"),
-  locationConsentCancel: document.getElementById("locationConsentCancel")
-};
 
 // ========== Document-Level Event Delegation ==========
 // Set up early to handle dynamically added cards (including on first page load)
@@ -467,9 +176,9 @@ document.addEventListener('click', (e) => {
     // Update button state
     const card = favoriteBtn.closest('.card');
     if (card) {
-      const program = programDataMap.get(id);
+      const program = state.programDataMap.get(id);
       if (program) {
-        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        const idx = Array.from(state.programDataMap.keys()).indexOf(id);
         if (typeof appCreateCard === 'function') {
           const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
@@ -497,9 +206,9 @@ document.addEventListener('click', (e) => {
     const card = compareCheckbox.closest('.card');
     if (card) {
       const id = card.dataset.id;
-      const program = programDataMap.get(id);
+      const program = state.programDataMap.get(id);
       if (program) {
-        const idx = Array.from(programDataMap.keys()).indexOf(id);
+        const idx = Array.from(state.programDataMap.keys()).indexOf(id);
         if (typeof appCreateCard === 'function') {
           const newCard = appCreateCard(program, idx);
           card.replaceWith(newCard);
@@ -549,158 +258,6 @@ document.addEventListener('keydown', (e) => {
 // All helper functions are now in js/utils/helpers.js and available via window.*
 // Removed duplicates to avoid code duplication and maintenance issues
 
-function buildLocationOptions(list){
-  const set = new Set();
-  list.forEach(p => {
-    (p.locations || []).forEach(l => {
-      const c = safeStr(l.city);
-      if (c && c.toLowerCase() !== "virtual" && c.toLowerCase() !== "multiple" && c.toLowerCase() !== "n/a") set.add(c);
-    });
-  });
-  const cities = Array.from(set).sort((a,b)=>a.localeCompare(b));
-  
-  // Clear existing options (preserve the select element)
-  if (els.loc) {
-    els.loc.innerHTML = '<option value="">Any</option>';
-    
-    // Add options using DOM methods (safe from XSS)
-    cities.forEach(city => {
-      const option = document.createElement('option');
-      option.value = city; // Browser automatically escapes attribute values
-      option.textContent = city; // textContent is safe from XSS
-      els.loc.appendChild(option);
-    });
-  }
-}
-
-function buildSearchCities(list) {
-  const set = new Set(
-    (window.CITIES || []).map((c) => c.toLowerCase())
-  );
-  list.forEach((p) => {
-    (p.locations || []).forEach((l) => {
-      const c = safeStr(l.city);
-      const key = c.toLowerCase();
-      if (
-        c &&
-        key !== 'virtual' &&
-        key !== 'multiple' &&
-        key !== 'national' &&
-        key !== 'n/a'
-      ) {
-        set.add(key);
-      }
-    });
-  });
-  const cities = Array.from(set).sort((a, b) => a.localeCompare(b));
-  window.getSearchCities = () => cities;
-  return cities;
-}
-
-function buildInsuranceOptions(list){
-  const typesSet = new Set();
-  const plansSet = new Set();
-  
-  list.forEach(p => {
-    const insurance = p.accepted_insurance || {};
-    
-    // Extract insurance types
-    if (Array.isArray(insurance.types)) {
-      insurance.types.forEach(type => {
-        const cleanType = safeStr(type).trim();
-        if (cleanType) {
-          // Normalize common variations
-          const normalized = cleanType
-            .replace(/\(many\)/gi, '')
-            .replace(/\(some\)/gi, '')
-            .replace(/\(varies\)/gi, '')
-            .replace(/\(listed\)/gi, '')
-            .replace(/\(most major\)/gi, '')
-            .trim();
-          if (normalized) typesSet.add(normalized);
-        }
-      });
-    }
-    
-    // Extract insurance plans
-    if (Array.isArray(insurance.plans)) {
-      insurance.plans.forEach(plan => {
-        const cleanPlan = safeStr(plan).trim();
-        if (cleanPlan) plansSet.add(cleanPlan);
-      });
-    }
-  });
-  
-  const types = Array.from(typesSet).sort((a,b)=>a.localeCompare(b));
-  const plans = Array.from(plansSet).sort((a,b)=>a.localeCompare(b));
-  
-  if (els.insurance) {
-    // Clear existing options
-    els.insurance.innerHTML = '';
-    
-    // Add default "Any insurance" option (static, safe)
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = 'Any insurance';
-    els.insurance.appendChild(defaultOption);
-
-    const buckets = window.INSURANCE_BUCKETS || {};
-    const bucketOrder = [
-      'bucket:medicaid',
-      'bucket:medicare',
-      'bucket:tricare',
-      'bucket:commercial',
-      'bucket:self_pay',
-      'bucket:contact',
-    ];
-    const bucketsGroup = document.createElement('optgroup');
-    bucketsGroup.label = 'Common coverage';
-    bucketOrder.forEach((key) => {
-      const meta = buckets[key];
-      if (!meta) return;
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = meta.label;
-      bucketsGroup.appendChild(option);
-    });
-    if (bucketsGroup.children.length > 0) {
-      els.insurance.appendChild(bucketsGroup);
-    }
-    
-    // Add insurance types section with optgroup
-    if (types.length > 0) {
-      const typesGroup = document.createElement('optgroup');
-      typesGroup.label = 'Insurance Types'; // Static label, safe
-      
-      types.forEach(type => {
-        const option = document.createElement('option');
-        // Value format must be exactly "type:${type}" for filtering logic to work
-        option.value = `type:${type}`; // Browser automatically escapes attribute values
-        option.textContent = type; // textContent is safe from XSS
-        typesGroup.appendChild(option);
-      });
-      
-      els.insurance.appendChild(typesGroup);
-    }
-    
-    // Add insurance plans section with optgroup
-    if (plans.length > 0) {
-      const plansGroup = document.createElement('optgroup');
-      plansGroup.label = 'Insurance Plans'; // Static label, safe
-      
-      plans.forEach(plan => {
-        const option = document.createElement('option');
-        // Value format must be exactly "plan:${plan}" for filtering logic to work
-        option.value = `plan:${plan}`; // Browser automatically escapes attribute values
-        option.textContent = plan; // textContent is safe from XSS
-        plansGroup.appendChild(option);
-      });
-      
-      els.insurance.appendChild(plansGroup);
-    }
-  }
-}
-
 // ========== Filter / relevance (delegate to modules) ==========
 /** Shared bindings for `js/modules/filters.js` — single source to avoid duplicating filter state in render(). */
 function getFilterModuleBindings(showCrisis) {
@@ -732,10 +289,10 @@ function getFilterModuleBindings(showCrisis) {
       verificationRecency: els.verificationRecency?.value || '',
       exactMatch: qEl?.dataset.exactMatch === 'true',
       matchType: qEl?.dataset.matchType || '',
-      selectedCounty,
-      selectedServiceDomains,
-      selectedSudServices,
-      verificationRecencyDays
+      selectedCounty: state.selectedCounty,
+      selectedServiceDomains: state.selectedServiceDomains,
+      selectedSudServices: state.selectedSudServices,
+      verificationRecencyDays: state.verificationRecencyDays
     },
     options: {
       safeStr: window.safeStr,
@@ -747,8 +304,8 @@ function getFilterModuleBindings(showCrisis) {
       hasVirtual: window.hasVirtual,
       locLabel: window.locLabel,
       featureFlags: window.FEATURE_FLAGS || {},
-      programs,
-      ready
+      programs: state.programs,
+      ready: state.ready
     }
   };
 }
@@ -782,14 +339,14 @@ function matchesFiltersFallback(p) {
 // ========== Call Tracking ==========
 async function trackCallAttempt(program) {
   const sanitize = typeof window.sanitizeText === 'function' ? window.sanitizeText : (s) => s;
-  callHistory.unshift({
+  state.callHistory.unshift({
     program: sanitize(program.program_name),
     org: sanitize(program.organization),
     timestamp: new Date().toISOString()
   });
-  callHistory = callHistory.slice(0, 20);
+  state.callHistory = state.callHistory.slice(0, 20);
   const STORAGE_KEYS = window.STORAGE_KEYS || { CALL_HISTORY: 'callHistory' };
-  await saveEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, callHistory);
+  await saveEncryptedDataFn(STORAGE_KEYS.CALL_HISTORY, state.callHistory);
   
   showCallConfirmation(program);
 }
@@ -812,101 +369,6 @@ function showCallConfirmation(program) {
   }, 5000);
 }
 
-// ========== Card Management ==========
-function getCardProgramName(cardEl) {
-  const pname = cardEl.querySelector('.pname');
-  return pname?.textContent?.trim() || 'Program';
-}
-
-function setExpandBtnA11y(expandBtn, isOpen, programName) {
-  if (!expandBtn) return;
-  const name = programName || 'Program';
-  expandBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  expandBtn.setAttribute('title', isOpen ? 'Collapse details' : 'View details');
-  expandBtn.setAttribute(
-    'aria-label',
-    isOpen ? `Collapse details for ${name}` : `View details for ${name}`
-  );
-}
-
-function setCardOpen(cardEl, isOpen){
-  cardEl.dataset.open = isOpen ? "true" : "false";
-  const btn = cardEl.querySelector(".expandBtn");
-  setExpandBtnA11y(btn, isOpen, getCardProgramName(cardEl));
-  const panel = cardEl.querySelector('.panel');
-  if (panel) {
-    panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-    // Keep collapsed panel content out of keyboard/AT flow.
-    if ('inert' in panel) panel.inert = !isOpen;
-  }
-}
-
-// Toggle modal-local card details (self-contained, doesn't affect main page)
-function toggleModalCardDetails(cardEl) {
-  if (!cardEl) return;
-  
-  const details = cardEl.querySelector('.card-details');
-  if (!details) return;
-  
-  const isOpen = !details.hasAttribute('hidden');
-  const expandBtn = cardEl.querySelector('.expandBtn');
-  
-  if (isOpen) {
-    // Collapse
-    details.setAttribute('hidden', '');
-    cardEl.dataset.open = 'false';
-    if (expandBtn) {
-      setExpandBtnA11y(expandBtn, false, getCardProgramName(cardEl));
-    }
-  } else {
-    // Expand
-    details.removeAttribute('hidden');
-    cardEl.dataset.open = 'true';
-    if (expandBtn) {
-      setExpandBtnA11y(expandBtn, true, getCardProgramName(cardEl));
-    }
-  }
-}
-
-function toggleOpen(id){
-  if (!id) return;
-  
-  const nextOpenId = (openId === id) ? null : id;
-
-  // Close previously open card
-  if (openId && openId !== nextOpenId){
-    const prev = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-    if (prev) {
-      setCardOpen(prev, false);
-    }
-  }
-
-  openId = nextOpenId;
-  syncStateToManager(); // Sync with StateManager
-
-  // Open new card if needed
-  if (openId){
-    const cur = document.querySelector(`.card[data-id="${CSS.escape(openId)}"]`);
-    if (cur) {
-      // Only scroll on main page cards, not inside modals
-      const isInModal = cur.closest('.modal');
-      
-      setCardOpen(cur, true);
-
-      // Scroll expanded panel into view (only for main page, not modals)
-      if (!isInModal) {
-        // Use requestAnimationFrame to ensure DOM has updated
-        requestAnimationFrame(() => {
-          const panel = cur.querySelector('.panel');
-          if (panel) {
-            panel.scrollIntoView({ block: "nearest", behavior: "smooth" });
-          }
-        });
-      }
-    }
-  }
-}
-
 // ========== Rendering Functions ==========
 // All rendering functions are now in js/modules/render.js and available via window.*
 // Removed duplicates to avoid code duplication and maintenance issues
@@ -915,18 +377,18 @@ function toggleOpen(id){
 const appCreateCard = (p, idx) => {
   const fn = window.createCard; // from render.js
   if (typeof fn === 'function') {
-  const state = {
-    getOpenId: () => openId,
-    getUserLocation: () => userLocation,
-    getCurrentSort: () => currentSort
+  const stateAccessors = {
+    getOpenId: () => state.openId,
+    getUserLocation: () => state.userLocation,
+    getCurrentSort: () => state.currentSort
   };
     return fn(p, idx, {
     els,
-    state,
+    state: stateAccessors,
     isFavorite,
-    comparisonSet,
-    programDataMap,
-    allPrograms: programs
+    comparisonSet: state.comparisonSet,
+    programDataMap: state.programDataMap,
+    allPrograms: state.programs
   });
   } else {
     console.error('createCard not available. Make sure js/modules/render.js is loaded.');
@@ -957,10 +419,10 @@ function announceToScreenReader(message, priority = 'polite') {
 const callUpdateStats = () => {
   const fn = window.updateStats; // from render.js
   if (typeof fn === 'function') {
-    fn(programs, els, updateFavoritesCount);
+    fn(state.programs, els, updateFavoritesCount);
   } else {
     console.error('updateStats not available. Make sure js/modules/render.js is loaded.');
-    if (els.programCount) els.programCount.textContent = programs.length;
+    if (els.programCount) els.programCount.textContent = state.programs.length;
     updateFavoritesCount();
   }
 };
@@ -972,33 +434,33 @@ function updateBadgeCount(el, count) {
 }
 
 function updateFavoritesCount() {
-  const count = favorites.size;
+  const count = state.favorites.size;
   updateBadgeCount(els.favoritesCount, count);
   updateBadgeCount(document.getElementById('favoritesCountMenu'), count);
 }
 
 function updateComparisonCount() {
-  const count = comparisonSet.size;
+  const count = state.comparisonSet.size;
   updateBadgeCount(document.getElementById('comparisonCount'), count);
   updateBadgeCount(document.getElementById('comparisonCountMenu'), count);
 }
 
 function saveComparison() {
   const STORAGE_KEYS = window.STORAGE_KEYS || { COMPARISON: 'comparison' };
-  localStorage.setItem(STORAGE_KEYS.COMPARISON, JSON.stringify(Array.from(comparisonSet)));
+  localStorage.setItem(STORAGE_KEYS.COMPARISON, JSON.stringify(Array.from(state.comparisonSet)));
   updateComparisonCount();
 }
 
 function toggleComparison(programId) {
-  if (comparisonSet.has(programId)) {
-    comparisonSet.delete(programId);
+  if (state.comparisonSet.has(programId)) {
+    state.comparisonSet.delete(programId);
     callShowToast('Removed from comparison', 'success');
   } else {
-    if (comparisonSet.size >= 3) {
+    if (state.comparisonSet.size >= 3) {
       callShowToast('Maximum 3 programs can be compared', 'error');
       return;
     }
-    comparisonSet.add(programId);
+    state.comparisonSet.add(programId);
     callShowToast('Added to comparison', 'success');
   }
   saveComparison();
@@ -1011,7 +473,7 @@ function toggleComparison(programId) {
 }
 
 function isInComparison(programId) {
-  return comparisonSet.has(programId);
+  return state.comparisonSet.has(programId);
 }
 
 // renderComparison wrapper - uses const to avoid overwriting window.renderComparison
@@ -1020,8 +482,8 @@ const callRenderComparison = () => {
   if (typeof fn === 'function') {
     fn({
       els,
-      comparisonSet,
-      programDataMap
+      comparisonSet: state.comparisonSet,
+      programDataMap: state.programDataMap
     });
   } else {
     console.error('renderComparison not available. Make sure js/modules/render.js is loaded.');
@@ -1030,7 +492,7 @@ const callRenderComparison = () => {
 
 async function saveFavorites() {
   const STORAGE_KEYS = window.STORAGE_KEYS || { FAVORITES: 'favorites' };
-  await saveEncryptedDataFn(STORAGE_KEYS.FAVORITES, Array.from(favorites));
+  await saveEncryptedDataFn(STORAGE_KEYS.FAVORITES, Array.from(state.favorites));
   updateFavoritesCount();
 }
 
@@ -1047,11 +509,11 @@ async function toggleFavorite(programId) {
     return;
   }
   
-  if (favorites.has(sanitizedId)) {
-    favorites.delete(sanitizedId);
+  if (state.favorites.has(sanitizedId)) {
+    state.favorites.delete(sanitizedId);
     callShowToast('Removed from saved programs', 'success');
   } else {
-    favorites.add(sanitizedId);
+    state.favorites.add(sanitizedId);
     callShowToast('Saved to your programs', 'success');
   }
   await saveFavorites();
@@ -1059,123 +521,86 @@ async function toggleFavorite(programId) {
 }
 
 function isFavorite(programId) {
-  return favorites.has(programId);
+  return state.favorites.has(programId);
 }
 
 async function saveProgramNote(programId, note) {
   if (!note || note.trim() === '') {
-    delete programNotes[programId];
+    delete state.programNotes[programId];
   } else {
-    programNotes[programId] = typeof window.sanitizeText === 'function' 
+    state.programNotes[programId] = typeof window.sanitizeText === 'function' 
       ? window.sanitizeText(note, 500)
       : note.substring(0, 500);
   }
   const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_NOTES: 'programNotes' };
-  await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, programNotes);
+  await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_NOTES, state.programNotes);
 }
 
 function getProgramNote(programId) {
-  return programNotes[programId] || '';
+  return state.programNotes[programId] || '';
 }
 
 async function addProgramTag(programId, tag) {
-  if (!programTags[programId]) {
-    programTags[programId] = [];
+  if (!state.programTags[programId]) {
+    state.programTags[programId] = [];
   }
   const sanitizedTag = typeof window.sanitizeText === 'function'
     ? window.sanitizeText(tag, 50)
     : tag.substring(0, 50);
-  if (!programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
-    programTags[programId].push(sanitizedTag);
+  if (!state.programTags[programId].includes(sanitizedTag) && sanitizedTag.trim()) {
+    state.programTags[programId].push(sanitizedTag);
     const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
-    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, state.programTags);
   }
 }
 
 async function removeProgramTag(programId, tag) {
-  if (programTags[programId]) {
-    programTags[programId] = programTags[programId].filter(t => t !== tag);
-    if (programTags[programId].length === 0) {
-      delete programTags[programId];
+  if (state.programTags[programId]) {
+    state.programTags[programId] = state.programTags[programId].filter(t => t !== tag);
+    if (state.programTags[programId].length === 0) {
+      delete state.programTags[programId];
     }
     const STORAGE_KEYS = window.STORAGE_KEYS || { PROGRAM_TAGS: 'programTags' };
-    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, programTags);
+    await saveEncryptedDataFn(STORAGE_KEYS.PROGRAM_TAGS, state.programTags);
   }
 }
 
 function getProgramTags(programId) {
-  return programTags[programId] || [];
+  return state.programTags[programId] || [];
 }
 
 async function createCustomList(listName) {
   const sanitizedName = typeof window.sanitizeText === 'function'
     ? window.sanitizeText(listName, 50)
     : listName.substring(0, 50);
-  if (sanitizedName.trim() && !customLists[sanitizedName]) {
-    customLists[sanitizedName] = [];
+  if (sanitizedName.trim() && !state.customLists[sanitizedName]) {
+    state.customLists[sanitizedName] = [];
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
     return sanitizedName;
   }
   return null;
 }
 
 async function addToCustomList(listName, programId) {
-  if (customLists[listName] && !customLists[listName].includes(programId)) {
-    customLists[listName].push(programId);
+  if (state.customLists[listName] && !state.customLists[listName].includes(programId)) {
+    state.customLists[listName].push(programId);
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
   }
 }
 
 async function removeFromCustomList(listName, programId) {
-  if (customLists[listName]) {
-    customLists[listName] = customLists[listName].filter(id => id !== programId);
+  if (state.customLists[listName]) {
+    state.customLists[listName] = state.customLists[listName].filter(id => id !== programId);
     const STORAGE_KEYS = window.STORAGE_KEYS || { CUSTOM_LISTS: 'customLists' };
-    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, customLists);
+    await saveEncryptedDataFn(STORAGE_KEYS.CUSTOM_LISTS, state.customLists);
   }
 }
 
 function isInCustomList(listName, programId) {
-  return customLists[listName] && customLists[listName].includes(programId);
+  return state.customLists[listName] && state.customLists[listName].includes(programId);
 }
-
-// showToast wrapper - uses const to avoid overwriting window.showToast
-// Note: security.js should use window.showToast directly from render.js
-const callShowToast = (message, type = 'success') => {
-  const fn = window.showToast; // from render.js
-  if (typeof fn === 'function') {
-    fn(message, type, els.toast);
-  } else {
-    // Fallback
-  if (!els.toast) return;
-  els.toast.textContent = message;
-  els.toast.className = `toast ${type} show`;
-  setTimeout(() => {
-    els.toast.classList.remove('show');
-  }, type === 'error' ? 5000 : 3000);
-  }
-};
-
-// showModal wrapper - uses const to avoid overwriting window.showModal
-const callShowModal = (modalEl) => {
-  const fn = window.showModal; // from render.js
-  if (typeof fn === 'function') {
-    fn(modalEl);
-  } else {
-    console.error('showModal not available. Make sure js/modules/render.js is loaded.');
-  }
-};
-
-// hideModal wrapper - uses const to avoid overwriting window.hideModal
-const callHideModal = (modalEl) => {
-  const fn = window.hideModal; // from render.js
-  if (typeof fn === 'function') {
-    fn(modalEl);
-  } else {
-    console.error('hideModal not available. Make sure js/modules/render.js is loaded.');
-  }
-};
 
 /** Local sort fallback — must not be named sortPrograms (would overwrite window.sortPrograms from sort.js). */
 function sortProgramsLocal(list) {
@@ -1189,7 +614,7 @@ function sortProgramsLocal(list) {
     DISTANCE: 'distance'
   };
   
-  switch(currentSort) {
+  switch(state.currentSort) {
     case SORT_OPTIONS.NAME:
       sorted.sort((a, b) => {
         const nameA = safeStr(a.program_name || a.organization).toLowerCase();
@@ -1212,7 +637,7 @@ function sortProgramsLocal(list) {
       });
       break;
     case SORT_OPTIONS.DISTANCE:
-      if (userLocation && typeof window.calculateProgramDistance === 'function') {
+      if (state.userLocation && typeof window.calculateProgramDistance === 'function') {
         // Separate virtual and in-person programs
         const inPerson = [];
         const virtual = [];
@@ -1228,7 +653,7 @@ function sortProgramsLocal(list) {
         
         // Calculate distances for in-person programs
         const withDistances = inPerson.map(program => {
-          const distance = window.calculateProgramDistance(program, userLocation.lat, userLocation.lng);
+          const distance = window.calculateProgramDistance(program, state.userLocation.lat, state.userLocation.lng);
           return { program, distance };
         });
         
@@ -1272,7 +697,7 @@ function sortProgramsLocal(list) {
 }
 
 function shareProgram(programId) {
-  const program = programDataMap.get(programId);
+  const program = state.programDataMap.get(programId);
   if (!program) return;
   
   // Validate programId to prevent injection
@@ -1393,279 +818,6 @@ function nativeShare(url, title) {
   }
 }
 
-/**
- * Single source of truth for clearing every filter, toggle, and search state.
- * @param {{ updateUrl?: boolean, closeCards?: boolean }} options
- */
-function clearAllFilters(options = {}) {
-  const { updateUrl = true, closeCards = true } = options;
-  refreshEls();
-
-  const qEl = els.q || document.getElementById('q');
-  if (qEl) {
-    qEl.value = '';
-    delete qEl.dataset.exactMatch;
-    delete qEl.dataset.matchType;
-  }
-  if (els.loc) els.loc.value = '';
-  if (els.age) {
-    els.age.value = '';
-  }
-  if (els.care) els.care.value = '';
-  if (els.insurance) els.insurance.value = '';
-  if (els.onlyVirtual) els.onlyVirtual.checked = false;
-  if (els.showCrisis) els.showCrisis.checked = false;
-  if (els.onlyVirtualTop) els.onlyVirtualTop.checked = false;
-  if (els.showCrisisTop) els.showCrisisTop.checked = false;
-
-  if (els.serviceDomain) els.serviceDomain.value = '';
-  selectedServiceDomains = [];
-  if (els.sudServices) {
-    Array.from(els.sudServices.options).forEach((opt) => {
-      opt.selected = false;
-    });
-    if (typeof syncChipsToSelect === 'function') syncChipsToSelect('sudServices');
-  }
-  selectedSudServices = [];
-  if (els.county) els.county.value = '';
-  selectedCounty = null;
-  if (els.verificationRecency) els.verificationRecency.value = '';
-  verificationRecencyDays = null;
-
-  if (stateManager) {
-    stateManager.setState({
-      selectedCounty: null,
-      selectedServiceDomains: [],
-      selectedSudServices: [],
-      verificationRecencyDays: null,
-      openId: closeCards ? null : openId,
-    });
-  }
-  if (closeCards) {
-    openId = null;
-  }
-
-  syncStateToManager();
-  syncTopToggles();
-
-  if (updateUrl && typeof updateURLState === 'function') {
-    updateURLState();
-  }
-}
-
-function getFilterContextForEmptyState() {
-  const query = readSearchQuery();
-  const parsed =
-    typeof window.parseSmartSearch === 'function'
-      ? window.parseSmartSearch(query)
-      : {};
-  const dropdowns = {
-    location: els.loc?.value || '',
-    age: els.age?.value || '',
-    care: els.care?.value || '',
-    insurance: els.insurance?.value || '',
-    onlyVirtual: els.onlyVirtual?.checked || false,
-    showCrisis: els.showCrisis?.checked || false,
-  };
-  let chips = [];
-  if (typeof window.getEffectiveSearchFilters === 'function') {
-    ({ chips } = window.getEffectiveSearchFilters(query, dropdowns, {
-      parseSmartSearch: window.parseSmartSearch,
-      getTextSearchTerms: window.getTextSearchTerms,
-      safeStr,
-    }));
-  }
-
-  const flags = window.FEATURE_FLAGS || {};
-  const extras = {};
-  if (flags.STATEWIDE_MODE && els.county?.value) {
-    extras.county = `County: ${els.county.options[els.county.selectedIndex]?.text || els.county.value}`;
-  }
-  if (flags.SHOW_SUD_FILTERS && els.serviceDomain?.value) {
-    const domainLabels = {
-      mental_health: 'Mental Health',
-      substance_use: 'Substance Use',
-      co_occurring: 'Co-occurring',
-      eating_disorders: 'Eating Disorders',
-    };
-    extras.serviceDomain = `Service Type: ${domainLabels[els.serviceDomain.value] || els.serviceDomain.value}`;
-  }
-  if (flags.SHOW_SUD_FILTERS && els.sudServices) {
-    const selected = Array.from(els.sudServices.selectedOptions);
-    if (selected.length > 0) {
-      extras.sudServices = `Substance Use Services: ${selected.map((o) => o.text).join(', ')}`;
-    }
-  }
-  if (flags.SHOW_VERIFICATION_FILTERS && els.verificationRecency?.value) {
-    const recencyLabels = { 30: 'Last 30 days', 90: 'Last 90 days', 180: 'Last 180 days' };
-    extras.verificationRecency = `Verified: ${recencyLabels[els.verificationRecency.value] || els.verificationRecency.value}`;
-  }
-
-  return { query, parsed, dropdowns, chips, extras };
-}
-
-function updateEmptyStateDisplay() {
-  if (!els.treatmentEmpty) return;
-
-  const titleEl = document.getElementById('emptyStateTitle');
-  const bodyEl = document.getElementById('emptyStateBody');
-  const tipEl = document.getElementById('emptyStateTip');
-  const broadenBtn = els.treatmentEmpty.querySelector('[data-action="broaden-search"]');
-
-  const { query, parsed, dropdowns, chips, extras } = getFilterContextForEmptyState();
-  const copy =
-    typeof window.getEmptyStateCopy === 'function'
-      ? window.getEmptyStateCopy(chips, extras)
-      : {
-          title: 'No programs match these filters',
-          body: 'Try one of the options below.',
-          tip: 'Tip: Try a nearby city or remove age or location filters.',
-          broadenLabel: 'Broaden search',
-        };
-
-  if (titleEl) titleEl.textContent = copy.title;
-  if (bodyEl) bodyEl.textContent = copy.body;
-  if (tipEl) tipEl.textContent = copy.tip;
-  if (broadenBtn) broadenBtn.textContent = copy.broadenLabel;
-
-  const removalPlan =
-    typeof window.getBroadenSearchRemovalPlan === 'function'
-      ? window.getBroadenSearchRemovalPlan({
-          insuranceDropdown: dropdowns.insurance,
-          parsedInsurance: parsed.insurance || '',
-          careDropdown: dropdowns.care,
-          parsedCare: parsed.care || '',
-          locDropdown: dropdowns.location,
-          parsedLoc: parsed.loc || (parsed.locs && parsed.locs.length ? parsed.locs.join(' ') : ''),
-          ageDropdown: dropdowns.age,
-          parsedAge: parsed.age || '',
-          onlyVirtual: dropdowns.onlyVirtual,
-          verificationRecency: els.verificationRecency?.value || '',
-          sudSelected: els.sudServices && els.sudServices.selectedOptions.length > 0,
-          serviceDomain: els.serviceDomain?.value || '',
-          county: els.county?.value || '',
-          query: query.trim(),
-        })
-      : null;
-
-  if (broadenBtn) {
-    broadenBtn.disabled = !removalPlan;
-    broadenBtn.setAttribute('aria-disabled', removalPlan ? 'false' : 'true');
-  }
-}
-
-/**
- * Remove the tightest active filter (insurance → care → location → age → …).
- * @returns {string|null} key removed
- */
-function broadenSearchOneStep() {
-  refreshEls();
-  const { query, parsed, dropdowns } = getFilterContextForEmptyState();
-  const plan =
-    typeof window.getBroadenSearchRemovalPlan === 'function'
-      ? window.getBroadenSearchRemovalPlan({
-          insuranceDropdown: dropdowns.insurance,
-          parsedInsurance: parsed.insurance || '',
-          careDropdown: dropdowns.care,
-          parsedCare: parsed.care || '',
-          locDropdown: dropdowns.location,
-          parsedLoc: parsed.loc || (parsed.locs && parsed.locs.length ? parsed.locs.join(' ') : ''),
-          ageDropdown: dropdowns.age,
-          parsedAge: parsed.age || '',
-          onlyVirtual: dropdowns.onlyVirtual,
-          verificationRecency: els.verificationRecency?.value || '',
-          sudSelected: els.sudServices && els.sudServices.selectedOptions.length > 0,
-          serviceDomain: els.serviceDomain?.value || '',
-          county: els.county?.value || '',
-          query: query.trim(),
-        })
-      : null;
-
-  if (!plan) return null;
-
-  const rebuild =
-    typeof window.rebuildQueryFromParsed === 'function'
-      ? window.rebuildQueryFromParsed
-      : () => '';
-
-  switch (plan.key) {
-    case 'insurance':
-      if (els.insurance) els.insurance.value = '';
-      if (els.q) {
-        const nextParsed = { ...parsed, insurance: '' };
-        els.q.value = rebuild(nextParsed);
-        delete els.q.dataset.exactMatch;
-        delete els.q.dataset.matchType;
-      }
-      break;
-    case 'care':
-      if (els.care) els.care.value = '';
-      if (els.q) {
-        els.q.value = rebuild({ ...parsed, care: '' });
-      }
-      break;
-    case 'location':
-      if (els.loc) els.loc.value = '';
-      if (els.q) {
-        els.q.value = rebuild({ ...parsed, loc: '', locs: [] });
-      }
-      break;
-    case 'age':
-      if (els.age) {
-        els.age.value = '';
-      }
-      if (els.q) {
-        els.q.value = rebuild({ ...parsed, age: '', minAge: null });
-      }
-      break;
-    case 'virtual':
-      if (els.onlyVirtual) els.onlyVirtual.checked = false;
-      break;
-    case 'verificationRecency':
-      if (els.verificationRecency) els.verificationRecency.value = '';
-      verificationRecencyDays = null;
-      if (stateManager) stateManager.setState({ verificationRecencyDays: null });
-      syncStateToManager();
-      break;
-    case 'sudServices':
-      if (els.sudServices) {
-        Array.from(els.sudServices.options).forEach((opt) => {
-          opt.selected = false;
-        });
-        selectedSudServices = [];
-        if (typeof syncChipsToSelect === 'function') syncChipsToSelect('sudServices');
-        if (stateManager) stateManager.setState({ selectedSudServices: [] });
-        syncStateToManager();
-      }
-      break;
-    case 'serviceDomain':
-      if (els.serviceDomain) els.serviceDomain.value = '';
-      selectedServiceDomains = [];
-      if (stateManager) stateManager.setState({ selectedServiceDomains: [] });
-      syncStateToManager();
-      break;
-    case 'county':
-      if (els.county) els.county.value = '';
-      selectedCounty = null;
-      if (stateManager) stateManager.setState({ selectedCounty: null });
-      syncStateToManager();
-      break;
-    case 'query':
-      if (els.q) {
-        els.q.value = '';
-        delete els.q.dataset.exactMatch;
-        delete els.q.dataset.matchType;
-      }
-      break;
-    default:
-      break;
-  }
-
-  syncTopToggles();
-  updateURLState();
-  return plan.key;
-}
-
 /** Apply a FILTER_PRESETS entry (see js/config/constants.js). */
 function applyPresetConfig(config) {
   if (!config || typeof config !== 'object') return;
@@ -1688,7 +840,7 @@ function applyPresetConfig(config) {
   if (config.showCrisis && els.showCrisis) els.showCrisis.checked = true;
   if (config.serviceDomain && els.serviceDomain) {
     els.serviceDomain.value = config.serviceDomain;
-    selectedServiceDomains = [config.serviceDomain];
+    state.selectedServiceDomains = [config.serviceDomain];
   }
 }
 
@@ -1774,7 +926,7 @@ function fallbackCopy(text) {
 }
 
 function printProgram(programId) {
-  const program = programDataMap.get(programId);
+  const program = state.programDataMap.get(programId);
   if (!program) return;
   
   const printWindow = window.open('', '_blank');
@@ -1824,27 +976,22 @@ function isValidRecentSearchQuery(query) {
 async function addRecentSearch(query) {
   if (!isValidRecentSearchQuery(query)) return;
   const trimmed = sanitizeText(query.trim(), 200);
-  recentSearches = recentSearches.filter(s => s !== trimmed);
-  recentSearches.unshift(trimmed);
-  recentSearches = recentSearches.slice(0, 5); // Reduced from 10 to 5
+  state.recentSearches = state.recentSearches.filter(s => s !== trimmed);
+  state.recentSearches.unshift(trimmed);
+  state.recentSearches = state.recentSearches.slice(0, 5); // Reduced from 10 to 5
   const STORAGE_KEYS = window.STORAGE_KEYS || { RECENT_SEARCHES: 'recentSearches' };
-  await saveEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, recentSearches);
+  await saveEncryptedDataFn(STORAGE_KEYS.RECENT_SEARCHES, state.recentSearches);
   renderRecentSearches();
 }
-
-/** Bumped on each render; stale async renders must not overwrite the UI. */
-let renderGeneration = 0;
-
-let recentSearchesPanelOpen = false;
 
 function renderRecentSearches() {
   const container = document.getElementById('recentSearchesContainer')
     || document.querySelector('.recent-searches');
   if (!container) return;
 
-  const validRecent = recentSearches.filter(isValidRecentSearchQuery);
+  const validRecent = state.recentSearches.filter(isValidRecentSearchQuery);
   const queryEmpty = !els.q?.value?.trim();
-  const shouldShow = validRecent.length > 0 && (recentSearchesPanelOpen || queryEmpty);
+  const shouldShow = validRecent.length > 0 && (state.recentSearchesPanelOpen || queryEmpty);
 
   if (!shouldShow) {
     container.style.display = 'none';
@@ -1882,7 +1029,7 @@ function renderRecentSearches() {
 
 if (typeof window !== 'undefined') {
   window.setRecentSearchesPanelOpen = (open) => {
-    recentSearchesPanelOpen = !!open;
+    state.recentSearchesPanelOpen = !!open;
     renderRecentSearches();
   };
   window.renderRecentSearches = renderRecentSearches;
@@ -1895,9 +1042,9 @@ function renderFavorites() {
     return;
   }
 
-  const favoritePrograms = programs.filter(p => {
-    const id = stableIdFor(p, programs.indexOf(p));
-    return favorites.has(id);
+  const favoritePrograms = state.programs.filter(p => {
+    const id = stableIdFor(p, state.programs.indexOf(p));
+    return state.favorites.has(id);
   });
   
   if (favoritePrograms.length === 0) {
@@ -1994,9 +1141,9 @@ function renderFavorites() {
 
 // Print/Export saved programs list
 function exportFavorites() {
-  const favoritePrograms = programs.filter(p => {
-    const id = stableIdFor(p, programs.indexOf(p));
-    return favorites.has(id);
+  const favoritePrograms = state.programs.filter(p => {
+    const id = stableIdFor(p, state.programs.indexOf(p));
+    return state.favorites.has(id);
   });
   
   if (favoritePrograms.length === 0) {
@@ -2088,12 +1235,12 @@ function renderCallHistory() {
     return;
   }
 
-  if (callHistory.length === 0) {
+  if (state.callHistory.length === 0) {
     els.historyList.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 40px 20px;">No call history yet. Call buttons will appear here after you use them.</p>';
     return;
   }
   
-  els.historyList.innerHTML = callHistory.map(call => {
+  els.historyList.innerHTML = state.callHistory.map(call => {
     const date = new Date(call.timestamp);
     return `
       <div class="card" style="margin-bottom: 12px;">
@@ -2111,19 +1258,12 @@ function renderCallHistory() {
   }).join('');
 }
 
-// Progressive loading state
-let progressiveLoadState = {
-  allItems: [],
-  displayedCount: 20,
-  isLoading: false
-};
-
 function renderProgressive(activeList, isCrisisList = false, appendOnly = false) {
   if (!els.treatmentGrid) return;
   
   const existingCards = appendOnly ? els.treatmentGrid.querySelectorAll('.card').length : 0;
   const startIndex = appendOnly ? existingCards : 0;
-  const toDisplay = activeList.slice(startIndex, progressiveLoadState.displayedCount);
+  const toDisplay = activeList.slice(startIndex, state.progressiveLoadState.displayedCount);
   if (!appendOnly) {
     els.treatmentGrid.innerHTML = "";
   }
@@ -2147,17 +1287,17 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
   
   // Show "Load More" button if there are more items
   const loadMoreBtn = document.getElementById('loadMoreBtn');
-  if (activeList.length > progressiveLoadState.displayedCount) {
+  if (activeList.length > state.progressiveLoadState.displayedCount) {
     if (!loadMoreBtn) {
       const btn = document.createElement('button');
       btn.id = 'loadMoreBtn';
       btn.className = 'btn-primary';
-      btn.textContent = `Load More (${activeList.length - progressiveLoadState.displayedCount} remaining)`;
+      btn.textContent = `Load More (${activeList.length - state.progressiveLoadState.displayedCount} remaining)`;
       btn.style.margin = '20px auto';
       btn.style.display = 'block';
       btn.addEventListener('click', () => {
-        progressiveLoadState.displayedCount = Math.min(
-          progressiveLoadState.displayedCount + 20,
+        state.progressiveLoadState.displayedCount = Math.min(
+          state.progressiveLoadState.displayedCount + 20,
           activeList.length
         );
         // Use requestIdleCallback for progressive loading if available
@@ -2170,7 +1310,7 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
       });
       els.treatmentGrid.parentElement.appendChild(btn);
     } else {
-      loadMoreBtn.textContent = `Load More (${activeList.length - progressiveLoadState.displayedCount} remaining)`;
+      loadMoreBtn.textContent = `Load More (${activeList.length - state.progressiveLoadState.displayedCount} remaining)`;
       loadMoreBtn.style.display = 'block';
     }
   } else if (loadMoreBtn) {
@@ -2179,10 +1319,10 @@ function renderProgressive(activeList, isCrisisList = false, appendOnly = false)
 }
 
 function render(){
-  if (!ready) {
+  if (!state.ready) {
     if (els.treatmentGrid) els.treatmentGrid.dataset.state = 'loading';
     updateResultsAwaitingPanel();
-    if (!resultsUnlocked) renderResultsLocked();
+    if (!state.resultsUnlocked) renderResultsLocked();
     return;
   }
 
@@ -2191,12 +1331,12 @@ function render(){
     return;
   }
 
-  if (!resultsUnlocked) {
+  if (!state.resultsUnlocked) {
     renderResultsLocked();
     return;
   }
 
-  const generation = ++renderGeneration;
+  const generation = ++state.renderGeneration;
   refreshEls();
   const showCrisis = els.showCrisis?.checked || false;
   const { filters: filterSnapshot, options: filterOptions } = getFilterModuleBindings(showCrisis);
@@ -2205,7 +1345,7 @@ function render(){
     ? (p) => window.matchesFilters(p, filterSnapshot, filterOptions)
     : matchesFiltersFallback;
 
-  const filtered = programs.filter(filterFn);
+  const filtered = state.programs.filter(filterFn);
 
   const treatment = filtered.filter(p => !isCrisis(p));
   const crisis = filtered.filter(p => isCrisis(p));
@@ -2241,7 +1381,7 @@ function render(){
     
     // Sort by relevance score (highest first) when sort is "relevance"
     const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
-    if (currentSort === SORT_OPTIONS.RELEVANCE) {
+    if (state.currentSort === SORT_OPTIONS.RELEVANCE) {
       scoredPrograms.sort((a, b) => b.score - a.score);
       activeList = scoredPrograms.map(sp => sp.program);
     } else {
@@ -2253,7 +1393,7 @@ function render(){
               safeStr: window.safeStr,
               locLabel: window.locLabel,
               calculateProgramDistance: window.calculateProgramDistance,
-              userLocation: userLocation,
+              userLocation: state.userLocation,
               SORT_OPTIONS: window.SORT_OPTIONS || {
                 RELEVANCE: 'relevance',
                 NAME: 'name',
@@ -2262,7 +1402,7 @@ function render(){
                 DISTANCE: 'distance'
               }
             };
-            return window.sortPrograms(list, currentSort, options);
+            return window.sortPrograms(list, state.currentSort, options);
           }
         : sortProgramsLocal; // Fallback to local function
       activeList = sortFn(activeList);
@@ -2276,7 +1416,7 @@ function render(){
             safeStr: window.safeStr,
             locLabel: window.locLabel,
             calculateProgramDistance: window.calculateProgramDistance,
-            userLocation: userLocation,
+            userLocation: state.userLocation,
             SORT_OPTIONS: window.SORT_OPTIONS || {
               RELEVANCE: 'relevance',
               NAME: 'name',
@@ -2285,22 +1425,22 @@ function render(){
               DISTANCE: 'distance'
             }
           };
-          return window.sortPrograms(list, currentSort, options);
+          return window.sortPrograms(list, state.currentSort, options);
         }
       : sortProgramsLocal; // Fallback to local function
     activeList = sortFn(activeList);
   }
   
   // Store for progressive loading
-  progressiveLoadState.allItems = activeList;
-  progressiveLoadState.displayedCount = Math.min(20, activeList.length);
+  state.progressiveLoadState.allItems = activeList;
+  state.progressiveLoadState.displayedCount = Math.min(20, activeList.length);
 
-  if (openId){
-    const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === openId);
-    if (!stillExists) openId = null;
+  if (state.openId){
+    const stillExists = activeList.some((p, idx) => stableIdFor(p, idx) === state.openId);
+    if (!stillExists) state.openId = null;
   }
 
-  if (generation !== renderGeneration) {
+  if (generation !== state.renderGeneration) {
     return;
   }
 
@@ -2401,20 +1541,7 @@ function render(){
   document.dispatchEvent(new CustomEvent('vmhr:rendered', { detail: { count: activeList.length, showCrisis } }));
 }
 
-function syncTopToggles(){
-  if (els.showCrisis && els.showCrisisTop) {
-    els.showCrisisTop.checked = els.showCrisis.checked;
-  }
-  if (els.onlyVirtual && els.onlyVirtualTop) {
-    els.onlyVirtualTop.checked = els.onlyVirtual.checked;
-  }
-}
-
 // ========== Autocomplete ==========
-let autocompleteSuggestions = [];
-let autocompleteSelectedIndex = -1;
-let autocompleteVisible = false;
-
 function generateAutocompleteSuggestions(query) {
   if (!query || query.length < 2) return [];
   
@@ -2423,7 +1550,7 @@ function generateAutocompleteSuggestions(query) {
   const seen = new Set();
   
   // Recent searches
-  recentSearches.forEach(search => {
+  state.recentSearches.forEach(search => {
     if (search.toLowerCase().includes(q) && !seen.has(search)) {
       suggestions.push({ type: 'recent', text: search });
       seen.add(search);
@@ -2431,11 +1558,11 @@ function generateAutocompleteSuggestions(query) {
   });
   
   // Program names and organizations - search ALL programs, not just first 50
-  if (ready && programs.length > 0) {
+  if (state.ready && state.programs.length > 0) {
     const exactMatches = [];
     const fuzzyMatches = [];
     
-    programs.forEach(p => {
+    state.programs.forEach(p => {
       const programName = safeStr(p.program_name);
       const orgName = safeStr(p.organization);
       
@@ -2455,7 +1582,7 @@ function generateAutocompleteSuggestions(query) {
       if (orgName && orgName !== programName) {
         const orgLower = orgName.toLowerCase();
         // Collect all programs for this organization
-        const orgPrograms = orgProgramsIndex.get(orgLower) || [];
+        const orgPrograms = state.orgProgramsIndex.get(orgLower) || [];
         
         if (orgLower === q) {
           exactMatches.push({ type: 'organization', text: orgName, programs: orgPrograms, isExact: true });
@@ -2527,13 +1654,13 @@ function renderAutocomplete(suggestions) {
     container.style.display = 'none';
     input.setAttribute('aria-expanded', 'false');
     updateAutocompleteActiveDescendant(-1);
-    autocompleteVisible = false;
+    state.autocompleteVisible = false;
     return;
   }
   
-  autocompleteSuggestions = suggestions;
-  autocompleteSelectedIndex = -1;
-  autocompleteVisible = true;
+  state.autocompleteSuggestions = suggestions;
+  state.autocompleteSelectedIndex = -1;
+  state.autocompleteVisible = true;
   input.setAttribute('aria-expanded', 'true');
   updateAutocompleteActiveDescendant(-1);
   
@@ -2573,7 +1700,7 @@ function renderAutocomplete(suggestions) {
     if (indexAttr !== null) {
       const index = parseInt(indexAttr, 10);
       // Use autocompleteSuggestions instead of suggestions parameter
-      if (!isNaN(index) && index >= 0 && index < autocompleteSuggestions.length) {
+      if (!isNaN(index) && index >= 0 && index < state.autocompleteSuggestions.length) {
         e.preventDefault();
         e.stopPropagation();
         selectSuggestion(index);
@@ -2605,14 +1732,14 @@ function setSelectedSuggestion(index) {
     item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
   });
   
-  autocompleteSelectedIndex = index;
+  state.autocompleteSelectedIndex = index;
   updateAutocompleteActiveDescendant(index);
 }
 
 function selectSuggestion(index) {
-  if (index < 0 || index >= autocompleteSuggestions.length) return;
+  if (index < 0 || index >= state.autocompleteSuggestions.length) return;
   
-  const suggestion = autocompleteSuggestions[index];
+  const suggestion = state.autocompleteSuggestions[index];
   
   // For organization suggestions, use the exact organization name from the database
   // This ensures case-sensitive matching works correctly
@@ -2640,7 +1767,7 @@ function selectSuggestion(index) {
   }
   els.q.setAttribute('aria-expanded', 'false');
   updateAutocompleteActiveDescendant(-1);
-  autocompleteVisible = false;
+  state.autocompleteVisible = false;
   
   // Clear any previous search state and trigger fresh search
   // Use a small delay to ensure the input value is set
@@ -2666,8 +1793,8 @@ function hideAutocomplete() {
     els.q.setAttribute('aria-expanded', 'false');
     updateAutocompleteActiveDescendant(-1);
   }
-  autocompleteVisible = false;
-  autocompleteSelectedIndex = -1;
+  state.autocompleteVisible = false;
+  state.autocompleteSelectedIndex = -1;
 }
 
 // ========== Mobile Swipe Gestures ==========
@@ -2714,74 +1841,6 @@ function initSwipeGestures() {
   } // End of disabled touch swipe block
 }
 
-// Sync chip checkboxes to match select state
-function syncChipsToSelect(selectId) {
-  const select = document.getElementById(selectId);
-  if (!select) return;
-  
-  const chipContainer = document.querySelector(`[data-sync-select="${selectId}"]`);
-  if (!chipContainer) return;
-  
-  const selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
-  const checkboxes = chipContainer.querySelectorAll('input[type="checkbox"]');
-  
-  checkboxes.forEach(checkbox => {
-    checkbox.checked = selectedValues.includes(checkbox.value);
-  });
-  
-  // Show/hide clear button
-  const clearBtn = document.querySelector(`[data-clear-select="${selectId}"]`);
-  if (clearBtn) {
-    clearBtn.style.display = selectedValues.length > 0 ? 'block' : 'none';
-  }
-}
-
-// Sync select to match chip checkbox state
-function syncSelectToChips(selectId, checkboxValue, isChecked) {
-  const select = document.getElementById(selectId);
-  if (!select) return;
-  
-  const option = Array.from(select.options).find(opt => opt.value === checkboxValue);
-  if (option) {
-    option.selected = isChecked;
-    // Dispatch change event so existing handlers run
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-}
-
-// Initialize chip-based multi-selects
-function initChipMultiSelects() {
-  const chipContainers = document.querySelectorAll('[data-sync-select]');
-  
-  chipContainers.forEach(container => {
-    const selectId = container.dataset.syncSelect;
-    const select = document.getElementById(selectId);
-    if (!select) return;
-    
-    // Initial sync from select to chips
-    syncChipsToSelect(selectId);
-    
-    // Handle chip checkbox changes
-    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', (e) => {
-        syncSelectToChips(selectId, checkbox.value, e.target.checked);
-      });
-    });
-    
-    // Handle clear button
-    const clearBtn = document.querySelector(`[data-clear-select="${selectId}"]`);
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        // Clear all options
-        Array.from(select.options).forEach(opt => opt.selected = false);
-        // Dispatch change event
-        select.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-    }
-  });
-}
-
 function bind(){
   // Use events module for event handler setup
   if (typeof window.setupEventHandlers !== 'function') {
@@ -2795,70 +1854,70 @@ function bind(){
   }
     
   // Setup state accessors - use StateManager if available, fallback to legacy variables
-  const state = {
-    getReady: () => stateManager ? stateManager.getState('ready') : ready,
-    getOpenId: () => stateManager ? stateManager.getState('openId') : openId,
+  const stateAccessors = {
+    getReady: () => stateManager ? stateManager.getState('ready') : state.ready,
+    getOpenId: () => stateManager ? stateManager.getState('openId') : state.openId,
     setOpenId: (id) => {
       if (stateManager) {
         stateManager.setState({ openId: id });
-        openId = id; // Update local variable directly
+        state.openId = id; // Update local variable directly
       } else {
-        openId = id;
+        state.openId = id;
       }
     },
-    getCurrentSort: () => stateManager ? stateManager.getState('currentSort') : currentSort,
+    getCurrentSort: () => stateManager ? stateManager.getState('currentSort') : state.currentSort,
     setCurrentSort: (sort) => {
       if (stateManager) {
         stateManager.setState({ currentSort: sort });
-        currentSort = sort; // Update local variable directly
+        state.currentSort = sort; // Update local variable directly
       } else {
-        currentSort = sort;
+        state.currentSort = sort;
       }
     },
-    getUserLocation: () => stateManager ? stateManager.getState('userLocation') : userLocation,
+    getUserLocation: () => stateManager ? stateManager.getState('userLocation') : state.userLocation,
     setUserLocation: (loc) => {
       if (stateManager) {
         stateManager.setState({ userLocation: loc });
-        userLocation = loc; // Update local variable directly
+        state.userLocation = loc; // Update local variable directly
       } else {
-        userLocation = loc;
+        state.userLocation = loc;
       }
     },
-    getPrograms: () => stateManager ? stateManager.getState('programs') : programs,
-    getSelectedCounty: () => stateManager ? stateManager.getState('selectedCounty') : selectedCounty,
+    getPrograms: () => stateManager ? stateManager.getState('programs') : state.programs,
+    getSelectedCounty: () => stateManager ? stateManager.getState('selectedCounty') : state.selectedCounty,
     setSelectedCounty: (county) => {
       if (stateManager) {
         stateManager.setState({ selectedCounty: county });
-        selectedCounty = county; // Update local variable directly
+        state.selectedCounty = county; // Update local variable directly
       } else {
-        selectedCounty = county;
+        state.selectedCounty = county;
       }
     },
-    getSelectedServiceDomains: () => stateManager ? stateManager.getState('selectedServiceDomains') : selectedServiceDomains,
+    getSelectedServiceDomains: () => stateManager ? stateManager.getState('selectedServiceDomains') : state.selectedServiceDomains,
     setSelectedServiceDomains: (domains) => {
       if (stateManager) {
         stateManager.setState({ selectedServiceDomains: domains });
-        selectedServiceDomains = domains; // Update local variable directly
+        state.selectedServiceDomains = domains; // Update local variable directly
       } else {
-        selectedServiceDomains = domains;
+        state.selectedServiceDomains = domains;
       }
     },
-    getSelectedSudServices: () => stateManager ? stateManager.getState('selectedSudServices') : selectedSudServices,
+    getSelectedSudServices: () => stateManager ? stateManager.getState('selectedSudServices') : state.selectedSudServices,
     setSelectedSudServices: (services) => {
       if (stateManager) {
         stateManager.setState({ selectedSudServices: services });
-        selectedSudServices = services; // Update local variable directly
+        state.selectedSudServices = services; // Update local variable directly
       } else {
-        selectedSudServices = services;
+        state.selectedSudServices = services;
       }
     },
-    getVerificationRecencyDays: () => stateManager ? stateManager.getState('verificationRecencyDays') : verificationRecencyDays,
+    getVerificationRecencyDays: () => stateManager ? stateManager.getState('verificationRecencyDays') : state.verificationRecencyDays,
     setVerificationRecencyDays: (days) => {
       if (stateManager) {
         stateManager.setState({ verificationRecencyDays: days });
-        verificationRecencyDays = days; // Update local variable directly
+        state.verificationRecencyDays = days; // Update local variable directly
         } else {
-        verificationRecencyDays = days;
+        state.verificationRecencyDays = days;
       }
     }
   };
@@ -2903,18 +1962,18 @@ function bind(){
     },
     setupPrivacyControls,
     setCardOpen,
-    getAutocompleteVisible: () => autocompleteVisible,
-    getAutocompleteSuggestions: () => autocompleteSuggestions,
-    getAutocompleteSelectedIndex: () => autocompleteSelectedIndex,
+    getAutocompleteVisible: () => state.autocompleteVisible,
+    getAutocompleteSuggestions: () => state.autocompleteSuggestions,
+    getAutocompleteSelectedIndex: () => state.autocompleteSelectedIndex,
     clearComparison: () => {
-      comparisonSet.clear();
+      state.comparisonSet.clear();
       saveComparison();
     }
   };
   
   refreshEls();
   // Call events module setup
-  window.setupEventHandlers({ els, callbacks, state });
+  window.setupEventHandlers({ els, callbacks, state: stateAccessors });
   
   // Make scheduleRender accessible globally (set by events module)
   // window.scheduleRenderFn is set inside setupEventHandlers
@@ -2957,10 +2016,10 @@ function setupPrivacyControls() {
         localStorage.removeItem('securityLog');
         
         // Reset in memory
-        favorites.clear();
-        recentSearches = [];
-        callHistory = [];
-        comparisonSet.clear();
+        state.favorites.clear();
+        state.recentSearches = [];
+        state.callHistory = [];
+        state.comparisonSet.clear();
         
         // Update UI
         updateFavoritesCount();
@@ -2979,10 +2038,10 @@ function setupPrivacyControls() {
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
       const userData = {
-        favorites: Array.from(favorites),
-        recentSearches: recentSearches,
-        callHistory: callHistory,
-        comparison: Array.from(comparisonSet),
+        favorites: Array.from(state.favorites),
+        recentSearches: state.recentSearches,
+        callHistory: state.callHistory,
+        comparison: Array.from(state.comparisonSet),
         exportedAt: new Date().toISOString()
       };
       
@@ -3021,13 +2080,13 @@ async function loadGeocodedData() {
     const response = await fetch('programs.geocoded.json');
     if (response.ok) {
       const data = await response.json();
-      geocodedPrograms = new Map();
+      state.geocodedPrograms = new Map();
       if (data.programs && Array.isArray(data.programs)) {
         data.programs.forEach(program => {
-          geocodedPrograms.set(program.program_id, program);
+          state.geocodedPrograms.set(program.program_id, program);
         });
       }
-      console.log(`Loaded ${geocodedPrograms.size} geocoded programs`);
+      console.log(`Loaded ${state.geocodedPrograms.size} geocoded programs`);
       return true;
     } else {
       console.warn('Geocoded data file not found (this is okay if not yet generated)');
@@ -3040,12 +2099,12 @@ async function loadGeocodedData() {
 }
 
 function mergeGeocodedData(programs) {
-  if (!geocodedPrograms || geocodedPrograms.size === 0) {
+  if (!state.geocodedPrograms || state.geocodedPrograms.size === 0) {
     return programs;
   }
   
   return programs.map(program => {
-    const geocoded = geocodedPrograms.get(program.program_id);
+    const geocoded = state.geocodedPrograms.get(program.program_id);
     if (geocoded && geocoded.locations) {
       const merged = { ...program };
       merged.locations = program.locations.map((loc, idx) => {
@@ -3150,518 +2209,6 @@ function computeAvailableFilters(programsList) {
   };
 }
 
-// Apply feature flags to UI - enforces "no-clutter" by hiding filters when flags are disabled
-function applyFeatureFlagsToUI() {
-  const flags = window.FEATURE_FLAGS || {};
-  
-  // County filter group - only visible when STATEWIDE_MODE is enabled
-  const countyGroup = document.getElementById('countyFilterGroup');
-  if (countyGroup) {
-    if (!flags.STATEWIDE_MODE) {
-      countyGroup.style.display = 'none';
-      // Reset county filter value to avoid accidental filtering
-      const countySelect = document.getElementById('county');
-      if (countySelect) countySelect.value = '';
-    }
-  }
-  
-  // Service domain and SUD services filters - only visible when SHOW_SUD_FILTERS is enabled
-  if (!flags.SHOW_SUD_FILTERS) {
-    const serviceDomainGroup = document.getElementById('serviceDomainFilterGroup');
-    if (serviceDomainGroup) {
-      serviceDomainGroup.style.display = 'none';
-      const serviceDomainSelect = document.getElementById('serviceDomain');
-      if (serviceDomainSelect) serviceDomainSelect.value = '';
-    }
-    
-    const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
-    if (sudServicesGroup) {
-      sudServicesGroup.style.display = 'none';
-      const sudServicesSelect = document.getElementById('sudServices');
-      if (sudServicesSelect) {
-        // Clear all selected options
-        Array.from(sudServicesSelect.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
-        syncChipsToSelect('sudServices');
-      }
-    }
-  }
-  
-  // Verification filter - only visible when SHOW_VERIFICATION_FILTERS is enabled
-  const verificationGroup = document.getElementById('verificationFilterGroup');
-  if (verificationGroup) {
-    if (!flags.SHOW_VERIFICATION_FILTERS) {
-      verificationGroup.style.display = 'none';
-      const verificationSelect = document.getElementById('verificationRecency');
-      if (verificationSelect) verificationSelect.value = '';
-    }
-  }
-  
-  // Update active filter chips after applying flags
-  if (typeof updateActiveFilterChips === 'function') {
-    updateActiveFilterChips();
-  }
-}
-
-// Update filter UI visibility based on availableFilters AND feature flags
-function updateFilterVisibility() {
-  const extendedSection = document.getElementById('statewideFiltersSection');
-  if (!extendedSection) return;
-  
-  const flags = window.FEATURE_FLAGS || {};
-  
-  // Check if any advanced filter is available AND enabled by feature flags
-  const hasAnyAdvancedFilter = 
-    (flags.STATEWIDE_MODE && availableFilters.hasCounty) ||
-    (flags.SHOW_SUD_FILTERS && (availableFilters.hasServiceDomains || availableFilters.hasSUD)) ||
-    (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ||
-    availableFilters.hasServiceArea; // Service area is always available if present
-  
-  extendedSection.style.display = hasAnyAdvancedFilter ? 'block' : 'none';
-  
-  // Show/hide individual filter groups (respect both data availability and feature flags)
-  const countyGroup = document.getElementById('countyFilterGroup');
-  if (countyGroup) {
-    countyGroup.style.display = (flags.STATEWIDE_MODE && availableFilters.hasCounty) ? 'block' : 'none';
-  }
-  
-  const serviceDomainGroup = document.getElementById('serviceDomainFilterGroup');
-  if (serviceDomainGroup) {
-    serviceDomainGroup.style.display = (flags.SHOW_SUD_FILTERS && (availableFilters.hasServiceDomains || availableFilters.hasSUD)) ? 'block' : 'none';
-  }
-  
-  // Substance Use Services filter - only visible when:
-  // 1. Feature flag allows it (SHOW_SUD_FILTERS)
-  // 2. Data has SUD services (availableFilters.hasSUD)
-  // 3. Service Type is set to "substance_use" (not co-occurring or mental_health)
-  const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
-  if (sudServicesGroup) {
-    const isSubstanceUseSelected = els.serviceDomain && els.serviceDomain.value === 'substance_use';
-    const shouldShow = flags.SHOW_SUD_FILTERS && availableFilters.hasSUD && isSubstanceUseSelected;
-    
-    if (shouldShow) {
-      sudServicesGroup.style.display = 'block';
-    } else {
-      sudServicesGroup.style.display = 'none';
-      // Clear selections when hiding
-      if (els.sudServices) {
-        Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
-        syncChipsToSelect('sudServices');
-      }
-    }
-  }
-  
-  const verificationGroup = document.getElementById('verificationFilterGroup');
-  if (verificationGroup) {
-    verificationGroup.style.display = (flags.SHOW_VERIFICATION_FILTERS && availableFilters.hasVerification) ? 'block' : 'none';
-  }
-  
-  // Apply feature flags to ensure disabled filters are hidden and cleared
-  applyFeatureFlagsToUI();
-}
-
-// Update active filter chips display (respects feature flags)
-function updateActiveFilterChips() {
-  const container = document.getElementById('activeFiltersContainer');
-  const chipsContainer = document.getElementById('activeFiltersChips');
-  if (!container || !chipsContainer) return;
-  
-  const flags = window.FEATURE_FLAGS || {};
-  const activeFilters = [];
-
-  if (typeof window.getEffectiveSearchFilters === 'function') {
-    const { chips } = window.getEffectiveSearchFilters(readSearchQuery(), {
-      location: els.loc?.value || '',
-      age: els.age?.value || '',
-      care: els.care?.value || '',
-      insurance: els.insurance?.value || '',
-      onlyVirtual: els.onlyVirtual?.checked || false,
-      showCrisis: els.showCrisis?.checked || false,
-    }, {
-      parseSmartSearch: window.parseSmartSearch,
-      getTextSearchTerms: window.getTextSearchTerms,
-      safeStr,
-    });
-
-    chips.forEach((chip, idx) => {
-      activeFilters.push({
-        type: chip.type || `search-${idx}`,
-        label: chip.label,
-      });
-    });
-  }
-  
-  // County filter - only show if STATEWIDE_MODE is enabled
-  if (flags.STATEWIDE_MODE && els.county && els.county.value) {
-    activeFilters.push({
-      type: 'county',
-      label: `County: ${els.county.options[els.county.selectedIndex]?.text || els.county.value}`,
-      removeFn: () => {
-        els.county.value = '';
-        selectedCounty = null;
-        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
-        else render();
-      }
-    });
-  }
-  
-  // Service domain filter - only show if SHOW_SUD_FILTERS is enabled
-  if (flags.SHOW_SUD_FILTERS && els.serviceDomain && els.serviceDomain.value) {
-    const domainLabels = {
-      'mental_health': 'Mental Health',
-      'substance_use': 'Substance Use',
-      'co_occurring': 'Co-occurring',
-      'eating_disorders': 'Eating Disorders'
-    };
-    activeFilters.push({
-      type: 'serviceDomain',
-      label: `Service Type: ${domainLabels[els.serviceDomain.value] || els.serviceDomain.value}`,
-      removeFn: () => {
-        els.serviceDomain.value = '';
-        selectedServiceDomains = [];
-        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
-        else render();
-      }
-    });
-  }
-  
-  // SUD services filter (multi-select) - only show if SHOW_SUD_FILTERS is enabled
-  if (flags.SHOW_SUD_FILTERS && els.sudServices) {
-    const selectedOptions = Array.from(els.sudServices.selectedOptions);
-    if (selectedOptions.length > 0) {
-      const sudLabels = {
-        'detox': 'Detox',
-        'otp': 'OTP',
-        'moud': 'MOUD',
-        'residential_sud': 'Residential',
-        'outpatient_sud': 'Outpatient',
-        'iop_sud': 'IOP',
-        'php_sud': 'PHP',
-        'osar_referral': 'OSAR Referral'
-      };
-      const labels = selectedOptions.map(opt => sudLabels[opt.value] || opt.value).join(', ');
-      activeFilters.push({
-        type: 'sudServices',
-        label: `Substance Use Services: ${labels}`,
-        removeFn: () => {
-          Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-          selectedSudServices = [];
-          syncChipsToSelect('sudServices');
-          if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
-          else render();
-        }
-      });
-    }
-  }
-  
-  // Verification recency filter - only show if SHOW_VERIFICATION_FILTERS is enabled
-  if (flags.SHOW_VERIFICATION_FILTERS && els.verificationRecency && els.verificationRecency.value) {
-    const recencyLabels = {
-      '30': 'Last 30 days',
-      '90': 'Last 90 days',
-      '180': 'Last 180 days'
-    };
-    activeFilters.push({
-      type: 'verificationRecency',
-      label: `Verified: ${recencyLabels[els.verificationRecency.value] || els.verificationRecency.value}`,
-      removeFn: () => {
-        els.verificationRecency.value = '';
-        verificationRecencyDays = null;
-        if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
-        else render();
-      }
-    });
-  }
-  
-  // Show/hide container and render chips (with optional exit animation)
-  const renderChipDom = () => {
-    if (activeFilters.length > 0) {
-      container.style.display = 'flex';
-
-      chipsContainer.innerHTML = activeFilters.map((filter, idx) => {
-        const chipId = `filter-chip-${filter.type}-${idx}`;
-        return `
-        <div class="active-filter-chip" role="listitem" id="${chipId}" style="--chip-i: ${idx}">
-          <span class="active-filter-chip-label">${escapeHtml(filter.label)}</span>
-          <button 
-            type="button" 
-            class="active-filter-chip-remove" 
-            aria-label="Remove ${escapeHtml(filter.label)} filter"
-            data-filter-type="${escapeHtml(filter.type)}"
-            data-filter-index="${idx}"
-            data-testid="remove-filter-${escapeHtml(filter.type)}"
-            tabindex="0">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-      `;
-      }).join('');
-
-      activeFilters.forEach((filter, idx) => {
-        const btn = chipsContainer.querySelector(
-          `.active-filter-chip-remove[data-filter-index="${idx}"]`
-        );
-        if (!btn) return;
-        const chipType = filter.type;
-        btn.addEventListener('click', () => clearActiveFilterChip(chipType));
-        btn.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            clearActiveFilterChip(chipType);
-          }
-        });
-      });
-    } else {
-      container.style.display = 'none';
-      chipsContainer.innerHTML = '';
-    }
-  };
-
-  if (window.flowMotion?.updateActiveFilterChipsWithMotion) {
-    window.flowMotion.updateActiveFilterChipsWithMotion(chipsContainer, activeFilters, renderChipDom);
-  } else {
-    renderChipDom();
-  }
-
-  window.flowScroll?.updateFlowContextBar?.();
-}
-
-function clearActiveFilterChip(chipType) {
-  refreshEls();
-
-  if (els.q) {
-    let next = els.q.value;
-    if (typeof window.stripFilterFromQuery === 'function') {
-      next = window.stripFilterFromQuery(next, chipType);
-    } else if (chipType === 'query') {
-      next = '';
-    }
-    els.q.value = next;
-    delete els.q.dataset.exactMatch;
-    delete els.q.dataset.matchType;
-    window.flowMotion?.renderSearchQueryChips();
-  }
-
-  switch (chipType) {
-    case 'location':
-    case 'parsedLocation':
-      if (els.loc) els.loc.value = '';
-      break;
-    case 'age':
-    case 'parsedAge':
-      if (els.age) els.age.value = '';
-      break;
-    case 'care':
-    case 'parsedCare':
-      if (els.care) els.care.value = '';
-      break;
-    case 'insurance':
-    case 'parsedInsurance':
-      if (els.insurance) els.insurance.value = '';
-      break;
-    case 'virtual':
-      if (els.onlyVirtual) els.onlyVirtual.checked = false;
-      break;
-    case 'crisis':
-    case 'parsedCrisis':
-      if (els.showCrisis) els.showCrisis.checked = false;
-      break;
-    case 'parsedDomain':
-      if (els.serviceDomain) {
-        els.serviceDomain.value = '';
-        selectedServiceDomains = [];
-      }
-      break;
-    default:
-      break;
-  }
-  if (typeof syncTopToggles === 'function') syncTopToggles();
-  if (typeof updateURLState === 'function') updateURLState();
-  if (typeof window.scheduleRenderFn === 'function') window.scheduleRenderFn();
-  else render();
-}
-
-function requestUserLocation() {
-  return new Promise((resolve, reject) => {
-    if (!window.isSecureContext) {
-      reject(new Error('Location access requires a secure connection (HTTPS). Use https://viablemhr.com or test on localhost.'));
-      return;
-    }
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by this browser'));
-      return;
-    }
-
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0 // Don't use cached location
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      },
-      (error) => {
-        let message = 'Unable to get your location';
-        switch(error.code) {
-          case error.PERMISSION_DENIED:
-            message = 'Location access denied';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            message = 'Location information unavailable';
-            break;
-          case error.TIMEOUT:
-            message = 'Location request timed out';
-            break;
-        }
-        reject(new Error(message));
-      },
-      options
-    );
-  });
-}
-
-function showLocationConsent() {
-  if (!els.locationConsentModal) {
-    console.error('Location consent modal not found');
-    return;
-  }
-  callShowModal(els.locationConsentModal);
-}
-
-function hideLocationConsent() {
-  if (!els.locationConsentModal) return;
-    callHideModal(els.locationConsentModal);
-}
-
-async function handleNearMeClick() {
-  // Always clear previous location to ensure fresh consent every time
-  userLocation = null;
-  syncStateToManager();
-
-  // Always show consent modal first (privacy-first approach)
-  if (!els.locationConsentModal) {
-    callShowToast('Location feature not available', 'error');
-    return;
-  }
-  showLocationConsent();
-}
-
-async function handleLocationConsentAllow() {
-  // Start geolocation in the same user gesture (before await) for Safari/Chrome
-  const locationPromise = requestUserLocation();
-  hideLocationConsent();
-
-  try {
-    // Check if distance module is loaded
-    if (typeof window.calculateProgramDistance !== 'function') {
-      callShowToast('Distance calculation not available. Please refresh the page.', 'error');
-      console.error('Distance module not loaded');
-      return;
-    }
-
-    userLocation = await locationPromise;
-
-    if (!userLocation) {
-      callShowToast('Failed to get location', 'error');
-      return;
-    }
-
-    syncStateToManager();
-
-    // Set sort to distance
-    const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-    currentSort = SORT_OPTIONS.DISTANCE;
-    if (els.sortSelect) {
-      els.sortSelect.value = SORT_OPTIONS.DISTANCE;
-    }
-
-    // Re-render with distance sorting
-    if (typeof window.scheduleRenderFn === 'function') {
-      window.scheduleRenderFn();
-    } else {
-      render();
-    }
-
-    updateLocationButtonVisibility();
-
-    callShowToast('Location found. Results sorted by distance.', 'success');
-  } catch (error) {
-    console.error('Location error:', error);
-    callShowToast(error.message || 'Failed to get location', 'error');
-    revertDistanceSortWithoutLocation();
-  }
-}
-
-function revertDistanceSortWithoutLocation() {
-  const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-  if (userLocation || currentSort !== SORT_OPTIONS.DISTANCE) return;
-  currentSort = SORT_OPTIONS.RELEVANCE;
-  if (els.sortSelect) {
-    els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
-  }
-  syncStateToManager();
-  if (typeof window.scheduleRenderFn === 'function') {
-    window.scheduleRenderFn();
-  } else {
-    render();
-  }
-}
-
-function handleLocationConsentCancel() {
-  hideLocationConsent();
-  revertDistanceSortWithoutLocation();
-}
-
-// TDPSA Compliance: Stop sharing location (right to opt-out)
-function handleStopLocationSharing() {
-  // Clear location data (TDPSA: right to delete personal data)
-  userLocation = null;
-  syncStateToManager();
-
-  // Reset sort if it was set to distance
-  const SORT_OPTIONS = window.SORT_OPTIONS || { DISTANCE: 'distance', RELEVANCE: 'relevance' };
-  if (currentSort === SORT_OPTIONS.DISTANCE) {
-    currentSort = SORT_OPTIONS.RELEVANCE;
-    if (els.sortSelect) {
-      els.sortSelect.value = SORT_OPTIONS.RELEVANCE;
-    }
-  }
-  
-  // Update UI to reflect location is no longer active
-  updateLocationButtonVisibility();
-  
-  // Re-render without distance sorting
-  if (typeof window.scheduleRenderFn === 'function') {
-    window.scheduleRenderFn();
-  } else {
-    render();
-  }
-  
-  // Provide user feedback (TDPSA: clear communication)
-  callShowToast('Location sharing stopped. Your location has been cleared.', 'success');
-}
-
-// Update button visibility based on location state (TDPSA: clear opt-out mechanism)
-function updateLocationButtonVisibility() {
-  if (!els.nearMeBtn || !els.stopLocationBtn) return;
-  
-  if (userLocation) {
-    // Location is active: show stop button, hide near me button
-    els.nearMeBtn.style.display = 'none';
-    els.stopLocationBtn.style.display = 'inline-flex';
-  } else {
-    // Location not active: show near me button, hide stop button
-    els.nearMeBtn.style.display = 'inline-flex';
-    els.stopLocationBtn.style.display = 'none';
-  }
-}
-
 // Display last updated date from metadata
 function parseMetadataDate(dateStr) {
   if (!dateStr) return null;
@@ -3680,15 +2227,15 @@ function updateLastUpdatedDisplay() {
   const lastUpdatedEl = document.getElementById('lastUpdated');
   if (!lastUpdatedEl) return;
 
-  if (!programsMetadata) {
+  if (!state.programsMetadata) {
     lastUpdatedEl.textContent = '';
     return;
   }
 
   const dateStr =
-    programsMetadata.last_full_verification ||
-    programsMetadata.generatedAt ||
-    programsMetadata.generated_at;
+    state.programsMetadata.last_full_verification ||
+    state.programsMetadata.generatedAt ||
+    state.programsMetadata.generated_at;
   const date = parseMetadataDate(dateStr);
   if (date) {
     const formatted = date.toLocaleDateString('en-US', {
@@ -3703,12 +2250,6 @@ function updateLastUpdatedDisplay() {
   lastUpdatedEl.textContent = 'Verification dates are shown on each program listing.';
 }
 
-// Store metadata for display
-let programsMetadata = null;
-
-// Dev-only regression guard: track if we've already warned about display:grid issue
-let didWarnDisplayGrid = false;
-
 // Dev-only: Check if treatmentGrid has display:grid (would break flex layout)
 // This warns once per page load if the computed display becomes "grid" instead of "flex"
 function checkTreatmentGridDisplayRegression() {
@@ -3721,12 +2262,12 @@ function checkTreatmentGridDisplayRegression() {
   );
   
   // Set flag BEFORE any checks to prevent multiple runs, even if check doesn't trigger warning
-  if (!isDev || didWarnDisplayGrid || !els.treatmentGrid) {
+  if (!isDev || state.didWarnDisplayGrid || !els.treatmentGrid) {
     return;
   }
   
   // Mark as checked immediately to prevent re-running (set BEFORE getComputedStyle)
-  didWarnDisplayGrid = true;
+  state.didWarnDisplayGrid = true;
   
   const computedDisplay = window.getComputedStyle(els.treatmentGrid).display;
   if (computedDisplay === 'grid') {
@@ -4070,7 +2611,7 @@ async function loadPrograms(retryCount = 0){
     
     // Store metadata for display
     if (data.metadata) {
-      programsMetadata = data.metadata;
+      state.programsMetadata = data.metadata;
     }
     
     // Handle both array format (programs.json) and object format (regional data)
@@ -4159,35 +2700,35 @@ async function loadPrograms(retryCount = 0){
     let loadedPrograms = programsArray.map(p => normalizeProgramData(p, normalizeCity));
     
     // Set programs first (before async geocoded data merge)
-    programs = loadedPrograms;
-    programDataMap.clear();
-    programs.forEach(p => programDataMap.set(p.program_id, p));
+    state.programs = loadedPrograms;
+    state.programDataMap.clear();
+    state.programs.forEach(p => state.programDataMap.set(p.program_id, p));
     if (typeof window.dispatchEvent === 'function') {
-      window.dispatchEvent(new CustomEvent('vmhr:programs-ready', { detail: { count: programs.length } }));
+      window.dispatchEvent(new CustomEvent('vmhr:programs-ready', { detail: { count: state.programs.length } }));
     }
     syncStateToManager(); // Sync with StateManager (programs -> StateManager)
-    console.log('Programs loaded:', programs.length, 'Ready:', ready);
+    console.log('Programs loaded:', state.programs.length, 'Ready:', state.ready);
     
     // Update available filters after programs are loaded
-    availableFilters = computeAvailableFilters(programs);
+    state.availableFilters = computeAvailableFilters(state.programs);
     updateFilterVisibility();
     
     // Apply feature flags to UI on initial load
     applyFeatureFlagsToUI();
 
     // Build autocomplete indexes to avoid O(n^2) behavior
-    buildAutocompleteIndexes(programs);
+    buildAutocompleteIndexes(state.programs);
 
-    buildLocationOptions(programs);
-    buildSearchCities(programs);
-    buildInsuranceOptions(programs);
+    buildLocationOptions(state.programs);
+    buildSearchCities(state.programs);
+    buildInsuranceOptions(state.programs);
     if (typeof window.registerInsurancePlansFromData === 'function') {
-      window.registerInsurancePlansFromData(programs);
+      window.registerInsurancePlansFromData(state.programs);
     }
     callUpdateStats();
     updateComparisonCount();
-    ready = true;
-    openId = null;
+    state.ready = true;
+    state.openId = null;
     syncStateToManager(); // Sync with StateManager
     
     // Initialize button visibility (TDPSA: ensure opt-out is visible when needed)
@@ -4201,28 +2742,28 @@ async function loadPrograms(retryCount = 0){
     render();
     
     // Update crisis banner offset after initial render
-    updateCrisisBannerOffset();
+    state.updateCrisisBannerOffset();
     
     // Dev-only: Check for display regression after initial render
     checkTreatmentGridDisplayRegression();
     
     // Try to load and merge geocoded data (non-blocking, after initial render)
     loadGeocodedData().then(() => {
-      if (geocodedPrograms && geocodedPrograms.size > 0) {
-        programs = mergeGeocodedData(programs);
-        programDataMap.clear();
-        programs.forEach(p => programDataMap.set(p.program_id, p));
+      if (state.geocodedPrograms && state.geocodedPrograms.size > 0) {
+        state.programs = mergeGeocodedData(state.programs);
+        state.programDataMap.clear();
+        state.programs.forEach(p => state.programDataMap.set(p.program_id, p));
         syncStateToManager(); // Sync with StateManager
         // Rebuild autocomplete indexes after merge
-        buildAutocompleteIndexes(programs);
+        buildAutocompleteIndexes(state.programs);
         // Recompute available filters after geocoded data merge
-        availableFilters = computeAvailableFilters(programs);
+        state.availableFilters = computeAvailableFilters(state.programs);
         updateFilterVisibility();
         
         // Re-apply feature flags after geocoded data merge
         applyFeatureFlagsToUI();
         // Re-render with geocoded data
-        if (ready) {
+        if (state.ready) {
           render();
         }
       }
@@ -4261,11 +2802,11 @@ async function loadPrograms(retryCount = 0){
     }
     announceToScreenReader(errorMessage, 'assertive');
     
-    ready = true;
-    programs = [];
-    buildLocationOptions(programs);
-    buildInsuranceOptions(programs);
-    openId = null;
+    state.ready = true;
+    state.programs = [];
+    buildLocationOptions(state.programs);
+    buildInsuranceOptions(state.programs);
+    state.openId = null;
     syncStateToManager(); // Sync with StateManager
     render();
   }
@@ -4278,23 +2819,23 @@ if('serviceWorker' in navigator) {
       // Silent fail - service worker is optional enhancement
     });
     // Update banner offset after fonts and layout settle
-    updateCrisisBannerOffset();
+    state.updateCrisisBannerOffset();
   });
 }
 
 // Update banner offset when DOM is ready (before fonts may load)
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateCrisisBannerOffset);
+  document.addEventListener('DOMContentLoaded', state.updateCrisisBannerOffset);
 } else {
   // DOM already ready
-  updateCrisisBannerOffset();
+  state.updateCrisisBannerOffset();
 }
 // Handle call/text tracking via event delegation
 document.addEventListener('click', (e) => {
   const callBtn = e.target.closest('[data-program-id]');
   if (callBtn && callBtn.href && (callBtn.href.startsWith('tel:') || callBtn.href.startsWith('sms:'))) {
     const programId = callBtn.dataset.programId;
-    const program = programDataMap.get(programId);
+    const program = state.programDataMap.get(programId);
     if (program) trackCallAttempt(program);
   }
 });
@@ -4333,208 +2874,12 @@ document.addEventListener('click', (e) => {
     els.onlyVirtual.checked = false;
     els.showCrisis.checked = false;
     syncTopToggles();
-    openId = null;
+    state.openId = null;
     render();
     const t = document.getElementById("treatmentSection");
     if (t) window.scrollTo({ top: t.offsetTop - 10, behavior: "smooth" });
   }
 });
-
-// ========== URL State Management ==========
-function updateURLState() {
-  const params = new URLSearchParams();
-  
-  // Add search query
-  const searchQ = readSearchQuery();
-  if (searchQ) {
-    params.set('q', searchQ);
-  }
-  
-  // Add location
-  if (els.loc && els.loc.value) {
-    params.set('loc', els.loc.value);
-  }
-  
-  // Add age
-  if (els.age && els.age.value) {
-    params.set('age', els.age.value);
-  }
-  
-  // Add level of care
-  if (els.care && els.care.value) {
-    params.set('care', els.care.value);
-  }
-  
-  // Add insurance
-  if (els.insurance && els.insurance.value) {
-    params.set('insurance', els.insurance.value);
-  }
-  
-  // Add toggles
-  if (els.showCrisis && els.showCrisis.checked) {
-    params.set('crisis', '1');
-  }
-  if (els.onlyVirtual && els.onlyVirtual.checked) {
-    params.set('virtual', '1');
-  }
-  
-  // Add sort
-  const SORT_OPTIONS = window.SORT_OPTIONS || { RELEVANCE: 'relevance' };
-  if (currentSort && currentSort !== SORT_OPTIONS.RELEVANCE) {
-    params.set('sort', currentSort);
-  }
-  
-  // Update URL without reload
-  const newURL = params.toString() 
-    ? `${window.location.pathname}?${params.toString()}`
-    : window.location.pathname;
-  window.history.replaceState({ filters: params.toString() }, '', newURL);
-}
-
-function loadURLState() {
-  const params = new URLSearchParams(window.location.search);
-
-  // Preset shortcut: when present, apply the preset config and skip granular URL params
-  // (preset applies an opinionated set; explicit params should be set via UI, not URL).
-  if (params.has('preset')) {
-    const presetId = params.get('preset');
-    const presets = window.FILTER_PRESETS || {};
-    const navigatorPresets = window.NAVIGATOR_PRESETS || {};
-    if (presets[presetId]) {
-      applyFilterPreset(presetId);
-      return;
-    }
-    if (navigatorPresets[presetId] && window.VMHRNavigatorMode && typeof window.VMHRNavigatorMode.applyPreset === 'function') {
-      window.VMHRNavigatorMode.applyPreset(presetId);
-      return;
-    }
-    // Unknown preset — fall through to normal URL state
-  }
-  
-  // Load search query
-  if (params.has('q') && els.q) {
-    const qValue = params.get('q');
-    els.q.value = qValue;
-    // Clear dataset attributes if q is empty or whitespace
-    if (!qValue || !qValue.trim()) {
-      delete els.q.dataset.exactMatch;
-      delete els.q.dataset.matchType;
-    }
-  } else if (els.q) {
-    // No 'q' parameter - ensure value is empty and clear dataset attributes
-    els.q.value = '';
-    delete els.q.dataset.exactMatch;
-    delete els.q.dataset.matchType;
-  }
-  
-  // Load location
-  if (params.has('loc') && els.loc) {
-    els.loc.value = params.get('loc');
-  }
-  
-  // Load age
-  if (params.has('age') && els.age) {
-    els.age.value = params.get('age');
-  }
-  
-  // Load level of care
-  if (params.has('care') && els.care) {
-    els.care.value = params.get('care');
-  }
-  
-  // Load insurance
-  if (params.has('insurance') && els.insurance) {
-    els.insurance.value = params.get('insurance');
-  }
-  
-  // Load toggles
-  if (els.showCrisis) {
-    els.showCrisis.checked = params.has('crisis');
-  }
-  if (els.onlyVirtual) {
-    els.onlyVirtual.checked = params.has('virtual');
-  }
-  syncTopToggles();
-  
-  // Load sort
-  if (params.has('sort') && els.sortSelect) {
-    currentSort = params.get('sort');
-    els.sortSelect.value = currentSort;
-  }
-  
-  // Sync chips after loading URL state
-  if (els.sudServices) {
-    syncChipsToSelect('sudServices');
-  }
-  
-  // Update Substance Use Services filter visibility based on service domain
-  const sudServicesGroup = document.getElementById('sudServicesFilterGroup');
-  if (sudServicesGroup && els.serviceDomain) {
-    const isSubstanceUse = els.serviceDomain.value === 'substance_use';
-    const flags = window.FEATURE_FLAGS || {};
-    
-    if (isSubstanceUse && flags.SHOW_SUD_FILTERS) {
-      sudServicesGroup.style.display = 'block';
-    } else {
-      sudServicesGroup.style.display = 'none';
-      // Clear selections if not substance_use
-      if (els.sudServices && !isSubstanceUse) {
-        Array.from(els.sudServices.options).forEach(opt => opt.selected = false);
-        selectedSudServices = [];
-        syncChipsToSelect('sudServices');
-      }
-    }
-  }
-}
-
-// Handle URL parameters for shared programs
-function handleURLParams() {
-  const params = new URLSearchParams(window.location.search);
-  let programId = params.get('program');
-  
-  // Load filter state from URL
-  if (ready) {
-    loadURLState();
-  }
-  
-  // Validate and sanitize program ID from URL
-  if (programId) {
-    // Extract only valid program ID format (p_hex_numbers)
-    const programIdMatch = programId.match(/p_[0-9a-f]+_\d+/);
-    if (programIdMatch) {
-      programId = programIdMatch[0];
-    } else if (typeof window.sanitizeId === 'function') {
-      // Fallback: sanitize the ID
-      programId = window.sanitizeId(programId);
-      if (programId !== params.get('program')) {
-        if (typeof window.logSecurityEvent === 'function') {
-          window.logSecurityEvent('suspicious_url_param', { original: params.get('program'), sanitized: programId });
-        }
-      }
-    } else {
-      // Basic sanitization
-      programId = programId.replace(/[^a-zA-Z0-9_-]/g, '');
-    }
-  }
-  
-  if (programId && ready) {
-    // Find and open the program
-    programs.forEach((p, idx) => {
-      const id = stableIdFor(p, idx);
-      if (id === programId) {
-        openId = id;
-        render();
-        setTimeout(() => {
-          const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
-          if (card) {
-            setCardOpen(card, true);
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 500);
-      }
-    });
-  }
-}
 
 // Document-level event delegation is set up at the top of the file (after DOM elements)
 
@@ -4543,15 +2888,15 @@ bind();
 initSwipeGestures();
 
 // Clear location on page load (privacy-first: never persist location)
-userLocation = null;
+state.userLocation = null;
 
 // Clear location when page unloads (extra privacy measure)
 window.addEventListener('beforeunload', () => {
-  userLocation = null;
+  state.userLocation = null;
 });
 
 loadPrograms().then(() => {
-  recentSearches = recentSearches.filter(isValidRecentSearchQuery);
+  state.recentSearches = state.recentSearches.filter(isValidRecentSearchQuery);
   // Clear any stale dataset attributes on initial load if q is empty
   if (els.q && (!els.q.value || !els.q.value.trim())) {
     delete els.q.dataset.exactMatch;
