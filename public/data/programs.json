@@ -2,7 +2,7 @@
   "metadata": {
     "generated_at": "2026-05-17",
     "notes": "All program records verified 2026-05-17 (links, spot-checks). Newport Academy Dallas removed (closed location).",
-    "generatedAt": "2026-09-28T01:22:09.439Z",
+    "generatedAt": "2026-11-16T20:46:39.771Z",
     "insurance_verified_at": "2025-12-26",
     "insurance_update_notes": "Added accepted_insurance object to each program; insurance was verified from provider websites where publicly stated. One program (Unity Behavioral Health) did not publicly list accepted insurance at time of verification.",
     "insurance_verified_programs": 83,
@@ -15,8 +15,8 @@
       "missing_website_url": 0
     },
     "last_full_verification": "2026-05-18",
-    "last_directory_review_notes": "Automated wave 3 audit 2026-09-21 (112 of 112 programs). See scripts/data-audit-summary.json.",
-    "regional_sync_at": "2026-09-28T01:22:09.439Z",
+    "last_directory_review_notes": "Automated wave 11 audit 2026-11-16 (18 of 112 programs). See scripts/data-audit-summary.json.",
+    "regional_sync_at": "2026-11-16T20:46:39.771Z",
     "regional_sync_source": "public/data/programs.json",
     "regional_program_count": 112,
     "last_spot_check_fixes": "2026-05-18",
@@ -32,8 +32,8 @@
     "last_patch_run_id": "bricolage-notes-cleanup-2026-09-27",
     "last_patch_notes": "Copy correction on both Bricolage records: removes outdated domain-history text from the top-level notes and from accepted_insurance.notes, which program pages show to families. Schedule and insurance sentences are the existing text, unchanged. Both listings already point to the correct site (website_url/accepted_insurance.source_url). stamp_verified is false, so neither last_verified nor accepted_insurance.last_verified advances, and no re-verification is claimed.",
     "last_patch_programs": 2,
-    "last_wave_verification": "2026-09-21",
-    "last_wave_verified": 3
+    "last_wave_verification": "2026-11-16",
+    "last_wave_verified": 11
   },
   "programs": [
     {
@@ -873,12 +873,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/friscotx",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://www.carruscarebehavioral.com/friscotx",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://www.carruscarebehavioral.com/friscotx",
         "plans": [],
         "types": [
@@ -899,13 +899,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.carruscarebehavioral.com/friscotx"
         ],
         "status": "partially_verified",
         "notes": "Phone not found on fetched source page.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
@@ -1001,12 +1001,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://www.carruscarebehavioral.com/plano",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "plans": [],
         "types": [
@@ -1027,13 +1027,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano"
         ],
         "status": "partially_verified",
         "notes": "Some fields could not be confirmed automatically.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -1367,13 +1367,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.762Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -1720,13 +1720,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 9
@@ -2503,13 +2503,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 11
@@ -2536,12 +2536,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "In-network with most major commercial plans per basepointacademy.com/insurance/; call 972-357-1749 to verify benefits for your plan.",
       "verification_source": "BasePoint Academy Forney: https://basepointacademy.com/locations/forney/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://basepointacademy.com/locations/forney/",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://basepointacademy.com/insurance/",
         "plans": [
           "Aetna",
@@ -2577,14 +2577,14 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://basepointacademy.com/locations/forney/",
           "https://basepointacademy.com/insurance/"
         ],
         "status": "verified",
         "notes": "Core fields match official source URLs fetched during audit.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -3095,13 +3095,13 @@
         ],
         "status": "partially_verified",
         "notes": "Source URL(s) failed this run only (strike 1 of 2): https://unitybehavioral.com/services (404). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
           "org_on_page": true
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 3
@@ -4223,13 +4223,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -4257,12 +4257,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/plano",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://www.carruscarebehavioral.com/plano",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://www.carruscarebehavioral.com/plano",
         "plans": [],
         "types": [
@@ -4283,13 +4283,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.carruscarebehavioral.com/plano"
         ],
         "status": "partially_verified",
         "notes": "Some fields could not be confirmed automatically.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
@@ -4479,12 +4479,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/mckinney",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://www.carruscarebehavioral.com/mckinney",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://www.carruscarebehavioral.com/mckinney",
         "plans": [],
         "types": [
@@ -4505,13 +4505,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.carruscarebehavioral.com/mckinney"
         ],
         "status": "partially_verified",
         "notes": "Phone not found on fetched source page.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
@@ -4613,12 +4613,12 @@
       "transportation_available": "Yes",
       "insurance_notes": "Plans: Most major commercial insurance, Medicaid | Types: Commercial, Medicaid | Hours Mon–Fri 8:00 AM–5:00 PM per location page. Call to verify plan.",
       "verification_source": "Carrus Care: https://www.carruscarebehavioral.com/friscotx",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "website": "https://www.carruscarebehavioral.com/friscotx",
       "data_quality": "Verified on official provider site",
       "accepted_insurance": {
         "status": "verified_on_website",
-        "last_verified": "2026-09-21",
+        "last_verified": "2026-11-16",
         "source_url": "https://www.carruscarebehavioral.com/friscotx",
         "plans": [],
         "types": [
@@ -4639,13 +4639,13 @@
         "mental_health"
       ],
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.carruscarebehavioral.com/friscotx"
         ],
         "status": "partially_verified",
         "notes": "Phone not found on fetched source page.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": true,
@@ -4730,13 +4730,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 5
@@ -6046,13 +6046,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 2
@@ -6742,15 +6742,15 @@
           "https://www.walkerwellness.com/about-us/"
         ],
         "status": "partially_verified",
-        "notes": "Source site refused the automated fetch (403 bot protection; 403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://www.walkerwellness.com/contact-us/ (520); https://www.walkerwellness.com/about-us/ (520). Prior verification held pending the next run.",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
-        "hold_reason": "bot_blocked"
+        "last_attempted_at": "2026-11-16",
+        "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 7
     },
@@ -6865,13 +6865,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (429 rate limited; 429 rate limited). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 7
@@ -7451,14 +7451,14 @@
           "https://fortbehavioral.com/contact-fort-behavioral-health-texas/"
         ],
         "status": "partially_verified",
-        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/ (500). Prior verification held pending the next run.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "notes": "Source URL(s) failed this run only (strike 1 of 2): https://fortbehavioral.com/adolescent-treatment-program-fort-worth-tx/ (500); https://fortbehavioral.com/contact-fort-behavioral-health-texas/ (500). Prior verification held pending the next run.",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "url_failed_single_run"
       },
       "verification_wave": 4
@@ -7676,13 +7676,13 @@
         ],
         "status": "verified",
         "notes": "Source site refused the automated fetch (403 bot protection). This is not a verification — check the page in a browser. Prior verification held.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": false,
           "city_on_page": false,
           "org_on_page": false
         },
-        "last_attempted_at": "2026-09-21",
+        "last_attempted_at": "2026-11-16",
         "hold_reason": "bot_blocked"
       },
       "verification_wave": 0
@@ -7761,7 +7761,7 @@
       "transportation_available": "N/A",
       "insurance_notes": "N/A (not an insurance-billed service)",
       "verification_source": "East Texas Council on Alcoholism and Drug Abuse: https://www.etcada.com",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-16",
       "service_domains": [
         "substance_use"
       ],
@@ -7770,18 +7770,18 @@
       ],
       "accepted_insurance": {
         "status": "not_applicable",
-        "last_verified": "2026-09-21"
+        "last_verified": "2026-11-16"
       },
       "website_url": "https://www.etcada.com",
       "website_domain": "etcada.com",
       "verification": {
-        "last_verified_at": "2026-09-21",
+        "last_verified_at": "2026-11-16",
         "source_urls": [
           "https://www.etcada.com"
         ],
         "status": "verified",
         "notes": "Crisis/navigation entry; contact and hours should be confirmed by phone.",
-        "audited_at": "2026-09-21T16:45:03.763Z",
+        "audited_at": "2026-11-16T20:46:39.640Z",
         "signals": {
           "phone_on_page": true,
           "city_on_page": true,
